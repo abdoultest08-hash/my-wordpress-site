@@ -49,9 +49,9 @@ function mybrand_customize_register( WP_Customize_Manager $wp_customize ): void 
     ] );
 
     foreach ( [
-        [ 'contact_email',   'hello@yourdomain.com', __( 'Email Address', 'mybrand' ) ],
-        [ 'contact_phone',   '+1 (555) 000-0000',    __( 'Phone Number',  'mybrand' ) ],
-        [ 'contact_address', '123 Your Street, City',__( 'Address',       'mybrand' ) ],
+        [ 'contact_email',   'info@winservecare.co.uk',  __( 'Email Address', 'mybrand' ) ],
+        [ 'contact_phone',   '0161 123 4567',             __( 'Phone Number',  'mybrand' ) ],
+        [ 'contact_address', 'Manchester, United Kingdom',__( 'Address',       'mybrand' ) ],
     ] as [ $id, $default, $label ] ) {
         $wp_customize->add_setting( $id, [ 'default' => $default, 'sanitize_callback' => 'sanitize_text_field' ] );
         $wp_customize->add_control( $id, [ 'label' => $label, 'section' => 'mybrand_contact', 'type' => 'text' ] );

@@ -141,6 +141,43 @@ function mybrand_section( string $id, string $class, callable $cb ): void {
 }
 
 /* ------------------------------------------------------------------
+   Assessment form handler
+------------------------------------------------------------------ */
+add_action( 'admin_post_winserve_assessment',        'winserve_handle_assessment' );
+add_action( 'admin_post_nopriv_winserve_assessment', 'winserve_handle_assessment' );
+
+function winserve_handle_assessment(): void {
+    if ( ! isset( $_POST['winserve_assessment_nonce'] )
+        || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['winserve_assessment_nonce'] ) ), 'winserve_assessment_action' )
+    ) {
+        wp_die( esc_html__( 'Security check failed.', 'mybrand' ) );
+    }
+
+    $name    = sanitize_text_field( wp_unslash( $_POST['assess_name']    ?? '' ) );
+    $phone   = sanitize_text_field( wp_unslash( $_POST['assess_phone']   ?? '' ) );
+    $email   = sanitize_email( wp_unslash( $_POST['assess_email']        ?? '' ) );
+    $service = sanitize_text_field( wp_unslash( $_POST['assess_service'] ?? '' ) );
+
+    if ( empty( $name ) || empty( $phone ) ) {
+        wp_safe_redirect( wp_get_referer() ?: home_url( '/' ) );
+        exit;
+    }
+
+    $to      = get_theme_mod( 'contact_email', get_option( 'admin_email' ) );
+    $subject = sprintf( '[Winserve] New Free Assessment Request — %s', $name );
+    $body    = "New free assessment request:\n\n"
+             . "Name:    {$name}\n"
+             . "Phone:   {$phone}\n"
+             . "Email:   {$email}\n"
+             . "Service: {$service}\n\n"
+             . "Submitted: " . current_time( 'mysql' );
+    wp_mail( $to, $subject, $body );
+
+    wp_safe_redirect( add_query_arg( 'assessment', 'sent', wp_get_referer() ?: home_url( '/' ) ) );
+    exit;
+}
+
+/* ------------------------------------------------------------------
    Excerpt length
 ------------------------------------------------------------------ */
 add_filter( 'excerpt_length', fn() => 25 );

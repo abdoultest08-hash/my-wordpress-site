@@ -56,7 +56,7 @@
     }
 
     // ── Animate-on-scroll (IntersectionObserver, no library) ──────────────────
-    const revealEls = document.querySelectorAll('.service-card, .portfolio-item, .stat-item, .post-card');
+    const revealEls = document.querySelectorAll('.service-card, .stat-item, .review-card, .comm-card, .how-step, .post-card');
     if ('IntersectionObserver' in window && revealEls.length) {
         const io = new IntersectionObserver(
             (entries) => {
