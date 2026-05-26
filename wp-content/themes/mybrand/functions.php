@@ -92,6 +92,23 @@ function mybrand_scripts() {
         true
     );
 
+    // Job board styles & scripts — only on job pages
+    if ( is_singular( 'winserve_job' ) || is_post_type_archive( 'winserve_job' ) ) {
+        wp_enqueue_style(
+            'mybrand-jobs',
+            MYBRAND_URI . '/assets/css/jobs.css',
+            [ 'mybrand-style' ],
+            MYBRAND_VERSION
+        );
+        wp_enqueue_script(
+            'mybrand-jobs',
+            MYBRAND_URI . '/assets/js/jobs.js',
+            [],
+            MYBRAND_VERSION,
+            true
+        );
+    }
+
     wp_localize_script( 'mybrand-main', 'MyBrand', [
         'ajaxUrl' => admin_url( 'admin-ajax.php' ),
         'nonce'   => wp_create_nonce( 'mybrand_nonce' ),
@@ -107,6 +124,11 @@ add_action( 'wp_enqueue_scripts', 'mybrand_scripts' );
    Customizer options
 ------------------------------------------------------------------ */
 require_once MYBRAND_DIR . '/inc/customizer.php';
+
+/* ------------------------------------------------------------------
+   Job board
+------------------------------------------------------------------ */
+require_once MYBRAND_DIR . '/inc/jobs.php';
 
 /* ------------------------------------------------------------------
    Helper: section wrapper for template parts
