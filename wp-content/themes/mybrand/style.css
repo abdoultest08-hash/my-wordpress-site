@@ -1,0 +1,58 @@
+/*
+Theme Name: MyBrand
+Theme URI: https://example.com
+Author: Your Name
+Author URI: https://example.com
+Description: A custom Business & Portfolio WordPress theme. Replace placeholder brand assets with your own logo, colors, and slogan.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.5
+Requires PHP: 8.0
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: mybrand
+Tags: business, portfolio, custom-colors, custom-logo, custom-menu, featured-images, responsive-layout, translation-ready
+*/
+
+/* =========================================================
+   CSS CUSTOM PROPERTIES — swap these when you add branding
+   ========================================================= */
+:root {
+    /* Brand colors — replace with your palette */
+    --color-primary:     #1a1a2e;
+    --color-secondary:   #16213e;
+    --color-accent:      #e94560;
+    --color-accent-alt:  #0f3460;
+
+    /* Neutrals */
+    --color-white:       #ffffff;
+    --color-off-white:   #f8f9fa;
+    --color-light-gray:  #e9ecef;
+    --color-mid-gray:    #6c757d;
+    --color-dark-gray:   #343a40;
+    --color-black:       #0d0d0d;
+
+    /* Typography */
+    --font-heading:      'Poppins', sans-serif;
+    --font-body:         'Inter', sans-serif;
+    --font-size-base:    1rem;
+    --line-height-base:  1.6;
+
+    /* Spacing */
+    --space-xs:   0.25rem;
+    --space-sm:   0.5rem;
+    --space-md:   1rem;
+    --space-lg:   2rem;
+    --space-xl:   4rem;
+    --space-2xl:  6rem;
+
+    /* Layout */
+    --container-max:  1200px;
+    --border-radius:  8px;
+    --transition:     0.3s ease;
+
+    /* Shadows */
+    --shadow-sm:  0 2px 8px rgba(0,0,0,.08);
+    --shadow-md:  0 4px 20px rgba(0,0,0,.12);
+    --shadow-lg:  0 8px 40px rgba(0,0,0,.18);
+}
