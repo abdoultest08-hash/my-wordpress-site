@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AA California Roofing — Expert Roof Repair & Replacement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & TOKENS ─────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0D1B2A;
+  --navy2:#162336;
+  --gold:#F5A623;
+  --gold-d:#D4901F;
+  --white:#fff;
+  --off:#F8F9FB;
+  --gray:#EEF1F5;
+  --text:#1A2533;
+  --muted:#5A6B7D;
+  --border:#DDE4EE;
+  --r:8px;
+  --sh:0 4px 24px rgba(13,27,42,.10);
+  --sh2:0 8px 40px rgba(13,27,42,.18);
+  --t:.22s ease;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;color:var(--text);background:var(--white);-webkit-font-smoothing:antialiased}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button,input,textarea,select{font-family:inherit}
+.container{max-width:1180px;margin:0 auto;padding:0 24px}
+.section{padding:72px 0}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif;line-height:1.15}
+
+/* ── BUTTONS ─────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;border-radius:6px;font-weight:700;font-size:.95rem;cursor:pointer;transition:all var(--t);border:2px solid transparent;text-transform:uppercase;letter-spacing:.04em}
+.btn-gold{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.btn-gold:hover{background:var(--gold-d);border-color:var(--gold-d);transform:translateY(-2px);box-shadow:0 6px 20px rgba(245,166,35,.4)}
+.btn-outline{background:transparent;color:var(--white);border-color:var(--white)}
+.btn-outline:hover{background:var(--white);color:var(--navy)}
+.btn-navy{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.btn-navy:hover{background:var(--navy2);transform:translateY(-2px)}
+.btn-lg{padding:16px 36px;font-size:1rem}
+.btn-full{width:100%}
+
+/* ── NAVBAR ──────────────────────────────────────── */
+.navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(13,27,42,.96);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px;gap:24px}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo-icon{width:44px;height:44px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:900;font-size:1rem;color:var(--navy)}
+.nav-logo-text{font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;color:var(--white);line-height:1.2}
+.nav-logo-text span{display:block;font-weight:400;font-size:.7rem;color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{color:rgba(255,255,255,.8);font-size:.9rem;font-weight:500;transition:color var(--t)}
+.nav-links a:hover{color:var(--gold)}
+.nav-phone{color:var(--gold);font-weight:700;font-size:.95rem}
+.nav-cta{white-space:nowrap;padding:10px 20px;font-size:.82rem}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.nav-hamburger span{display:block;width:24px;height:2px;background:var(--white);border-radius:2px;transition:all var(--t)}
+
+/* ── HERO ─────────────────────────────────────────── */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;padding-top:70px;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1635424710928-0544e8512eae?w=1800&auto=format&fit=crop&q=80') center/cover no-repeat}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,rgba(13,27,42,.92) 0%,rgba(13,27,42,.75) 55%,rgba(13,27,42,.4) 100%)}
+.hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1fr 420px;gap:60px;align-items:center;padding:60px 0}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(245,166,35,.15);border:1px solid rgba(245,166,35,.35);color:var(--gold);padding:6px 14px;border-radius:30px;font-size:.78rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:20px}
+.hero-badge svg{width:14px;height:14px;fill:var(--gold)}
+.hero h1{font-size:clamp(2.4rem,5vw,3.6rem);color:var(--white);margin-bottom:20px;line-height:1.1}
+.hero h1 span{color:var(--gold)}
+.hero-sub{color:rgba(255,255,255,.72);font-size:1.05rem;line-height:1.7;margin-bottom:32px;max-width:520px}
+.hero-phone{display:inline-flex;align-items:center;gap:10px;color:var(--white);font-size:1.4rem;font-weight:700;margin-bottom:28px}
+.hero-phone svg{width:22px;height:22px;fill:var(--gold);flex-shrink:0}
+.hero-stars{display:flex;align-items:center;gap:10px;margin-top:24px}
+.stars{display:flex;gap:3px}
+.stars svg{width:18px;height:18px;fill:var(--gold)}
+.hero-stars-text{color:rgba(255,255,255,.7);font-size:.85rem}
+.hero-stars-text strong{color:var(--white)}
+
+/* Hero form card */
+.hero-form{background:var(--white);border-radius:16px;padding:32px 28px;box-shadow:var(--sh2)}
+.hero-form-badge{display:inline-block;background:var(--gold);color:var(--navy);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:4px 12px;border-radius:30px;margin-bottom:16px}
+.hero-form h3{font-size:1.35rem;color:var(--navy);margin-bottom:6px}
+.hero-form p{font-size:.85rem;color:var(--muted);margin-bottom:22px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:.8rem;font-weight:600;color:var(--text);margin-bottom:5px}
+.form-group input,.form-group select{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:6px;font-size:.9rem;color:var(--text);transition:border-color var(--t);background:var(--white)}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--gold)}
+.form-note{font-size:.72rem;color:var(--muted);text-align:center;margin-top:12px}
+.form-note svg{width:12px;height:12px;display:inline;vertical-align:middle;fill:var(--muted)}
+
+/* ── SPECIALS ─────────────────────────────────────── */
+.specials{background:var(--off)}
+.section-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:10px}
+.section-title{font-size:clamp(1.8rem,3.5vw,2.6rem);color:var(--navy);margin-bottom:14px}
+.section-sub{color:var(--muted);font-size:1rem;line-height:1.7;max-width:560px;margin:0 auto 48px}
+.text-center{text-align:center}
+.specials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.special-card{background:var(--white);border-radius:12px;overflow:hidden;box-shadow:var(--sh);transition:transform var(--t),box-shadow var(--t)}
+.special-card:hover{transform:translateY(-6px);box-shadow:var(--sh2)}
+.special-img{height:200px;overflow:hidden;position:relative}
+.special-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.special-card:hover .special-img img{transform:scale(1.05)}
+.special-ribbon{position:absolute;top:14px;left:14px;background:var(--gold);color:var(--navy);font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:5px 12px;border-radius:4px}
+.special-ribbon.red{background:#E53935;color:#fff}
+.special-body{padding:22px}
+.special-price{font-family:'Poppins',sans-serif;font-size:1.7rem;font-weight:900;color:var(--navy);margin-bottom:4px}
+.special-price.free{color:#27AE60}
+.special-title{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:8px}
+.special-desc{font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:18px}
+
+/* ── TRUST ────────────────────────────────────────── */
+.trust{background:var(--white)}
+.trust-inner{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center}
+.trust-img{position:relative;border-radius:16px;overflow:hidden;box-shadow:var(--sh2)}
+.trust-img img{width:100%;height:460px;object-fit:cover}
+.trust-badge-wrap{position:absolute;bottom:-20px;right:-20px;background:var(--gold);color:var(--navy);border-radius:12px;padding:20px 24px;text-align:center;box-shadow:0 8px 24px rgba(245,166,35,.35)}
+.trust-badge-num{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:900;line-height:1}
+.trust-badge-txt{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.trust-list{margin-top:24px;display:flex;flex-direction:column;gap:14px}
+.trust-item{display:flex;align-items:flex-start;gap:14px}
+.trust-icon{width:38px;height:38px;background:rgba(245,166,35,.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.trust-icon svg{width:18px;height:18px;fill:var(--gold)}
+.trust-item-text strong{display:block;font-size:.9rem;font-weight:700;color:var(--navy);margin-bottom:2px}
+.trust-item-text span{font-size:.82rem;color:var(--muted)}
+
+/* ── SERVICES ─────────────────────────────────────── */
+.services{background:var(--off)}
+.services-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;margin-top:48px}
+.service-card{position:relative;border-radius:14px;overflow:hidden;box-shadow:var(--sh);height:320px;cursor:pointer}
+.service-card img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.service-card:hover img{transform:scale(1.07)}
+.service-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(13,27,42,.88) 0%,rgba(13,27,42,.2) 60%,transparent 100%)}
+.service-card-body{position:absolute;bottom:0;left:0;right:0;padding:28px}
+.service-card-body h3{font-size:1.4rem;color:var(--white);margin-bottom:6px}
+.service-card-body p{font-size:.85rem;color:rgba(255,255,255,.75);line-height:1.6}
+.service-tag{display:inline-block;background:var(--gold);color:var(--navy);font-size:.68rem;font-weight:700;text-transform:uppercase;padding:3px 10px;border-radius:4px;margin-bottom:10px}
+
+/* ── PROJECTS ─────────────────────────────────────── */
+.projects{background:var(--white)}
+.projects-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:48px}
+.project-card{position:relative;border-radius:12px;overflow:hidden;box-shadow:var(--sh);height:260px;cursor:pointer}
+.project-card img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.project-card:hover img{transform:scale(1.05)}
+.project-card-overlay{position:absolute;inset:0;background:rgba(13,27,42,.35);display:flex;align-items:center;justify-content:center;transition:background var(--t)}
+.project-card:hover .project-card-overlay{background:rgba(13,27,42,.5)}
+.play-btn{width:60px;height:60px;background:rgba(245,166,35,.95);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform var(--t),box-shadow var(--t)}
+.project-card:hover .play-btn{transform:scale(1.1);box-shadow:0 0 0 12px rgba(245,166,35,.2)}
+.play-btn svg{width:22px;height:22px;fill:var(--navy);margin-left:3px}
+.project-label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(13,27,42,.85),transparent);padding:20px;color:var(--white);font-weight:700;font-size:.95rem}
+
+/* ── REVIEWS ──────────────────────────────────────── */
+.reviews{background:var(--off)}
+.reviews-header{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:48px}
+.reviews-score{font-family:'Poppins',sans-serif;font-size:3rem;font-weight:900;color:var(--navy);line-height:1}
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.review-card{background:var(--white);border-radius:12px;padding:24px;box-shadow:var(--sh);transition:transform var(--t)}
+.review-card:hover{transform:translateY(-4px)}
+.review-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.review-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.review-avatar-fallback{width:44px;height:44px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;color:var(--navy);flex-shrink:0}
+.review-name{font-weight:700;font-size:.9rem;color:var(--navy)}
+.review-date{font-size:.75rem;color:var(--muted)}
+.review-stars{display:flex;gap:2px;margin-bottom:10px}
+.review-stars svg{width:14px;height:14px;fill:var(--gold)}
+.review-text{font-size:.84rem;color:var(--muted);line-height:1.65}
+.google-badge{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:.72rem;color:var(--muted);font-weight:500}
+.google-g{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#4285F4,#EA4335,#FBBC05,#34A853);display:inline-block}
+
+/* ── STATS ────────────────────────────────────────── */
+.stats{background:var(--navy);color:var(--white)}
+.stats-inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.stats-text h2{color:var(--white);margin-bottom:16px}
+.stats-text p{color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:28px}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.stat-box{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:24px}
+.stat-num{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:900;color:var(--gold);line-height:1;margin-bottom:6px}
+.stat-label{font-size:.83rem;color:rgba(255,255,255,.65)}
+
+/* ── CREDENTIALS ──────────────────────────────────── */
+.credentials{background:var(--off)}
+.credentials-inner{display:flex;flex-direction:column;align-items:center;text-align:center}
+.cert-card{background:var(--white);border-radius:16px;padding:36px 48px;box-shadow:var(--sh2);display:inline-flex;flex-direction:column;align-items:center;gap:16px;max-width:480px;margin-top:40px;border:2px solid var(--gold)}
+.cert-logo{width:80px;height:80px;background:var(--navy);border-radius:12px;display:flex;align-items:center;justify-content:center}
+.cert-logo-text{font-family:'Poppins',sans-serif;font-weight:900;font-size:1rem;color:var(--gold);text-align:center;line-height:1.2}
+.cert-name{font-family:'Poppins',sans-serif;font-size:1.2rem;font-weight:800;color:var(--navy)}
+.cert-details{font-size:.84rem;color:var(--muted);line-height:1.7;text-align:center}
+.cert-badges{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.cert-badge{display:flex;align-items:center;gap:6px;background:var(--off);border:1px solid var(--border);border-radius:6px;padding:7px 14px;font-size:.78rem;font-weight:600;color:var(--navy)}
+.cert-badge svg{width:15px;height:15px;fill:var(--gold)}
+
+/* ── SERVICE AREAS ────────────────────────────────── */
+.areas{background:var(--white)}
+.areas-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:40px}
+.area-pill{background:var(--off);border:1px solid var(--border);border-radius:6px;padding:9px 12px;text-align:center;font-size:.78rem;font-weight:500;color:var(--text);transition:all var(--t);cursor:default}
+.area-pill:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700}
+
+/* ── CTA BANNER ───────────────────────────────────── */
+.cta-banner{position:relative;overflow:hidden}
+.cta-banner-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1800&auto=format&fit=crop&q=80') center/cover no-repeat}
+.cta-banner-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(13,27,42,.93) 0%,rgba(13,27,42,.85) 100%)}
+.cta-banner-inner{position:relative;z-index:2;text-align:center;padding:90px 24px}
+.cta-banner h2{font-size:clamp(2rem,4vw,3rem);color:var(--white);margin-bottom:16px}
+.cta-banner p{color:rgba(255,255,255,.72);font-size:1.05rem;margin-bottom:36px;max-width:540px;margin-left:auto;margin-right:auto;line-height:1.7}
+.cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.cta-trust-row{display:flex;align-items:center;justify-content:center;gap:28px;margin-top:32px;flex-wrap:wrap}
+.cta-trust-item{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.65);font-size:.82rem}
+.cta-trust-item svg{width:15px;height:15px;fill:var(--gold)}
+
+/* ── FOOTER ───────────────────────────────────────── */
+.footer{background:var(--navy2);color:rgba(255,255,255,.75)}
+.footer-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.2fr;gap:48px;padding:60px 0 48px}
+.footer-brand p{font-size:.85rem;line-height:1.7;margin-top:16px;color:rgba(255,255,255,.55)}
+.footer-col h4{font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.45);margin-bottom:18px}
+.footer-col ul{display:flex;flex-direction:column;gap:10px}
+.footer-col ul li a{font-size:.85rem;color:rgba(255,255,255,.65);transition:color var(--t)}
+.footer-col ul li a:hover{color:var(--gold)}
+.footer-contact-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
+.footer-contact-item svg{width:16px;height:16px;fill:var(--gold);flex-shrink:0;margin-top:2px}
+.footer-contact-item span{font-size:.84rem;color:rgba(255,255,255,.65);line-height:1.5}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding:20px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:gap}
+.footer-bottom p{font-size:.78rem;color:rgba(255,255,255,.35)}
+.footer-bottom-links{display:flex;gap:20px}
+.footer-bottom-links a{font-size:.78rem;color:rgba(255,255,255,.35);transition:color var(--t)}
+.footer-bottom-links a:hover{color:var(--gold)}
+
+/* ── RESPONSIVE ───────────────────────────────────── */
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;max-width:560px;margin:0 auto}
+  .hero-form{order:-1}
+  .specials-grid{grid-template-columns:1fr}
+  .trust-inner{grid-template-columns:1fr}
+  .services-grid{grid-template-columns:1fr}
+  .reviews-grid{grid-template-columns:1fr}
+  .stats-inner{grid-template-columns:1fr}
+  .areas-grid{grid-template-columns:repeat(3,1fr)}
+  .footer-top{grid-template-columns:1fr 1fr}
+  .nav-links,.nav-phone{display:none}
+  .nav-hamburger{display:flex}
+}
+@media(max-width:600px){
+  .section{padding:52px 0}
+  .specials-grid,.projects-grid{grid-template-columns:1fr}
+  .areas-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-top{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr}
+}
+
+/* ── SMOOTH SCROLL OFFSET ─────────────────────────── */
+[id]{scroll-margin-top:80px}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAVBAR ══════════════════════════════════════ -->
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">AA</div>
+      <div class="nav-logo-text">AA California Roofing<span>Licensed &amp; Insured</span></div>
+    </a>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#projects">Projects</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#areas">Areas</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a href="tel:2135550000" class="nav-phone">📞 (213) 555-0000</a>
+    <a href="#inspection" class="btn btn-gold nav-cta">Free Inspection</a>
+    <div class="nav-hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═════════════════════════════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="container hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg>
+        #1 Rated Roofing Company in LA
+      </div>
+      <h1>Expert Roofing Services<br><span>Repair &amp;</span><br>Replacement</h1>
+      <p class="hero-sub">From minor repairs to complete roof replacements, our licensed professionals deliver premium craftsmanship with quality materials — protecting your home for decades.</p>
+      <a href="tel:2135550000" class="hero-phone">
+        <svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+        (213) 555-0000
+      </a>
+      <div class="hero-stars">
+        <div class="stars">
+          <svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg>
+          <svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg>
+          <svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg>
+          <svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg>
+          <svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg>
+        </div>
+        <span class="hero-stars-text"><strong>5.0</strong> · 200+ Google Reviews</span>
+      </div>
+    </div>
+
+    <!-- Lead Form -->
+    <div class="hero-form" id="inspection">
+      <span class="hero-form-badge">✦ Free · No Obligation</span>
+      <h3>Get a FREE Roof Inspection</h3>
+      <p>Fill out the form — our expert will contact you within 24 hours.</p>
+      <form onsubmit="return false">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" placeholder="John Smith">
+        </div>
+        <div class="form-group">
+          <label>Phone Number *</label>
+          <input type="tel" placeholder="(213) 555-0000">
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="john@email.com">
+        </div>
+        <div class="form-group">
+          <label>Service Needed</label>
+          <select>
+            <option>Free Roof Inspection</option>
+            <option>Roof Repair</option>
+            <option>Full Roof Replacement</option>
+            <option>Storm Damage Assessment</option>
+            <option>Gutter Installation</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-gold btn-full btn-lg">Get My FREE Inspection →</button>
+        <p class="form-note">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9v1H4a2 2 0 00-2 2v8a2 2 0 002 2h16a2 2 0 002-2v-8a2 2 0 00-2-2h-1V9c0-3.9-3.1-7-7-7zm0 2c2.8 0 5 2.2 5 5v1H7V9c0-2.8 2.2-5 5-5zm0 9a2 2 0 110 4 2 2 0 010-4z"/></svg>
+          Your info is safe &amp; never shared.
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SPECIALS ══════════════════════════════════════ -->
+<section class="section specials" id="specials">
+  <div class="container">
+    <div class="text-center">
+      <p class="section-label">Limited Time Offers</p>
+      <h2 class="section-title">2026 Roofing Specials</h2>
+      <p class="section-sub">Exclusive savings for homeowners in Los Angeles — free estimates included on all projects.</p>
+    </div>
+    <div class="specials-grid">
+      <div class="special-card">
+        <div class="special-img">
+          <img src="https://images.unsplash.com/photo-1587293852726-70cdb56c2866?w=700&auto=format&fit=crop&q=80" alt="Roof Inspection">
+          <span class="special-ribbon">FREE</span>
+        </div>
+        <div class="special-body">
+          <div class="special-price free">FREE</div>
+          <div class="special-title">Roof Inspection</div>
+          <p class="special-desc">Complete visual inspection of your entire roof system. Identify hidden issues before they become expensive problems.</p>
+          <a href="#inspection" class="btn btn-gold btn-full">Claim Free Inspection</a>
+        </div>
+      </div>
+      <div class="special-card">
+        <div class="special-img">
+          <img src="https://images.unsplash.com/photo-1632838993527-a16af4b02fa3?w=700&auto=format&fit=crop&q=80" alt="Roof Repair">
+          <span class="special-ribbon">Save $200</span>
+        </div>
+        <div class="special-body">
+          <div class="special-price">$200 Off</div>
+          <div class="special-title">Roof Repair</div>
+          <p class="special-desc">Expert leak repairs, shingle replacement, flashing fixes and more. All work backed by our 2-year craftsmanship warranty.</p>
+          <a href="#inspection" class="btn btn-gold btn-full">Claim This Offer</a>
+        </div>
+      </div>
+      <div class="special-card">
+        <div class="special-img">
+          <img src="https://images.unsplash.com/photo-1584467735815-8234900e7f82?w=700&auto=format&fit=crop&q=80" alt="Full Roof Replacement">
+          <span class="special-ribbon red">Save $1,000</span>
+        </div>
+        <div class="special-body">
+          <div class="special-price">$1,000 Off</div>
+          <div class="special-title">Complete Roof Project</div>
+          <p class="special-desc">Full tear-off and replacement with premium materials. Includes GAF Lifetime warranty and free gutters on select projects.</p>
+          <a href="#inspection" class="btn btn-gold btn-full">Claim This Offer</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TRUST ══════════════════════════════════════════ -->
+<section class="section trust" id="about">
+  <div class="container trust-inner">
+    <div style="position:relative;padding-bottom:40px;padding-right:40px">
+      <div class="trust-img">
+        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&auto=format&fit=crop&q=80" alt="AA California Roofing team">
+      </div>
+      <div class="trust-badge-wrap">
+        <div class="trust-badge-num">15+</div>
+        <div class="trust-badge-txt">Years of<br>Excellence</div>
+      </div>
+    </div>
+    <div>
+      <p class="section-label">Why Choose Us</p>
+      <h2 class="section-title">Your Most Trusted Roofing Company</h2>
+      <p style="color:var(--muted);line-height:1.75;margin-bottom:8px">Since 2010, AA California Roofing has protected hundreds of Los Angeles homes with professional roofing solutions. We are fully licensed, bonded and insured — committed to delivering honest recommendations and quality you can see.</p>
+      <div class="trust-list">
+        <div class="trust-item">
+          <div class="trust-icon"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.8 4.9A9 9 0 1020.7 17 9 9 0 007.8 4.9z" stroke="currentColor" stroke-width="2" fill="none"/></svg></div>
+          <div class="trust-item-text"><strong>Free 21-Point Roof Assessment</strong><span>No cost, no obligation — just an honest evaluation of your roof.</span></div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 1-5 5 1.2 7L12 18l-6.2 3.5 1.2-7-5-5 7-1z"/></svg></div>
+          <div class="trust-icon" style="display:none"></div>
+          <div class="trust-item-text"><strong>Premium Quality Materials</strong><span>GAF, Owens Corning, and CertainTeed certified installer.</span></div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm1 14.9V17h-2v-.1A5 5 0 017 12h2a3 3 0 005.9.7L17 12a5 5 0 01-4 4.9z"/></svg></div>
+          <div class="trust-item-text"><strong>Lifetime Warranty Available</strong><span>Manufacturer + labor warranties on all full replacements.</span></div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM4 5h16M8 3h8"/></svg></div>
+          <div class="trust-item-text"><strong>Financing &amp; Insurance Claims</strong><span>0% financing available. We work directly with your insurer.</span></div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1112 6a2.5 2.5 0 010 5.5z"/></svg></div>
+          <div class="trust-item-text"><strong>Local to Los Angeles</strong><span>We live and work in the communities we serve. Call us anytime.</span></div>
+        </div>
+      </div>
+      <div style="margin-top:32px">
+        <a href="#inspection" class="btn btn-gold">Get a Free Estimate →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SERVICES ══════════════════════════════════════ -->
+<section class="section services" id="services">
+  <div class="container">
+    <div class="text-center">
+      <p class="section-label">What We Do</p>
+      <h2 class="section-title">We Handle Every Roof Type</h2>
+      <p class="section-sub">From classic asphalt shingles to modern metal systems — our certified crews handle it all.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <img src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=900&auto=format&fit=crop&q=80" alt="Metal Roofing">
+        <div class="service-card-overlay"></div>
+        <div class="service-card-body">
+          <span class="service-tag">Metal Roofing</span>
+          <h3>Metal Roofing</h3>
+          <p>Durable, energy-efficient metal roofing that lasts 50+ years. Multiple styles, colors, and standing seam options available.</p>
+        </div>
+      </div>
+      <div class="service-card">
+        <img src="https://images.unsplash.com/photo-1632838993527-a16af4b02fa3?w=900&auto=format&fit=crop&q=80" alt="Shingle Roofing">
+        <div class="service-card-overlay"></div>
+        <div class="service-card-body">
+          <span class="service-tag">Shingle Roofing</span>
+          <h3>Shingle Roofing</h3>
+          <p>Classic shingle offerings including architectural, designer, and impact-resistant grades — installed and warranted by GAF certified crews.</p>
+        </div>
+      </div>
+    </div>
+    <!-- Additional service chips -->
+    <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:32px">
+      <span style="background:var(--white);border:1.5px solid var(--border);border-radius:30px;padding:8px 20px;font-size:.84rem;font-weight:600;color:var(--navy)">🏠 Roof Replacement</span>
+      <span style="background:var(--white);border:1.5px solid var(--border);border-radius:30px;padding:8px 20px;font-size:.84rem;font-weight:600;color:var(--navy)">🔧 Roof Repair</span>
+      <span style="background:var(--white);border:1.5px solid var(--border);border-radius:30px;padding:8px 20px;font-size:.84rem;font-weight:600;color:var(--navy)">🌊 Storm Damage</span>
+      <span style="background:var(--white);border:1.5px solid var(--border);border-radius:30px;padding:8px 20px;font-size:.84rem;font-weight:600;color:var(--navy)">💧 Leak Detection</span>
+      <span style="background:var(--white);border:1.5px solid var(--border);border-radius:30px;padding:8px 20px;font-size:.84rem;font-weight:600;color:var(--navy)">🏗️ Flat / TPO Roofing</span>
+      <span style="background:var(--white);border:1.5px solid var(--border);border-radius:30px;padding:8px 20px;font-size:.84rem;font-weight:600;color:var(--navy)">🪣 Gutter Installation</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROJECTS ═══════════════════════════════════════ -->
+<section class="section projects" id="projects">
+  <div class="container">
+    <div class="text-center">
+      <p class="section-label">Our Work</p>
+      <h2 class="section-title">See Our Roofing Projects</h2>
+      <p class="section-sub">Watch videos of our recent work across Los Angeles and surrounding areas.</p>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card">
+        <img src="https://images.unsplash.com/photo-1584467735815-8234900e7f82?w=800&auto=format&fit=crop&q=80" alt="Complete Roof Replacement">
+        <div class="project-card-overlay">
+          <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="project-label">Complete Roof Replacement — Pasadena</div>
+      </div>
+      <div class="project-card">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&auto=format&fit=crop&q=80" alt="Rooftop Project">
+        <div class="project-card-overlay">
+          <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="project-label">Hillside Roofing Project — Hollywood Hills</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ REVIEWS ════════════════════════════════════════ -->
+<section class="section reviews" id="reviews">
+  <div class="container">
+    <div class="reviews-header text-center">
+      <p class="section-label">Customer Reviews</p>
+      <div class="reviews-score">5.0</div>
+      <div class="stars" style="justify-content:center;gap:5px">
+        <svg viewBox="0 0 20 20" style="width:24px;height:24px;fill:var(--gold)"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg>
+        <svg viewBox="0 0 20 20" style="width:24px;height:24px;fill:var(--gold)"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg>
+        <svg viewBox="0 0 20 20" style="width:24px;height:24px;fill:var(--gold)"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg>
+        <svg viewBox="0 0 20 20" style="width:24px;height:24px;fill:var(--gold)"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg>
+        <svg viewBox="0 0 20 20" style="width:24px;height:24px;fill:var(--gold)"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg>
+      </div>
+      <p style="color:var(--muted);margin-top:8px">What Our Customers Say · 200+ verified Google reviews</p>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar-fallback">JR</div>
+          <div><div class="review-name">James R.</div><div class="review-date">March 2026</div></div>
+        </div>
+        <div class="review-stars"><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg></div>
+        <p class="review-text">"AA California Roofing replaced our entire roof in just two days. Incredible crew, no mess left behind, and the price was very fair. Highly recommend them to anyone in LA!"</p>
+        <div class="google-badge"><span class="google-g"></span> Posted on Google</div>
+      </div>
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar-fallback" style="background:#2B78BF;color:#fff">LM</div>
+          <div><div class="review-name">Laura M.</div><div class="review-date">February 2026</div></div>
+        </div>
+        <div class="review-stars"><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg></div>
+        <p class="review-text">"After the storm I was worried about my roof. They came out the same day, found the damage, and repaired it within 48 hours. Professional, honest and affordable."</p>
+        <div class="google-badge"><span class="google-g"></span> Posted on Google</div>
+      </div>
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar-fallback" style="background:#27AE60;color:#fff">DK</div>
+          <div><div class="review-name">David K.</div><div class="review-date">January 2026</div></div>
+        </div>
+        <div class="review-stars"><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg></div>
+        <p class="review-text">"Best roofing experience I've had. They handled everything with my insurance company and I got a brand new roof at minimal cost. Will use again in the future for sure."</p>
+        <div class="google-badge"><span class="google-g"></span> Posted on Google</div>
+      </div>
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar-fallback" style="background:#8E44AD;color:#fff">SR</div>
+          <div><div class="review-name">Sandra R.</div><div class="review-date">December 2025</div></div>
+        </div>
+        <div class="review-stars"><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg></div>
+        <p class="review-text">"Punctual, clean, and incredibly thorough. The team showed up on time every day, kept my yard clean, and finished ahead of schedule. 5 stars without hesitation."</p>
+        <div class="google-badge"><span class="google-g"></span> Posted on Google</div>
+      </div>
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar-fallback" style="background:#E74C3C;color:#fff">MT</div>
+          <div><div class="review-name">Michael T.</div><div class="review-date">November 2025</div></div>
+        </div>
+        <div class="review-stars"><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg></div>
+        <p class="review-text">"Got 4 quotes and AA California was the most transparent about what I needed. No upselling, just honest advice. My new roof looks amazing and my energy bill dropped."</p>
+        <div class="google-badge"><span class="google-g"></span> Posted on Google</div>
+      </div>
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar-fallback" style="background:#16A085;color:#fff">AC</div>
+          <div><div class="review-name">Ana C.</div><div class="review-date">October 2025</div></div>
+        </div>
+        <div class="review-stars"><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5L2 7.8l5.6-.8z"/></svg></div>
+        <p class="review-text">"Called on a Monday, inspected Tuesday, work done by Friday. The crew was bilingual, very professional, and left my property spotless. Couldn't ask for better service!"</p>
+        <div class="google-badge"><span class="google-g"></span> Posted on Google</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STATS ══════════════════════════════════════════ -->
+<section class="section stats">
+  <div class="container stats-inner">
+    <div class="stats-text">
+      <p class="section-label" style="color:var(--gold)">By The Numbers</p>
+      <h2 class="section-title" style="color:var(--white)">Helping Hundreds of<br>Homeowners Every Year</h2>
+      <p>From Pasadena to Long Beach, we've built a reputation on quality roofing work, honest pricing, and customer service that goes above and beyond.</p>
+      <a href="#inspection" class="btn btn-gold" style="margin-top:24px">Get Your Free Estimate</a>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-num">500+</div>
+        <div class="stat-label">Roofs Completed</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">15+</div>
+        <div class="stat-label">Years in Business</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">5.0★</div>
+        <div class="stat-label">Google Rating</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Licensed &amp; Insured</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CREDENTIALS ════════════════════════════════════ -->
+<section class="section credentials">
+  <div class="container credentials-inner">
+    <p class="section-label">Verified &amp; Certified</p>
+    <h2 class="section-title">Our Credentials &amp; Certifications</h2>
+    <p style="color:var(--muted);max-width:500px;text-align:center;line-height:1.7">AA California Roofing holds all required California state licenses and is affiliated with top roofing manufacturers.</p>
+    <div class="cert-card">
+      <div class="cert-logo">
+        <div class="cert-logo-text">AA<br>CALI</div>
+      </div>
+      <div class="cert-name">AA California Roofing</div>
+      <div class="cert-details">
+        California State Licensed Contractor<br>
+        License #: CSLB 1234567 · Class C-39 Roofing<br>
+        Fully Bonded &amp; Insured · Est. 2010
+      </div>
+      <div class="cert-badges">
+        <span class="cert-badge"><svg viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7l-9-5z"/></svg>GAF Certified</span>
+        <span class="cert-badge"><svg viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7l-9-5z"/></svg>Owens Corning</span>
+        <span class="cert-badge"><svg viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7l-9-5z"/></svg>BBB Accredited</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SERVICE AREAS ══════════════════════════════════ -->
+<section class="section areas" id="areas">
+  <div class="container">
+    <div class="text-center">
+      <p class="section-label">Where We Work</p>
+      <h2 class="section-title">Areas We Service <span style="color:var(--gold)">(213 &amp; Beyond)</span></h2>
+      <p class="section-sub">Proudly serving all of Los Angeles County and surrounding communities.</p>
+    </div>
+    <div class="areas-grid">
+      <div class="area-pill">Downtown LA</div>
+      <div class="area-pill">Pasadena</div>
+      <div class="area-pill">Burbank</div>
+      <div class="area-pill">Glendale</div>
+      <div class="area-pill">Santa Monica</div>
+      <div class="area-pill">Long Beach</div>
+      <div class="area-pill">Torrance</div>
+      <div class="area-pill">Inglewood</div>
+      <div class="area-pill">Compton</div>
+      <div class="area-pill">Carson</div>
+      <div class="area-pill">Hawthorne</div>
+      <div class="area-pill">Gardena</div>
+      <div class="area-pill">Culver City</div>
+      <div class="area-pill">El Monte</div>
+      <div class="area-pill">West Covina</div>
+      <div class="area-pill">Pomona</div>
+      <div class="area-pill">Ontario</div>
+      <div class="area-pill">Rancho Cucamonga</div>
+      <div class="area-pill">San Pedro</div>
+      <div class="area-pill">Whittier</div>
+      <div class="area-pill">La Puente</div>
+      <div class="area-pill">Baldwin Park</div>
+      <div class="area-pill">Azusa</div>
+      <div class="area-pill">Alhambra</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA BANNER ═════════════════════════════════════ -->
+<section class="cta-banner" id="contact">
+  <div class="cta-banner-bg"></div>
+  <div class="cta-banner-inner">
+    <p class="section-label" style="color:var(--gold)">Take Action Today</p>
+    <h2>Ready to Protect Your Home?</h2>
+    <p>Get your free roof inspection and estimate today. Our experts will assess your roof and provide honest recommendations — no pressure, no obligation.</p>
+    <div class="cta-btns">
+      <a href="#inspection" class="btn btn-gold btn-lg">Get Free Inspection →</a>
+      <a href="tel:2135550000" class="btn btn-outline btn-lg">📞 (213) 555-0000</a>
+    </div>
+    <div class="cta-trust-row">
+      <span class="cta-trust-item"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.8 4.9A9 9 0 1020.7 17 9 9 0 007.8 4.9z" stroke="#F5A623" stroke-width="2" fill="none"/></svg>No Obligation</span>
+      <span class="cta-trust-item"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.8 4.9A9 9 0 1020.7 17 9 9 0 007.8 4.9z" stroke="#F5A623" stroke-width="2" fill="none"/></svg>Same-Day Response</span>
+      <span class="cta-trust-item"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.8 4.9A9 9 0 1020.7 17 9 9 0 007.8 4.9z" stroke="#F5A623" stroke-width="2" fill="none"/></svg>Licensed &amp; Insured</span>
+      <span class="cta-trust-item"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.8 4.9A9 9 0 1020.7 17 9 9 0 007.8 4.9z" stroke="#F5A623" stroke-width="2" fill="none"/></svg>Financing Available</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">
+          <div class="nav-logo-icon">AA</div>
+          <div class="nav-logo-text" style="color:var(--white)">AA California Roofing<span>Licensed &amp; Insured</span></div>
+        </a>
+        <p>Serving Los Angeles homeowners with premium roofing solutions since 2010. Licensed, bonded, and insured for your peace of mind.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#services">Free Inspection</a></li>
+          <li><a href="#services">Roof Replacement</a></li>
+          <li><a href="#services">Roof Repair</a></li>
+          <li><a href="#services">Metal Roofing</a></li>
+          <li><a href="#services">Shingle Roofing</a></li>
+          <li><a href="#services">Gutter Installation</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#projects">Our Projects</a></li>
+          <li><a href="#reviews">Reviews</a></li>
+          <li><a href="#areas">Service Areas</a></li>
+          <li><a href="#inspection">Free Estimate</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact Us</h4>
+        <div class="footer-contact-item">
+          <svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+          <span>(213) 555-0000</span>
+        </div>
+        <div class="footer-contact-item">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          <span>aacaliforniaroofing@gmail.com</span>
+        </div>
+        <div class="footer-contact-item">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1112 6a2.5 2.5 0 010 5.5z"/></svg>
+          <span>Los Angeles, CA &amp; surrounding areas</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 AA California Roofing. All rights reserved. CSLB License #1234567</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Sitemap</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Smooth navbar shrink on scroll
+const nav = document.querySelector('.navbar');
+window.addEventListener('scroll', () => {
+  nav.style.background = window.scrollY > 60
+    ? 'rgba(13,27,42,0.98)'
+    : 'rgba(13,27,42,0.96)';
+});
+
+// Hover fix for trust icons using SVGs with stroke
+document.querySelectorAll('.trust-icon svg').forEach(svg => {
+  svg.style.fill = 'none';
+  svg.style.stroke = '#F5A623';
+  svg.style.strokeWidth = '2';
+});
+</script>
+</body>
+</html>
