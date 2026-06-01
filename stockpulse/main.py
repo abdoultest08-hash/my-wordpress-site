@@ -23,6 +23,8 @@ sys.path.insert(0, str(_BASE))
 from collectors.reddit_collector import collect as collect_reddit
 from collectors.news_collector   import collect as collect_news
 from collectors.macro_collector  import collect as collect_macro
+from collectors.price_collector  import collect as collect_prices
+from collectors.sec_collector    import collect as collect_sec
 from scoring.thematic_cascade    import detect_cascades
 from scoring.signal_scorer       import score_all
 from notifications.sms_sender    import send_alert_sms
@@ -40,6 +42,8 @@ def run_pipeline(send_alerts: bool = True) -> dict:
         "reddit_signals": 0,
         "news_signals":   0,
         "macro_events":   [],
+        "sec_signals":    0,
+        "prices_fetched": 0,
         "cascades":       0,
         "tickers_scored": 0,
         "alerts_sent":    0,
@@ -62,6 +66,19 @@ def run_pipeline(send_alerts: bool = True) -> dict:
         print(f"  Macro events: {len(summary['macro_events'])} world events identified")
     except Exception:
         summary["errors"].append(f"macro: {traceback.format_exc()}")
+
+    try:
+        summary["sec_signals"] = collect_sec()
+        print(f"  SEC insider signals: {summary['sec_signals']}")
+    except Exception:
+        summary["errors"].append(f"sec: {traceback.format_exc()}")
+
+    try:
+        prices = collect_prices()
+        summary["prices_fetched"] = len(prices)
+        print(f"  Live prices fetched: {summary['prices_fetched']} tickers")
+    except Exception:
+        summary["errors"].append(f"prices: {traceback.format_exc()}")
 
     print(f"  Total new signals: {summary['reddit_signals'] + summary['news_signals']}")
 

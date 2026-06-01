@@ -136,5 +136,36 @@ def upsert_daily_score(row: dict) -> None:
         ))
 
 
+def upsert_price(row: dict) -> None:
+    """Insert or update a prices row (one per ticker, latest price)."""
+    if _IS_POSTGRES:
+        sql = """
+            INSERT INTO prices (ticker, price, prev_close, pct_change, volume, fetched_at)
+            VALUES (%s,%s,%s,%s,%s,%s)
+            ON CONFLICT (ticker) DO UPDATE SET
+                price      = EXCLUDED.price,
+                prev_close = EXCLUDED.prev_close,
+                pct_change = EXCLUDED.pct_change,
+                volume     = EXCLUDED.volume,
+                fetched_at = EXCLUDED.fetched_at
+        """
+    else:
+        sql = """
+            INSERT INTO prices (ticker, price, prev_close, pct_change, volume, fetched_at)
+            VALUES (?,?,?,?,?,?)
+            ON CONFLICT (ticker) DO UPDATE SET
+                price      = excluded.price,
+                prev_close = excluded.prev_close,
+                pct_change = excluded.pct_change,
+                volume     = excluded.volume,
+                fetched_at = excluded.fetched_at
+        """
+    with get_db() as conn:
+        conn.cursor().execute(sql, (
+            row["ticker"], row["price"], row["prev_close"],
+            row["pct_change"], row["volume"], row["fetched_at"],
+        ))
+
+
 def is_postgres() -> bool:
     return _IS_POSTGRES

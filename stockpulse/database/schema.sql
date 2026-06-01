@@ -179,6 +179,22 @@ CREATE INDEX IF NOT EXISTS idx_alerts_acknowledged     ON alerts (acknowledged_a
 
 
 -- =============================================================
+-- 6. PRICES
+--    Latest live price per ticker, updated every pipeline run.
+-- =============================================================
+CREATE TABLE IF NOT EXISTS prices (
+    ticker      TEXT PRIMARY KEY REFERENCES tickers (symbol) ON DELETE CASCADE,
+    price       NUMERIC(12,4) NOT NULL,
+    prev_close  NUMERIC(12,4),
+    pct_change  NUMERIC(6,2),
+    volume      BIGINT,
+    fetched_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+COMMENT ON TABLE prices IS 'Latest live price snapshot per ticker from Yahoo Finance.';
+
+
+-- =============================================================
 -- SEED DATA — starter tickers aligned to your investor profile
 -- You can delete or extend this list at any time.
 -- =============================================================

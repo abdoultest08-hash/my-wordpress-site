@@ -73,6 +73,15 @@ CREATE TABLE IF NOT EXISTS alerts (
     cascade_event_id TEXT REFERENCES cascade_events(id) ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS prices (
+    ticker      TEXT PRIMARY KEY REFERENCES tickers(symbol) ON DELETE CASCADE,
+    price       REAL NOT NULL,
+    prev_close  REAL,
+    pct_change  REAL,
+    volume      INTEGER,
+    fetched_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 -- Seed tickers
 INSERT OR IGNORE INTO tickers (symbol, name, theme, sector, market_cap_tier, watchlist_status) VALUES
     ('NVDA',  'NVIDIA Corporation',           'AI / Semiconductors',     'Technology',          'mega-cap',  'active'),
