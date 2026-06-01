@@ -13,7 +13,8 @@ from contextlib import contextmanager
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).parent / ".env")
+# .env lives in stockpulse/ (parent of database/)
+load_dotenv(Path(__file__).parent.parent / ".env")
 
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 _IS_POSTGRES = DATABASE_URL.startswith("postgres")
