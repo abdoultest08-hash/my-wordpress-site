@@ -2,7 +2,7 @@
 StockPulse main pipeline.
 
 One full run:
-  1. Collect signals (Reddit + News)
+  1. Collect signals (Reddit + News + Macro world events)
   2. Detect thematic cascades
   3. Score all tickers
   4. Send instant SMS alerts for any ticker >= conviction threshold
@@ -22,6 +22,7 @@ sys.path.insert(0, str(_BASE))
 
 from collectors.reddit_collector import collect as collect_reddit
 from collectors.news_collector   import collect as collect_news
+from collectors.macro_collector  import collect as collect_macro
 from scoring.thematic_cascade    import detect_cascades
 from scoring.signal_scorer       import score_all
 from notifications.sms_sender    import send_alert_sms
@@ -38,6 +39,7 @@ def run_pipeline(send_alerts: bool = True) -> dict:
         "started_at":     started_at.isoformat(),
         "reddit_signals": 0,
         "news_signals":   0,
+        "macro_events":   [],
         "cascades":       0,
         "tickers_scored": 0,
         "alerts_sent":    0,
@@ -54,6 +56,12 @@ def run_pipeline(send_alerts: bool = True) -> dict:
         summary["news_signals"] = collect_news()
     except Exception:
         summary["errors"].append(f"news: {traceback.format_exc()}")
+
+    try:
+        summary["macro_events"] = collect_macro()
+        print(f"  Macro events: {len(summary['macro_events'])} world events identified")
+    except Exception:
+        summary["errors"].append(f"macro: {traceback.format_exc()}")
 
     print(f"  Total new signals: {summary['reddit_signals'] + summary['news_signals']}")
 
