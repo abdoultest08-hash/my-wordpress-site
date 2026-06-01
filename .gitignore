@@ -1,0 +1,25 @@
+# Secrets — never commit
+stockpulse/.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Logs and runtime data
+stockpulse/logs/
+stockpulse/data/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
