@@ -1,0 +1,114 @@
+{
+  "investor": {
+    "email": "abdoultest08@gmail.com",
+    "name": "Investor"
+  },
+  "investing_style": {
+    "primary": "growth",
+    "description": "High-growth companies, willing to accept volatility for big upside"
+  },
+  "risk_tolerance": {
+    "level": "moderate",
+    "description": "Mix of stable and growing companies. Some speculative positions OK.",
+    "max_risk_tier": "High",
+    "exclude_tier": "Speculative"
+  },
+  "sectors": [
+    {
+      "name": "Tech / AI / Semiconductors",
+      "weight": 1.3,
+      "examples": ["Nvidia", "AMD", "Microsoft", "AI infrastructure"]
+    },
+    {
+      "name": "Space / Defense / Aerospace",
+      "weight": 1.2,
+      "examples": ["SpaceX ecosystem", "Palantir", "Lockheed", "satellite plays"]
+    },
+    {
+      "name": "Energy / Clean Tech",
+      "weight": 1.1,
+      "examples": ["Renewables", "EV", "battery technology", "oil majors"]
+    }
+  ],
+  "market_cap_focus": [
+    {
+      "tier": "large-cap",
+      "range": "$10B–$200B",
+      "weight": 1.0
+    },
+    {
+      "tier": "mid-cap",
+      "range": "$2B–$10B",
+      "weight": 1.1
+    },
+    {
+      "tier": "small-micro-cap",
+      "range": "<$2B",
+      "weight": 0.9,
+      "note": "Higher volatility — require stronger signal to score high"
+    }
+  ],
+  "holding_period": {
+    "target": "1–6 months",
+    "style": "medium-term",
+    "description": "Hold through a catalyst then reassess"
+  },
+  "signal_sources": {
+    "reddit": {
+      "enabled": true,
+      "communities": [
+        "stocks",
+        "investing",
+        "wallstreetbets",
+        "SecurityAnalysis",
+        "Futurology",
+        "space"
+      ]
+    },
+    "news": {
+      "enabled": true,
+      "feeds": [
+        "Reuters",
+        "Bloomberg",
+        "CNBC",
+        "TechCrunch",
+        "SpaceNews"
+      ]
+    },
+    "ceo_social": {
+      "enabled": true,
+      "platforms": ["Twitter/X"],
+      "watch_list": []
+    }
+  },
+  "scoring": {
+    "conviction_alert_threshold": 8,
+    "conviction_scale": "1–10",
+    "risk_tiers": ["Low", "Medium", "High", "Speculative"],
+    "score_weights": {
+      "reddit_sentiment": 0.20,
+      "news_sentiment": 0.25,
+      "ceo_signal": 0.20,
+      "thematic_cascade": 0.20,
+      "sector_alignment": 0.15
+    }
+  },
+  "notifications": {
+    "daily_digest": {
+      "enabled": true,
+      "time": "07:00",
+      "timezone": "America/New_York",
+      "channel": "email"
+    },
+    "instant_alert": {
+      "enabled": true,
+      "trigger": "conviction_score >= 8",
+      "channels": ["email", "sms"]
+    }
+  },
+  "deployment": {
+    "platform": "Railway",
+    "schedule": "24/7",
+    "scan_interval_minutes": 30
+  }
+}
