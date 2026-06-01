@@ -1,15 +1,14 @@
 """
-SMS notifications — instant alerts via Twilio when conviction score >= 8.
+SMS notifications — instant alerts and daily 7am summary via Twilio.
 
-Sign up at twilio.com (free trial gives ~$15 credit, enough for ~200 SMS).
-Set in .env: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER, SMS_TO_NUMBER
+Set in Railway Variables: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN,
+TWILIO_FROM_NUMBER, SMS_TO_NUMBER
 """
 
 import json
 import os
 from datetime import datetime, timezone
 from pathlib import Path
-
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -22,44 +21,33 @@ def _get_twilio():
         sid   = os.getenv("TWILIO_ACCOUNT_SID", "")
         token = os.getenv("TWILIO_AUTH_TOKEN", "")
         if not sid or not token:
-            raise ValueError("TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN not set")
+            raise ValueError("TWILIO credentials not set")
         return Client(sid, token)
     except ImportError:
         raise ImportError("Run: pip install twilio")
 
 
 def send_alert_sms(ticker: str, score: float, risk_tier: str, reasoning: str) -> bool:
-    """
-    Send an instant SMS alert. Called when conviction score >= threshold.
-    Returns True on success.
-    """
+    """Send an instant SMS when conviction score >= threshold."""
     from_number = os.getenv("TWILIO_FROM_NUMBER", "")
     to_number   = os.getenv("SMS_TO_NUMBER", "")
 
     if not from_number or not to_number:
-        print("[SMS] TWILIO_FROM_NUMBER or SMS_TO_NUMBER not set — skipping")
+        print("[SMS] Twilio numbers not set — skipping")
         return False
 
-    # Keep SMS concise — it's a push notification, not a report
     short_reason = reasoning[:120] if reasoning else ""
     body = (
         f"⚡ StockPulse Alert\n"
         f"{ticker} — {score:.1f}/10 [{risk_tier} Risk]\n"
-        f"{short_reason}\n"
-        f"Check your email for full details."
+        f"{short_reason}"
     )
 
     try:
         client = _get_twilio()
-        message = client.messages.create(
-            body=body,
-            from_=from_number,
-            to=to_number,
-        )
-
+        message = client.messages.create(body=body, from_=from_number, to=to_number)
         success = message.status in ("queued", "sent", "delivered")
 
-        # Log to alerts table
         try:
             insert("alerts", {
                 "ticker":           ticker,
@@ -75,10 +63,59 @@ def send_alert_sms(ticker: str, score: float, risk_tier: str, reasoning: str) ->
         except Exception:
             pass
 
-        status = f"✅ sent (SID: {message.sid})" if success else f"❌ failed ({message.status})"
-        print(f"[SMS] {ticker} alert → {to_number} {status}")
+        print(f"[SMS] {ticker} alert → {to_number} {'✅' if success else '❌'}")
         return success
 
     except Exception as e:
         print(f"[SMS] Error: {e}")
+        return False
+
+
+def send_daily_sms_summary() -> bool:
+    """Send a concise 7am SMS with today's top stocks. No email needed."""
+    from database.db import execute
+
+    from_number = os.getenv("TWILIO_FROM_NUMBER", "")
+    to_number   = os.getenv("SMS_TO_NUMBER", "")
+
+    if not from_number or not to_number:
+        print("[SMS] Twilio numbers not set — skipping daily summary")
+        return False
+
+    scores = execute("""
+        SELECT ticker, conviction_score, risk_tier
+        FROM daily_scores
+        WHERE date = date('now')
+        ORDER BY conviction_score DESC
+        LIMIT 10
+    """)
+
+    if not scores:
+        print("[SMS] No scores for today — skipping")
+        return False
+
+    date_str = datetime.now().strftime("%b %-d")
+    lines = [f"📈 StockPulse {date_str}"]
+
+    alerts = [s for s in scores if s["conviction_score"] >= 8.0]
+    if alerts:
+        lines.append("\n⚡ HIGH CONVICTION:")
+        for s in alerts:
+            lines.append(f"  {s['ticker']} {s['conviction_score']:.1f}/10 [{s['risk_tier']}]")
+
+    lines.append("\n📊 Top picks:")
+    for s in scores[:5]:
+        bar = "▲" if s["conviction_score"] >= 7 else ("→" if s["conviction_score"] >= 5 else "▼")
+        lines.append(f"  {bar} {s['ticker']} {s['conviction_score']:.1f}/10")
+
+    body = "\n".join(lines)
+
+    try:
+        client = _get_twilio()
+        message = client.messages.create(body=body, from_=from_number, to=to_number)
+        success = message.status in ("queued", "sent", "delivered")
+        print(f"[SMS] Daily summary → {to_number} {'✅' if success else '❌'}")
+        return success
+    except Exception as e:
+        print(f"[SMS] Daily summary error: {e}")
         return False
