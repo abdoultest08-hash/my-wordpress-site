@@ -1,0 +1,8 @@
+outreach/node_modules/
+outreach/token.json
+outreach/credentials.json
+outreach/.env
+outreach/sites/
+outreach/screenshots/
+outreach/outreach_log.json
+outreach/test_output.html
