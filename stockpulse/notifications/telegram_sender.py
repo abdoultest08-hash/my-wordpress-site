@@ -54,8 +54,6 @@ def _chat_id() -> str:
         return _runtime_chat_id
     print("[Telegram] TELEGRAM_CHAT_ID not set and no message received yet — send any message to your bot")
     return ""
-        print(f"[Telegram] Error discovering chat ID: {e}")
-        return ""
 
 
 def send_message(text: str, parse_mode: str = "HTML") -> bool:
