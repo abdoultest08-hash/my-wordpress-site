@@ -18,10 +18,14 @@ _SCHEMA_SQLITE = _HERE / "schema_sqlite.sql"
 
 # Full ticker list — always synced on startup so new tickers are never missed
 ALL_TICKERS = [
-    # AI / Semiconductors
+    # AI / Semiconductors / Big Tech
     ("NVDA", "NVIDIA Corporation",           "AI / Semiconductors",        "Technology",             "mega-cap",  "active"),
     ("AMD",  "Advanced Micro Devices",        "AI / Semiconductors",        "Technology",             "large-cap", "active"),
     ("MSFT", "Microsoft Corporation",         "AI / Cloud",                 "Technology",             "mega-cap",  "active"),
+    ("AAPL", "Apple Inc",                     "Big Tech / Consumer",        "Technology",             "mega-cap",  "active"),
+    ("META", "Meta Platforms",                "AI / Social Media",          "Technology",             "mega-cap",  "active"),
+    ("GOOGL","Alphabet Inc",                  "AI / Cloud / Search",        "Technology",             "mega-cap",  "active"),
+    ("ASML", "ASML Holding",                  "Semiconductor Equipment",    "Technology",             "mega-cap",  "active"),
     ("PLTR", "Palantir Technologies",         "AI / Defense Analytics",     "Technology",             "large-cap", "active"),
     ("ARM",  "Arm Holdings",                  "AI / Chip Architecture",     "Technology",             "large-cap", "active"),
     ("SMCI", "Super Micro Computer",          "AI Infrastructure",          "Technology",             "large-cap", "active"),
@@ -41,6 +45,7 @@ ALL_TICKERS = [
     ("OKLO", "Oklo",                          "Nuclear / Data Center Power","Energy",                 "small-cap", "active"),
     ("CEG",  "Constellation Energy",          "Nuclear Energy",             "Energy",                 "large-cap", "active"),
     # Clean Energy / Batteries
+    ("FLNC", "Fluence Energy",                "Clean Tech / Energy Storage","Energy",                 "mid-cap",   "active"),
     ("ENPH", "Enphase Energy",                "Clean Tech / Solar",         "Energy",                 "mid-cap",   "active"),
     ("FSLR", "First Solar",                   "Clean Tech / Solar",         "Energy",                 "mid-cap",   "active"),
     ("PLUG", "Plug Power",                    "Clean Tech / Hydrogen",      "Energy",                 "small-cap", "active"),
