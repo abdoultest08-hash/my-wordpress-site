@@ -248,85 +248,105 @@ def send_daily_summary() -> bool:
         mood = "🔴 CAUTIOUS — stay defensive"
 
     lines = [
-        f"<b>📈 StockPulse Morning Brief — {date_str}</b>",
-        f"Market: {mood}  |  Avg conviction: {avg_score:.1f}/10",
+        f"<b>📈 StockPulse — {date_str}</b>",
+        f"{mood}  |  Avg: {avg_score:.1f}/10 across {len(scores)} stocks",
         "",
     ]
 
-    # World events
+    # World events — max 4, clean title only (no source repetition)
     if macro_signals:
         lines.append("🌐 <b>World Events:</b>")
-        seen = set()
+        seen_headlines = set()
+        count = 0
         for m in macro_signals:
+            if count >= 4:
+                break
             content = m.get("content", "")
-            headline = content.split("|", 1)[1].strip() if "|" in content else content
-            headline = _clean(headline, 100)
-            if headline and headline not in seen:
-                seen.add(headline)
-                arrow = "▲" if "BULLISH" in content.upper() else ("▼" if "BEARISH" in content.upper() else "➡")
-                lines.append(f"{arrow} {headline}")
+            # Extract headline before source separator
+            headline = content.split("|", 1)[0].strip() if "|" in content else content
+            # Strip sentiment prefix like [BULLISH]
+            headline = re.sub(r'^\[.*?\]\s*', '', headline).strip()
+            headline = _clean(headline, 90)
+            if not headline or headline in seen_headlines:
+                continue
+            seen_headlines.add(headline)
+            arrow = "▲" if "BULLISH" in content.upper() else ("▼" if "BEARISH" in content.upper() else "➡")
+            lines.append(f"  {arrow} {headline}")
+            count += 1
         lines.append("")
 
-    # Sector cascades
+    # Active themes — deduplicated by theme name
     if cascades:
-        lines.append("🔗 <b>Sector Cascades:</b>")
-        for c in cascades[:3]:
+        lines.append("🔗 <b>Active Themes:</b>")
+        seen_themes = set()
+        for c in cascades:
+            theme = c.get("cascade_theme", "")
+            if theme in seen_themes:
+                continue
+            seen_themes.add(theme)
             try:
                 affected = json.loads(c["affected_tickers"]) if isinstance(c["affected_tickers"], str) else c["affected_tickers"]
-                lines.append(f"• {_clean(c['cascade_theme'])} → {', '.join(affected[:4])}")
+                lines.append(f"  • {_clean(theme)} → {', '.join(affected[:4])}")
             except Exception:
                 pass
         lines.append("")
 
     # High conviction picks
     if high_conviction:
-        lines.append("🔥 <b>HIGH CONVICTION (8.0+/10):</b>")
+        lines.append("🔥 <b>HIGH CONVICTION (8.0+):</b>")
         for s in high_conviction:
             price_str  = _get_price_str(s["ticker"])
-            price_part = f" | {price_str}" if price_str else ""
-            lines.append(f"\n<b>{s['ticker']}</b> — {s['conviction_score']:.1f}/10 [{s['risk_tier']}]{price_part}")
+            price_part = f"  {price_str}" if price_str else ""
+            risk_emoji = {"Low": "🔵", "Medium": "🟡", "High": "🟠", "Speculative": "🔴"}.get(s["risk_tier"], "⚪")
+            lines.append(f"\n{risk_emoji} <b>{s['ticker']}</b>  {s['conviction_score']:.1f}/10{price_part}")
             if s.get("reasoning"):
-                lines.append(_clean(s["reasoning"], 200))
+                sentences = [x.strip() for x in _clean(s["reasoning"]).split(".") if x.strip()]
+                lines.append(". ".join(sentences[:2]) + ".")
     else:
         lines.append("No high conviction picks today (threshold: 8.0+/10)")
     lines.append("")
 
-    # Top 6 watchlist
-    lines.append("📊 <b>Top 6 Watchlist:</b>")
+    # Watchlist with prices
+    lines.append("📊 <b>Watchlist:</b>")
     for s in top_picks:
-        bar       = "▲" if s["conviction_score"] >= 7 else ("➡" if s["conviction_score"] >= 5 else "▼")
-        price_str = _get_price_str(s["ticker"])
-        price_part = f" {price_str}" if price_str else ""
+        bar        = "▲" if s["conviction_score"] >= 7 else ("➡" if s["conviction_score"] >= 5 else "▼")
+        price_str  = _get_price_str(s["ticker"])
+        price_part = f"  <i>{price_str}</i>" if price_str else ""
         lines.append(f"  {bar} <b>{s['ticker']}</b>  {s['conviction_score']:.1f}/10{price_part}")
     lines.append("")
 
     # Insider activity
     if insider_signals:
-        lines.append("🏦 <b>Insider Activity:</b>")
+        lines.append("🏦 <b>Insider Moves:</b>")
         for ins in insider_signals:
-            lines.append(f"• [{ins['ticker']}] {_clean(ins['content'], 120)}")
+            lines.append(f"  • <b>{ins['ticker']}</b>  {_clean(ins['content'], 100)}")
         lines.append("")
 
-    # Key headlines
+    # Headlines — one per ticker, clean title, no source duplication
     if top_headlines:
-        lines.append("📰 <b>Key Headlines:</b>")
-        seen = set()
+        lines.append("📰 <b>Top Headlines:</b>")
+        seen_tickers = set()
+        seen_texts   = set()
         for h in top_headlines:
-            text = _clean(h.get("content", ""), 110)
-            if text in seen:
+            tkr   = h["ticker"]
+            raw   = h.get("content", "")
+            title = re.sub(r'\s*-\s*\S[\S ]{0,30}$', '', raw).strip()
+            title = _clean(title, 95)
+            if not title or title in seen_texts or tkr in seen_tickers:
                 continue
-            seen.add(text)
+            seen_texts.add(title)
+            seen_tickers.add(tkr)
             arrow = "▲" if "bullish" in h.get("sentiment", "") else "▼"
-            lines.append(f"{arrow} [{h['ticker']}] {text}")
+            lines.append(f"  {arrow} <b>{tkr}</b>  {title}")
         lines.append("")
 
-    # Opinion
-    lines.append("💡 <b>StockPulse View:</b>")
+    # View
+    lines.append("💡 <b>View:</b>")
     for line in _build_opinion(scores, macro_signals, cascades, avg_score):
-        lines.append(_clean(line))
+        lines.append(f"  {_clean(line)}")
 
     lines.append("")
-    lines.append("🔄 Next scan in 30 min  |  Reply <b>update</b> for on-demand refresh")
+    lines.append("<i>Next scan in 30 min — msg <b>update</b> anytime</i>")
 
     return send_message("\n".join(lines))
 
