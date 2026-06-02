@@ -27,7 +27,7 @@ from collectors.price_collector  import collect as collect_prices
 from collectors.sec_collector    import collect as collect_sec
 from scoring.thematic_cascade    import detect_cascades
 from scoring.signal_scorer       import score_all
-from notifications.sms_sender    import send_alert_sms
+from notifications.telegram_sender import send_alert as send_alert_telegram
 from database.db                 import execute
 
 
@@ -122,7 +122,7 @@ def run_pipeline(send_alerts: bool = True) -> dict:
                 print(f"  {ticker} already alerted in last 6h — skipping")
                 continue
             print(f"  ⚡ ALERT: {ticker} scored {score:.1f}/10 [{risk_tier}]")
-            if send_alert_sms(ticker, score, risk_tier, reasoning):
+            if send_alert_telegram(ticker, score, risk_tier, reasoning):
                 summary["alerts_sent"] += 1
     else:
         print("  Alerts disabled" if not send_alerts else "  No scores available")

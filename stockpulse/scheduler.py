@@ -21,7 +21,7 @@ import threading
 import schedule
 
 from main import run_pipeline
-from notifications.sms_sender import send_daily_sms_summary, send_alert_sms
+from notifications.telegram_sender import send_daily_summary, send_alert
 
 _LOG_DIR = Path(__file__).parent / "logs"
 _LOG_DIR.mkdir(exist_ok=True)
@@ -40,22 +40,18 @@ log = logging.getLogger("stockpulse")
 def _run_test_alert(ticker: str):
     try:
         from scoring.signal_scorer import score_all
-        from database.mock_data import insert_mock_signals
-        insert_mock_signals()
         results = score_all()
         match = next((r for r in results if r["ticker"] == ticker), None)
         if match:
             score     = match["conviction_score"]
             risk_tier = match["risk_tier"]
             reasoning = match.get("reasoning", "")
-            log.info(f"TEST: {ticker} scored {score:.1f}/10 [{risk_tier}] — sending SMS")
-            send_alert_sms(ticker, score, risk_tier, reasoning)
+            log.info(f"TEST: {ticker} scored {score:.1f}/10 [{risk_tier}] — sending Telegram alert")
+            send_alert(ticker, score, risk_tier, reasoning)
         else:
-            log.warning(f"TEST: {ticker} not found in scored results — sending preview SMS")
-            send_alert_sms(
-                ticker, 7.5, "Medium",
-                f"Test alert for {ticker}. Live scoring will run every 30 minutes."
-            )
+            log.warning(f"TEST: {ticker} not found in scored results — sending preview")
+            send_alert(ticker, 7.5, "Medium",
+                f"Test alert for {ticker}. Live scoring will run every 30 minutes.")
     except Exception as e:
         log.error(f"Test alert error: {e}", exc_info=True)
 
@@ -70,23 +66,23 @@ def job_pipeline():
 
 
 def job_daily_digest():
-    log.info("Sending daily SMS summary...")
+    log.info("Sending daily Telegram summary...")
     try:
-        ok = send_daily_sms_summary()
-        log.info(f"Daily SMS {'sent' if ok else 'failed'}")
+        ok = send_daily_summary()
+        log.info(f"Daily summary {'sent ✅' if ok else 'failed ❌'}")
     except Exception as e:
-        log.error(f"Daily SMS error: {e}", exc_info=True)
+        log.error(f"Daily summary error: {e}", exc_info=True)
 
 
 def _start_webhook():
-    """Start the Twilio SMS reply webhook in a background thread."""
+    """Start the Telegram bot polling + HTTP webhook in a background thread."""
     try:
         from webhook import start_webhook_server
         t = threading.Thread(target=start_webhook_server, daemon=True, name="webhook")
         t.start()
-        log.info("[Webhook] SMS reply server started in background thread")
+        log.info("[Webhook] Server started")
     except Exception as e:
-        log.error(f"[Webhook] Failed to start webhook server: {e}")
+        log.error(f"[Webhook] Failed to start: {e}")
 
 
 def main():
@@ -96,15 +92,14 @@ def main():
     log.info("=" * 50)
     log.info("StockPulse scheduler starting")
     log.info(f"  Scan every {scan_interval} minutes")
-    log.info(f"  Daily SMS at {digest_time}")
+    log.info(f"  Daily digest at {digest_time}")
     log.info("=" * 50)
 
-    # Start webhook server so Twilio SMS replies trigger on-demand summaries
     _start_webhook()
 
     test_ticker = os.getenv("TEST_TICKER", "").upper().strip()
     if test_ticker:
-        log.info(f"TEST_TICKER={test_ticker} — running forced analysis and SMS...")
+        log.info(f"TEST_TICKER={test_ticker} — running forced analysis...")
         _run_test_alert(test_ticker)
 
     if os.getenv("FORCE_DAILY_SUMMARY", "").lower() == "true":
