@@ -12,13 +12,22 @@ On first startup, if TELEGRAM_CHAT_ID is not set, the bot will
 print your chat ID in the Railway logs — copy it and add it as a variable.
 """
 
+import html
 import json
 import os
+import re
 import sys
 from datetime import datetime, timezone, timedelta, date
 from pathlib import Path
 
 import requests
+
+
+def _clean(text: str, limit: int = 0) -> str:
+    """Strip HTML tags and escape special chars for Telegram HTML mode."""
+    text = re.sub(r'<[^>]+>', '', str(text))   # strip any HTML tags
+    text = html.escape(text)                    # escape & < > "
+    return text[:limit] if limit else text
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from database.db import execute, insert, is_postgres
@@ -127,22 +136,22 @@ def send_alert(ticker: str, score: float, risk_tier: str, reasoning: str) -> boo
         "",
     ]
     if reasoning:
-        lines.append(reasoning[:300])
+        lines.append(_clean(reasoning, 300))
         lines.append("")
     if insider:
-        lines.append(f"🏦 <b>Insider:</b> {insider[0]['content'][:150]}")
+        lines.append(f"🏦 <b>Insider:</b> {_clean(insider[0]['content'], 150)}")
         lines.append("")
     if headlines:
         lines.append("📰 <b>Key signals:</b>")
         for h in headlines:
-            src  = h.get("source_detail", "").replace("Google News: ", "").replace("Yahoo Finance: ", "")
-            text = h.get("content", "")[:120]
+            src  = _clean(h.get("source_detail", "").replace("Google News: ", "").replace("Yahoo Finance: ", ""))
+            text = _clean(h.get("content", ""), 120)
             lines.append(f"• {text} [{src}]")
         lines.append("")
     if cascades:
         lines.append("🔗 <b>Cascade:</b>")
         for c in cascades:
-            lines.append(f"• {c['cascade_theme']}: {c['reasoning'][:120]}")
+            lines.append(f"• {_clean(c['cascade_theme'])}: {_clean(c['reasoning'], 120)}")
 
     success = send_message("\n".join(lines))
 
@@ -250,7 +259,8 @@ def send_daily_summary() -> bool:
         seen = set()
         for m in macro_signals:
             content = m.get("content", "")
-            headline = content.split("|", 1)[1].strip()[:100] if "|" in content else content[:100]
+            headline = content.split("|", 1)[1].strip() if "|" in content else content
+            headline = _clean(headline, 100)
             if headline and headline not in seen:
                 seen.add(headline)
                 arrow = "▲" if "BULLISH" in content.upper() else ("▼" if "BEARISH" in content.upper() else "➡")
@@ -263,7 +273,7 @@ def send_daily_summary() -> bool:
         for c in cascades[:3]:
             try:
                 affected = json.loads(c["affected_tickers"]) if isinstance(c["affected_tickers"], str) else c["affected_tickers"]
-                lines.append(f"• {c['cascade_theme']} → {', '.join(affected[:4])}")
+                lines.append(f"• {_clean(c['cascade_theme'])} → {', '.join(affected[:4])}")
             except Exception:
                 pass
         lines.append("")
@@ -276,7 +286,7 @@ def send_daily_summary() -> bool:
             price_part = f" | {price_str}" if price_str else ""
             lines.append(f"\n<b>{s['ticker']}</b> — {s['conviction_score']:.1f}/10 [{s['risk_tier']}]{price_part}")
             if s.get("reasoning"):
-                lines.append(s["reasoning"][:200])
+                lines.append(_clean(s["reasoning"], 200))
     else:
         lines.append("No high conviction picks today (threshold: 8.0+/10)")
     lines.append("")
@@ -294,7 +304,7 @@ def send_daily_summary() -> bool:
     if insider_signals:
         lines.append("🏦 <b>Insider Activity:</b>")
         for ins in insider_signals:
-            lines.append(f"• [{ins['ticker']}] {ins['content'][:120]}")
+            lines.append(f"• [{ins['ticker']}] {_clean(ins['content'], 120)}")
         lines.append("")
 
     # Key headlines
@@ -302,7 +312,7 @@ def send_daily_summary() -> bool:
         lines.append("📰 <b>Key Headlines:</b>")
         seen = set()
         for h in top_headlines:
-            text = h.get("content", "")[:110]
+            text = _clean(h.get("content", ""), 110)
             if text in seen:
                 continue
             seen.add(text)
@@ -313,7 +323,7 @@ def send_daily_summary() -> bool:
     # Opinion
     lines.append("💡 <b>StockPulse View:</b>")
     for line in _build_opinion(scores, macro_signals, cascades, avg_score):
-        lines.append(line)
+        lines.append(_clean(line))
 
     lines.append("")
     lines.append("🔄 Next scan in 30 min  |  Reply <b>update</b> for on-demand refresh")
