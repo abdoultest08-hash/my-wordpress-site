@@ -174,7 +174,8 @@ def send_daily_sms_summary() -> bool:
         print("[SMS] No scores for today — skipping")
         return False
 
-    date_str = datetime.now().strftime("%a %b %-d")
+    now      = datetime.now()
+    date_str = f"{now.strftime('%a %b')} {now.day}"  # e.g. "Mon Jun 2"
     avg_score = sum(s["conviction_score"] for s in scores) / len(scores)
 
     macro_signals = execute("""
