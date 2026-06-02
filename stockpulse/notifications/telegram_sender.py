@@ -25,6 +25,17 @@ from database.db import execute, insert, is_postgres
 
 _API = "https://api.telegram.org/bot{token}/{method}"
 
+# Cached at runtime by the polling loop — no env var needed
+_runtime_chat_id: str = ""
+
+
+def set_chat_id(cid: str):
+    """Called by the polling loop the moment a message arrives."""
+    global _runtime_chat_id
+    if _runtime_chat_id != str(cid):
+        _runtime_chat_id = str(cid)
+        print(f"[Telegram] Chat ID set: {cid}  👉 Add TELEGRAM_CHAT_ID={cid} to Railway Variables")
+
 
 def _token() -> str:
     t = os.getenv("TELEGRAM_BOT_TOKEN", "")
@@ -34,25 +45,15 @@ def _token() -> str:
 
 
 def _chat_id() -> str:
+    # 1. Env var (persistent across restarts)
     cid = os.getenv("TELEGRAM_CHAT_ID", "")
     if cid:
         return cid
-    # Auto-discover: fetch the most recent message sent to the bot
-    try:
-        resp = requests.get(
-            _API.format(token=_token(), method="getUpdates"),
-            timeout=10
-        ).json()
-        updates = resp.get("result", [])
-        if updates:
-            cid = str(updates[-1]["message"]["chat"]["id"])
-            print(f"[Telegram] ✅ Auto-discovered TELEGRAM_CHAT_ID = {cid}")
-            print(f"[Telegram] 👉 Add TELEGRAM_CHAT_ID={cid} to Railway Variables to skip this step")
-            return cid
-        else:
-            print("[Telegram] ❌ No messages found — send any message to your bot first, then redeploy")
-            return ""
-    except Exception as e:
+    # 2. Runtime cache set by polling loop
+    if _runtime_chat_id:
+        return _runtime_chat_id
+    print("[Telegram] TELEGRAM_CHAT_ID not set and no message received yet — send any message to your bot")
+    return ""
         print(f"[Telegram] Error discovering chat ID: {e}")
         return ""
 

@@ -168,8 +168,13 @@ def _telegram_poll_loop():
             for update in resp.get("result", []):
                 offset = update["update_id"] + 1
                 try:
-                    text = update["message"]["text"]
-                    log.info(f"[Telegram] Command: '{text}'")
+                    msg  = update["message"]
+                    text = msg["text"]
+                    cid  = str(msg["chat"]["id"])
+                    # Save chat ID so send_message() works without env var
+                    from notifications.telegram_sender import set_chat_id
+                    set_chat_id(cid)
+                    log.info(f"[Telegram] Command from {cid}: '{text}'")
                     _handle_telegram_command(text)
                 except KeyError:
                     pass
