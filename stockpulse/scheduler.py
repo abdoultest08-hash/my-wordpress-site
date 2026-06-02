@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent / ".env")
 sys.path.insert(0, str(Path(__file__).parent))
 
+import threading
 import schedule
 
 from main import run_pipeline
@@ -77,6 +78,17 @@ def job_daily_digest():
         log.error(f"Daily SMS error: {e}", exc_info=True)
 
 
+def _start_webhook():
+    """Start the Twilio SMS reply webhook in a background thread."""
+    try:
+        from webhook import start_webhook_server
+        t = threading.Thread(target=start_webhook_server, daemon=True, name="webhook")
+        t.start()
+        log.info("[Webhook] SMS reply server started in background thread")
+    except Exception as e:
+        log.error(f"[Webhook] Failed to start webhook server: {e}")
+
+
 def main():
     digest_time   = os.getenv("DIGEST_TIME", "07:00")
     scan_interval = int(os.getenv("SCAN_INTERVAL_MINUTES", "30"))
@@ -86,6 +98,9 @@ def main():
     log.info(f"  Scan every {scan_interval} minutes")
     log.info(f"  Daily SMS at {digest_time}")
     log.info("=" * 50)
+
+    # Start webhook server so Twilio SMS replies trigger on-demand summaries
+    _start_webhook()
 
     test_ticker = os.getenv("TEST_TICKER", "").upper().strip()
     if test_ticker:

@@ -14,3 +14,4 @@ twilio==9.3.3
 pandas==2.2.2
 psycopg2-binary==2.9.9
 yfinance==0.2.40
+flask==3.0.3

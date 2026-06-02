@@ -170,8 +170,19 @@ def send_daily_sms_summary() -> bool:
         ORDER BY conviction_score DESC
         LIMIT 20
     """)
+    print(f"[SMS] Daily summary: found {len(scores) if scores else 0} scores for today")
     if not scores:
-        print("[SMS] No scores for today — skipping")
+        # Try last 2 days as fallback (handles timezone edge cases)
+        scores = execute("""
+            SELECT ticker, conviction_score, risk_tier, reasoning,
+                   signal_count, reddit_score, news_score, cascade_score
+            FROM daily_scores
+            ORDER BY date DESC, conviction_score DESC
+            LIMIT 20
+        """)
+        print(f"[SMS] Fallback query: {len(scores) if scores else 0} scores total in DB")
+    if not scores:
+        print("[SMS] No scores in database at all — skipping daily summary")
         return False
 
     now      = datetime.now()
