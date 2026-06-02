@@ -95,6 +95,14 @@ def _get_price_str(ticker: str) -> str:
         return ""
 
 
+def _get_price_data(ticker: str) -> dict | None:
+    try:
+        from collectors.price_collector import get_price
+        return get_price(ticker)
+    except Exception:
+        return None
+
+
 # ---------------------------------------------------------------------------
 # Instant alert
 # ---------------------------------------------------------------------------
@@ -180,6 +188,7 @@ def send_alert(ticker: str, score: float, risk_tier: str, reasoning: str) -> boo
 def send_daily_summary() -> bool:
     _today = date.today().isoformat()
     _12h   = (datetime.now(timezone.utc) - timedelta(hours=12)).isoformat()
+    _24h   = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
     _7d    = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
 
     scores = execute("""
@@ -195,8 +204,7 @@ def send_daily_summary() -> bool:
         scores = execute("""
             SELECT ticker, conviction_score, risk_tier, reasoning,
                    signal_count, reddit_score, news_score, cascade_score
-            FROM daily_scores
-            ORDER BY date DESC, conviction_score DESC LIMIT 20
+            FROM daily_scores ORDER BY date DESC, conviction_score DESC LIMIT 20
         """)
         print(f"[Telegram] Fallback: {len(scores) if scores else 0} scores in DB")
 
@@ -204,149 +212,175 @@ def send_daily_summary() -> bool:
         send_message("⚠️ <b>StockPulse:</b> No scores yet — pipeline still running. Try again in a few minutes.")
         return False
 
-    now      = datetime.now()
-    date_str = f"{now.strftime('%a %b')} {now.day}"
+    now       = datetime.now(timezone.utc)
+    date_str  = f"{now.strftime('%a %b')} {now.day}"
+    time_str  = now.strftime("%H:%M UTC")
     avg_score = sum(s["conviction_score"] for s in scores) / len(scores)
 
+    # Fetch all data
     macro_signals = execute("""
         SELECT content, source_detail FROM signals
         WHERE ticker = 'MACRO' AND collected_at >= ?
-        ORDER BY collected_at DESC LIMIT 6
+        ORDER BY collected_at DESC LIMIT 12
     """, (_12h,))
 
     cascades = execute("""
-        SELECT cascade_theme, reasoning, affected_tickers FROM cascade_events
-        WHERE detected_at >= ? ORDER BY detected_at DESC LIMIT 4
+        SELECT DISTINCT cascade_theme, reasoning, affected_tickers FROM cascade_events
+        WHERE detected_at >= ? ORDER BY detected_at DESC LIMIT 20
     """, (_12h,))
 
-    top_headlines = execute("""
-        SELECT s.ticker, s.content, s.sentiment FROM signals s
+    corporate_news = execute("""
+        SELECT s.ticker, s.content, s.source_detail, s.sentiment, s.source FROM signals s
         WHERE s.collected_at >= ?
           AND s.source IN ('news', 'sec_filing')
-          AND s.sentiment IN ('very_bullish', 'bullish', 'very_bearish', 'bearish')
           AND s.ticker != 'MACRO'
         ORDER BY
+          CASE s.source WHEN 'sec_filing' THEN 1 ELSE 2 END,
           CASE s.sentiment WHEN 'very_bullish' THEN 1 WHEN 'very_bearish' THEN 2 ELSE 3 END,
-          s.collected_at DESC LIMIT 6
-    """, (_12h,))
+          s.collected_at DESC LIMIT 20
+    """, (_24h,))
 
-    insider_signals = execute("""
-        SELECT ticker, content FROM signals
-        WHERE source = 'sec_filing' AND collected_at >= ?
-        ORDER BY raw_score DESC LIMIT 3
-    """, (_7d,))
+    # Personal watchlist from env var (comma-separated tickers)
+    watchlist_env = os.getenv("WATCHLIST", "")
+    watchlist_tickers = [t.strip().upper() for t in watchlist_env.split(",") if t.strip()] if watchlist_env else []
 
     high_conviction = [s for s in scores if s["conviction_score"] >= 8.0]
-    top_picks       = scores[:6]
+    top_picks       = scores[:8]
 
-    # Market mood
+    # ── HEADER ──────────────────────────────────────────────────────────────
     if avg_score >= 7:
-        mood = "🟢 BULLISH — broad strength"
+        mood_icon, mood_text = "🟢", "BULLISH"
     elif avg_score >= 5.5:
-        mood = "🟡 MIXED — selective opportunities"
+        mood_icon, mood_text = "🟡", "MIXED"
     else:
-        mood = "🔴 CAUTIOUS — stay defensive"
+        mood_icon, mood_text = "🔴", "CAUTIOUS"
 
     lines = [
-        f"<b>📈 StockPulse — {date_str}</b>",
-        f"{mood}  |  Avg: {avg_score:.1f}/10 across {len(scores)} stocks",
+        f"<b>📊 StockPulse  |  {date_str}  |  {time_str}</b>",
+        f"━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        f"{mood_icon} Market: <b>{mood_text}</b>  |  Avg signal: {avg_score:.1f}/10 across {len(scores)} stocks",
         "",
     ]
 
-    # World events — max 4, clean title only (no source repetition)
-    if macro_signals:
-        lines.append("🌐 <b>World Events:</b>")
-        seen_headlines = set()
-        count = 0
-        for m in macro_signals:
-            if count >= 4:
-                break
-            content = m.get("content", "")
-            # Extract headline before source separator
-            headline = content.split("|", 1)[0].strip() if "|" in content else content
-            # Strip sentiment prefix like [BULLISH]
-            headline = re.sub(r'^\[.*?\]\s*', '', headline).strip()
-            headline = _clean(headline, 90)
-            if not headline or headline in seen_headlines:
-                continue
-            seen_headlines.add(headline)
-            arrow = "▲" if "BULLISH" in content.upper() else ("▼" if "BEARISH" in content.upper() else "➡")
+    # ── SECTION 1: GLOBAL MACRO ──────────────────────────────────────────────
+    macro_events = []
+    seen_macro = set()
+    for m in macro_signals:
+        content = m.get("content", "")
+        # Strip sentiment tag [BULLISH] etc and source attribution after |
+        headline = re.sub(r'^\[.*?\]\s*', '', content.split("|")[0]).strip()
+        headline = _clean(headline, 95)
+        if headline and headline not in seen_macro:
+            seen_macro.add(headline)
+            sentiment = content.upper()
+            arrow = "▲" if "BULLISH" in sentiment else ("▼" if "BEARISH" in sentiment else "→")
+            macro_events.append((arrow, headline))
+
+    if macro_events:
+        lines.append("🌍 <b>GLOBAL MACRO</b>")
+        for arrow, headline in macro_events[:5]:
             lines.append(f"  {arrow} {headline}")
-            count += 1
         lines.append("")
 
-    # Active themes — deduplicated by theme name
-    if cascades:
-        lines.append("🔗 <b>Active Themes:</b>")
-        seen_themes = set()
-        for c in cascades:
-            theme = c.get("cascade_theme", "")
-            if theme in seen_themes:
-                continue
-            seen_themes.add(theme)
-            try:
-                affected = json.loads(c["affected_tickers"]) if isinstance(c["affected_tickers"], str) else c["affected_tickers"]
-                lines.append(f"  • {_clean(theme)} → {', '.join(affected[:4])}")
-            except Exception:
-                pass
-        lines.append("")
+    # ── SECTION 2: WHAT COMPANIES ARE SAYING ────────────────────────────────
+    sec_items   = []
+    news_items  = []
+    seen_corp   = set()
+    seen_corp_t = set()
 
-    # High conviction picks
-    if high_conviction:
-        lines.append("🔥 <b>HIGH CONVICTION (8.0+):</b>")
-        for s in high_conviction:
-            price_str  = _get_price_str(s["ticker"])
-            price_part = f"  {price_str}" if price_str else ""
-            risk_emoji = {"Low": "🔵", "Medium": "🟡", "High": "🟠", "Speculative": "🔴"}.get(s["risk_tier"], "⚪")
-            lines.append(f"\n{risk_emoji} <b>{s['ticker']}</b>  {s['conviction_score']:.1f}/10{price_part}")
-            if s.get("reasoning"):
-                sentences = [x.strip() for x in _clean(s["reasoning"]).split(".") if x.strip()]
-                lines.append(". ".join(sentences[:2]) + ".")
-    else:
-        lines.append("No high conviction picks today (threshold: 8.0+/10)")
-    lines.append("")
+    for n in corporate_news:
+        raw   = n.get("content", "")
+        src   = n.get("source", "")
+        tkr   = n.get("ticker", "")
+        # Clean: strip "Title - Source Source" duplication at end
+        title = re.sub(r'\s*[-–]\s*[\w\s\.]{3,40}$', '', raw).strip()
+        title = _clean(title, 100)
+        if not title or title in seen_corp:
+            continue
+        seen_corp.add(title)
+        if src == "sec_filing":
+            sec_items.append((tkr, title))
+        elif tkr not in seen_corp_t:
+            seen_corp_t.add(tkr)
+            news_items.append((tkr, title, n.get("sentiment", "")))
 
-    # Watchlist with prices
-    lines.append("📊 <b>Watchlist:</b>")
-    for s in top_picks:
-        bar        = "▲" if s["conviction_score"] >= 7 else ("➡" if s["conviction_score"] >= 5 else "▼")
-        price_str  = _get_price_str(s["ticker"])
-        price_part = f"  <i>{price_str}</i>" if price_str else ""
-        lines.append(f"  {bar} <b>{s['ticker']}</b>  {s['conviction_score']:.1f}/10{price_part}")
-    lines.append("")
-
-    # Insider activity
-    if insider_signals:
-        lines.append("🏦 <b>Insider Moves:</b>")
-        for ins in insider_signals:
-            lines.append(f"  • <b>{ins['ticker']}</b>  {_clean(ins['content'], 100)}")
-        lines.append("")
-
-    # Headlines — one per ticker, clean title, no source duplication
-    if top_headlines:
-        lines.append("📰 <b>Top Headlines:</b>")
-        seen_tickers = set()
-        seen_texts   = set()
-        for h in top_headlines:
-            tkr   = h["ticker"]
-            raw   = h.get("content", "")
-            title = re.sub(r'\s*-\s*\S[\S ]{0,30}$', '', raw).strip()
-            title = _clean(title, 95)
-            if not title or title in seen_texts or tkr in seen_tickers:
-                continue
-            seen_texts.add(title)
-            seen_tickers.add(tkr)
-            arrow = "▲" if "bullish" in h.get("sentiment", "") else "▼"
+    if sec_items or news_items:
+        lines.append("🏢 <b>CORPORATE & FILINGS</b>")
+        for tkr, title in sec_items[:3]:
+            lines.append(f"  📋 <b>{tkr}</b>  {title}")
+        for tkr, title, sent in news_items[:4]:
+            arrow = "▲" if "bullish" in sent else ("▼" if "bearish" in sent else "→")
             lines.append(f"  {arrow} <b>{tkr}</b>  {title}")
         lines.append("")
 
-    # View
-    lines.append("💡 <b>View:</b>")
+    # ── SECTION 3: SECTORS AFFECTED ─────────────────────────────────────────
+    seen_themes = set()
+    sector_lines = []
+    for c in cascades:
+        theme = c.get("cascade_theme", "")
+        if theme in seen_themes:
+            continue
+        seen_themes.add(theme)
+        try:
+            affected = json.loads(c["affected_tickers"]) if isinstance(c["affected_tickers"], str) else c["affected_tickers"]
+            # Determine direction from reasoning
+            reasoning = c.get("reasoning", "").upper()
+            icon = "🟢" if "BULLISH" in reasoning else ("🔴" if "BEARISH" in reasoning else "🟡")
+            sector_lines.append(f"  {icon} {_clean(theme)} → {', '.join(affected[:4])}")
+        except Exception:
+            pass
+
+    if sector_lines:
+        lines.append("📡 <b>SECTORS AFFECTED</b>")
+        for sl in sector_lines[:5]:
+            lines.append(sl)
+        lines.append("")
+
+    # ── SECTION 4: HIGH CONVICTION PICKS ────────────────────────────────────
+    lines.append("🔥 <b>HIGH CONVICTION (8.0+)</b>")
+    if high_conviction:
+        for s in high_conviction:
+            p = _get_price_data(s["ticker"])
+            price_str = f"  <b>${p['price']:.2f}</b> {'▲' if p['pct_change'] >= 0 else '▼'}{abs(p['pct_change']):.1f}%" if p else ""
+            risk_emoji = {"Low": "🔵", "Medium": "🟡", "High": "🟠", "Speculative": "🔴"}.get(s["risk_tier"], "⚪")
+            lines.append(f"  {risk_emoji} <b>{s['ticker']}</b>  {s['conviction_score']:.1f}/10{price_str}")
+            if s.get("reasoning"):
+                sentences = [x.strip() for x in _clean(s["reasoning"]).split(".") if x.strip()]
+                lines.append(f"     {'. '.join(sentences[:2])}.")
+    else:
+        lines.append("  No picks above 8.0 today — market conviction low")
+    lines.append("")
+
+    # ── SECTION 5: FULL WATCHLIST (scored stocks with 24h price) ────────────
+    lines.append("📊 <b>WATCHLIST</b>")
+    for s in top_picks:
+        p          = _get_price_data(s["ticker"])
+        bar        = "▲" if s["conviction_score"] >= 7 else ("→" if s["conviction_score"] >= 5 else "▼")
+        price_str  = f"  <i>${p['price']:.2f}  {'▲' if p['pct_change'] >= 0 else '▼'}{abs(p['pct_change']):.1f}%</i>" if p else ""
+        lines.append(f"  {bar} <b>{s['ticker']}</b>  {s['conviction_score']:.1f}/10{price_str}")
+
+    # Personal watchlist tickers not already in top picks
+    top_tickers = {s["ticker"] for s in top_picks}
+    extra = [t for t in watchlist_tickers if t not in top_tickers]
+    if extra:
+        lines.append("  <i>── your watchlist ──</i>")
+        for tkr in extra:
+            p = _get_price_data(tkr)
+            if p:
+                arrow = "▲" if p["pct_change"] >= 0 else "▼"
+                lines.append(f"  {arrow} <b>{tkr}</b>  <i>${p['price']:.2f}  {arrow}{abs(p['pct_change']):.1f}%</i>")
+            else:
+                lines.append(f"  → <b>{tkr}</b>  no price data")
+    lines.append("")
+
+    # ── SECTION 6: VIEW ──────────────────────────────────────────────────────
+    lines.append("💡 <b>VIEW</b>")
     for line in _build_opinion(scores, macro_signals, cascades, avg_score):
         lines.append(f"  {_clean(line)}")
 
     lines.append("")
-    lines.append("<i>Next scan in 30 min — msg <b>update</b> anytime</i>")
+    lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    lines.append("<i>Next scan 30 min  |  msg <b>update</b> anytime  |  <b>alert NVDA</b> for specific stock</i>")
 
     return send_message("\n".join(lines))
 
