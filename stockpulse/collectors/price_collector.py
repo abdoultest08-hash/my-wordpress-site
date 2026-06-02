@@ -41,10 +41,10 @@ def collect() -> dict[str, dict]:
 
     results = {}
     try:
-        # Batch fetch — much faster than one-by-one
+        # Use 5d period so weekends/holidays still return the last trading day's close
         data = yf.download(
             tickers=" ".join(symbols),
-            period="2d",
+            period="5d",
             interval="1d",
             group_by="ticker",
             auto_adjust=True,
