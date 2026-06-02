@@ -28,44 +28,42 @@ from database.db import execute, insert
 # ---------------------------------------------------------------------------
 
 RSS_FEEDS = [
-    # Yahoo Finance — broad market and sector news
-    {
-        "name": "Yahoo Finance: Markets",
-        "url": "https://finance.yahoo.com/rss/topfinstories",
-        "theme": "general",
-    },
-    {
-        "name": "Yahoo Finance: Tech",
-        "url": "https://finance.yahoo.com/rss/industry?ind=semiconductors",
-        "theme": "Tech / AI / Semiconductors",
-    },
-    # Google News — finance and tech
-    {
-        "name": "Google News: Stock Market",
-        "url": "https://news.google.com/rss/search?q=stock+market+earnings&hl=en-US&gl=US&ceid=US:en",
-        "theme": "general",
-    },
-    {
-        "name": "Google News: AI Stocks",
-        "url": "https://news.google.com/rss/search?q=AI+semiconductor+nvidia+amd+stocks&hl=en-US&gl=US&ceid=US:en",
-        "theme": "Tech / AI / Semiconductors",
-    },
-    {
-        "name": "Google News: Space Stocks",
-        "url": "https://news.google.com/rss/search?q=space+rocket+satellite+stock+SpaceX&hl=en-US&gl=US&ceid=US:en",
-        "theme": "Space / Defense / Aerospace",
-    },
-    {
-        "name": "Google News: Clean Energy",
-        "url": "https://news.google.com/rss/search?q=solar+energy+EV+battery+clean+tech+stock&hl=en-US&gl=US&ceid=US:en",
-        "theme": "Energy / Clean Tech",
-    },
-    # Seeking Alpha public RSS
-    {
-        "name": "Seeking Alpha: Market News",
-        "url": "https://seekingalpha.com/market_currents.xml",
-        "theme": "general",
-    },
+    # ── Yahoo Finance ──────────────────────────────────────────────────────
+    {"name": "Yahoo Finance: Markets",      "url": "https://finance.yahoo.com/rss/topfinstories",                                                                    "theme": "general"},
+    {"name": "Yahoo Finance: Tech",         "url": "https://finance.yahoo.com/rss/industry?ind=semiconductors",                                                      "theme": "Tech / AI"},
+    # ── MarketWatch ────────────────────────────────────────────────────────
+    {"name": "MarketWatch: Top Stories",    "url": "https://feeds.marketwatch.com/marketwatch/topstories/",                                                          "theme": "general"},
+    {"name": "MarketWatch: Tech",           "url": "https://feeds.marketwatch.com/marketwatch/marketpulse/",                                                         "theme": "Tech / AI"},
+    # ── Reuters ────────────────────────────────────────────────────────────
+    {"name": "Reuters: Business",           "url": "https://feeds.reuters.com/reuters/businessNews",                                                                 "theme": "general"},
+    {"name": "Reuters: Tech",               "url": "https://feeds.reuters.com/reuters/technologyNews",                                                               "theme": "Tech / AI"},
+    # ── CNBC ───────────────────────────────────────────────────────────────
+    {"name": "CNBC: Top News",              "url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114",                           "theme": "general"},
+    {"name": "CNBC: Tech",                  "url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=19854910",                            "theme": "Tech / AI"},
+    {"name": "CNBC: Investing",             "url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15839069",                            "theme": "general"},
+    # ── Investing.com ──────────────────────────────────────────────────────
+    {"name": "Investing.com: Stock News",   "url": "https://www.investing.com/rss/news_25.rss",                                                                     "theme": "general"},
+    {"name": "Investing.com: Tech",         "url": "https://www.investing.com/rss/news_14.rss",                                                                     "theme": "Tech / AI"},
+    # ── Seeking Alpha ──────────────────────────────────────────────────────
+    {"name": "Seeking Alpha: Markets",      "url": "https://seekingalpha.com/market_currents.xml",                                                                  "theme": "general"},
+    # ── Google News per sector ─────────────────────────────────────────────
+    {"name": "Google News: AI Stocks",      "url": "https://news.google.com/rss/search?q=AI+semiconductor+nvidia+amd+stocks&hl=en-US&gl=US&ceid=US:en",             "theme": "Tech / AI"},
+    {"name": "Google News: Space Stocks",   "url": "https://news.google.com/rss/search?q=space+rocket+satellite+stock+SpaceX+RocketLab&hl=en-US&gl=US&ceid=US:en", "theme": "Space / Defense"},
+    {"name": "Google News: Clean Energy",   "url": "https://news.google.com/rss/search?q=solar+energy+EV+battery+clean+tech+stock&hl=en-US&gl=US&ceid=US:en",      "theme": "Energy"},
+    {"name": "Google News: Big Tech",       "url": "https://news.google.com/rss/search?q=Apple+Meta+Google+Microsoft+earnings+stock&hl=en-US&gl=US&ceid=US:en",    "theme": "Big Tech"},
+    {"name": "Google News: Biotech",        "url": "https://news.google.com/rss/search?q=biotech+FDA+clinical+trial+stock&hl=en-US&gl=US&ceid=US:en",              "theme": "Biotech"},
+    {"name": "Google News: Macro",          "url": "https://news.google.com/rss/search?q=Federal+Reserve+interest+rates+economy+tariffs&hl=en-US&gl=US&ceid=US:en","theme": "Macro"},
+    # ── Per-ticker Yahoo Finance news ──────────────────────────────────────
+    {"name": "Yahoo Finance: NVDA",         "url": "https://finance.yahoo.com/rss/headline?s=NVDA",  "theme": "Tech / AI",    "ticker_hint": "NVDA"},
+    {"name": "Yahoo Finance: TSLA",         "url": "https://finance.yahoo.com/rss/headline?s=TSLA",  "theme": "EV / Energy",  "ticker_hint": "TSLA"},
+    {"name": "Yahoo Finance: PLTR",         "url": "https://finance.yahoo.com/rss/headline?s=PLTR",  "theme": "Tech / AI",    "ticker_hint": "PLTR"},
+    {"name": "Yahoo Finance: AAPL",         "url": "https://finance.yahoo.com/rss/headline?s=AAPL",  "theme": "Big Tech",     "ticker_hint": "AAPL"},
+    {"name": "Yahoo Finance: META",         "url": "https://finance.yahoo.com/rss/headline?s=META",  "theme": "Big Tech",     "ticker_hint": "META"},
+    {"name": "Yahoo Finance: GOOGL",        "url": "https://finance.yahoo.com/rss/headline?s=GOOGL", "theme": "Big Tech",     "ticker_hint": "GOOGL"},
+    {"name": "Yahoo Finance: AMD",          "url": "https://finance.yahoo.com/rss/headline?s=AMD",   "theme": "Tech / AI",    "ticker_hint": "AMD"},
+    {"name": "Yahoo Finance: MSFT",         "url": "https://finance.yahoo.com/rss/headline?s=MSFT",  "theme": "Big Tech",     "ticker_hint": "MSFT"},
+    {"name": "Yahoo Finance: RKLB",         "url": "https://finance.yahoo.com/rss/headline?s=RKLB",  "theme": "Space",        "ticker_hint": "RKLB"},
+    {"name": "Yahoo Finance: ASML",         "url": "https://finance.yahoo.com/rss/headline?s=ASML",  "theme": "Tech / AI",    "ticker_hint": "ASML"},
 ]
 
 REQUEST_DELAY = 1.5     # seconds between feed fetches
@@ -243,6 +241,8 @@ def collect() -> int:
             entries = feed.get("entries", [])
             print(f"    → {len(entries)} articles")
 
+            ticker_hint = feed_cfg.get("ticker_hint")  # per-ticker feeds already know the symbol
+
             for entry in entries:
                 url = entry.get("link", "")
                 if url in seen_urls:
@@ -253,7 +253,10 @@ def collect() -> int:
                 summary = entry.get("summary", "")
                 full_text = f"{title} {summary}".strip()
 
-                tickers = _extract_tickers(full_text, watchlist)
+                if ticker_hint:
+                    tickers = [ticker_hint]
+                else:
+                    tickers = _extract_tickers(full_text, watchlist)
                 if not tickers:
                     continue
 
