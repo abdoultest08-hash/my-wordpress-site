@@ -92,7 +92,12 @@ def main():
         log.info(f"TEST_TICKER={test_ticker} — running forced analysis and SMS...")
         _run_test_alert(test_ticker)
 
-    job_pipeline()
+    if os.getenv("FORCE_DAILY_SUMMARY", "").lower() == "true":
+        log.info("FORCE_DAILY_SUMMARY=true — running pipeline then sending daily summary now...")
+        job_pipeline()
+        job_daily_digest()
+    else:
+        job_pipeline()
 
     schedule.every(scan_interval).minutes.do(job_pipeline)
     schedule.every().day.at(digest_time).do(job_daily_digest)
