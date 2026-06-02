@@ -11,7 +11,7 @@ One full run:
 import os
 import sys
 import traceback
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -111,12 +111,13 @@ def run_pipeline(send_alerts: bool = True) -> dict:
             ticker, score, risk_tier, reasoning = (
                 r["ticker"], r["conviction_score"], r["risk_tier"], r.get("reasoning", "")
             )
+            _6h = (datetime.now(timezone.utc) - timedelta(hours=6)).isoformat()
             recent = execute("""
                 SELECT id FROM alerts
                 WHERE ticker = ?
                   AND alert_type = 'instant'
-                  AND sent_at >= datetime('now', '-6 hours')
-            """, (ticker,))
+                  AND sent_at >= ?
+            """, (ticker, _6h))
             if recent:
                 print(f"  {ticker} already alerted in last 6h — skipping")
                 continue

@@ -7,7 +7,7 @@ TWILIO_FROM_NUMBER, SMS_TO_NUMBER
 
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta, date
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -67,12 +67,17 @@ def send_alert_sms(ticker: str, score: float, risk_tier: str, reasoning: str) ->
     price_str  = _get_price_str(ticker)
     price_part = f" | {price_str}" if price_str else ""
 
+    _now = datetime.now(timezone.utc)
+    _24h  = (_now - timedelta(hours=24)).isoformat()
+    _48h  = (_now - timedelta(hours=48)).isoformat()
+    _7d   = (_now - timedelta(days=7)).isoformat()
+
     # Top headlines driving this score
     headlines = execute("""
         SELECT content, source_detail, sentiment
         FROM signals
         WHERE ticker = ?
-          AND collected_at >= datetime('now', '-24 hours')
+          AND collected_at >= ?
           AND source IN ('news', 'reddit', 'sec_filing')
         ORDER BY
           CASE sentiment
@@ -82,24 +87,24 @@ def send_alert_sms(ticker: str, score: float, risk_tier: str, reasoning: str) ->
           END,
           collected_at DESC
         LIMIT 3
-    """, (ticker,))
+    """, (ticker, _24h))
 
     # Active cascade events
     cascades = execute("""
         SELECT cascade_theme, reasoning
         FROM cascade_events
-        WHERE detected_at >= datetime('now', '-48 hours')
+        WHERE detected_at >= ?
           AND affected_tickers LIKE ?
         LIMIT 2
-    """, (f'%{ticker}%',))
+    """, (_48h, f'%{ticker}%'))
 
     # Insider trades
     insider = execute("""
         SELECT content FROM signals
         WHERE ticker = ? AND source = 'sec_filing'
-          AND collected_at >= datetime('now', '-7 days')
+          AND collected_at >= ?
         ORDER BY collected_at DESC LIMIT 1
-    """, (ticker,))
+    """, (ticker, _7d))
 
     direction = "▲ BULLISH" if score >= 7 else ("→ NEUTRAL" if score >= 5 else "▼ BEARISH")
     lines = [
@@ -162,17 +167,20 @@ def send_daily_sms_summary() -> bool:
         print("[SMS] Twilio numbers not set — skipping daily summary")
         return False
 
+    _today = date.today().isoformat()
+    _12h   = (datetime.now(timezone.utc) - timedelta(hours=12)).isoformat()
+
     scores = execute("""
         SELECT ticker, conviction_score, risk_tier, reasoning,
                signal_count, reddit_score, news_score, cascade_score
         FROM daily_scores
-        WHERE date = date('now')
+        WHERE date = ?
         ORDER BY conviction_score DESC
         LIMIT 20
-    """)
-    print(f"[SMS] Daily summary: found {len(scores) if scores else 0} scores for today")
+    """, (_today,))
+    print(f"[SMS] Daily summary: found {len(scores) if scores else 0} scores for {_today}")
     if not scores:
-        # Try last 2 days as fallback (handles timezone edge cases)
+        # Fallback: grab most recent scores regardless of date (handles timezone edge)
         scores = execute("""
             SELECT ticker, conviction_score, risk_tier, reasoning,
                    signal_count, reddit_score, news_score, cascade_score
@@ -191,20 +199,20 @@ def send_daily_sms_summary() -> bool:
 
     macro_signals = execute("""
         SELECT content, source_detail FROM signals
-        WHERE ticker = 'MACRO' AND collected_at >= datetime('now', '-12 hours')
+        WHERE ticker = 'MACRO' AND collected_at >= ?
         ORDER BY collected_at DESC LIMIT 8
-    """)
+    """, (_12h,))
 
     cascades = execute("""
         SELECT cascade_theme, reasoning, affected_tickers FROM cascade_events
-        WHERE detected_at >= datetime('now', '-12 hours')
+        WHERE detected_at >= ?
         ORDER BY detected_at DESC LIMIT 5
-    """)
+    """, (_12h,))
 
     top_headlines = execute("""
         SELECT s.ticker, s.content, s.source_detail, s.sentiment
         FROM signals s
-        WHERE s.collected_at >= datetime('now', '-12 hours')
+        WHERE s.collected_at >= ?
           AND s.source IN ('news', 'sec_filing')
           AND s.sentiment IN ('very_bullish', 'bullish', 'very_bearish', 'bearish')
           AND s.ticker != 'MACRO'
@@ -212,7 +220,7 @@ def send_daily_sms_summary() -> bool:
           CASE s.sentiment WHEN 'very_bullish' THEN 1 WHEN 'very_bearish' THEN 2 ELSE 3 END,
           s.collected_at DESC
         LIMIT 8
-    """)
+    """, (_12h,))
 
     high_conviction = [s for s in scores if s["conviction_score"] >= 8.0]
     top_picks       = scores[:6]
@@ -272,12 +280,13 @@ def send_daily_sms_summary() -> bool:
     p3 = [f"📰 StockPulse Analysis — {date_str} (3/3)"]
 
     # Insider trades from last 7 days
+    _7d = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
     insider_signals = execute("""
         SELECT ticker, content FROM signals
         WHERE source = 'sec_filing'
-          AND collected_at >= datetime('now', '-7 days')
+          AND collected_at >= ?
         ORDER BY raw_score DESC LIMIT 3
-    """)
+    """, (_7d,))
     if insider_signals:
         p3.append("\n🏦 Insider Activity:")
         for ins in insider_signals:

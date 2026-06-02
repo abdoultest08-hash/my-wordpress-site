@@ -215,9 +215,10 @@ def score_ticker(ticker: str) -> dict | None:
     risk_tier = _classify_risk(ticker_info, conviction, avg_sentiment)
 
     # --- Yesterday's score for delta ---
+    _yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).date().isoformat()
     prev = execute(
-        "SELECT conviction_score FROM daily_scores WHERE ticker = ? AND date = date('now', '-1 day')",
-        (ticker,)
+        "SELECT conviction_score FROM daily_scores WHERE ticker = ? AND date = ?",
+        (ticker, _yesterday)
     )
     prev_score = float(prev[0]["conviction_score"]) if prev else None
 

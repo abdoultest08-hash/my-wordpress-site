@@ -112,7 +112,8 @@ def _get_status():
     try:
         from database.db import execute
         from datetime import datetime
-        scores_today = execute("SELECT COUNT(*) as cnt FROM daily_scores WHERE date = date('now')")
+        from datetime import date
+        scores_today = execute("SELECT COUNT(*) as cnt FROM daily_scores WHERE date = ?", (date.today().isoformat(),))
         cnt = scores_today[0]["cnt"] if scores_today else 0
         now = datetime.now().strftime("%H:%M UTC")
         return f"StockPulse ✅ running — {cnt} tickers scored today — last check {now}"

@@ -8,7 +8,7 @@ No API key required. Runs every pipeline cycle to:
 """
 
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -134,9 +134,10 @@ def _detect_price_anomalies(prices: dict[str, dict]):
             continue
 
         # Check if we have news explaining the move
+        _6h = (datetime.now(timezone.utc) - timedelta(hours=6)).isoformat()
         signals = execute(
-            "SELECT COUNT(*) as cnt FROM signals WHERE ticker = ? AND collected_at >= datetime('now', '-6 hours')",
-            (symbol,)
+            "SELECT COUNT(*) as cnt FROM signals WHERE ticker = ? AND collected_at >= ?",
+            (symbol, _6h)
         )
         signal_count = signals[0]["cnt"] if signals else 0
 
