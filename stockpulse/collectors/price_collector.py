@@ -1,14 +1,17 @@
 """
-Live price collector — Yahoo Finance via yfinance (no API key needed).
+Live price collector — Finnhub (primary) with yfinance fallback.
 
-Uses individual Ticker fetches instead of batch download for reliability on Railway.
-Runs every pipeline cycle to store price/change/volume and detect anomalies.
+Finnhub: free API key at finnhub.io, set FINNHUB_API_KEY in Railway Variables.
+yfinance: no API key, used as fallback if Finnhub fails.
 """
 
+import os
 import sys
 import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+
+import requests
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -19,16 +22,45 @@ try:
 except ImportError:
     yf = None
 
+_FINNHUB_BASE = "https://finnhub.io/api/v1"
 
-def _fetch_one(symbol: str) -> dict | None:
-    """Fetch price for a single ticker. Returns price dict or None."""
+
+def _fetch_finnhub(symbol: str, api_key: str) -> dict | None:
+    """Fetch real-time quote from Finnhub."""
+    try:
+        resp = requests.get(
+            f"{_FINNHUB_BASE}/quote",
+            params={"symbol": symbol, "token": api_key},
+            timeout=8,
+        )
+        d = resp.json()
+        price = float(d.get("c") or 0)   # current price
+        prev  = float(d.get("pc") or 0)  # previous close
+        if price <= 0:
+            return None
+        pct_change = round((price - prev) / prev * 100, 2) if prev else 0.0
+        return {
+            "ticker":     symbol,
+            "price":      round(price, 2),
+            "prev_close": round(prev, 2),
+            "pct_change": pct_change,
+            "volume":     int(d.get("v") or 0),
+            "fetched_at": datetime.now(timezone.utc).isoformat(),
+        }
+    except Exception as e:
+        print(f"  [Prices] Finnhub {symbol}: {e}")
+        return None
+
+
+def _fetch_yfinance(symbol: str) -> dict | None:
+    """Fallback: fetch price via yfinance."""
+    if yf is None:
+        return None
     try:
         t    = yf.Ticker(symbol)
         info = t.fast_info
-
         price = float(info.last_price or 0)
         if price <= 0:
-            # fast_info failed — fall back to history
             hist = t.history(period="5d")
             if hist.empty:
                 return None
@@ -36,27 +68,32 @@ def _fetch_one(symbol: str) -> dict | None:
             prev_close = float(hist["Close"].iloc[-2]) if len(hist) >= 2 else price
         else:
             prev_close = float(info.previous_close or price)
-
         pct_change = round((price - prev_close) / prev_close * 100, 2) if prev_close else 0.0
-        volume     = int(getattr(info, "three_month_average_volume", None) or 0)
-
         return {
             "ticker":     symbol,
             "price":      round(price, 2),
             "prev_close": round(prev_close, 2),
             "pct_change": pct_change,
-            "volume":     volume,
+            "volume":     int(getattr(info, "three_month_average_volume", None) or 0),
             "fetched_at": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
-        print(f"  [Prices] {symbol}: {e}")
+        print(f"  [Prices] yfinance {symbol}: {e}")
         return None
 
 
+def _fetch_one(symbol: str, api_key: str = "") -> dict | None:
+    """Try Finnhub first, fall back to yfinance."""
+    if api_key:
+        data = _fetch_finnhub(symbol, api_key)
+        if data:
+            return data
+    return _fetch_yfinance(symbol)
+
+
 def collect() -> dict[str, dict]:
-    if yf is None:
-        print("[Prices] yfinance not installed — skipping")
-        return {}
+    api_key = os.getenv("FINNHUB_API_KEY", "")
+    source  = "Finnhub" if api_key else "yfinance"
 
     tickers = execute(
         "SELECT symbol FROM tickers WHERE watchlist_status IN ('active', 'watching') AND symbol != 'MACRO'"
@@ -65,19 +102,19 @@ def collect() -> dict[str, dict]:
         return {}
 
     symbols = [r["symbol"] for r in tickers]
-    print(f"[Prices] Fetching prices for {len(symbols)} tickers...")
+    print(f"[Prices] Fetching {len(symbols)} prices via {source}...")
 
     results = {}
     for symbol in symbols:
-        data = _fetch_one(symbol)
+        data = _fetch_one(symbol, api_key)
         if data:
             results[symbol] = data
             try:
                 upsert_price(data)
             except Exception as e:
                 print(f"  [Prices] DB error {symbol}: {e}")
-        # Small delay to avoid rate limiting
-        time.sleep(0.15)
+        # Finnhub free tier: 60 req/min → ~1 req/sec is safe
+        time.sleep(1.1 if api_key else 0.15)
 
     _detect_price_anomalies(results)
     print(f"[Prices] Done — {len(results)}/{len(symbols)} prices fetched")
