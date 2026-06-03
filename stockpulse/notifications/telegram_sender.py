@@ -96,6 +96,7 @@ def _token() -> str:
 
 
 def _chat_id() -> str:
+    global _runtime_chat_id
     # 1. Env var (persistent across restarts — most reliable)
     cid = os.getenv("TELEGRAM_CHAT_ID", "")
     if cid:
@@ -106,7 +107,6 @@ def _chat_id() -> str:
     # 3. DB — survives restarts even without env var
     cid = _load_chat_id_from_db()
     if cid:
-        global _runtime_chat_id
         _runtime_chat_id = cid
         return cid
     print("[Telegram] TELEGRAM_CHAT_ID not set and no message received yet — send any message to your bot")
