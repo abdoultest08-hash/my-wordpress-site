@@ -10,43 +10,35 @@ Setup (one-time):
   4. Run this file once → browser opens → sign in → token.json saved for future runs
 """
 import base64
-import os
 import json
+import os
+import requests
+from pathlib import Path
 from email.mime.multipart import MIMEMultipart
-from email.mime.text       import MIMEText
-from email.mime.image      import MIMEImage
-from google.auth.transport.requests import Request
-from google.oauth2.credentials      import Credentials
-from google_auth_oauthlib.flow      import InstalledAppFlow
-from googleapiclient.discovery      import build
+from email.mime.text      import MIMEText
+from email.mime.image     import MIMEImage
 
-SCOPES = ["https://www.googleapis.com/auth/gmail.compose"]
-CREDS_FILE = os.path.join(os.path.dirname(__file__), "credentials.json")
-TOKEN_FILE  = os.path.join(os.path.dirname(__file__), "token.json")
+CREDS_FILE = Path(__file__).parent / "credentials.json"
+TOKEN_FILE  = Path(__file__).parent / "token.json"
 
 
-def get_gmail_service():
-    creds = None
-    if os.path.exists(TOKEN_FILE):
-        creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(CREDS_FILE, SCOPES)
-            # Generate auth URL manually — user opens it, pastes the code back
-            flow.redirect_uri = "urn:ietf:wg:oauth:2.0:oob"
-            auth_url, _ = flow.authorization_url(prompt="consent", access_type="offline")
-            print("\n" + "="*60)
-            print("OPEN THIS URL in your browser (logged in as sitesbyabs@gmail.com):")
-            print("\n" + auth_url + "\n")
-            print("="*60)
-            code = input("Paste the authorization code here: ").strip()
-            flow.fetch_token(code=code)
-            creds = flow.credentials
-        with open(TOKEN_FILE, "w") as f:
-            f.write(creds.to_json())
-    return build("gmail", "v1", credentials=creds)
+def get_access_token() -> str:
+    """Return a valid access token, refreshing if needed."""
+    token_data = json.loads(TOKEN_FILE.read_text())
+    creds_data  = json.loads(CREDS_FILE.read_text())["installed"]
+
+    if "refresh_token" in token_data:
+        r = requests.post("https://oauth2.googleapis.com/token", data={
+            "client_id":     creds_data["client_id"],
+            "client_secret": creds_data["client_secret"],
+            "refresh_token": token_data["refresh_token"],
+            "grant_type":    "refresh_token",
+        })
+        if r.status_code == 200:
+            token_data["access_token"] = r.json()["access_token"]
+            TOKEN_FILE.write_text(json.dumps(token_data))
+
+    return token_data["access_token"]
 
 
 def build_email_body(lead: dict, your_name: str, your_website: str) -> str:
@@ -105,31 +97,27 @@ def build_email_body(lead: dict, your_name: str, your_website: str) -> str:
 
 def create_draft(lead: dict, screenshot_path: str, your_name: str, your_email: str, your_website: str) -> str:
     """Creates a Gmail draft and returns the draft ID."""
-    service = get_gmail_service()
-
     msg = MIMEMultipart("related")
     msg["Subject"] = f"I built a free website mock for {lead['business_name']} 🏠"
     msg["From"]    = your_email
     msg["To"]      = lead["email"]
 
-    # HTML body
-    html_body = build_email_body(lead, your_name, your_website)
-    msg.attach(MIMEText(html_body, "html"))
+    msg.attach(MIMEText(build_email_body(lead, your_name, your_website), "html"))
 
-    # Embed screenshot as inline image
     with open(screenshot_path, "rb") as f:
         img = MIMEImage(f.read(), _subtype="png")
     img.add_header("Content-ID",          "<mocksite_preview>")
     img.add_header("Content-Disposition", "inline", filename="website_preview.png")
     msg.attach(img)
 
-    raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
-    draft = service.users().drafts().create(
-        userId="me",
-        body={"message": {"raw": raw}}
-    ).execute()
-
-    return draft["id"]
+    raw  = base64.urlsafe_b64encode(msg.as_bytes()).decode()
+    resp = requests.post(
+        "https://gmail.googleapis.com/gmail/v1/users/me/drafts",
+        headers={"Authorization": f"Bearer {get_access_token()}"},
+        json={"message": {"raw": raw}},
+    )
+    resp.raise_for_status()
+    return resp.json()["id"]
 
 
 if __name__ == "__main__":
