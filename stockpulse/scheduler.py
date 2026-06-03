@@ -95,6 +95,13 @@ def main():
     log.info(f"  Daily digest at {digest_time}")
     log.info("=" * 50)
 
+    # Warn loudly about missing keys — prices will fail without Finnhub
+    if not os.getenv("FINNHUB_API_KEY"):
+        log.warning("⚠️  FINNHUB_API_KEY not set — NO LIVE PRICES will be available!")
+        log.warning("   Get a free key at finnhub.io → add FINNHUB_API_KEY to Railway Variables")
+    if not os.getenv("TELEGRAM_CHAT_ID"):
+        log.warning("⚠️  TELEGRAM_CHAT_ID not set — send any message to your bot to activate it")
+
     _start_webhook()
 
     test_ticker = os.getenv("TEST_TICKER", "").upper().strip()

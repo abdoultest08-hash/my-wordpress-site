@@ -38,12 +38,54 @@ _API = "https://api.telegram.org/bot{token}/{method}"
 _runtime_chat_id: str = ""
 
 
+def _save_chat_id_to_db(cid: str):
+    """Persist chat_id to DB so it survives container restarts."""
+    try:
+        ph = "%s" if is_postgres() else "?"
+        from database.db import get_db
+        with get_db() as conn:
+            c = conn.cursor()
+            c.execute(f"""
+                CREATE TABLE IF NOT EXISTS settings (
+                    key   TEXT PRIMARY KEY,
+                    value TEXT
+                )
+            """)
+            if is_postgres():
+                c.execute(
+                    "INSERT INTO settings (key, value) VALUES (%s, %s) "
+                    "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value",
+                    ("telegram_chat_id", cid)
+                )
+            else:
+                c.execute(
+                    "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)",
+                    ("telegram_chat_id", cid)
+                )
+    except Exception as e:
+        print(f"[Telegram] Could not persist chat_id: {e}")
+
+
+def _load_chat_id_from_db() -> str:
+    """Load chat_id persisted from a previous run."""
+    try:
+        rows = execute(
+            "SELECT value FROM settings WHERE key = %s" if is_postgres()
+            else "SELECT value FROM settings WHERE key = ?",
+            ("telegram_chat_id",)
+        )
+        return rows[0]["value"] if rows else ""
+    except Exception:
+        return ""
+
+
 def set_chat_id(cid: str):
     """Called by the polling loop the moment a message arrives."""
     global _runtime_chat_id
     if _runtime_chat_id != str(cid):
         _runtime_chat_id = str(cid)
-        print(f"[Telegram] Chat ID set: {cid}  👉 Add TELEGRAM_CHAT_ID={cid} to Railway Variables")
+        _save_chat_id_to_db(str(cid))
+        print(f"[Telegram] Chat ID set: {cid}  👉 Add TELEGRAM_CHAT_ID={cid} to Railway Variables to make permanent")
 
 
 def _token() -> str:
@@ -54,13 +96,19 @@ def _token() -> str:
 
 
 def _chat_id() -> str:
-    # 1. Env var (persistent across restarts)
+    # 1. Env var (persistent across restarts — most reliable)
     cid = os.getenv("TELEGRAM_CHAT_ID", "")
     if cid:
         return cid
     # 2. Runtime cache set by polling loop
     if _runtime_chat_id:
         return _runtime_chat_id
+    # 3. DB — survives restarts even without env var
+    cid = _load_chat_id_from_db()
+    if cid:
+        global _runtime_chat_id
+        _runtime_chat_id = cid
+        return cid
     print("[Telegram] TELEGRAM_CHAT_ID not set and no message received yet — send any message to your bot")
     return ""
 
