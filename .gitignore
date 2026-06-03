@@ -6,3 +6,5 @@ outreach/sites/
 outreach/screenshots/
 outreach/outreach_log.json
 outreach/test_output.html
+token*.json
+credentials.json

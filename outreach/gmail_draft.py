@@ -21,6 +21,11 @@ from email.mime.image     import MIMEImage
 CREDS_FILE = Path(__file__).parent / "credentials.json"
 TOKEN_FILE  = Path(__file__).parent / "token.json"
 
+def get_access_token_for_account(account: dict) -> str:
+    """Get access token for a specific account dict."""
+    from accounts import get_access_token
+    return get_access_token(account)
+
 
 def get_access_token() -> str:
     """Return a valid access token, refreshing if needed."""
@@ -95,8 +100,34 @@ def build_email_body(lead: dict, your_name: str, your_website: str) -> str:
 """
 
 
+def send_email(lead: dict, screenshot_path: str, account: dict, your_website: str) -> str:
+    """Sends an email immediately from the given account. Returns Gmail message ID."""
+    msg = MIMEMultipart("related")
+    msg["Subject"] = f"I built a free website mock for {lead['business_name']} 🏠"
+    msg["From"]    = f"{account['name']} <{account['email']}>"
+    msg["To"]      = lead["email"]
+
+    msg.attach(MIMEText(build_email_body(lead, account["name"], your_website), "html"))
+
+    with open(screenshot_path, "rb") as f:
+        img = MIMEImage(f.read(), _subtype="png")
+    img.add_header("Content-ID",          "<mocksite_preview>")
+    img.add_header("Content-Disposition", "inline", filename="website_preview.png")
+    msg.attach(img)
+
+    raw  = base64.urlsafe_b64encode(msg.as_bytes()).decode()
+    token = get_access_token_for_account(account)
+    resp = requests.post(
+        "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"raw": raw},
+    )
+    resp.raise_for_status()
+    return resp.json()["id"]
+
+
 def create_draft(lead: dict, screenshot_path: str, your_name: str, your_email: str, your_website: str) -> str:
-    """Creates a Gmail draft and returns the draft ID."""
+    """Creates a Gmail draft (legacy — used for testing). Returns draft ID."""
     msg = MIMEMultipart("related")
     msg["Subject"] = f"I built a free website mock for {lead['business_name']} 🏠"
     msg["From"]    = your_email
