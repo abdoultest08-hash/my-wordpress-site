@@ -1,9 +1,6 @@
 """
-Reddit collector — scans subreddits for stock ticker mentions.
-
-Uses Reddit's free public JSON feed (no API key required).
-Fetches hot + new posts from each community, extracts ticker mentions,
-scores sentiment with VADER, and saves signals to the database.
+Reddit collector — disabled (Railway IP blocked by Reddit 403).
+StockTwits collector handles social sentiment instead.
 """
 
 import json
@@ -152,10 +149,13 @@ def _fetch_posts(subreddit: str, sort: str, client: httpx.Client) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 def collect() -> int:
-    """
-    Scan all subreddits, extract signals, save to database.
-    Returns the number of signals saved.
-    """
+    """Disabled — Reddit blocks Railway IPs with 403. Returns 0."""
+    print("[Reddit] Skipped — blocked by Reddit (use StockTwits instead)")
+    return 0
+
+
+def _collect_disabled() -> int:
+    """Original implementation kept for reference but not called."""
     print(f"[Reddit] Starting collection — {len(SUBREDDITS)} subreddits")
     watchlist = _load_watchlist()
     if not watchlist:
