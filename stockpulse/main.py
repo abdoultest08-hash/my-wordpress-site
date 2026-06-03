@@ -25,6 +25,7 @@ from collectors.news_collector   import collect as collect_news
 from collectors.macro_collector  import collect as collect_macro
 from collectors.price_collector  import collect as collect_prices
 from collectors.sec_collector    import collect as collect_sec
+from collectors.executive_collector import collect as collect_exec, collect_events
 from scoring.thematic_cascade    import detect_cascades
 from scoring.signal_scorer       import score_all
 from notifications.telegram_sender import send_alert as send_alert_telegram
@@ -72,6 +73,13 @@ def run_pipeline(send_alerts: bool = True) -> dict:
         print(f"  SEC insider signals: {summary['sec_signals']}")
     except Exception:
         summary["errors"].append(f"sec: {traceback.format_exc()}")
+
+    try:
+        exec_count = collect_exec()
+        event_count = collect_events()
+        print(f"  Executive signals: {exec_count} | Event signals: {event_count}")
+    except Exception:
+        summary["errors"].append(f"exec: {traceback.format_exc()}")
 
     try:
         prices = collect_prices()

@@ -229,6 +229,13 @@ def send_daily_summary() -> bool:
         WHERE detected_at >= ? ORDER BY detected_at DESC LIMIT 20
     """, (_12h,))
 
+    executive_signals = execute("""
+        SELECT s.ticker, s.content, s.source_detail, s.sentiment FROM signals s
+        WHERE s.collected_at >= ?
+          AND s.source = 'executive'
+        ORDER BY s.raw_score DESC, s.collected_at DESC LIMIT 10
+    """, (_24h,))
+
     corporate_news = execute("""
         SELECT s.ticker, s.content, s.source_detail, s.sentiment, s.source FROM signals s
         WHERE s.collected_at >= ?
@@ -282,7 +289,26 @@ def send_daily_summary() -> bool:
             lines.append(f"  {arrow} {headline}")
         lines.append("")
 
-    # ── SECTION 2: WHAT COMPANIES ARE SAYING ────────────────────────────────
+    # ── SECTION 2: WHAT CEOs ARE SAYING ─────────────────────────────────────
+    if executive_signals:
+        lines.append("🎙 <b>WHAT CEOs ARE SAYING</b>")
+        seen_exec = set()
+        for e in executive_signals:
+            source = _clean(e.get("source_detail", ""))
+            content = e.get("content", "")
+            # Extract the statement part after "exec_name: "
+            stmt = content.split(":", 1)[1].strip() if ":" in content else content
+            stmt = _clean(stmt, 110)
+            key = source[:30]
+            if key in seen_exec or not stmt:
+                continue
+            seen_exec.add(key)
+            tkr   = e["ticker"]
+            arrow = "▲" if "bullish" in e.get("sentiment", "") else ("▼" if "bearish" in e.get("sentiment", "") else "→")
+            lines.append(f"  {arrow} <b>{source}</b>  {stmt}")
+        lines.append("")
+
+    # ── SECTION 3: CORPORATE NEWS & FILINGS ─────────────────────────────────
     sec_items   = []
     news_items  = []
     seen_corp   = set()
