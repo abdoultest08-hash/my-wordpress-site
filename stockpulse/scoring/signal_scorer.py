@@ -108,7 +108,11 @@ def _sentiment_subscore(signals: list[dict], source_filter: str | None = None) -
     Weighted average sentiment for signals from a given source (or all sources).
     Returns 0–10 (5.0 = perfectly neutral).
     """
-    filtered = [s for s in signals if source_filter is None or s["source"] == source_filter]
+    # treat stocktwits as equivalent to reddit for social sentiment scoring
+    if source_filter == "reddit":
+        filtered = [s for s in signals if s["source"] in ("reddit", "stocktwits")]
+    else:
+        filtered = [s for s in signals if source_filter is None or s["source"] == source_filter]
     if not filtered:
         return 5.0  # neutral when no data
 
