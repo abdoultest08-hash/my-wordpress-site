@@ -34,7 +34,16 @@ def get_gmail_service():
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(CREDS_FILE, SCOPES)
-            creds = flow.run_local_server(port=0)
+            # Generate auth URL manually — user opens it, pastes the code back
+            flow.redirect_uri = "urn:ietf:wg:oauth:2.0:oob"
+            auth_url, _ = flow.authorization_url(prompt="consent", access_type="offline")
+            print("\n" + "="*60)
+            print("OPEN THIS URL in your browser (logged in as sitesbyabs@gmail.com):")
+            print("\n" + auth_url + "\n")
+            print("="*60)
+            code = input("Paste the authorization code here: ").strip()
+            flow.fetch_token(code=code)
+            creds = flow.credentials
         with open(TOKEN_FILE, "w") as f:
             f.write(creds.to_json())
     return build("gmail", "v1", credentials=creds)
