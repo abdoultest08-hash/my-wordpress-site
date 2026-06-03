@@ -97,8 +97,18 @@ def _get_price_str(ticker: str) -> str:
 
 def _get_price_data(ticker: str) -> dict | None:
     try:
-        from collectors.price_collector import get_price
-        return get_price(ticker)
+        from collectors.price_collector import get_price, _fetch_finnhub, _fetch_yfinance
+        # Try DB first (fastest)
+        p = get_price(ticker)
+        if p and float(p.get("price", 0)) > 0:
+            return p
+        # DB miss — fetch live right now
+        api_key = os.getenv("FINNHUB_API_KEY", "")
+        if api_key:
+            p = _fetch_finnhub(ticker, api_key)
+            if p:
+                return p
+        return _fetch_yfinance(ticker)
     except Exception:
         return None
 
@@ -246,6 +256,13 @@ def send_daily_summary() -> bool:
           CASE s.sentiment WHEN 'very_bullish' THEN 1 WHEN 'very_bearish' THEN 2 ELSE 3 END,
           s.collected_at DESC LIMIT 20
     """, (_24h,))
+
+    # Discovery — new stocks not in watchlist
+    try:
+        from collectors.discovery_collector import get_recent_discoveries
+        discoveries = get_recent_discoveries(hours=24)
+    except Exception:
+        discoveries = []
 
     # Personal watchlist from env var (comma-separated tickers)
     watchlist_env = os.getenv("WATCHLIST", "")
@@ -399,7 +416,34 @@ def send_daily_summary() -> bool:
                 lines.append(f"  → <b>{tkr}</b>  no price data")
     lines.append("")
 
-    # ── SECTION 6: VIEW ──────────────────────────────────────────────────────
+    # ── SECTION 6: STOCKS TO WATCH (discovery) ──────────────────────────────
+    if discoveries:
+        lines.append("🔍 <b>STOCKS TO WATCH</b>  <i>(not in your list)</i>")
+        type_labels = {
+            "social_trending":   "📣 Trending",
+            "analyst_upgrade":   "⬆️ Analyst Upgrade",
+            "options_activity":  "🎯 Unusual Options",
+            "short_squeeze":     "💥 Short Squeeze",
+            "earnings_upcoming": "📅 Earnings Due",
+            "small_cap_momentum":"🚀 Small Cap Move",
+            "ipo_watch":         "🆕 IPO/New Listing",
+            "news_mention":      "📰 In the News",
+        }
+        seen_disc = set()
+        for d in discoveries[:6]:
+            tkr = d["ticker"]
+            if tkr in seen_disc:
+                continue
+            seen_disc.add(tkr)
+            label  = type_labels.get(d["signal_type"], "👀 Watch")
+            reason = _clean(d["reason"], 90)
+            p      = _get_price_data(tkr)
+            price_str = f"  <i>${p['price']:.2f} {'▲' if p['pct_change'] >= 0 else '▼'}{abs(p['pct_change']):.1f}%</i>" if p else ""
+            lines.append(f"  {label}  <b>{tkr}</b>{price_str}")
+            lines.append(f"     {reason}")
+        lines.append("")
+
+    # ── SECTION 7: VIEW ─────────────────────────────────────────────────────
     lines.append("💡 <b>VIEW</b>")
     for line in _build_opinion(scores, macro_signals, cascades, avg_score):
         lines.append(f"  {_clean(line)}")
