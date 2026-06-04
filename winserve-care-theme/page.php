@@ -1,22 +1,23 @@
 <?php get_header(); ?>
 
-<?php while ( have_posts() ) : the_post(); ?>
-
+<!-- Page Hero -->
 <section class="page-hero">
-  <div class="container">
-    <h1><?php the_title(); ?></h1>
-    <p class="breadcrumb"><a href="<?php echo esc_url(home_url('/')); ?>">Home</a> &rsaquo; <span><?php the_title(); ?></span></p>
+  <div class="page-hero-overlay"></div>
+  <div class="container page-hero-content">
+    <span class="page-hero-badge"><?php the_title(); ?></span>
+    <p class="page-breadcrumb"><a href="<?php echo esc_url(home_url('/')); ?>">Home</a> &rsaquo; <?php the_title(); ?></p>
   </div>
 </section>
 
-<section class="page-content">
+<!-- Page Content -->
+<section style="padding:72px 0;">
   <div class="container">
-    <div class="page-content-inner">
-      <?php the_content(); ?>
-    </div>
+    <?php while (have_posts()) : the_post(); ?>
+      <div class="post-content" style="max-width:800px;margin:0 auto;">
+        <?php the_content(); ?>
+      </div>
+    <?php endwhile; ?>
   </div>
 </section>
-
-<?php endwhile; ?>
 
 <?php get_footer(); ?>

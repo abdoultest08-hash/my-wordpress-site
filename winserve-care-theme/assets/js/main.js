@@ -1,28 +1,23 @@
-(function() {
+(function () {
   'use strict';
 
   // Sticky nav
   var header = document.getElementById('site-header');
   if (header) {
-    window.addEventListener('scroll', function() {
-      if (window.scrollY > 60) {
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
+    window.addEventListener('scroll', function () {
+      header.classList.toggle('scrolled', window.scrollY > 60);
     }, { passive: true });
   }
 
-  // Mobile menu toggle
+  // Mobile menu
   var toggle = document.getElementById('menu-toggle');
   var nav = document.getElementById('primary-nav');
   if (toggle && nav) {
-    toggle.addEventListener('click', function() {
-      var isOpen = nav.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    toggle.addEventListener('click', function () {
+      var open = nav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open);
     });
-    // Close on outside click
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
       if (!toggle.contains(e.target) && !nav.contains(e.target)) {
         nav.classList.remove('open');
         toggle.setAttribute('aria-expanded', 'false');
@@ -30,13 +25,24 @@
     });
   }
 
-  // Smooth scroll for anchor links
-  document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
-    anchor.addEventListener('click', function(e) {
-      var target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var t = document.querySelector(this.getAttribute('href'));
+      if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+
+  // Vacancy apply toggle
+  document.querySelectorAll('.btn-apply-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var form = this.closest('.vacancy-card').querySelector('.apply-form');
+      if (form) {
+        form.classList.toggle('open');
+        this.textContent = form.classList.contains('open') ? 'Close Form ✕' : 'Apply for This Role →';
+        if (form.classList.contains('open')) {
+          form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       }
     });
   });
