@@ -147,7 +147,7 @@
       </div>
 
       <div class="service-card">
-        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living.jpg');"></div>
+        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living-new.png');"></div>
         <div class="service-card-bar">
           <span>Supported Living</span>
           <a href="<?php echo esc_url(home_url('/services')); ?>" class="service-card-plus">+</a>
@@ -165,7 +165,7 @@
       </div>
 
       <div class="service-card">
-        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living.jpg');"></div>
+        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-dementia-care.png');"></div>
         <div class="service-card-bar">
           <span>Dementia &amp; Alzheimer's Care</span>
           <a href="<?php echo esc_url(home_url('/services')); ?>" class="service-card-plus">+</a>

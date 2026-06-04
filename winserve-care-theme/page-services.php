@@ -13,7 +13,7 @@
 <section class="services-intro">
   <div class="container">
     <span class="eyebrow">+ What We Offer</span>
-    <h2 style="font-family:var(--font-heading);font-size:40px;color:var(--navy);line-height:1.2;">Comprehensive Care Across 18 Specialist Areas</h2>
+    <h2 style="font-family:var(--font-heading);font-size:40px;color:var(--navy);line-height:1.2;">Specialist Care Services Across Leeds &amp; Cornwall</h2>
     <p>We provide care that makes a real difference to the lives of individuals and families across Leeds and Cornwall. Every service is delivered with compassion, professionalism, and a commitment to your dignity and independence.</p>
   </div>
 </section>
@@ -23,7 +23,7 @@
   <div class="services-full-grid">
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-educational-3.png');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-dementia-care.png');"></div>
       <div class="service-full-content">
         <h3>Dementia &amp; Alzheimer's Care</h3>
         <p>Specialist support for those living with dementia and Alzheimer's, helping maintain routine, safety, and dignity at home.</p>
@@ -32,7 +32,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living-new.png');"></div>
       <div class="service-full-content">
         <h3>Supported Living</h3>
         <p>Enabling adults with learning disabilities, mental health needs or physical disabilities to live independently with the right support.</p>
@@ -59,7 +59,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-domiciliary.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-live-in-care.png');"></div>
       <div class="service-full-content">
         <h3>Live-In Care</h3>
         <p>A dedicated carer lives in the home providing round-the-clock support, allowing individuals to remain in familiar surroundings.</p>
@@ -77,7 +77,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-domiciliary.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-learning-disabilities-new.png');"></div>
       <div class="service-full-content">
         <h3>Learning Disabilities</h3>
         <p>Tailored support for adults with learning disabilities, promoting independence, choice, and community participation.</p>
@@ -122,7 +122,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-companionship.png');"></div>
       <div class="service-full-content">
         <h3>Companionship</h3>
         <p>Meaningful social interaction and companionship to reduce isolation and support emotional wellbeing.</p>
@@ -149,7 +149,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-educational-6.png');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-medication-care.png');"></div>
       <div class="service-full-content">
         <h3>Medication Assistance</h3>
         <p>Prompting and administering medication safely and on time, as directed by the care plan.</p>
