@@ -38,8 +38,8 @@ button { font-family: var(--font-body); }
    TOPBAR
    ========================================================= */
 .topbar {
-  background: #d0eaf8;
-  border-bottom: 1px solid #a8d4ef;
+  background: #eaf4fc;
+  border-bottom: 1px solid #c4e0f0;
   padding: 9px 0;
   font-size: 12.5px;
 }
@@ -2253,3 +2253,20 @@ button { font-family: var(--font-body); }
 .privacy-doc address { font-style: normal; background: var(--section-bg); border-left: 3px solid var(--blue); padding: 12px 18px; border-radius: 0 6px 6px 0; margin: 12px 0 20px; color: #555; }
 .privacy-doc a { color: var(--blue); text-decoration: underline; }
 .privacy-updated { font-size: 13px; color: #999; margin-bottom: 36px; }
+
+/* Quick Enquiry Form (homepage below services) */
+.quick-enquiry-wrap { margin-top: 60px; background: var(--section-bg); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.quick-enquiry-inner { display: grid; grid-template-columns: 1fr 1.6fr; }
+.quick-enquiry-left { background: var(--navy); padding: 48px 40px; color: #fff; }
+.quick-enquiry-left .section-eyebrow { color: var(--blue); }
+.quick-enquiry-left h3 { font-family: var(--font-heading); font-size: 28px; color: #fff; margin: 12px 0 14px; line-height: 1.25; }
+.quick-enquiry-left p { font-family: var(--font-body); font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.75; }
+.quick-enquiry-right { padding: 40px; }
+.quick-enquiry-form { display: flex; flex-direction: column; gap: 12px; }
+.qe-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.quick-enquiry-form input,
+.quick-enquiry-form select,
+.quick-enquiry-form textarea { font-family: var(--font-body); font-size: 14px; padding: 11px 14px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--navy); width: 100%; box-sizing: border-box; }
+.quick-enquiry-form select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
+.quick-enquiry-form textarea { resize: vertical; min-height: 70px; }
+@media(max-width:860px) { .quick-enquiry-inner { grid-template-columns: 1fr; } .qe-row { grid-template-columns: 1fr; } }

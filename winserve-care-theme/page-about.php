@@ -19,7 +19,7 @@
       <div class="story-content">
         <span class="eyebrow">+ Who We Are</span>
         <h2>A Care Company Built on Purpose, Not Just Process</h2>
-        <p>Winserve Care Services Ltd is a CQC-registered domiciliary and supported living care provider operating across Leeds and Cornwall. Founded by Amon Mutyasira with a clear mission — to deliver genuinely compassionate, person-centred home care — we have grown over five years into a trusted name in health and social care.</p>
+        <p>Winserve Care Services Ltd is a CQC-registered domiciliary and supported living care provider operating across Leeds and Cornwall. Founded by Amon Mutyasira with a clear mission — to deliver genuinely compassionate, person-centred home care — we have grown over six years into a trusted name in health and social care.</p>
         <p>We are not a franchise. We are an independent, values-led organisation where every decision is guided by one question: <em>what is best for the people we support?</em> That principle drives how we hire, how we train, and how we show up every day for our service users and their families.</p>
         <p>Our CQC Good rating, achieved across all five key lines of enquiry in June 2025, reflects the hard work of our 50+ carers and the leadership team that supports them.</p>
         <ul class="story-bullets">
@@ -52,7 +52,7 @@
         <span class="stat-lbl">CQC Compliant</span>
       </div>
       <div class="stat-col">
-        <span class="stat-num">5<sup>+</sup></span>
+        <span class="stat-num">6<sup>+</sup></span>
         <span class="stat-lbl">Years Operating</span>
       </div>
     </div>

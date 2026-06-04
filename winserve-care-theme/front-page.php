@@ -121,7 +121,7 @@
         <span class="stat-lbl">CQC Compliant</span>
       </div>
       <div class="stat-col">
-        <span class="stat-num">5<sup>+</sup></span>
+        <span class="stat-num">6<sup>+</sup></span>
         <span class="stat-lbl">Years Operating</span>
       </div>
     </div>
@@ -194,6 +194,50 @@
     </div>
     <div style="text-align:center;margin-top:44px;">
       <a href="<?php echo esc_url(home_url('/services')); ?>" class="btn-more">View All Services &rarr;</a>
+    </div>
+
+    <!-- Quick Enquiry Form -->
+    <div class="quick-enquiry-wrap">
+      <div class="quick-enquiry-inner">
+        <div class="quick-enquiry-left">
+          <span class="section-eyebrow">+ Quick Enquiry</span>
+          <h3>Not sure which service you need?</h3>
+          <p>Leave your details and our team will call you back to help find the right care.</p>
+        </div>
+        <div class="quick-enquiry-right">
+          <?php if (isset($_GET['sent']) && $_GET['sent'] === '1') : ?>
+            <div class="alert-success" style="margin:0;">Thank you — we'll be in touch shortly.</div>
+          <?php else : ?>
+          <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="quick-enquiry-form">
+            <input type="hidden" name="action" value="winserve_contact">
+            <input type="hidden" name="pathway" value="Quick Enquiry">
+            <?php wp_nonce_field('winserve_contact', 'winserve_nonce'); ?>
+            <div class="qe-row">
+              <input type="text" name="full_name" required placeholder="Your name">
+              <input type="tel" name="phone" required placeholder="Phone number">
+            </div>
+            <div class="qe-row">
+              <input type="email" name="email" required placeholder="Email address">
+              <input type="text" name="postcode" placeholder="Your location / postcode">
+            </div>
+            <select name="subject">
+              <option value="">Which service are you interested in?</option>
+              <option>Domiciliary Care</option>
+              <option>Supported Living</option>
+              <option>Dementia Care</option>
+              <option>Live-In Care</option>
+              <option>Respite Care</option>
+              <option>Learning Disabilities Support</option>
+              <option>Medication Assistance</option>
+              <option>Palliative Care</option>
+              <option>Not sure — need advice</option>
+            </select>
+            <textarea name="message" rows="2" placeholder="Anything else you'd like us to know? (optional)"></textarea>
+            <button type="submit" class="btn-cta" style="width:100%;justify-content:center;">Send Enquiry &rarr;</button>
+          </form>
+          <?php endif; ?>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -300,17 +344,6 @@
   <div class="container">
     <div class="reviews-cta">
       <a href="https://www.homecare.co.uk/homecare/agency.cfm/id/65432238891" target="_blank" rel="noopener" class="btn-outline">Read all 74 reviews on Homecare.co.uk &rarr;</a>
-    </div>
-  </div>
-</section>
-
-<!-- HOMECARE WIDGET -->
-<section class="homecare-widget-strip">
-  <div class="container">
-    <p class="hw-label">Independently verified reviews from Homecare.co.uk</p>
-    <div class="homecare-widget-inner">
-      <script async class='tg-review-widget' type='text/javascript' src='https://api.homecare.co.uk/assets/js/review_widget.js?displaydiv=tgrw-757cc806&displayid=65432238891&displaycontent=snippet&displaywidth=300&displaycount=2&displayscore=true&displaylink=false&displayborder=true&displaybackgroundcolor=faded&displaypagination=false&displaystrapline=true&displayfontsize=default&displayminoverallrating=0&displayallratings=false&displaylogo=true&displaywrappers=true&displaybutton=true&displaysettingname=true&displayratingreview=true&linksnofollow=false'></script>
-      <div class='tg-review-widget-container' id='tgrw-757cc806'></div>
     </div>
   </div>
 </section>
