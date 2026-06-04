@@ -38,7 +38,7 @@
   <div class="container">
     <nav class="nav-inner" role="navigation" aria-label="Primary">
       <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo" aria-label="Winserve Care Services Home">
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo.png" alt="Winserve Care Services Ltd" width="180" height="56">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-gray.png" alt="Winserve Care Services Ltd" height="56" style="width:auto;max-width:200px;">
       </a>
       <button class="menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span><span></span>

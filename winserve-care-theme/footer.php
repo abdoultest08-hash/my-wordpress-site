@@ -15,7 +15,7 @@
 
         <!-- Col 1: Brand -->
         <div class="footer-col footer-brand">
-          <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo.png" alt="Winserve Care Services Ltd" class="footer-logo">
+          <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-white.png" alt="Winserve Care Services Ltd" class="footer-logo">
           <p class="footer-desc">Winserve Care Services Ltd is a CQC-registered domiciliary and supported living care provider serving Leeds and Cornwall. Care is at the heart of what we do.</p>
 
           <div class="footer-contact-row">
