@@ -1902,3 +1902,20 @@ button { font-family: var(--font-body); }
   .regulatory-grid { grid-template-columns: 1fr 1fr; }
   .page-hero-badge { font-size: 28px; padding: 10px 24px; }
 }
+
+/* Team card — no photo state */
+.team-card--no-img .team-card-avatar {
+  height: 160px;
+  background: var(--card-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 52px;
+  font-weight: 600;
+  color: var(--blue);
+  border-bottom: 1px solid var(--border);
+}
+.team-card--no-img .team-card-avatar svg {
+  color: var(--blue);
+}

@@ -22,8 +22,8 @@
 <div class="container">
   <div class="team-grid">
 
-    <div class="team-card">
-      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/team-amon.jpg" alt="Amon Mutyasira — Managing Director" class="team-card-img">
+    <div class="team-card team-card--no-img">
+      <div class="team-card-avatar">AM</div>
       <div class="team-card-bar">
         <div class="team-card-name">Amon Mutyasira</div>
         <div class="team-card-role">Managing Director &amp; Founder</div>
@@ -33,8 +33,8 @@
       </div>
     </div>
 
-    <div class="team-card">
-      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/team-hr.jpg" alt="Alex Parcei — HR &amp; Administration" class="team-card-img">
+    <div class="team-card team-card--no-img">
+      <div class="team-card-avatar">AP</div>
       <div class="team-card-bar">
         <div class="team-card-name">Alex Parcei</div>
         <div class="team-card-role">HR &amp; Administration</div>
@@ -44,8 +44,10 @@
       </div>
     </div>
 
-    <div class="team-card">
-      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/team-carers.jpg" alt="Winserve Care Team" class="team-card-img">
+    <div class="team-card team-card--no-img">
+      <div class="team-card-avatar">
+        <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </div>
       <div class="team-card-bar">
         <div class="team-card-name">The Care Team</div>
         <div class="team-card-role">50+ Dedicated Carers</div>
