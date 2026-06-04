@@ -20,7 +20,7 @@
         <span class="eyebrow">+ Our Story</span>
         <h2>A Decade of Compassionate Care Across England</h2>
         <p>Winserve Care Services Ltd was founded by Amon Mutyasira with one vision: to deliver genuinely compassionate, person-centred home care that treats every individual with the dignity and respect they deserve.</p>
-        <p>Over more than 10 years, we have grown from a small team in Leeds into a trusted care provider spanning both Leeds and Cornwall. Our CQC Good rating (June 2025) is a testament to the dedication of our 50+ carers and support staff.</p>
+        <p>Over the past 5 years, we have grown from a small team in Leeds into a trusted care provider spanning both Leeds and Cornwall. Our CQC Good rating (June 2025) is a testament to the dedication of our 50+ carers and support staff.</p>
         <p>We are proud to be a Real Living Wage employer, a signatory of the Armed Forces Covenant, and accredited under CHAS for health and safety standards. These accreditations reflect our deep commitment not just to those we care for, but to those who deliver that care.</p>
         <ul class="story-bullets">
           <li>Founded and led by Amon Mutyasira, Managing Director</li>

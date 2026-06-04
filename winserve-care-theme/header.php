@@ -45,6 +45,7 @@
       </button>
       <div class="primary-nav" id="primary-nav">
         <a href="<?php echo esc_url(home_url('/')); ?>">Home</a>
+        <a href="<?php echo esc_url(home_url('/about')); ?>">About Us</a>
         <a href="<?php echo esc_url(home_url('/services')); ?>">Services</a>
         <a href="<?php echo esc_url(home_url('/our-team')); ?>">Our Team</a>
         <a href="<?php echo esc_url(home_url('/vacancies')); ?>">Vacancies</a>

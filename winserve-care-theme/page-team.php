@@ -29,7 +29,7 @@
         <div class="team-card-role">Managing Director &amp; Founder</div>
       </div>
       <div class="team-card-bio">
-        <p>Amon founded Winserve Care Services Ltd over 10 years ago with a clear mission: to provide high-quality, compassionate domiciliary care that genuinely improves lives. Under his leadership, the company has grown to serve both Leeds and Cornwall, achieving a CQC rating of Good in June 2025. Amon is passionate about empowering both service users and staff, ensuring a culture of dignity, respect, and continuous improvement.</p>
+        <p>Amon founded Winserve Care Services Ltd 5 years ago with a clear mission: to provide high-quality, compassionate domiciliary care that genuinely improves lives. Under his leadership, the company has grown to serve both Leeds and Cornwall, achieving a CQC rating of Good in June 2025. Amon is passionate about empowering both service users and staff, ensuring a culture of dignity, respect, and continuous improvement.</p>
       </div>
     </div>
 
