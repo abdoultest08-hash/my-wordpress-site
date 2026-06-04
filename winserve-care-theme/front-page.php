@@ -13,9 +13,6 @@
       <p class="hero-sub">Winserve Care Services provides compassionate, person-centred domiciliary and supported living care across Leeds and Cornwall. Care is at the heart of everything we do.</p>
       <div class="hero-actions">
         <a href="<?php echo esc_url(home_url('/contact')); ?>" class="btn-hero">Contact Us &rarr;</a>
-        <a href="<?php echo esc_url(home_url('/services')); ?>" class="btn-play" aria-label="View our services">
-          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </a>
       </div>
     </div>
   </div>
@@ -204,11 +201,7 @@
 <!-- SECTION 6: WHY CHOOSE US -->
 <section class="why-section">
   <div class="why-image">
-    <div class="why-image-overlay">
-      <button class="play-btn" aria-label="Find out more">
-        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-      </button>
-    </div>
+    <div class="why-image-overlay"></div>
   </div>
   <div class="why-content">
     <span class="eyebrow">+ Why Choose Us</span>

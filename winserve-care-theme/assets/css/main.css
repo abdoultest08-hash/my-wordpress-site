@@ -1962,3 +1962,65 @@ button { font-family: var(--font-body); }
 
 /* Menu toggle visible on dark nav */
 .menu-toggle span { background: #fff; }
+
+/* Contact Pathways */
+.contact-pathways {
+  margin-bottom: 40px;
+  text-align: center;
+}
+.pathway-label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 16px;
+}
+.pathway-tabs {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.pathway-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--navy);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.pathway-tab svg { color: var(--blue); flex-shrink: 0; }
+.pathway-tab:hover { border-color: var(--blue); }
+.pathway-tab.active {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: #fff;
+}
+.pathway-tab.active svg { color: #fff; }
+
+/* Alert */
+.alert-success {
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  border-radius: 6px;
+  padding: 16px 20px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #1b5e20;
+  margin-bottom: 32px;
+}
+
+/* Blog card image placeholder */
+.blog-card-img-ph {
+  width: 100%;
+  height: 200px;
+  background: var(--card-bg);
+}
