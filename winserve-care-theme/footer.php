@@ -85,18 +85,34 @@
 
         <!-- Col 4: Accreditations -->
         <div class="footer-col">
-          <h4>Accreditations</h4>
+          <h4>Accreditations &amp; Partners</h4>
           <div class="accred-list">
             <div class="accred-item">&#9733; CQC Rated Good<br><span style="opacity:0.6;font-size:9px;">Inspection: 30 June 2025</span></div>
             <div class="accred-item">&#9654; Armed Forces Covenant<br><span style="opacity:0.6;font-size:9px;">Proud Signatory</span></div>
             <div class="accred-item">&#9654; CHAS Standard<br><span style="opacity:0.6;font-size:9px;">Health &amp; Safety Accredited</span></div>
             <div class="accred-item">&#9654; Living Wage Employer<br><span style="opacity:0.6;font-size:9px;">Real Living Wage Committed</span></div>
+            <div class="accred-item">&#9654; QCS Quality Compliance<br><span style="opacity:0.6;font-size:9px;">Policies &amp; Procedures</span></div>
+            <div class="accred-item">&#9654; Click Learning<br><span style="opacity:0.6;font-size:9px;">Staff Training Platform</span></div>
           </div>
+        </div>
 
-          <div style="margin-top:24px;">
       </div><!-- .footer-grid -->
     </div><!-- .container -->
   </div><!-- .footer-main -->
+
+  <!-- Partner Logo Strip -->
+  <div class="footer-logos-strip">
+    <div class="container">
+      <p class="footer-logos-label">Our Partners &amp; Accreditations</p>
+      <div class="footer-logos-row">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-armed-forces.webp" alt="Armed Forces Covenant" class="footer-partner-logo">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-chas.webp" alt="CHAS Standard" class="footer-partner-logo footer-partner-logo--sm">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-qcs.webp" alt="QCS Quality Compliance Systems" class="footer-partner-logo">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-click-learning.webp" alt="Click Learning" class="footer-partner-logo footer-partner-logo--sm">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-bpr-heaton.webp" alt="BPR Heaton Chartered Accountants" class="footer-partner-logo">
+      </div>
+    </div>
+  </div>
 
   <!-- Footer Bottom Bar -->
   <div class="container">
@@ -107,8 +123,6 @@
   </div>
 
 </footer>
-
-
 
 <?php wp_footer(); ?>
 </body>

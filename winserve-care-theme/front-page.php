@@ -304,6 +304,17 @@
   </div>
 </section>
 
+<!-- HOMECARE WIDGET -->
+<section class="homecare-widget-strip">
+  <div class="container">
+    <p class="hw-label">Independently verified reviews from Homecare.co.uk</p>
+    <div class="homecare-widget-inner">
+      <script async class='tg-review-widget' type='text/javascript' src='https://api.homecare.co.uk/assets/js/review_widget.js?displaydiv=tgrw-757cc806&displayid=65432238891&displaycontent=snippet&displaywidth=300&displaycount=2&displayscore=true&displaylink=false&displayborder=true&displaybackgroundcolor=faded&displaypagination=false&displaystrapline=true&displayfontsize=default&displayminoverallrating=0&displayallratings=false&displaylogo=true&displaywrappers=true&displaybutton=true&displaysettingname=true&displayratingreview=true&linksnofollow=false'></script>
+      <div class='tg-review-widget-container' id='tgrw-757cc806'></div>
+    </div>
+  </div>
+</section>
+
 <!-- SECTION 8: TESTIMONIALS -->
 <section class="testimonials-section">
   <div class="testi-content">
