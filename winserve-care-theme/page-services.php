@@ -23,7 +23,7 @@
   <div class="services-full-grid">
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-domiciliary.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-educational-3.png');"></div>
       <div class="service-full-content">
         <h3>Dementia &amp; Alzheimer's Care</h3>
         <p>Specialist support for those living with dementia and Alzheimer's, helping maintain routine, safety, and dignity at home.</p>
@@ -41,7 +41,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-domiciliary.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-educational-4.png');"></div>
       <div class="service-full-content">
         <h3>Personal Care</h3>
         <p>Assistance with washing, dressing, grooming and personal hygiene, delivered with sensitivity and respect.</p>
@@ -104,7 +104,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-educational-5.png');"></div>
       <div class="service-full-content">
         <h3>Physical &amp; Sensory Disabilities</h3>
         <p>Support for those with physical or sensory impairments to live as independently as possible.</p>
@@ -149,7 +149,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-domiciliary.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-educational-6.png');"></div>
       <div class="service-full-content">
         <h3>Medication Assistance</h3>
         <p>Prompting and administering medication safely and on time, as directed by the care plan.</p>
