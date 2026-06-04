@@ -26,7 +26,7 @@
 <!-- SECTION 2: OVERLAP CARDS -->
 <div class="container" style="position:relative;">
   <div class="overlap-cards">
-    <div class="overlap-card" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/recruit-warmth.png');">
+    <div class="overlap-card" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/recruit-warmth-new.jpg');">
       <div class="overlap-card-overlay"></div>
       <div class="overlap-card-body">
         <div class="overlap-icon">
@@ -36,7 +36,7 @@
         <p>70+ trained carers across Leeds &amp; Cornwall</p>
       </div>
     </div>
-    <div class="overlap-card" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-educational-1.png');">
+    <div class="overlap-card" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-edu-1.jpg');">
       <div class="overlap-card-overlay"></div>
       <div class="overlap-card-body">
         <div class="overlap-icon">
@@ -65,7 +65,7 @@
     <div class="about-grid">
       <div class="about-images">
         <div class="exp-badge">
-          <span class="num">5<sup>+</sup></span>
+          <span class="num">6<sup>+</sup></span>
           <span class="lbl">Years of Care</span>
         </div>
         <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/about-main.jpg" alt="Winserve Care team member with service user" class="about-main-img">
@@ -78,7 +78,7 @@
           <span class="snum">50<sup>+</sup></span>
           <p>Dedicated carers delivering high-quality, person-centred care across two regions of England. Every carer is DBS checked, trained, and supported.</p>
         </div>
-        <p class="about-body">Founded by Amon Mutyasira, Winserve Care Services Ltd has grown over 5 years into a trusted name in domiciliary and supported living care. We are CQC registered with a Good rating (June 2025) and proud to be a Real Living Wage employer.</p>
+        <p class="about-body">Founded by Amon Mutyasira, Winserve Care Services Ltd has grown over 6 years into a trusted name in domiciliary and supported living care. We are CQC registered with a Good rating (June 2025) and proud to be a Real Living Wage employer.</p>
         <p class="about-body">Our mission is simple: to enable every individual to live with dignity, independence, and confidence — in the comfort of their own home.</p>
         <a href="<?php echo esc_url(home_url('/about')); ?>" class="btn-more">Learn More About Us &rarr;</a>
         <div class="founder-row">
@@ -138,7 +138,7 @@
     <div class="services-grid">
 
       <div class="service-card">
-        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-domiciliary.jpg');"></div>
+        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-1.jpg');"></div>
         <div class="service-card-bar">
           <span>Domiciliary Care</span>
           <a href="<?php echo esc_url(home_url('/services')); ?>" class="service-card-plus">+</a>
@@ -147,7 +147,7 @@
       </div>
 
       <div class="service-card">
-        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living-new.png');"></div>
+        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-2.jpg');"></div>
         <div class="service-card-bar">
           <span>Supported Living</span>
           <a href="<?php echo esc_url(home_url('/services')); ?>" class="service-card-plus">+</a>
@@ -156,7 +156,7 @@
       </div>
 
       <div class="service-card">
-        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-domiciliary.jpg');"></div>
+        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-3.jpg');"></div>
         <div class="service-card-bar">
           <span>Complex Care</span>
           <a href="<?php echo esc_url(home_url('/services')); ?>" class="service-card-plus">+</a>
@@ -165,7 +165,7 @@
       </div>
 
       <div class="service-card">
-        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-dementia-care.png');"></div>
+        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-4.jpg');"></div>
         <div class="service-card-bar">
           <span>Dementia &amp; Alzheimer's Care</span>
           <a href="<?php echo esc_url(home_url('/services')); ?>" class="service-card-plus">+</a>
@@ -174,7 +174,7 @@
       </div>
 
       <div class="service-card">
-        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-domiciliary.jpg');"></div>
+        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-5.jpg');"></div>
         <div class="service-card-bar">
           <span>Live-In Care</span>
           <a href="<?php echo esc_url(home_url('/services')); ?>" class="service-card-plus">+</a>
@@ -183,7 +183,7 @@
       </div>
 
       <div class="service-card">
-        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living.jpg');"></div>
+        <div class="service-card-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-6.jpg');"></div>
         <div class="service-card-bar">
           <span>Palliative Care</span>
           <a href="<?php echo esc_url(home_url('/services')); ?>" class="service-card-plus">+</a>

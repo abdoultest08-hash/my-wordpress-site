@@ -22,9 +22,9 @@
 <section style="padding:0 0 60px;background:#fff;">
   <div class="container">
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
-      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/recruit-carer-with-car.png" alt="Now hiring in Leeds — company vehicle provided" style="width:100%;border-radius:10px;box-shadow:0 8px 32px rgba(0,50,120,0.12);">
-      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/recruit-split-panel.png" alt="Join Leeds' best care team" style="width:100%;border-radius:10px;box-shadow:0 8px 32px rgba(0,50,120,0.12);">
-      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/recruit-warmth.png" alt="Make a real difference every day" style="width:100%;border-radius:10px;box-shadow:0 8px 32px rgba(0,50,120,0.12);">
+      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/recruit-car.jpg" alt="Now hiring in Leeds — company vehicle provided" style="width:100%;border-radius:10px;box-shadow:0 8px 32px rgba(0,50,120,0.12);">
+      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/recruit-panel.jpg" alt="Join Leeds' best care team" style="width:100%;border-radius:10px;box-shadow:0 8px 32px rgba(0,50,120,0.12);">
+      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/recruit-warmth-new.jpg" alt="Make a real difference every day" style="width:100%;border-radius:10px;box-shadow:0 8px 32px rgba(0,50,120,0.12);">
     </div>
   </div>
 </section>

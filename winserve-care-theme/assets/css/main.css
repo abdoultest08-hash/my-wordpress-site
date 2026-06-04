@@ -958,7 +958,7 @@ button { font-family: var(--font-body); }
 }
 .testi-arrow:hover { background: var(--card-bg); }
 .testi-photo {
-  background: url('../images/testimonial-photo.jpg') center/cover;
+  background: url('../images/service-new-7.jpg') center/cover;
   background-color: var(--card-bg);
 }
 

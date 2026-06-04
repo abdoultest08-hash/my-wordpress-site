@@ -29,18 +29,7 @@
         <div class="team-card-role">Managing Director &amp; Founder</div>
       </div>
       <div class="team-card-bio">
-        <p>Amon founded Winserve Care Services Ltd 5 years ago with a clear mission: to provide high-quality, compassionate domiciliary care that genuinely improves lives. Under his leadership, the company has grown to serve both Leeds and Cornwall, achieving a CQC rating of Good in June 2025. Amon is passionate about empowering both service users and staff, ensuring a culture of dignity, respect, and continuous improvement.</p>
-      </div>
-    </div>
-
-    <div class="team-card team-card--no-img">
-      <div class="team-card-avatar">AP</div>
-      <div class="team-card-bar">
-        <div class="team-card-name">Alex Parcei</div>
-        <div class="team-card-role">HR &amp; Administration</div>
-      </div>
-      <div class="team-card-bio">
-        <p>Alex oversees all human resources and administrative operations at Winserve, ensuring that every member of staff is properly trained, supported, and compliant with CQC and industry regulations. Alex plays a key role in recruitment, onboarding, and the ongoing development of our care team — helping to ensure that Winserve remains an employer of choice in the care sector.</p>
+        <p>Amon founded Winserve Care Services Ltd 6 years ago with a clear mission: to provide high-quality, compassionate domiciliary care that genuinely improves lives. Under his leadership, the company has grown to serve both Leeds and Cornwall, achieving a CQC rating of Good in June 2025. Amon is passionate about empowering both service users and staff, ensuring a culture of dignity, respect, and continuous improvement.</p>
       </div>
     </div>
 
