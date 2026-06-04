@@ -1810,6 +1810,17 @@ button { font-family: var(--font-body); }
 /* =========================================================
    SUCCESS / ALERT MESSAGES
    ========================================================= */
+.alert-error {
+  background: #fdecea;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 16px 20px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #b71c1c;
+  margin-bottom: 24px;
+}
+.alert-error a { color: #b71c1c; text-decoration: underline; }
 .alert-success {
   background: #e8f5e9;
   border: 1px solid #a5d6a7;

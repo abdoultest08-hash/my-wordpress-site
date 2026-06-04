@@ -23,6 +23,11 @@
         <strong>Application received!</strong> Thank you for your interest in joining the Winserve team. We will be in touch shortly.
       </div>
     <?php endif; ?>
+    <?php if (isset($_GET['sent']) && $_GET['sent'] === 'error') : ?>
+      <div class="alert-error">
+        <strong>Sorry, there was a problem sending your message.</strong> Please try again, or contact us directly at <a href="mailto:info@winservecare.co.uk">info@winservecare.co.uk</a> or call <a href="tel:01133408777">0113 340 8777</a>.
+      </div>
+    <?php endif; ?>
 
     <!-- Info Boxes -->
     <div class="contact-info-bar">

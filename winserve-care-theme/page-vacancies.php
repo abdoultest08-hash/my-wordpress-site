@@ -38,6 +38,11 @@
         <strong>Thank you for your application.</strong> Our HR team will be in touch within 5 working days.
       </div>
     <?php endif; ?>
+    <?php if (isset($_GET['applied']) && $_GET['applied'] === 'error') : ?>
+      <div class="alert-error">
+        <strong>Sorry, there was a problem submitting your application.</strong> Please try again or email us directly at <a href="mailto:hr@winservecare.co.uk">hr@winservecare.co.uk</a>.
+      </div>
+    <?php endif; ?>
 
     <!-- Vacancy Card: Care Assistant / Support Worker -->
     <div class="vacancy-card">

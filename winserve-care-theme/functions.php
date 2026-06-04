@@ -285,8 +285,9 @@ function winserve_handle_contact() {
     }
 
     $headers = ['Content-Type: text/plain; charset=UTF-8', 'From: Winserve Website <info@winservecare.co.uk>', 'Reply-To: ' . $email];
-    wp_mail( $to, $subject, $body, $headers );
-    wp_redirect( add_query_arg('sent', '1', wp_get_referer()) );
+    $sent = wp_mail( $to, $subject, $body, $headers );
+    $param = $sent ? ['sent' => '1'] : ['sent' => 'error'];
+    wp_redirect( add_query_arg($param, wp_get_referer()) );
     exit;
 }
 add_action( 'admin_post_nopriv_winserve_contact', 'winserve_handle_contact' );
@@ -316,8 +317,9 @@ function winserve_handle_application() {
     $body   .= "Why Applying:\n" . sanitize_textarea_field($_POST['why_applying'] ?? '');
 
     $headers = ['Content-Type: text/plain; charset=UTF-8', 'From: Winserve Website <info@winservecare.co.uk>', 'Reply-To: ' . $email];
-    wp_mail( $to, $subject, $body, $headers );
-    wp_redirect( add_query_arg('applied', '1', wp_get_referer()) );
+    $sent = wp_mail( $to, $subject, $body, $headers );
+    $param = $sent ? ['applied' => '1'] : ['applied' => 'error'];
+    wp_redirect( add_query_arg($param, wp_get_referer()) );
     exit;
 }
 add_action( 'admin_post_nopriv_winserve_application', 'winserve_handle_application' );
