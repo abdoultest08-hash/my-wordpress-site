@@ -118,7 +118,7 @@
   <div class="container">
     <div class="footer-bottom">
       <p>&copy; <?php echo date('Y'); ?> Winserve Care Services Ltd. All rights reserved.</p>
-      <p>Registered in England &amp; Wales &bull; Company No. registered &bull; CQC Provider ID: 1-8945106634</p>
+      <p>Registered in England &amp; Wales &bull; Company No. 12398800 &bull; CQC Provider ID: 1-8945106634 &bull; <a href="<?php echo esc_url(home_url('/privacy-policy')); ?>" style="color:rgba(255,255,255,0.55);text-decoration:underline;">Privacy Policy</a></p>
     </div>
   </div>
 

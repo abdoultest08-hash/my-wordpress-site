@@ -2231,3 +2231,14 @@ button { font-family: var(--font-body); }
   .diff-grid { grid-template-columns: 1fr; }
   .footer-logos-row { gap: 24px; }
 }
+
+/* Privacy Policy page */
+.privacy-doc { font-family: var(--font-body); font-size: 15px; color: #444; line-height: 1.85; }
+.privacy-doc h2 { font-family: var(--font-heading); font-size: 26px; color: var(--navy); margin: 40px 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+.privacy-doc h3 { font-family: var(--font-heading); font-size: 20px; color: var(--navy); margin: 28px 0 10px; }
+.privacy-doc p { margin-bottom: 16px; }
+.privacy-doc ul { padding-left: 22px; margin-bottom: 16px; }
+.privacy-doc li { margin-bottom: 6px; }
+.privacy-doc address { font-style: normal; background: var(--section-bg); border-left: 3px solid var(--blue); padding: 12px 18px; border-radius: 0 6px 6px 0; margin: 12px 0 20px; color: #555; }
+.privacy-doc a { color: var(--blue); text-decoration: underline; }
+.privacy-updated { font-size: 13px; color: #999; margin-bottom: 36px; }

@@ -26,7 +26,7 @@
 <!-- SECTION 2: OVERLAP CARDS -->
 <div class="container" style="position:relative;">
   <div class="overlap-cards">
-    <div class="overlap-card" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-domiciliary.jpg');">
+    <div class="overlap-card" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/recruit-warmth.png');">
       <div class="overlap-card-overlay"></div>
       <div class="overlap-card-body">
         <div class="overlap-icon">
@@ -36,7 +36,7 @@
         <p>70+ trained carers across Leeds &amp; Cornwall</p>
       </div>
     </div>
-    <div class="overlap-card" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living.jpg');">
+    <div class="overlap-card" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-educational-1.png');">
       <div class="overlap-card-overlay"></div>
       <div class="overlap-card-body">
         <div class="overlap-icon">
