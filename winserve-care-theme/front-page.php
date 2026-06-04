@@ -193,7 +193,7 @@
 
     </div>
     <div style="text-align:center;margin-top:44px;">
-      <a href="<?php echo esc_url(home_url('/services')); ?>" class="btn-more">View All 18 Services &rarr;</a>
+      <a href="<?php echo esc_url(home_url('/services')); ?>" class="btn-more">View All Services &rarr;</a>
     </div>
   </div>
 </section>

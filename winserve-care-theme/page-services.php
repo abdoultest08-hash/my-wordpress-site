@@ -187,15 +187,82 @@
   </div>
 </div>
 
-<!-- CTA Banner -->
-<section class="cta-banner">
-  <div class="container cta-banner-inner">
-    <div>
-      <span class="cta-eyebrow">+ Free Assessment</span>
+<!-- Not Sure / Enquiry Split -->
+<section class="services-enquiry-split">
+  <div class="container services-enquiry-inner">
+
+    <div class="services-enquiry-left">
+      <span class="eyebrow" style="color:var(--light-blue);">+ Free Assessment</span>
       <h2>Not Sure Which Service You Need?</h2>
-      <p>Our care coordinators will help you find the right support. Call us or request a callback today.</p>
+      <p>Our care coordinators are here to help. Simply tell us a little about your situation and we'll guide you to the right support — no obligation, no pressure.</p>
+      <div class="contact-detail">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+        <a href="tel:01133408777">0113 340 8777</a>
+      </div>
+      <div class="contact-detail">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        <a href="mailto:info@winservecare.co.uk">info@winservecare.co.uk</a>
+      </div>
+      <div class="contact-detail">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>Mon&ndash;Fri 08:00&ndash;17:00</span>
+      </div>
     </div>
-    <a href="<?php echo esc_url(home_url('/contact')); ?>" class="btn-cta">Talk to Our Team &rarr;</a>
+
+    <div class="services-enquiry-right">
+      <h3>Quick Service Enquiry</h3>
+      <p class="sub">We&rsquo;ll get back to you within 1 working day.</p>
+
+      <?php if (isset($_GET['sent']) && $_GET['sent'] === '1') : ?>
+        <div class="alert-success">Thank you &mdash; we&rsquo;ll be in touch shortly.</div>
+      <?php endif; ?>
+
+      <form method="POST" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+        <?php wp_nonce_field('winserve_contact', 'winserve_nonce'); ?>
+        <input type="hidden" name="action" value="winserve_contact">
+        <input type="hidden" name="pathway" value="Services Enquiry">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="se_name">Your Name <span style="color:var(--blue);">*</span></label>
+            <input type="text" id="se_name" name="full_name" required placeholder="Full name">
+          </div>
+          <div class="form-group">
+            <label for="se_phone">Phone Number <span style="color:var(--blue);">*</span></label>
+            <input type="tel" id="se_phone" name="phone" required placeholder="07xxx xxxxxx">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="se_email">Email Address <span style="color:var(--blue);">*</span></label>
+          <input type="email" id="se_email" name="email" required placeholder="your@email.com">
+        </div>
+
+        <div class="form-group">
+          <label for="se_service">Which service are you enquiring about?</label>
+          <select id="se_service" name="subject">
+            <option value="Not sure — need guidance">Not sure &mdash; need guidance</option>
+            <option value="Domiciliary / Home Care">Domiciliary / Home Care</option>
+            <option value="Supported Living">Supported Living</option>
+            <option value="Dementia Care">Dementia Care</option>
+            <option value="Complex Care">Complex Care</option>
+            <option value="Live-In Care">Live-In Care</option>
+            <option value="Palliative Care">Palliative Care</option>
+            <option value="Learning Disabilities">Learning Disabilities</option>
+            <option value="Mental Health Support">Mental Health Support</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="se_message">Anything else you&rsquo;d like us to know?</label>
+          <textarea id="se_message" name="message" rows="3" placeholder="Tell us briefly about the situation&hellip;" style="min-height:80px;"></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">Send Enquiry &rarr;</button>
+      </form>
+    </div>
+
   </div>
 </section>
 

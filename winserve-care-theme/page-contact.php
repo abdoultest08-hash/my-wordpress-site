@@ -51,7 +51,7 @@
         </div>
         <div>
           <h4>Office Hours</h4>
-          <p>Monday &ndash; Friday<br>09:00 &ndash; 17:00</p>
+          <p>Monday &ndash; Friday<br>08:00 &ndash; 17:00</p>
           <p style="font-size:12px;color:#999;margin-top:4px;">For urgent out-of-hours care support, please contact your care coordinator directly.</p>
         </div>
       </div>

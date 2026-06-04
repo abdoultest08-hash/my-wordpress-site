@@ -28,6 +28,127 @@
       </div>
     <?php endif; ?>
 
+    <!-- Vacancy Card: Care Assistant / Support Worker -->
+    <div class="vacancy-card">
+      <div class="vacancy-card-header">
+        <div>
+          <div class="vacancy-title">Care Assistant / Support Worker</div>
+          <div class="vacancy-meta">
+            <span class="vacancy-tag">&#128205; Leeds</span>
+            <span class="vacancy-tag">&#128176; &pound;13.10 &ndash; &pound;15.00 per hour</span>
+            <span class="vacancy-tag">&#128197; Part-time &amp; Full-time</span>
+            <span class="vacancy-tag" style="background:var(--blue);color:#fff;">No Experience Needed</span>
+          </div>
+        </div>
+        <button class="btn-apply-toggle">Apply for This Role &rarr;</button>
+      </div>
+
+      <div class="vacancy-body">
+
+        <div class="visa-warning">
+          &#9888; <strong>Important:</strong> We are unable to offer visa sponsorship for this role. All applicants must have the right to work in the UK.
+        </div>
+
+        <h3>About the Role</h3>
+        <p>As a Care Assistant / Support Worker at Winserve, you will provide high-quality, person-centred care and support to adults living in the community across Leeds. You will help people with everyday tasks, support their independence, and be a friendly, reliable presence they can count on every day.</p>
+        <p>No two days are the same — and that's what makes this role so rewarding. Whether you're brand new to care or a seasoned professional, you'll be welcomed into a supportive team and given everything you need to do a brilliant job.</p>
+
+        <h3>What You&rsquo;ll Be Doing</h3>
+        <ul>
+          <li>Providing personal care with dignity, compassion, and respect</li>
+          <li>Supporting people with daily living activities and getting out in the community</li>
+          <li>Administering medication safely and in line with individual care plans</li>
+          <li>Keeping clear, accurate care records after every visit</li>
+          <li>Working as part of a team alongside families and healthcare professionals</li>
+          <li>Promoting each person's independence, wellbeing, and quality of life</li>
+        </ul>
+
+        <h3>What We&rsquo;re Looking For</h3>
+        <p>You do not need any previous care experience. We provide full on-the-job training and will support you to achieve your Care Certificate — fully funded by us.</p>
+        <p><strong>Essential:</strong></p>
+        <ul>
+          <li>Right to work in the UK</li>
+          <li>Fluent spoken and written English</li>
+          <li>A genuine passion for helping and supporting others</li>
+          <li>Reliability, compassion, and a positive attitude</li>
+          <li>Based in Leeds or within commutable distance</li>
+        </ul>
+        <p><strong>Bonus (not required):</strong></p>
+        <ul>
+          <li>Previous experience in care or support work</li>
+          <li>Full UK driving licence (fewer than 6 penalty points)</li>
+          <li>Care Certificate or health and social care qualification</li>
+        </ul>
+
+        <h3>What You&rsquo;ll Get</h3>
+        <ul>
+          <li>&pound;13.10 &ndash; &pound;15.00 per hour based on experience</li>
+          <li>Company car provided &mdash; no fuel costs or vehicle wear on your end</li>
+          <li>Paid travel time between every visit</li>
+          <li>Blue Light Card &mdash; thousands of discounts on your favourite brands</li>
+          <li>Free confidential counselling whenever you need it</li>
+          <li>Generous cash bonuses for referring friends who join the team</li>
+          <li>Fully funded training from day one &mdash; Care Certificate, NVQs and beyond</li>
+          <li>Flexible hours genuinely designed around your life</li>
+          <li>Team events, competitions, rewards, and regular get-togethers</li>
+          <li>Real opportunities to progress your career as we grow</li>
+        </ul>
+
+      </div><!-- .vacancy-body -->
+
+      <!-- Application Form -->
+      <div class="apply-form" id="apply-form-ca">
+        <h3>Apply for: Care Assistant / Support Worker</h3>
+        <form method="POST" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+          <?php wp_nonce_field('winserve_application', 'app_nonce'); ?>
+          <input type="hidden" name="action" value="winserve_application">
+          <input type="hidden" name="role" value="Care Assistant / Support Worker">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="ca_first_name">First Name <span style="color:var(--blue);">*</span></label>
+              <input type="text" id="ca_first_name" name="first_name" required placeholder="Your first name">
+            </div>
+            <div class="form-group">
+              <label for="ca_last_name">Last Name <span style="color:var(--blue);">*</span></label>
+              <input type="text" id="ca_last_name" name="last_name" required placeholder="Your last name">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="ca_email">Email Address <span style="color:var(--blue);">*</span></label>
+              <input type="email" id="ca_email" name="email" required placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+              <label for="ca_phone">Phone Number <span style="color:var(--blue);">*</span></label>
+              <input type="tel" id="ca_phone" name="phone" required placeholder="07xxx xxxxxx">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="ca_experience">Care experience</label>
+            <select id="ca_experience" name="experience">
+              <option value="No experience — willing to train">No experience &mdash; willing to train</option>
+              <option value="Under 1 year">Under 1 year</option>
+              <option value="1–2 years">1&ndash;2 years</option>
+              <option value="3–5 years">3&ndash;5 years</option>
+              <option value="5+ years">5+ years</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="ca_why">Why do you want to work at Winserve? <span style="color:var(--blue);">*</span></label>
+            <textarea id="ca_why" name="why_applying" required placeholder="Tell us about yourself and your availability&hellip;"></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit">Submit Application &rarr;</button>
+          <p style="font-family:var(--font-body);font-size:12px;color:#888;margin-top:12px;">Your application will be sent directly to our HR team at hr@winservecare.co.uk. We aim to respond within 5 working days.</p>
+        </form>
+      </div>
+
+    </div><!-- .vacancy-card -->
+
     <!-- Vacancy Card: Service Delivery Coordinator -->
     <div class="vacancy-card">
       <div class="vacancy-card-header">
@@ -49,80 +170,37 @@
         </div>
 
         <h3>About the Role</h3>
-        <p>This is an exciting opportunity to join Winserve Care Services Ltd as a Service Delivery Coordinator. You will play a central role in the operational management of our care delivery, ensuring that our service users receive consistent, high-quality support while our carers are well-scheduled and supported.</p>
-        <p>You will work closely with the management team to coordinate rotas, manage service delivery logistics, support quality assurance processes, and contribute to tendering and finance activities. This is a varied, fast-paced role that requires excellent organisational skills, a calm approach under pressure, and a genuine passion for the care sector.</p>
+        <p>A central operations role managing care delivery across our service — coordinating rotas, supporting quality assurance, and working closely with the management team to ensure every service user receives consistent, high-quality support.</p>
 
         <h3>What You&rsquo;ll Be Doing</h3>
-
-        <p><strong>Operations &amp; Rota Management</strong></p>
         <ul>
-          <li>Coordinate and manage the scheduling of care visits across the service, ensuring full rota coverage at all times</li>
-          <li>Act as the first point of contact for carer queries relating to scheduling and service delivery</li>
-          <li>Monitor and respond to last-minute changes, absences, and emergencies to maintain continuity of care</li>
-          <li>Liaise with service users, their families, and external professionals to ensure care plans are delivered as agreed</li>
-          <li>Support the onboarding and induction of new carers, including matching them to appropriate service users</li>
-          <li>Maintain accurate and up-to-date records on the care management system</li>
-          <li>Carry out regular compliance checks to ensure all care visits are documented correctly</li>
-        </ul>
-
-        <p><strong>Tendering, Finance &amp; Quality</strong></p>
-        <ul>
-          <li>Support the preparation of tender submissions and quality assurance documentation</li>
-          <li>Assist with invoicing, payroll data, and financial reporting as required</li>
-          <li>Contribute to internal audits and CQC compliance activities</li>
-          <li>Identify opportunities for service improvement and raise these with the management team</li>
-          <li>Support the organisation in maintaining and building upon its CQC Good rating</li>
+          <li>Coordinate and manage the scheduling of care visits, ensuring full rota coverage at all times</li>
+          <li>Act as first point of contact for carers on scheduling and service delivery queries</li>
+          <li>Monitor and respond to last-minute changes, absences, and emergencies</li>
+          <li>Liaise with service users, families, and external professionals to ensure care plans are delivered as agreed</li>
+          <li>Maintain accurate records on the care management system and carry out compliance checks</li>
+          <li>Support tender submissions, invoicing, payroll data, and internal audits</li>
+          <li>Contribute to maintaining and building upon the CQC Good rating</li>
         </ul>
 
         <h3>What We&rsquo;re Looking For</h3>
-
-        <p><strong>Essential</strong></p>
+        <p><strong>Essential:</strong></p>
         <ul>
-          <li>Previous experience in a care coordination, scheduling, or operations role within the health and social care sector</li>
-          <li>Strong organisational and time management skills with the ability to prioritise effectively</li>
-          <li>Excellent communication skills — written and verbal — with the ability to build positive relationships with carers, service users, and professionals</li>
+          <li>Previous experience in care coordination, scheduling, or operations within health and social care</li>
+          <li>Strong organisational skills with the ability to prioritise under pressure</li>
+          <li>Excellent communication skills &mdash; written and verbal</li>
           <li>Proficiency with care management software or rostering systems</li>
-          <li>A positive, solution-focused attitude and ability to remain calm under pressure</li>
-          <li>Right to work in the UK (no visa sponsorship available)</li>
-          <li>Enhanced DBS check (can be obtained on appointment)</li>
+          <li>Right to work in the UK &bull; Enhanced DBS check required</li>
         </ul>
-
-        <p><strong>Desirable</strong></p>
-        <ul>
-          <li>NVQ Level 3 or above in Health and Social Care or equivalent</li>
-          <li>Experience supporting CQC inspection preparation</li>
-          <li>Knowledge of domiciliary or supported living care environments</li>
-          <li>Experience with tendering processes in the care sector</li>
-          <li>Familiarity with finance or payroll processes in a care setting</li>
-        </ul>
-
-        <h3>Training &amp; Development</h3>
-        <p><strong>What We&rsquo;ll Train You In</strong></p>
-        <ul>
-          <li>Winserve care management systems and internal processes</li>
-          <li>CQC compliance and quality assurance frameworks</li>
-          <li>Safeguarding adults at risk</li>
-          <li>Mental Capacity Act and Deprivation of Liberty Safeguards (DoLS)</li>
-          <li>Medication management awareness</li>
-          <li>Leadership and management development (progression pathway)</li>
-        </ul>
+        <p><strong>Desirable:</strong> NVQ Level 3+ in Health and Social Care, CQC inspection experience, knowledge of domiciliary or supported living environments.</p>
 
         <h3>What You&rsquo;ll Get</h3>
         <ul>
           <li>Salary of &pound;31,000 &ndash; &pound;35,000 per year (dependent on experience)</li>
-          <li>Real Living Wage commitment — we are a Living Wage employer</li>
-          <li>28 days annual leave (including bank holidays)</li>
-          <li>Ongoing professional development and training</li>
+          <li>28 days annual leave including bank holidays</li>
+          <li>Real Living Wage commitment and ongoing professional development</li>
           <li>Wellbeing support and an open, supportive management culture</li>
-          <li>Opportunity to grow within a purpose-driven, expanding care organisation</li>
-          <li>Enhanced DBS check funded by the company</li>
-        </ul>
-
-        <h3>Career Pathway</h3>
-        <ul>
-          <li><strong>Step 1:</strong> Service Delivery Coordinator &mdash; Lead on rota management, operations, and quality</li>
-          <li><strong>Step 2:</strong> Senior Coordinator / Team Leader &mdash; Oversee a team of coordinators and lead service improvement projects</li>
-          <li><strong>Step 3:</strong> Registered Manager / Operations Manager &mdash; Take full responsibility for service delivery and CQC registration</li>
+          <li>Clear progression pathway: Coordinator &rarr; Senior / Team Leader &rarr; Registered Manager</li>
         </ul>
 
       </div><!-- .vacancy-body -->
@@ -175,7 +253,7 @@
           <button type="submit" class="btn-submit">Submit Application &rarr;</button>
           <p style="font-family:var(--font-body);font-size:12px;color:#888;margin-top:12px;">Your application will be sent directly to our HR team at hr@winservecare.co.uk. We aim to respond within 5 working days.</p>
         </form>
-      </div><!-- .apply-form -->
+      </div>
 
     </div><!-- .vacancy-card -->
 
