@@ -8,3 +8,4 @@ outreach/outreach_log.json
 outreach/test_output.html
 token*.json
 credentials.json
+crm/.env\ncrm/dist\ncrm/node_modules
