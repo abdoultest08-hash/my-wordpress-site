@@ -74,24 +74,12 @@
         <div class="footer-col">
           <h4>Our Services</h4>
           <ul>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Dementia &amp; Alzheimer&rsquo;s Care</a></li>
+            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Domiciliary Care</a></li>
             <li><a href="<?php echo esc_url(home_url('/services')); ?>">Supported Living</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Personal Care</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Palliative Care</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Live-In Care</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Complex Care</a></li>
+            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Respite Care</a></li>
             <li><a href="<?php echo esc_url(home_url('/services')); ?>">Learning Disabilities</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Mental Health Support</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Autism Support</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Physical &amp; Sensory Disabilities</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Shopping Assistance</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Companionship</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Exercise Assistance</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Meal Preparation</a></li>
             <li><a href="<?php echo esc_url(home_url('/services')); ?>">Medication Assistance</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Home Cleaning Support</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Diabetes Management</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Challenging Behaviours</a></li>
+            <li><a href="<?php echo esc_url(home_url('/services')); ?>">View All Services &rarr;</a></li>
           </ul>
         </div>
 
@@ -106,11 +94,6 @@
           </div>
 
           <div style="margin-top:24px;">
-            <p style="font-family:var(--font-body);font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">CQC Widget</p>
-            <div id="cqc-widget-placeholder" style="min-height:60px;"></div>
-          </div>
-        </div>
-
       </div><!-- .footer-grid -->
     </div><!-- .container -->
   </div><!-- .footer-main -->
@@ -125,7 +108,7 @@
 
 </footer>
 
-<script type="text/javascript" src="https://www.cqc.org.uk/sites/all/modules/custom/cqc_widget/widget.js?data-id=1-8945106634&data-host=https://www.cqc.org.uk&type=location"></script>
+
 
 <?php wp_footer(); ?>
 </body>

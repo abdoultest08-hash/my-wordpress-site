@@ -12,7 +12,7 @@
       <h1>Trusted Care, Right in Your Own Home.</h1>
       <p class="hero-sub">Winserve Care Services provides compassionate, person-centred domiciliary and supported living care across Leeds and Cornwall. Care is at the heart of everything we do.</p>
       <div class="hero-actions">
-        <a href="<?php echo esc_url(home_url('/contact')); ?>" class="btn-hero">Get Started &rarr;</a>
+        <a href="<?php echo esc_url(home_url('/contact')); ?>" class="btn-hero">Contact Us &rarr;</a>
         <a href="<?php echo esc_url(home_url('/services')); ?>" class="btn-play" aria-label="View our services">
           <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </a>
@@ -68,7 +68,7 @@
     <div class="about-grid">
       <div class="about-images">
         <div class="exp-badge">
-          <span class="num">10<sup>+</sup></span>
+          <span class="num">5<sup>+</sup></span>
           <span class="lbl">Years of Care</span>
         </div>
         <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/about-main.jpg" alt="Winserve Care team member with service user" class="about-main-img">
@@ -85,7 +85,9 @@
         <p class="about-body">Our mission is simple: to enable every individual to live with dignity, independence, and confidence — in the comfort of their own home.</p>
         <a href="<?php echo esc_url(home_url('/about')); ?>" class="btn-more">Learn More About Us &rarr;</a>
         <div class="founder-row">
-          <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/amon-avatar.jpg" alt="Amon Mutyasira" class="founder-avatar">
+          <div class="founder-icon">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          </div>
           <div>
             <div class="founder-name">Amon Mutyasira</div>
             <div class="founder-role">Managing Director &amp; Founder, Winserve Care Services Ltd</div>
@@ -95,6 +97,15 @@
     </div>
   </div>
 </section>
+
+<!-- CQC WIDGET — between About and Stats -->
+<div class="cqc-widget-strip">
+  <div class="container cqc-widget-inner">
+    <p class="cqc-widget-label">Regulated by the Care Quality Commission</p>
+    <div id="cqc-widget-home"></div>
+    <script type="text/javascript" src="https://www.cqc.org.uk/sites/all/modules/custom/cqc_widget/widget.js?data-id=1-8945106634&data-host=https://www.cqc.org.uk&type=location"></script>
+  </div>
+</div>
 
 <!-- SECTION 4: STATS BAR -->
 <section class="stats-bar">
@@ -113,7 +124,7 @@
         <span class="stat-lbl">CQC Compliant</span>
       </div>
       <div class="stat-col">
-        <span class="stat-num">10<sup>+</sup></span>
+        <span class="stat-num">5<sup>+</sup></span>
         <span class="stat-lbl">Years Operating</span>
       </div>
     </div>

@@ -89,15 +89,15 @@ button { font-family: var(--font-body); }
    NAVIGATION
    ========================================================= */
 .site-header {
-  background: #fff;
-  border-bottom: 1px solid var(--border);
+  background: var(--navy);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
   position: sticky;
   top: 0;
   z-index: 999;
   transition: box-shadow 0.3s;
 }
 .site-header.scrolled {
-  box-shadow: 0 3px 24px rgba(0,50,120,0.10);
+  box-shadow: 0 3px 24px rgba(0,0,0,0.25);
 }
 .nav-inner {
   display: flex;
@@ -116,8 +116,8 @@ button { font-family: var(--font-body); }
 }
 .primary-nav a {
   font-family: var(--font-body);
-  font-size: 13.5px;
-  color: #333;
+  font-size: 15px;
+  color: rgba(255,255,255,0.88);
   font-weight: 500;
   transition: color 0.2s;
   position: relative;
@@ -129,10 +129,10 @@ button { font-family: var(--font-body); }
   left: 0;
   width: 0;
   height: 2px;
-  background: var(--blue);
+  background: var(--light-blue);
   transition: width 0.2s;
 }
-.primary-nav a:hover { color: var(--blue); }
+.primary-nav a:hover { color: #fff; }
 .primary-nav a:hover::after { width: 100%; }
 .menu-toggle {
   display: none;
@@ -1919,3 +1919,46 @@ button { font-family: var(--font-body); }
 .team-card--no-img .team-card-avatar svg {
   color: var(--blue);
 }
+
+/* CQC Widget Strip */
+.cqc-widget-strip {
+  background: var(--section-bg);
+  padding: 32px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.cqc-widget-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+.cqc-widget-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+#cqc-widget-home {
+  display: flex;
+  justify-content: center;
+}
+
+/* Founder icon (no photo) */
+.founder-icon {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue);
+}
+
+/* Menu toggle visible on dark nav */
+.menu-toggle span { background: #fff; }
