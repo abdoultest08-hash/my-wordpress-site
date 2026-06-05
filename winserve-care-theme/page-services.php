@@ -23,7 +23,7 @@
   <div class="services-full-grid">
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-dementia-care.png');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-1.jpg');"></div>
       <div class="service-full-content">
         <h3>Dementia &amp; Alzheimer's Care</h3>
         <p>Specialist support for those living with dementia and Alzheimer's, helping maintain routine, safety, and dignity at home.</p>
@@ -32,7 +32,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living-new.png');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-2.jpg');"></div>
       <div class="service-full-content">
         <h3>Supported Living</h3>
         <p>Enabling adults with learning disabilities, mental health needs or physical disabilities to live independently with the right support.</p>
@@ -41,7 +41,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-educational-4.png');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-3.jpg');"></div>
       <div class="service-full-content">
         <h3>Personal Care</h3>
         <p>Assistance with washing, dressing, grooming and personal hygiene, delivered with sensitivity and respect.</p>
@@ -50,7 +50,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-edu-1.jpg');"></div>
       <div class="service-full-content">
         <h3>Palliative Care</h3>
         <p>Compassionate end-of-life care focused on comfort, dignity, and quality of life for individuals and their families.</p>
@@ -59,7 +59,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-live-in-care.png');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-4.jpg');"></div>
       <div class="service-full-content">
         <h3>Live-In Care</h3>
         <p>A dedicated carer lives in the home providing round-the-clock support, allowing individuals to remain in familiar surroundings.</p>
@@ -68,7 +68,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-edu-2.jpg');"></div>
       <div class="service-full-content">
         <h3>Complex Care</h3>
         <p>Specialist care for those with high-level health needs including acquired brain injuries, spinal conditions, and long-term conditions.</p>
@@ -77,7 +77,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-learning-disabilities-new.png');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-5.jpg');"></div>
       <div class="service-full-content">
         <h3>Learning Disabilities</h3>
         <p>Tailored support for adults with learning disabilities, promoting independence, choice, and community participation.</p>
@@ -86,7 +86,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-edu-3.jpg');"></div>
       <div class="service-full-content">
         <h3>Mental Health Support</h3>
         <p>Compassionate support for individuals living with mental health conditions, helping maintain stability and wellbeing.</p>
@@ -95,7 +95,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-domiciliary.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/recruit-panel.jpg');"></div>
       <div class="service-full-content">
         <h3>Autism Support</h3>
         <p>Specialist support for autistic adults, respecting individual communication styles and routines.</p>
@@ -104,7 +104,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-educational-5.png');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-6.jpg');"></div>
       <div class="service-full-content">
         <h3>Physical &amp; Sensory Disabilities</h3>
         <p>Support for those with physical or sensory impairments to live as independently as possible.</p>
@@ -113,7 +113,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-domiciliary.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/recruit-warmth-new.jpg');"></div>
       <div class="service-full-content">
         <h3>Shopping Assistance</h3>
         <p>Help with grocery shopping, errands, and collecting prescriptions to keep daily life running smoothly.</p>
@@ -122,7 +122,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-companionship.png');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-7.jpg');"></div>
       <div class="service-full-content">
         <h3>Companionship</h3>
         <p>Meaningful social interaction and companionship to reduce isolation and support emotional wellbeing.</p>
@@ -131,7 +131,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-domiciliary.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/about-main.jpg');"></div>
       <div class="service-full-content">
         <h3>Exercise Assistance</h3>
         <p>Support with gentle exercise and mobility to maintain physical health and independence.</p>
@@ -140,7 +140,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/social-edu-4.jpg');"></div>
       <div class="service-full-content">
         <h3>Meal Preparation</h3>
         <p>Preparing nutritious, enjoyable meals tailored to individual dietary needs and preferences.</p>
@@ -149,7 +149,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-medication-care.png');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-new-8.jpg');"></div>
       <div class="service-full-content">
         <h3>Medication Assistance</h3>
         <p>Prompting and administering medication safely and on time, as directed by the care plan.</p>
@@ -158,7 +158,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/why-choose-us.jpg');"></div>
       <div class="service-full-content">
         <h3>Home Cleaning Support</h3>
         <p>Light housekeeping and cleaning to maintain a safe, comfortable, and tidy home environment.</p>
@@ -167,7 +167,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-domiciliary.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/about-inset.jpg');"></div>
       <div class="service-full-content">
         <h3>Diabetes Management</h3>
         <p>Support for individuals managing diabetes, including diet guidance, medication reminders, and monitoring.</p>
@@ -176,7 +176,7 @@
     </div>
 
     <div class="service-full-card">
-      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/service-supported-living.jpg');"></div>
+      <div class="service-full-img" style="background-image:url('<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/recruit-car.jpg');"></div>
       <div class="service-full-content">
         <h3>Challenging Behaviours</h3>
         <p>Skilled support for individuals presenting with challenging behaviours, delivered with patience and specialist training.</p>
