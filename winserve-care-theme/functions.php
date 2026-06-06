@@ -158,7 +158,7 @@ function winserve_structured_data() {
         'logo'        => get_template_directory_uri() . '/assets/images/logo-white.png',
         'image'       => get_template_directory_uri() . '/assets/images/hero-bg.jpg',
         'telephone'   => '+441133408777',
-        'email'       => 'info@winservecare.co.uk',
+        'email'       => 'enquiries@winservecare.co.uk',
         'address'     => [
             '@type'           => 'PostalAddress',
             'streetAddress'   => 'Unit 52, Pure Offices, Turnberry Park Road, Morley',
@@ -250,7 +250,7 @@ function winserve_handle_contact() {
         wp_die('Security check failed');
     }
 
-    $to       = 'info@winservecare.co.uk';
+    $to       = 'enquiries@winservecare.co.uk';
     $pathway  = sanitize_text_field( $_POST['pathway'] ?? 'General Enquiry' );
 
     // Build full name from either field format
@@ -284,7 +284,7 @@ function winserve_handle_contact() {
         $body .= "\nMessage:\n" . sanitize_textarea_field($_POST['message']) . "\n";
     }
 
-    $headers = ['Content-Type: text/plain; charset=UTF-8', 'From: Winserve Website <info@winservecare.co.uk>', 'Reply-To: ' . $email];
+    $headers = ['Content-Type: text/plain; charset=UTF-8', 'From: Winserve Website <enquiries@winservecare.co.uk>', 'Reply-To: ' . $email];
     $sent = wp_mail( $to, $subject, $body, $headers );
     $param = $sent ? ['sent' => '1'] : ['sent' => 'error'];
     wp_redirect( add_query_arg($param, wp_get_referer()) );
@@ -300,7 +300,7 @@ function winserve_handle_application() {
     if ( ! isset($_POST['app_nonce']) || ! wp_verify_nonce($_POST['app_nonce'], 'winserve_application') ) {
         wp_die('Security check failed');
     }
-    $to    = 'hr@winservecare.co.uk';
+    $to    = 'enquiries@winservecare.co.uk';
     $role  = sanitize_text_field( $_POST['role'] ?? 'Unknown Role' );
     $fname = sanitize_text_field( $_POST['first_name'] ?? '' );
     $lname = sanitize_text_field( $_POST['last_name']  ?? '' );
@@ -316,7 +316,7 @@ function winserve_handle_application() {
     $body   .= "Experience: \n". sanitize_textarea_field($_POST['experience'] ?? '') . "\n\n";
     $body   .= "Why Applying:\n" . sanitize_textarea_field($_POST['why_applying'] ?? '');
 
-    $headers = ['Content-Type: text/plain; charset=UTF-8', 'From: Winserve Website <info@winservecare.co.uk>', 'Reply-To: ' . $email];
+    $headers = ['Content-Type: text/plain; charset=UTF-8', 'From: Winserve Website <enquiries@winservecare.co.uk>', 'Reply-To: ' . $email];
     $sent = wp_mail( $to, $subject, $body, $headers );
     $param = $sent ? ['applied' => '1'] : ['applied' => 'error'];
     wp_redirect( add_query_arg($param, wp_get_referer()) );
