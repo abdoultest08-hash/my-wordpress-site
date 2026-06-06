@@ -110,6 +110,7 @@
         <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-qcs.webp" alt="QCS Quality Compliance Systems" class="footer-partner-logo">
         <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-click-learning.webp" alt="Click Learning" class="footer-partner-logo footer-partner-logo--sm">
         <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-bpr-heaton.webp" alt="BPR Heaton Chartered Accountants" class="footer-partner-logo">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-homecare.png" alt="Homecare.co.uk" class="footer-partner-logo">
       </div>
     </div>
   </div>

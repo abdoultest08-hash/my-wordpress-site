@@ -320,6 +320,10 @@
         <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-bpr-heaton.webp" alt="BPR Heaton Chartered Accountants">
         <span class="about-logo-caption">BPR Heaton</span>
       </div>
+      <div class="about-logo-item">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-homecare.png" alt="Homecare.co.uk">
+        <span class="about-logo-caption">Homecare.co.uk</span>
+      </div>
     </div>
   </div>
 </section>
