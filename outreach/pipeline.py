@@ -92,6 +92,10 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
 
         print(f"\n[{i}/{len(leads)}] {name} <{email}>")
 
+        # Normalise field names (Excel columns may use title case)
+        if not lead.get("address"):
+            lead["address"] = lead.get("Address", "")
+
         # ── 1. Upsert into Supabase ───────────────────────────────────────────
         lead_id = upsert_lead(lead)
         if not lead_id:
