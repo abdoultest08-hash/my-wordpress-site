@@ -104,8 +104,8 @@
         <span class="stat-lbl">Dedicated Carers</span>
       </div>
       <div class="stat-col">
-        <span class="stat-num">2</span>
-        <span class="stat-lbl">Regions Served</span>
+        <span class="stat-num">70<sup>+</sup></span>
+        <span class="stat-lbl">5&#9733; Reviews</span>
       </div>
       <div class="stat-col">
         <span class="stat-num">100<sup>%</sup></span>
