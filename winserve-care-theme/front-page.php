@@ -9,8 +9,8 @@
         <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         CQC Registered &bull; Leeds &amp; Cornwall
       </span>
-      <h1>Trusted Care, Right in Your Own Home.</h1>
-      <p class="hero-sub">Winserve Care Services provides compassionate, person-centred domiciliary and supported living care across Leeds and Cornwall. Care is at the heart of everything we do.</p>
+      <h1>Care is at the heart of what we do.</h1>
+      <p class="hero-sub">Winserve Care Services provides compassionate, person-centred domiciliary and supported living care across Leeds and Cornwall.</p>
       <div class="hero-actions">
         <a href="<?php echo esc_url(home_url('/contact')); ?>" class="btn-hero">Contact Us &rarr;</a>
       </div>
