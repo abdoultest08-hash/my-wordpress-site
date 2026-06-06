@@ -23,13 +23,15 @@
   <div class="team-grid">
 
     <div class="team-card team-card--no-img">
-      <div class="team-card-avatar">AM</div>
+      <div class="team-card-avatar">
+        <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      </div>
       <div class="team-card-bar">
-        <div class="team-card-name">Amon Mutyasira</div>
-        <div class="team-card-role">Managing Director &amp; Founder</div>
+        <div class="team-card-name">Leadership Team</div>
+        <div class="team-card-role">Management &amp; Operations</div>
       </div>
       <div class="team-card-bio">
-        <p>Amon founded Winserve Care Services Ltd 6 years ago with a clear mission: to provide high-quality, compassionate domiciliary care that genuinely improves lives. Under his leadership, the company has grown to serve both Leeds and Cornwall, achieving a CQC rating of Good in June 2025. Amon is passionate about empowering both service users and staff, ensuring a culture of dignity, respect, and continuous improvement.</p>
+        <p>Winserve Care Services Ltd was founded with a clear mission: to provide high-quality, compassionate domiciliary care that genuinely improves lives. Under our leadership, the company has grown to serve both Leeds and Cornwall, achieving a CQC rating of Good in June 2025. We are passionate about empowering both service users and staff, ensuring a culture of dignity, respect, and continuous improvement.</p>
       </div>
     </div>
 

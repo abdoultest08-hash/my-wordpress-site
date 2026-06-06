@@ -78,18 +78,9 @@
           <span class="snum">50<sup>+</sup></span>
           <p>Dedicated carers delivering high-quality, person-centred care across two regions of England. Every carer is DBS checked, trained, and supported.</p>
         </div>
-        <p class="about-body">Founded by Amon Mutyasira, Winserve Care Services Ltd has grown over 6 years into a trusted name in domiciliary and supported living care. We are CQC registered with a Good rating (June 2025) and proud to be a Real Living Wage employer.</p>
+        <p class="about-body">Winserve Care Services Ltd has grown over 6 years into a trusted name in domiciliary and supported living care. We are CQC registered with a Good rating (June 2025) and proud to be a Real Living Wage employer.</p>
         <p class="about-body">Our mission is simple: to enable every individual to live with dignity, independence, and confidence — in the comfort of their own home.</p>
         <a href="<?php echo esc_url(home_url('/about')); ?>" class="btn-more">Learn More About Us &rarr;</a>
-        <div class="founder-row">
-          <div class="founder-icon">
-            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-          </div>
-          <div>
-            <div class="founder-name">Amon Mutyasira</div>
-            <div class="founder-role">Managing Director &amp; Founder, Winserve Care Services Ltd</div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
