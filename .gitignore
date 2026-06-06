@@ -5,7 +5,11 @@ outreach/.env
 outreach/sites/
 outreach/screenshots/
 outreach/outreach_log.json
+outreach/local_log.json
 outreach/test_output.html
+outreach/__pycache__/
 token*.json
 credentials.json
-crm/.env\ncrm/dist\ncrm/node_modules
+crm/.env
+crm/dist
+crm/node_modules
