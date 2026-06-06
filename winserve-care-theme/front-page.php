@@ -287,9 +287,9 @@
 <!-- SECTION 7: HOMECARE REVIEWS CAROUSEL -->
 <section class="reviews-section">
   <div class="container">
-    <div class="section-header">
-      <span class="section-eyebrow">+ Our Reviews</span>
-      <h2 class="section-title">What Families Say About Winserve Care</h2>
+    <div class="reviews-homecare-header">
+      <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-homecare.png" alt="Homecare.co.uk — The UK's No.1 Home Care Website" class="homecare-logo">
+      <p class="homecare-caption">Independently verified reviews from the UK&rsquo;s No.1 home care website</p>
     </div>
     <div class="reviews-rating-bar">
       <span class="reviews-score">9.8</span>
