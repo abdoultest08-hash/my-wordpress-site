@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react"
 import { supabase } from "../lib/supabase"
 import { STATUS_CONFIG, fmtDate } from "../lib/utils"
 import { useNavigate } from "react-router-dom"
-import { Upload, Search, Filter } from "lucide-react"
+import { Upload, Download, Search, Filter } from "lucide-react"
 import * as XLSX from "xlsx"
 
 export default function Leads() {
@@ -19,6 +19,37 @@ export default function Leads() {
   async function loadLeads() {
     const { data } = await supabase.from("leads").select("*").order("created_at", { ascending: false })
     setLeads(data ?? [])
+  }
+
+  async function exportExcel() {
+    const { data } = await supabase.from("leads").select("*").order("created_at", { ascending: false })
+    if (!data?.length) return alert("No leads to export yet.")
+
+    const rows = data.map(l => ({
+      "Business Name":  l.business_name,
+      "Owner Name":     l.owner_name,
+      "Industry":       l.industry,
+      "City":           l.city,
+      "State":          l.state,
+      "Email":          l.email,
+      "Phone":          l.phone,
+      "Status":         l.status,
+      "Deal Value (£)": l.deal_value || 0,
+      "Notes":          l.notes,
+      "Logo URL":       l.logo_url,
+      "GMB URL":        l.gmb_url,
+      "Email Sent At":  l.email_sent_at ? new Date(l.email_sent_at).toLocaleString() : "",
+      "Replied At":     l.replied_at   ? new Date(l.replied_at).toLocaleString()   : "",
+      "Meeting At":     l.meeting_at   ? new Date(l.meeting_at).toLocaleString()   : "",
+      "Closed At":      l.closed_at    ? new Date(l.closed_at).toLocaleString()    : "",
+      "Added":          l.created_at   ? new Date(l.created_at).toLocaleString()   : "",
+    }))
+
+    const ws = XLSX.utils.json_to_sheet(rows)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, "Leads")
+    const date = new Date().toISOString().split("T")[0]
+    XLSX.writeFile(wb, `outreach-leads-${date}.xlsx`)
   }
 
   async function importExcel(e) {
@@ -73,6 +104,11 @@ export default function Leads() {
         </div>
         <div className="flex items-center gap-3">
           {importMsg && <span className="text-sm">{importMsg}</span>}
+          <button onClick={exportExcel}
+            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors">
+            <Download size={15} />
+            Export Excel
+          </button>
           <button onClick={() => fileRef.current?.click()}
             disabled={importing}
             className="flex items-center gap-2 bg-[#0D1B2A] text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#162336] transition-colors">
