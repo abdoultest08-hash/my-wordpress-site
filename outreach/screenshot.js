@@ -1,34 +1,39 @@
 /**
  * screenshot.js
- * Takes a full above-the-fold screenshot of an HTML file using Puppeteer.
+ * Takes a screenshot of an HTML file matching a real laptop screen (1440×900).
  * Usage: node screenshot.js <input.html> <output.png>
  */
 const puppeteer = require('puppeteer');
 const path = require('path');
-const fs   = require('fs');
 
 async function screenshot(htmlFile, outputFile) {
   const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'],
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-gpu',
+      '--disable-web-security',          // allows external images/fonts to load
+      '--allow-file-access-from-files',
+    ],
     headless: true,
   });
 
   try {
     const page = await browser.newPage();
 
-    // Desktop viewport — 1280×900 captures hero + top of services section
-    await page.setViewport({ width: 1280, height: 900, deviceScaleFactor: 1.5 });
+    // 1440×900 = standard MacBook Pro / laptop viewport
+    await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
 
     const absPath = path.resolve(htmlFile);
     await page.goto(`file://${absPath}`, { waitUntil: 'networkidle0', timeout: 30000 });
 
-    // Wait for fonts & images to settle
-    await new Promise(r => setTimeout(r, 2000));
+    // Wait extra time for external images (Unsplash) and Google Fonts to load
+    await new Promise(r => setTimeout(r, 4000));
 
-    // Capture hero + first section below (matches typical laptop screen)
+    // Full 1440×900 — matches what the business owner sees on a laptop
     await page.screenshot({
       path: outputFile,
-      clip: { x: 0, y: 0, width: 1280, height: 900 },
+      clip: { x: 0, y: 0, width: 1440, height: 900 },
     });
 
     console.log(`Screenshot saved: ${outputFile}`);

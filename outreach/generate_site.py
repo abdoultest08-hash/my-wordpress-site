@@ -52,24 +52,25 @@ You produce complete, self-contained single-file HTML — no external CSS files,
 Use Google Fonts via CDN link tag only.
 
 STRICT layout rules (follow exactly):
-1. NAVBAR: white background, full width. Logo image (if provided) or business name text top-left.
+1. NAVBAR: white background, full width, max-width 1440px. Logo image (if provided) or business name text top-left.
    Nav links (Services, About, Contact) centre. Phone number + solid CTA button top-right.
 2. HERO: full-viewport-width background image with a dark semi-transparent overlay (rgba 0,0,0,0.45).
+   Min-height 580px. Use flexbox row layout:
    LEFT SIDE (55% width): large white headline (2 lines), accent-coloured sub-headline,
-   short description, phone CTA button, star rating line ("★★★★★ [N] Five-Star Reviews").
-   RIGHT SIDE (40% width): white rounded card — offer badge at top, form title,
-   3-4 input fields (Name, Phone, Email, optional service dropdown), gold/accent submit button.
-3. SERVICES STRIP: light grey background, centred section heading + subtext,
-   3 service cards in a row (icon + title + short description). This section must be VISIBLE
-   in the screenshot — keep it tight, no excessive padding.
+   short description, phone CTA button with phone icon, star rating line ("★★★★★ [N] Five-Star Reviews").
+   RIGHT SIDE (40% width): white rounded card (border-radius 12px, strong box-shadow) —
+   dark pill badge at top (offer text), bold form title, 3-4 input fields styled with border,
+   gold/accent full-width submit button.
+3. SERVICES STRIP: light grey background (#F7F8FA), centred section heading + subtext,
+   3 service cards in a row (icon + title + 1-line description). Padding max 48px top/bottom
+   so it is fully visible at 900px viewport height.
 
-Design tokens (neutral, works for any trade):
-- Primary dark: #1B2A3B (dark slate)
-- Accent: #E8A020 (warm amber — universally readable)
+Design tokens:
+- Primary dark: #1B2A3B
+- Accent: #E8A020 (warm amber)
 - Background light: #F7F8FA
-- Text: #1B2A3B
-- Font: Inter for body, Poppins for headings (Google Fonts)
-- Card shadow: 0 8px 32px rgba(0,0,0,0.13)
+- Font: Inter (body), Poppins (headings) — load both from Google Fonts CDN
+- Viewport width: 1440px — design for this width
 
 Output ONLY raw HTML. No markdown, no code fences, no explanation."""
 
