@@ -38,8 +38,8 @@ button { font-family: var(--font-body); }
    TOPBAR
    ========================================================= */
 .topbar {
-  background: #eaf4fc;
-  border-bottom: 1px solid #c4e0f0;
+  background: #223270;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
   padding: 9px 0;
   font-size: 12.5px;
 }
@@ -54,7 +54,7 @@ button { font-family: var(--font-body); }
   align-items: center;
 }
 .topbar-link {
-  color: #1a4a7a;
+  color: rgba(255,255,255,0.88);
   display: flex;
   align-items: center;
   gap: 5px;
@@ -62,42 +62,42 @@ button { font-family: var(--font-body); }
   font-size: 12px;
   transition: color 0.2s;
 }
-.topbar-link:hover { color: var(--navy); }
+.topbar-link:hover { color: #fff; }
 .topbar-right {
   display: flex;
   gap: 12px;
   align-items: center;
 }
 .topbar-social {
-  color: #1a4a7a;
+  color: rgba(255,255,255,0.88);
   width: 26px;
   height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 1px solid #8ec5e0;
+  border: 1px solid rgba(255,255,255,0.35);
   transition: all 0.2s;
 }
 .topbar-social:hover {
-  background: var(--navy);
+  background: rgba(255,255,255,0.15);
   color: #fff;
-  border-color: var(--navy);
+  border-color: rgba(255,255,255,0.6);
 }
 
 /* =========================================================
    NAVIGATION
    ========================================================= */
 .site-header {
-  background: #223270;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background: #ffffff;
+  border-bottom: 1px solid #e0e8f0;
   position: sticky;
   top: 0;
   z-index: 999;
   transition: box-shadow 0.3s;
 }
 .site-header.scrolled {
-  box-shadow: 0 3px 24px rgba(0,0,0,0.25);
+  box-shadow: 0 3px 24px rgba(0,0,0,0.10);
 }
 .nav-inner {
   display: flex;
@@ -117,7 +117,7 @@ button { font-family: var(--font-body); }
 .primary-nav a {
   font-family: var(--font-body);
   font-size: 15px;
-  color: rgba(255,255,255,0.88);
+  color: var(--navy);
   font-weight: 500;
   transition: color 0.2s;
   position: relative;
@@ -129,10 +129,10 @@ button { font-family: var(--font-body); }
   left: 0;
   width: 0;
   height: 2px;
-  background: var(--light-blue);
+  background: var(--blue);
   transition: width 0.2s;
 }
-.primary-nav a:hover { color: #fff; }
+.primary-nav a:hover { color: var(--blue); }
 .primary-nav a:hover::after { width: 100%; }
 .menu-toggle {
   display: none;
@@ -145,7 +145,7 @@ button { font-family: var(--font-body); }
   display: block;
   width: 24px;
   height: 2px;
-  background: #333;
+  background: var(--navy);
   margin: 5px 0;
   transition: 0.3s;
 }
