@@ -5,8 +5,10 @@ Layout: AA California Roofing style — navbar, hero with right-side form card, 
 Neutral professional colour scheme that works across all industries.
 """
 import anthropic
+import base64
 import os
 import re
+import requests as _req
 
 client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
@@ -52,25 +54,21 @@ You produce complete, self-contained single-file HTML — no external CSS files,
 Use Google Fonts via CDN link tag only.
 
 STRICT layout rules (follow exactly):
-1. NAVBAR: white background, full width, max-width 1440px. Logo image (if provided) or business name text top-left.
-   Nav links (Services, About, Contact) centre. Phone number + solid CTA button top-right.
-2. HERO: full-viewport-width background image with a dark semi-transparent overlay (rgba 0,0,0,0.45).
-   Min-height 580px. Use flexbox row layout:
-   LEFT SIDE (55% width): large white headline (2 lines), accent-coloured sub-headline,
-   short description, phone CTA button with phone icon, star rating line ("★★★★★ [N] Five-Star Reviews").
-   RIGHT SIDE (40% width): white rounded card (border-radius 12px, strong box-shadow) —
-   dark pill badge at top (offer text), bold form title, 3-4 input fields styled with border,
-   gold/accent full-width submit button.
-3. SERVICES STRIP: light grey background (#F7F8FA), centred section heading + subtext,
-   3 service cards in a row (icon + title + 1-line description). Padding max 48px top/bottom
-   so it is fully visible at 900px viewport height.
+1. NAVBAR: white background, full width. Logo image (if provided) or business name text top-left.
+   Nav links (Services, About, Contact) centre. Phone number + solid navy CTA button top-right.
+2. HERO: the hero section uses the background image as a CSS background-image (already embedded as base64 data URI — use it exactly as provided in the prompt). Apply dark overlay rgba(0,0,0,0.50) via an absolutely positioned full-cover div inside the hero. The hero itself must have position:relative and overflow:hidden.
+   Min-height 570px. Flexbox row, align-items center, padding 0 80px.
+   LEFT SIDE (55%): large white headline, blue accent sub-headline, description text, phone button, star line.
+   RIGHT SIDE (40%): white card, border-radius 14px, box-shadow 0 12px 40px rgba(0,0,0,0.18). Dark navy pill badge top. Bold title. 3 input fields. Full-width blue submit button.
+3. SERVICES STRIP: #F4F6F9 background. Centred heading + subtext. 3 cards in a row. Max padding 40px top/bottom.
 
-Design tokens:
-- Primary dark: #1B2A3B
-- Accent: #E8A020 (warm amber)
-- Background light: #F7F8FA
-- Font: Inter (body), Poppins (headings) — load both from Google Fonts CDN
-- Viewport width: 1440px — design for this width
+Design tokens — navy/blue professional theme:
+- Primary navy: #0D2137
+- Accent blue: #1A56DB
+- Button hover: #1445B5
+- Light bg: #F4F6F9
+- Font: Inter (body), Poppins (headings) from Google Fonts CDN
+- Viewport: 1440px wide
 
 Output ONLY raw HTML. No markdown, no code fences, no explanation."""
 
@@ -95,6 +93,8 @@ def generate_mock_site(lead: dict) -> str:
         reviews = m.group(2)
     star_line = f"★★★★★ {reviews} Five-Star Reviews" if reviews else "★★★★★ Trusted by Local Customers"
 
+    hero_data_uri = hero_img  # Unsplash URL — Puppeteer loads it directly via Chrome
+
     location = f"{city}, {state}".strip(", ")
 
     logo_html = (
@@ -113,13 +113,16 @@ Location: {location}
 Phone: {phone}
 Address: {address or location}
 Star line: {star_line}
-Hero image URL (use exactly as background-image): {hero_img}
+Hero background-image (use this EXACTLY as the CSS background-image value — it is already embedded): {hero_data_uri[:80]}{"...[truncated]" if len(hero_data_uri) > 80 else ""}
+NOTE: The full hero image data URI will be injected directly into the style tag — use the placeholder text HERO_IMAGE_DATA_URI in the CSS and it will be replaced automatically.
 Logo HTML (paste exactly into navbar top-left): {logo_html}{notes_context}
 
 Write 3 services appropriate for a {industry} business in {city}.
 Make the hero headline punchy and local (mention {city} or the trade).
-The offer badge in the form card should reference the current month with a compelling offer (e.g. "Free Estimate — No Obligation").
-Keep vertical padding tight so the services strip is visible without scrolling on a 900px tall screen.
+The offer badge in the form card: compelling free offer (e.g. "Free Estimate — No Obligation").
+Keep vertical padding tight so the services strip is visible at 900px height.
+In the hero CSS, write the background-image exactly as: url('HERO_IMAGE_DATA_URI')
+This placeholder will be replaced with the real embedded image after generation.
 
 Output ONLY the complete HTML."""
 
@@ -133,6 +136,12 @@ Output ONLY the complete HTML."""
     html = message.content[0].text.strip()
     html = re.sub(r'^```html?\n?', '', html, flags=re.MULTILINE)
     html = re.sub(r'\n?```$',      '', html, flags=re.MULTILINE)
+
+    # Inject the actual base64 image in place of the placeholder
+    html = html.replace("HERO_IMAGE_DATA_URI", hero_data_uri)
+    # Also replace any raw Unsplash URL the model may have used as fallback
+    html = html.replace(hero_img, hero_data_uri)
+
     return html
 
 
