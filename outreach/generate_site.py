@@ -9,6 +9,7 @@ import base64
 import os
 import re
 import requests as _req
+from hero_images import make_hero
 
 client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
@@ -93,15 +94,24 @@ def generate_mock_site(lead: dict) -> str:
         reviews = m.group(2)
     star_line = f"★★★★★ {reviews} Five-Star Reviews" if reviews else "★★★★★ Trusted by Local Customers"
 
-    hero_data_uri = hero_img  # Unsplash URL — Puppeteer loads it directly via Chrome
+    # Generate hero image locally (no network needed) and embed as base64 data URI
+    hero_file = make_hero(industry)
+    with open(hero_file, "rb") as f:
+        hero_data_uri = "data:image/jpeg;base64," + base64.b64encode(f.read()).decode()
 
     location = f"{city}, {state}".strip(", ")
 
-    logo_html = (
-        f'<img src="{logo_url}" style="height:48px;width:auto;object-fit:contain" alt="logo">'
-        if logo_url else
-        f'<span style="font-family:Poppins,sans-serif;font-weight:700;font-size:18px;color:#1B2A3B">{lead["business_name"]}</span>'
-    )
+    # Embed logo as base64 so it always renders (Google CDN URLs are also blocked server-side)
+    logo_html = f'<span style="font-family:Poppins,sans-serif;font-weight:700;font-size:18px;color:#0D2137">{lead["business_name"]}</span>'
+    if logo_url:
+        try:
+            lr = _req.get(logo_url, timeout=6)
+            if lr.status_code == 200:
+                mime = lr.headers.get("Content-Type", "image/jpeg").split(";")[0]
+                b64  = base64.b64encode(lr.content).decode()
+                logo_html = f'<img src="data:{mime};base64,{b64}" style="height:48px;width:auto;object-fit:contain" alt="logo">'
+        except Exception:
+            pass  # fallback to text
 
     notes_context = f"\nExtra context about this business: {notes}" if notes else ""
 
@@ -113,8 +123,8 @@ Location: {location}
 Phone: {phone}
 Address: {address or location}
 Star line: {star_line}
-Hero background-image (use this EXACTLY as the CSS background-image value — it is already embedded): {hero_data_uri[:80]}{"...[truncated]" if len(hero_data_uri) > 80 else ""}
-NOTE: The full hero image data URI will be injected directly into the style tag — use the placeholder text HERO_IMAGE_DATA_URI in the CSS and it will be replaced automatically.
+Hero background-image: in the CSS, write exactly: background-image: url('HERO_IMAGE_DATA_URI');
+The placeholder HERO_IMAGE_DATA_URI will be replaced with a real embedded image automatically.
 Logo HTML (paste exactly into navbar top-left): {logo_html}{notes_context}
 
 Write 3 services appropriate for a {industry} business in {city}.
