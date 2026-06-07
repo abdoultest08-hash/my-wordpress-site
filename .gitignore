@@ -7,6 +7,7 @@ outreach/screenshots/
 outreach/outreach_log.json
 outreach/local_log.json
 outreach/test_output.html
+outreach/test_screenshot.png
 outreach/__pycache__/
 token*.json
 credentials.json
