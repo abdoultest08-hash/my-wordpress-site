@@ -18,13 +18,13 @@ BASE = Path(__file__).parent
 ACCOUNTS = [
     {
         "email":      "sitesbyabs@gmail.com",
-        "name":       "Abdoul",
+        "name":       "Abdoul Sandwidi",
         "token_file": BASE / "token.json",
         "start_date": date(2026, 6, 3),
     },
     {
         "email":      "pagesforlocals@gmail.com",
-        "name":       "Abs - Sites By Abs",
+        "name":       "Abdoul Sandwidi",
         "token_file": BASE / "token_pagesforlocals.json",
         "start_date": date(2026, 6, 3),
     },

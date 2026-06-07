@@ -73,6 +73,8 @@ def build_email_body(lead: dict, your_name: str, your_website: str, copy_version
 
     return f"""<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#222;font-size:15px;line-height:1.8">
 
+<p>Hi there,</p>
+
 <p>{para1}</p>
 
 <p>{para2}</p>
@@ -86,7 +88,7 @@ def build_email_body(lead: dict, your_name: str, your_website: str, copy_version
 <p>Worth a look? Would love to know what you think.</p>
 
 <p style="margin-top:28px">
-  {your_name}
+  Abdoul Sandwidi
 </p>
 
 </div><!-- cv:{copy_version} pt:{pitch_type} -->"""
