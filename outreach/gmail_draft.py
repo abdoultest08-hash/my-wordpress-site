@@ -47,37 +47,51 @@ def get_access_token() -> str:
 
 
 def build_email_body(lead: dict, your_name: str, your_website: str) -> str:
-    """Returns the HTML email body with the screenshot embedded via cid."""
-    biz   = lead["business_name"]
-    owner = lead.get("owner_name", "there")
-    city  = lead.get("city", "your city")
+    """Returns the HTML email body. Switches copy based on pitch_type."""
+    biz        = lead["business_name"]
+    owner      = lead.get("owner_name") or "there"
+    city       = lead.get("city", "your city")
+    industry   = lead.get("industry", "service")
+    pitch_type = lead.get("pitch_type", "new")  # "new" or "upgrade"
+
+    if pitch_type == "upgrade":
+        intro = f"""I was browsing {industry} companies in {city} and came across <strong>{biz}</strong>.
+    Your current site caught my eye — I could see straight away there's a big opportunity to make it
+    work a lot harder for you. So I went ahead and mocked up a <strong>free redesign</strong> to show
+    you what it could look like."""
+        bullet1 = "✅ Rank higher on Google with a faster, modern site"
+        bullet2 = "✅ Convert more visitors into calls and enquiries"
+        bullet3 = "✅ Look more professional than your local competitors"
+        subject_suffix = "— free redesign concept"
+    else:
+        intro = f"""I was searching for {industry} companies in {city} and came across
+    <strong>{biz}</strong>. I noticed you don't have a website yet — so I went ahead and built
+    a <strong>free mock homepage</strong> to show you what it could look like."""
+        bullet1 = "✅ Show up on Google when locals search for you"
+        bullet2 = "✅ Look more professional than competitors"
+        bullet3 = "✅ Get more calls and enquiries automatically"
 
     return f"""
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#1A2533">
   <p style="font-size:15px">Hi {owner},</p>
 
-  <p style="font-size:15px;line-height:1.7">
-    I was searching for {lead.get('industry','service')} companies in {city} and came across
-    <strong>{biz}</strong>. I noticed you don't have a website yet — so I went ahead and built
-    a <strong>free mock homepage</strong> to show you what it could look like.
-  </p>
+  <p style="font-size:15px;line-height:1.7">{intro}</p>
 
   <p style="font-size:15px;line-height:1.7">Here's a preview:</p>
 
-  <!-- Screenshot embedded below -->
   <div style="border-radius:10px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.15);margin:20px 0">
     <img src="cid:mocksite_preview" alt="{biz} Website Preview"
          style="width:100%;display:block;border-radius:10px">
   </div>
 
   <p style="font-size:15px;line-height:1.7">
-    This is just a starting point — I can customize it fully with your services, photos,
-    reviews, and anything else you'd like. A professional website helps you:
+    This is just a starting point — I can customise it fully with your services, photos,
+    reviews, and anything else you'd like. A great website helps you:
   </p>
   <ul style="font-size:15px;line-height:2">
-    <li>✅ Show up on Google when locals search for you</li>
-    <li>✅ Look more professional than competitors</li>
-    <li>✅ Get more calls and enquiries automatically</li>
+    <li>{bullet1}</li>
+    <li>{bullet2}</li>
+    <li>{bullet3}</li>
   </ul>
 
   <p style="font-size:15px;line-height:1.7">

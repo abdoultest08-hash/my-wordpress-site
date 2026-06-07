@@ -95,6 +95,8 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
         # Normalise field names (Excel columns may use title case)
         if not lead.get("address"):
             lead["address"] = lead.get("Address", "")
+        if not lead.get("pitch_type"):
+            lead["pitch_type"] = "new"
 
         # ── 1. Upsert into Supabase ───────────────────────────────────────────
         lead_id = upsert_lead(lead)
@@ -146,7 +148,13 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
         print(f"  → Sending from: {account['email']} ({account['remaining']} left today)")
 
         # ── 5. Send / draft ───────────────────────────────────────────────────
-        subject = f"I built a free website mock for {name} 🏠"
+        pitch = lead.get("pitch_type", "new")
+        subject = (
+            f"Free redesign concept for {name} 🏠"
+            if pitch == "upgrade" else
+            f"I built a free website mock for {name} 🏠"
+        )
+        print(f"  → Pitch type: {pitch}")
         try:
             if draft_mode:
                 msg_id = create_draft(lead, str(png_file), account["name"], account["email"], YOUR_WEBSITE)
