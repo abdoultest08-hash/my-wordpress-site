@@ -16,8 +16,8 @@ async function screenshot(htmlFile, outputFile) {
   try {
     const page = await browser.newPage();
 
-    // Desktop viewport — looks great in email
-    await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1.5 });
+    // Desktop viewport — 1280×900 captures hero + top of services section
+    await page.setViewport({ width: 1280, height: 900, deviceScaleFactor: 1.5 });
 
     const absPath = path.resolve(htmlFile);
     await page.goto(`file://${absPath}`, { waitUntil: 'networkidle0', timeout: 30000 });
@@ -25,10 +25,10 @@ async function screenshot(htmlFile, outputFile) {
     // Wait for fonts & images to settle
     await new Promise(r => setTimeout(r, 2000));
 
-    // Capture just the hero / above the fold (800px tall at 1.5x = visually 1200px)
+    // Capture hero + first section below (matches typical laptop screen)
     await page.screenshot({
       path: outputFile,
-      clip: { x: 0, y: 0, width: 1280, height: 800 },
+      clip: { x: 0, y: 0, width: 1280, height: 900 },
     });
 
     console.log(`Screenshot saved: ${outputFile}`);
