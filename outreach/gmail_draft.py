@@ -58,64 +58,38 @@ def build_email_body(lead: dict, your_name: str, your_website: str, copy_version
     pitch_type: 'new' = no website, 'upgrade' = has website.
     """
     biz        = lead["business_name"]
-    owner      = lead.get("owner_name") or "there"
+    industry   = lead.get("industry", "service businesses")
     city       = lead.get("city", "your area")
-    industry   = lead.get("industry", "service")
     pitch_type = lead.get("pitch_type", "new")
 
     if pitch_type == "upgrade":
-        referral_line = f"""Someone actually mentioned {biz} to me the other day — said you do great work
-    but that your website doesn't really do you justice. So I decided to put together a quick
-    <strong>free preview</strong> of what a modern site could look like for you."""
-        value_line = """A site like this typically brings in <strong>5+ extra quote requests per month</strong>
-    just from people finding you on Google — without any ads."""
-        cta_line = "Does this feel like the right direction for your business?"
+        para1 = f"Heard about {biz} from someone the other day. They said your work is solid but the website doesn't really reflect that."
+        para2 = "I put together a quick mock-up of what an updated version could look like."
+        para3 = f"Most {industry}s in your area pick up 5+ extra quote requests a month just from Google."
     else:
-        referral_line = f"""A family member of mine recently used a {industry} in {city} and mentioned
-    {biz} — said you do great work but don't have a website. So I decided to put together a
-    <strong>free preview</strong> of what one could look like for you."""
-        value_line = """For local {industry} businesses, a site like this typically brings in
-    <strong>5+ extra quote requests per month</strong> — just from people searching on Google
-    in your area, without spending anything on ads."""
-        cta_line = "Does this feel like the right fit for your business?"
+        para1 = f"Heard about {biz} from someone the other day. They said your work is solid but you don't have a website yet, which means you're probably missing out on quote requests every month."
+        para2 = "I put together a quick mock-up of what one could look like for you."
+        para3 = f"Most {industry}s in your area pick up 5+ extra quote requests a month just from Google."
 
-    return f"""
-<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#1A2533;line-height:1.7">
+    return f"""<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#222;font-size:15px;line-height:1.8">
 
-  <p style="font-size:15px;margin-bottom:6px">Hi {owner},</p>
+<p>{para1}</p>
 
-  <p style="font-size:15px">{referral_line}</p>
+<p>{para2}</p>
 
-  <p style="font-size:15px;margin-bottom:4px">Here's what I put together:</p>
-
-  <div style="border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.13);margin:18px 0 22px">
-    <img src="cid:mocksite_preview" alt="{biz} Website Preview"
-         style="width:100%;display:block">
-  </div>
-
-  <p style="font-size:15px">{value_line}</p>
-
-  <p style="font-size:15px">
-    I'd love to get your thoughts on it — no pitch, no pressure. Just curious whether this
-    is something that would be useful to you.
-  </p>
-
-  <p style="font-size:15px;font-weight:600">{cta_line}</p>
-
-  <a href="mailto:{lead.get('email','')}"
-     style="display:inline-block;background:#F5A623;color:#0D1B2A;font-weight:700;
-            padding:13px 26px;border-radius:6px;text-decoration:none;font-size:15px;margin:8px 0 24px">
-    👉 Yes, tell me more
-  </a>
-
-  <p style="font-size:13px;color:#999;margin-top:28px;border-top:1px solid #eee;padding-top:16px">
-    {your_name}<br>
-    Web Design for Local Businesses · <a href="https://{your_website}" style="color:#999">{your_website}</a>
-  </p>
-
+<div style="border-radius:10px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.10);margin:20px 0">
+  <img src="cid:mocksite_preview" alt="{biz} Website Preview" style="width:100%;display:block">
 </div>
-<!-- cv:{copy_version} pt:{pitch_type} -->
-"""
+
+<p>{para3}</p>
+
+<p>Worth a look? Would love to know what you think.</p>
+
+<p style="margin-top:28px">
+  {your_name}
+</p>
+
+</div><!-- cv:{copy_version} pt:{pitch_type} -->"""
 
 
 def _build_mime(lead: dict, screenshot_path: str, from_name: str, from_email: str,
