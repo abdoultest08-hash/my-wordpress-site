@@ -31,7 +31,7 @@ from pathlib import Path
 import openpyxl
 
 from generate_site   import generate_mock_site
-from gmail_draft     import send_email, create_draft
+from gmail_draft     import send_email, create_draft, build_subject
 from accounts        import pick_account, log_send, random_send_delay, is_business_hours, ACCOUNTS
 from supabase_client import (upsert_lead, mark_site_generated, mark_email_sent,
                               increment_send_count, get_send_log, get_lead_by_email)
@@ -42,8 +42,9 @@ SHOTS = BASE / "screenshots"
 SITES.mkdir(exist_ok=True)
 SHOTS.mkdir(exist_ok=True)
 
-YOUR_NAME    = os.environ.get("YOUR_NAME",    "Abdoul")
-YOUR_WEBSITE = os.environ.get("YOUR_WEBSITE", "sitesbyabs.com")
+YOUR_NAME     = os.environ.get("YOUR_NAME",     "Abdoul")
+YOUR_WEBSITE  = os.environ.get("YOUR_WEBSITE",  "sitesbyabs.com")
+COPY_VERSION  = os.environ.get("COPY_VERSION",  "v1")  # bump to v2, v3 to A/B test copy
 
 
 def slug(name: str) -> str:
@@ -148,26 +149,23 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
         print(f"  → Sending from: {account['email']} ({account['remaining']} left today)")
 
         # ── 5. Send / draft ───────────────────────────────────────────────────
-        pitch = lead.get("pitch_type", "new")
-        subject = (
-            f"Free redesign concept for {name} 🏠"
-            if pitch == "upgrade" else
-            f"I built a free website mock for {name} 🏠"
-        )
-        print(f"  → Pitch type: {pitch}")
+        pitch   = lead.get("pitch_type", "new")
+        subject = build_subject(lead)
+        print(f"  → Pitch: {pitch} | Copy: {COPY_VERSION} | Subject: {subject}")
         try:
             if draft_mode:
-                msg_id = create_draft(lead, str(png_file), account["name"], account["email"], YOUR_WEBSITE)
+                msg_id = create_draft(lead, str(png_file), account["name"], account["email"],
+                                      YOUR_WEBSITE, COPY_VERSION)
                 print(f"  ✓ Draft created")
             else:
-                msg_id = send_email(lead, str(png_file), account, YOUR_WEBSITE)
+                msg_id = send_email(lead, str(png_file), account, YOUR_WEBSITE, COPY_VERSION)
                 print(f"  ✓ Email sent!")
         except Exception as e:
             print(f"  ✗ Email failed: {e}")
             continue
 
         # ── 6. Update CRM + send log ──────────────────────────────────────────
-        mark_email_sent(lead_id, account["email"], subject, msg_id)
+        mark_email_sent(lead_id, account["email"], subject, msg_id, COPY_VERSION, pitch)
         send_log = log_send(send_log, account["email"])
         increment_send_count(account["email"])
         print(f"  ✓ CRM updated → Email Sent")
