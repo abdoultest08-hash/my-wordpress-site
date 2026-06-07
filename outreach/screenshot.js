@@ -1,20 +1,32 @@
 /**
- * screenshot.js — 1440×900 laptop screenshot with guaranteed image rendering.
- * Uses Chrome's own fetch() to embed external images as base64 before capture.
+ * screenshot.js — 1440×900 laptop screenshot.
+ * Serves the HTML via a local HTTP server so external images (Unsplash, Google CDN)
+ * load exactly as they would in a real browser — no file:// CORS restrictions.
  * Usage: node screenshot.js <input.html> <output.png>
  */
 const puppeteer = require('puppeteer');
-const path = require('path');
+const http      = require('http');
+const fs        = require('fs');
+const path      = require('path');
+
+function startServer(htmlFile) {
+  return new Promise((resolve) => {
+    const server = http.createServer((req, res) => {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      fs.createReadStream(htmlFile).pipe(res);
+    });
+    server.listen(0, '127.0.0.1', () => {
+      resolve({ server, port: server.address().port });
+    });
+  });
+}
 
 async function screenshot(htmlFile, outputFile) {
+  const absPath = path.resolve(htmlFile);
+  const { server, port } = await startServer(absPath);
+
   const browser = await puppeteer.launch({
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-gpu',
-      '--disable-web-security',
-      '--allow-file-access-from-files',
-    ],
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'],
     headless: true,
   });
 
@@ -22,57 +34,19 @@ async function screenshot(htmlFile, outputFile) {
     const page = await browser.newPage();
     await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
 
-    // Load the HTML file
-    const absPath = path.resolve(htmlFile);
-    await page.goto(`file://${absPath}`, { waitUntil: 'networkidle0', timeout: 30000 });
+    // Load via HTTP — external images (Unsplash, Google CDN) load without restriction
+    await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: 'networkidle0', timeout: 30000 });
 
-    // Use Chrome's own fetch to download external images and embed as base64.
-    // This bypasses all CORS and file:// restrictions because Chrome is making the request.
-    await page.evaluate(async () => {
-      async function toDataUri(url) {
-        try {
-          const resp = await fetch(url, { mode: 'no-cors' });
-          const blob = await resp.blob();
-          return await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload  = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-        } catch (e) {
-          return null;
-        }
-      }
+    // Wait for all <img> tags to finish loading
+    await page.evaluate(() =>
+      Promise.all(Array.from(document.images).map(img =>
+        img.complete ? Promise.resolve() :
+        new Promise(r => { img.onload = r; img.onerror = r; })
+      ))
+    );
 
-      // Replace CSS background-image URLs
-      for (const el of document.querySelectorAll('*')) {
-        const computed = window.getComputedStyle(el);
-        const bg = computed.backgroundImage;
-        if (bg && bg !== 'none' && bg.includes('http')) {
-          const match = bg.match(/url\(["']?(https?[^"')]+)["']?\)/);
-          if (match) {
-            const dataUri = await toDataUri(match[1]);
-            if (dataUri) el.style.backgroundImage = `url('${dataUri}')`;
-          }
-        }
-      }
-
-      // Replace broken <img> src URLs
-      for (const img of document.images) {
-        if (img.src && img.src.startsWith('http') && !img.complete) {
-          const dataUri = await toDataUri(img.src);
-          if (dataUri) img.src = dataUri;
-        }
-        // Also try force-reload of logo images
-        if (img.src && img.src.startsWith('http')) {
-          const dataUri = await toDataUri(img.src);
-          if (dataUri) img.src = dataUri;
-        }
-      }
-    });
-
-    // Let everything repaint
-    await new Promise(r => setTimeout(r, 1500));
+    // Extra time for CSS background images (Unsplash hero)
+    await new Promise(r => setTimeout(r, 2500));
 
     await page.screenshot({
       path: outputFile,
@@ -82,6 +56,7 @@ async function screenshot(htmlFile, outputFile) {
     console.log(`Screenshot saved: ${outputFile}`);
   } finally {
     await browser.close();
+    server.close();
   }
 }
 
