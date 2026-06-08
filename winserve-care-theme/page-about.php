@@ -9,19 +9,17 @@
   </div>
 </section>
 
-<!-- SECTION 1: WHO WE ARE -->
+<!-- SECTION 1: WHO WE ARE (text left) + ENQUIRY FORM (right) -->
 <section class="story-section">
   <div class="container">
-    <div class="story-grid">
-      <div class="story-img-wrap">
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/about-main.jpg" alt="Winserve Care — Our Story" class="story-img">
-      </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;">
+
+      <!-- Left: Who We Are text -->
       <div class="story-content">
         <span class="eyebrow">+ Who We Are</span>
         <h2>A Care Company Built on Purpose, Not Just Process</h2>
         <p>Winserve Care Services Ltd is a CQC-registered domiciliary and supported living care provider operating across Leeds and Cornwall. Founded with a clear mission — to deliver genuinely compassionate, person-centred home care — we have grown over six years into a trusted name in health and social care.</p>
         <p>We are not a franchise. We are an independent, values-led organisation where every decision is guided by one question: <em>what is best for the people we support?</em> That principle drives how we hire, how we train, and how we show up every day for our service users and their families.</p>
-        <p>Our CQC Good rating, achieved across all five key lines of enquiry in June 2025, reflects the hard work of our 50+ carers and the leadership team that supports them.</p>
         <ul class="story-bullets">
           <li>Founded and led by an experienced care management team</li>
           <li>CQC registered and rated Good across all 5 domains &mdash; June 2025</li>
@@ -31,6 +29,63 @@
           <li>Armed Forces Covenant signatory</li>
         </ul>
       </div>
+
+      <!-- Right: Enquiry Form -->
+      <div style="background:var(--section-bg);border:1px solid var(--border);border-radius:12px;padding:36px 32px;">
+        <span class="eyebrow">+ Get in Touch</span>
+        <h3 style="font-family:var(--font-heading);font-size:24px;color:var(--navy);margin:10px 0 6px;">Make a Care Enquiry</h3>
+        <p style="font-family:var(--font-body);font-size:13px;color:#666;line-height:1.7;margin-bottom:24px;">Tell us a little about your needs and a member of our team will be in touch within one working day.</p>
+
+        <?php if (isset($_GET['sent']) && $_GET['sent'] === '1'): ?>
+          <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:14px 18px;margin-bottom:20px;font-family:var(--font-body);font-size:13px;color:#2e7d32;">
+            Thank you — we have received your enquiry and will be in touch shortly.
+          </div>
+        <?php endif; ?>
+
+        <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="POST" style="display:flex;flex-direction:column;gap:14px;">
+          <input type="hidden" name="action" value="winserve_contact">
+          <?php wp_nonce_field('winserve_contact_nonce', 'winserve_nonce'); ?>
+          <input type="hidden" name="form_source" value="about_enquiry">
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div>
+              <label style="font-family:var(--font-body);font-size:12px;color:var(--navy);font-weight:600;display:block;margin-bottom:5px;">Full Name *</label>
+              <input type="text" name="name" required placeholder="Your name" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:13px;color:#333;background:#fff;box-sizing:border-box;">
+            </div>
+            <div>
+              <label style="font-family:var(--font-body);font-size:12px;color:var(--navy);font-weight:600;display:block;margin-bottom:5px;">Phone Number *</label>
+              <input type="tel" name="phone" required placeholder="Your phone" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:13px;color:#333;background:#fff;box-sizing:border-box;">
+            </div>
+          </div>
+
+          <div>
+            <label style="font-family:var(--font-body);font-size:12px;color:var(--navy);font-weight:600;display:block;margin-bottom:5px;">Email Address *</label>
+            <input type="email" name="email" required placeholder="Your email" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:13px;color:#333;background:#fff;box-sizing:border-box;">
+          </div>
+
+          <div>
+            <label style="font-family:var(--font-body);font-size:12px;color:var(--navy);font-weight:600;display:block;margin-bottom:5px;">Type of Care Needed</label>
+            <select name="service" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:13px;color:#333;background:#fff;box-sizing:border-box;">
+              <option value="">Please select...</option>
+              <option>Domiciliary / Home Care</option>
+              <option>Supported Living</option>
+              <option>Dementia Care</option>
+              <option>Palliative / End of Life Care</option>
+              <option>Live-In Care</option>
+              <option>Complex Care</option>
+              <option>Not sure — need advice</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-family:var(--font-body);font-size:12px;color:var(--navy);font-weight:600;display:block;margin-bottom:5px;">Your Message</label>
+            <textarea name="message" rows="3" placeholder="Tell us a little about your situation..." style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:13px;color:#333;background:#fff;resize:vertical;box-sizing:border-box;"></textarea>
+          </div>
+
+          <button type="submit" style="background:var(--blue);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:600;padding:13px 28px;border:none;border-radius:6px;cursor:pointer;transition:background 0.2s;text-align:center;">Send Enquiry &rarr;</button>
+        </form>
+      </div>
+
     </div>
   </div>
 </section>
@@ -59,7 +114,47 @@
   </div>
 </section>
 
-<!-- SECTION 3: OUR GOALS & MISSION -->
+<!-- SECTION 3: THE STORY BEHIND WINSERVE -->
+<section style="padding:80px 0;background:#fff;">
+  <div class="container">
+
+    <!-- Marathon: text LEFT, images RIGHT -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-bottom:72px;">
+      <div>
+        <span class="eyebrow" style="color:var(--blue);">+ The Story Behind Winserve</span>
+        <h2 style="font-family:var(--font-heading);font-size:34px;color:var(--navy);margin:12px 0 20px;line-height:1.2;">Why Care Is at the Heart of What We Do</h2>
+        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;margin-bottom:16px;">Winserve was not built on a business plan. It was built on a personal promise. Our Managing Director lost both his father and his sister to cancer. He works daily alongside service users in palliative care — people bravely fighting the same disease that took his own family. That experience is not background noise. It is the reason this company exists.</p>
+        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;margin-bottom:16px;">In April 2023, he ran the Manchester Marathon — months of early morning training, late nights after work — and raised over <strong>&pound;1,200 for Cancer Research UK</strong>. Not because it was easy. Because it mattered.</p>
+        <blockquote style="border-left:3px solid var(--blue);padding-left:18px;margin:24px 0;font-family:var(--font-body);font-size:14px;color:var(--navy);font-style:italic;line-height:1.8;">"We work every day with service users who have cancer. I lost my father and my sister to cancer, and several of our service users in palliative care are fighting cancer. We realise the importance of Cancer Research to reduce people's suffering."</blockquote>
+        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;">This is what we mean when we say <em>care is at the heart of what we do.</em> It is not a slogan — it is the reason this company exists.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:12px;">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/marathon-1.png" alt="Managing Director running the Manchester Marathon for Cancer Research UK" style="width:100%;border-radius:10px;object-fit:cover;height:300px;">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/marathon-2.png" alt="Finishing the Manchester Marathon with Cancer Research UK medal" style="width:100%;border-radius:10px;object-fit:cover;height:300px;">
+      </div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin-bottom:72px;">
+
+    <!-- Homeless Hampers: image LEFT, text RIGHT -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;">
+      <div>
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/homeless-clotehs.png" alt="Winserve team with Homeless Hampers donation boxes" style="width:100%;border-radius:10px;object-fit:cover;max-height:380px;">
+        <p style="font-family:var(--font-body);font-size:12px;color:#888;margin-top:10px;text-align:center;font-style:italic;">Our team with Tina, lead manager of Homeless Hampers Leeds</p>
+      </div>
+      <div>
+        <span class="eyebrow" style="color:var(--blue);">+ Homeless Hampers, Leeds</span>
+        <h2 style="font-family:var(--font-heading);font-size:34px;color:var(--navy);margin:12px 0 20px;line-height:1.2;">Spreading Warmth &amp; Hope in Our Community</h2>
+        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;margin-bottom:16px;">Since 2021, Winserve has made annual donations to <strong>Homeless Hampers</strong> — a Leeds-based charity providing warm clothing and essentials to those sleeping rough. We first got involved because of the significant number of homeless veterans in Leeds — a cause deeply aligned with our Armed Forces Covenant commitment.</p>
+        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;margin-bottom:16px;">In 2023, we donated <strong>&pound;500 worth of warm clothing</strong> — scarves, hats, coats, thermals, leggings, underwear, and jumpers. In the coldest months, warm clothing is not a comfort. It is a lifeline, reducing the risk of cold-related illness and pneumonia among the most vulnerable.</p>
+        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;">Through our work with local councils, we support many individuals who have experienced homelessness in the past. Giving back to those still facing it is something we are proud to do — every single year.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION 5: OUR GOALS & MISSION -->
 <section class="values-section">
   <div class="container">
     <div class="section-header">
@@ -272,53 +367,6 @@
   </div>
 </section>
 
-<!-- SECTION 9: CHARITY & COMMUNITY — REAL STORIES -->
-<section style="padding:80px 0;background:#fff;">
-  <div class="container">
-    <div class="section-header">
-      <span class="section-eyebrow">+ Giving Back</span>
-      <h2 class="section-title">More Than a Care Company</h2>
-      <p style="font-family:var(--font-body);font-size:15px;color:#555;max-width:680px;margin:16px auto 0;line-height:1.85;">Care is at the heart of what we do — and that extends beyond our service users. From running marathons to donating to those sleeping rough, Winserve gives back to the communities we serve.</p>
-    </div>
-
-    <!-- Story 1: Marathon -->
-    <div class="csr-story-block" style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;margin-top:64px;">
-      <div class="csr-story-images">
-        <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:12px;">
-          <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/marathon-1.png" alt="Winserve Managing Director running the Manchester Marathon for Cancer Research UK" style="width:100%;border-radius:10px;object-fit:cover;height:280px;">
-          <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/marathon-2.png" alt="Completing the Manchester Marathon with Cancer Research UK medal" style="width:100%;border-radius:10px;object-fit:cover;height:280px;">
-        </div>
-      </div>
-      <div class="csr-story-content">
-        <span class="eyebrow" style="color:var(--blue);">+ Manchester Marathon 2023</span>
-        <h3 style="font-family:var(--font-heading);font-size:28px;color:var(--navy);margin:12px 0 16px;line-height:1.25;">Running for a Cause That Hits Close to Home</h3>
-        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;margin-bottom:16px;">In April 2023, our Managing Director completed the Manchester Marathon, raising over <strong>&pound;1,200 for Cancer Research UK</strong>. The motivation was deeply personal — having lost both his father and his sister to cancer, and working daily alongside service users in palliative care, he understood better than most why this research matters.</p>
-        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;margin-bottom:16px;">Months of early-morning training runs and late-night sessions after work led to that finish line. But the real reason behind it was simple: a belief that if you can do something, you should.</p>
-        <blockquote style="border-left:3px solid var(--blue);padding-left:16px;margin:20px 0;font-family:var(--font-body);font-size:14px;color:var(--navy);font-style:italic;line-height:1.8;">"We work every day with service users who have cancer. I lost my father and my sister to cancer, and several of our service users in palliative care are fighting cancer. We realise the importance of Cancer Research to reduce people's suffering."</blockquote>
-        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;">This is what we mean when we say <em>care is at the heart of what we do.</em> It is not a slogan — it is the reason this company exists.</p>
-      </div>
-    </div>
-
-    <!-- Divider -->
-    <hr style="border:none;border-top:1px solid var(--border);margin:72px 0;">
-
-    <!-- Story 2: Homeless Hampers -->
-    <div class="csr-story-block" style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;">
-      <div class="csr-story-content">
-        <span class="eyebrow" style="color:var(--blue);">+ Homeless Hampers, Leeds</span>
-        <h3 style="font-family:var(--font-heading);font-size:28px;color:var(--navy);margin:12px 0 16px;line-height:1.25;">Spreading Warmth &amp; Hope in Our Community</h3>
-        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;margin-bottom:16px;">Since 2021, Winserve has made annual donations to <strong>Homeless Hampers</strong> — a Leeds-based charity providing warm clothing and essentials to those sleeping rough. We began donating due to the significant number of homeless people in Leeds who have served in the military, a cause close to our hearts as an Armed Forces Covenant signatory.</p>
-        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;margin-bottom:16px;">In 2023, we gifted <strong>&pound;500 worth of warm clothing</strong> — scarves, hats, coats, thermals, leggings, underwear, and jumpers — items that do more than provide comfort. In the coldest months, warm clothing saves lives, reducing the risk of cold-related illnesses like pneumonia among those most vulnerable.</p>
-        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;">Through our work with local councils, we support many individuals who have experienced homelessness in the past. Giving back to those still facing it is something we are proud to do year after year.</p>
-      </div>
-      <div>
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/homeless-clotehs.png" alt="Winserve team members with Homeless Hampers donation boxes" style="width:100%;border-radius:10px;object-fit:cover;max-height:380px;">
-        <p style="font-family:var(--font-body);font-size:12px;color:#888;margin-top:10px;text-align:center;font-style:italic;">Our team with Tina, lead manager of Homeless Hampers Leeds</p>
-      </div>
-    </div>
-
-  </div>
-</section>
 
 <!-- SECTION 10: ACCREDITATIONS & PARTNER LOGOS -->
 <section style="padding:64px 0;background:var(--section-bg);border-top:1px solid var(--border);">
