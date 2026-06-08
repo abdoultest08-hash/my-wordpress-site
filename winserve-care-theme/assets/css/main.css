@@ -21,8 +21,8 @@
 
 /* Reset & Base */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body { font-family: var(--font-body); color: var(--text); background: #fff; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body { font-family: var(--font-body); color: var(--text); background: #fff; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; max-width: 100vw; }
 img { max-width: 100%; height: auto; display: block; }
 a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
@@ -2275,3 +2275,172 @@ button { font-family: var(--font-body); }
 .reviews-homecare-header { text-align: center; margin-bottom: 28px; }
 .homecare-logo { height: 52px; width: auto; margin: 0 auto 10px; display: block; }
 .homecare-caption { font-family: var(--font-body); font-size: 13px; color: #888; }
+
+/* =========================================================
+   MOBILE FIXES — hamburger, overflow, inline grids
+   ========================================================= */
+
+/* Hamburger button — make it clearly visible on white nav */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: 2px solid var(--navy);
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 8px 10px;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+}
+.menu-toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--navy);
+  border-radius: 2px;
+  transition: 0.3s;
+}
+
+@media (max-width: 768px) {
+  .menu-toggle { display: flex; }
+
+  /* Prevent any element causing horizontal scroll */
+  section, .container, header, footer, div {
+    max-width: 100%;
+  }
+
+  /* About page: Who We Are + form — stack vertically */
+  .story-section .container > div[style*="grid-template-columns:1fr 1fr"],
+  .story-section .container > div[style*="grid-template-columns: 1fr 1fr"] {
+    display: block !important;
+  }
+  .story-section .container > div > div {
+    margin-bottom: 32px;
+  }
+
+  /* About page: Marathon and Homeless Hampers sections */
+  div[style*="grid-template-columns:1fr 1fr"],
+  div[style*="grid-template-columns: 1fr 1fr"],
+  div[style*="grid-template-columns:1.4fr 1fr"],
+  div[style*="grid-template-columns: 1.4fr 1fr"] {
+    display: block !important;
+  }
+  div[style*="grid-template-columns:1fr 1fr"] > *,
+  div[style*="grid-template-columns: 1fr 1fr"] > *,
+  div[style*="grid-template-columns:1.4fr 1fr"] > *,
+  div[style*="grid-template-columns: 1.4fr 1fr"] > * {
+    margin-bottom: 24px;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Marathon side-by-side photos — stack */
+  div[style*="grid-template-columns:1.4fr 1fr"] img,
+  div[style*="grid-template-columns: 1.4fr 1fr"] img {
+    height: 220px !important;
+    width: 100% !important;
+  }
+
+  /* About page mission section — two column text+values */
+  div[style*="grid-template-columns:1fr 1fr;gap:48px"] {
+    display: block !important;
+  }
+
+  /* About page compliance section — two column */
+  div[style*="grid-template-columns:1fr 1fr;gap:32px"],
+  div[style*="grid-template-columns: 1fr 1fr;gap:32px"] {
+    display: block !important;
+  }
+
+  /* Three column who we work with */
+  div[style*="grid-template-columns:1fr 1fr 1fr"],
+  div[style*="grid-template-columns: 1fr 1fr 1fr"] {
+    display: block !important;
+  }
+  div[style*="grid-template-columns:1fr 1fr 1fr"] > *,
+  div[style*="grid-template-columns: 1fr 1fr 1fr"] > * {
+    margin-bottom: 20px;
+  }
+
+  /* Carer traits section on Our Team */
+  div[style*="grid-template-columns:1fr 1.2fr"],
+  div[style*="grid-template-columns: 1fr 1.2fr"] {
+    display: block !important;
+  }
+
+  /* Carer trait cards — already 2-col grid, keep on mobile */
+  div[style*="grid-template-columns:1fr 1fr;gap:16px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Our Team centred flex cards */
+  div[style*="display:flex;gap:32px;justify-content:center"] {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  /* Enquiry form inside about page — name/phone row */
+  div[style*="grid-template-columns:1fr 1fr;gap:14px"] {
+    display: block !important;
+  }
+  div[style*="grid-template-columns:1fr 1fr;gap:14px"] > div {
+    margin-bottom: 14px;
+  }
+
+  /* Headings — reduce large inline font sizes */
+  h2[style*="font-size:34px"],
+  h2[style*="font-size:38px"],
+  h3[style*="font-size:28px"] {
+    font-size: 24px !important;
+  }
+
+  /* Images in story sections — full width */
+  .story-section img,
+  div[style*="border-radius:10px"] img {
+    width: 100% !important;
+    max-height: 260px;
+    object-fit: cover;
+  }
+
+  /* Padding reduction on sections using inline padding */
+  section[style*="padding:80px 0"] {
+    padding: 48px 0 !important;
+  }
+  section[style*="padding:64px 0"] {
+    padding: 40px 0 !important;
+  }
+
+  /* About page form — full width */
+  .story-section form {
+    width: 100%;
+  }
+
+  /* Diff grid — already 2-col, collapse */
+  .diff-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* About logos grid */
+  .about-logos-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Values grid inline */
+  .values-grid {
+    grid-template-columns: 1fr !important;
+    margin-top: 32px !important;
+  }
+
+  /* CQC section text */
+  .cqc-section h2 {
+    font-size: 24px !important;
+  }
+
+  /* Page hero badge */
+  .page-hero-badge {
+    font-size: 26px !important;
+  }
+}
