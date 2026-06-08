@@ -272,23 +272,51 @@
   </div>
 </section>
 
-<!-- SECTION 9: CHARITY & COMMUNITY -->
+<!-- SECTION 9: CHARITY & COMMUNITY — REAL STORIES -->
 <section style="padding:80px 0;background:#fff;">
   <div class="container">
     <div class="section-header">
       <span class="section-eyebrow">+ Giving Back</span>
-      <h2 class="section-title">Our Commitment to the Community</h2>
+      <h2 class="section-title">More Than a Care Company</h2>
+      <p style="font-family:var(--font-body);font-size:15px;color:#555;max-width:680px;margin:16px auto 0;line-height:1.85;">Care is at the heart of what we do — and that extends beyond our service users. From running marathons to donating to those sleeping rough, Winserve gives back to the communities we serve.</p>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-top:48px;">
-      <div>
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/about-inset.jpg" alt="Winserve community commitment" style="width:100%;border-radius:10px;">
+
+    <!-- Story 1: Marathon -->
+    <div class="csr-story-block" style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;margin-top:64px;">
+      <div class="csr-story-images">
+        <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:12px;">
+          <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/marathon-1.png" alt="Winserve Managing Director running the Manchester Marathon for Cancer Research UK" style="width:100%;border-radius:10px;object-fit:cover;height:280px;">
+          <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/marathon-2.png" alt="Completing the Manchester Marathon with Cancer Research UK medal" style="width:100%;border-radius:10px;object-fit:cover;height:280px;">
+        </div>
+      </div>
+      <div class="csr-story-content">
+        <span class="eyebrow" style="color:var(--blue);">+ Manchester Marathon 2023</span>
+        <h3 style="font-family:var(--font-heading);font-size:28px;color:var(--navy);margin:12px 0 16px;line-height:1.25;">Running for a Cause That Hits Close to Home</h3>
+        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;margin-bottom:16px;">In April 2023, our Managing Director completed the Manchester Marathon, raising over <strong>&pound;1,200 for Cancer Research UK</strong>. The motivation was deeply personal — having lost both his father and his sister to cancer, and working daily alongside service users in palliative care, he understood better than most why this research matters.</p>
+        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;margin-bottom:16px;">Months of early-morning training runs and late-night sessions after work led to that finish line. But the real reason behind it was simple: a belief that if you can do something, you should.</p>
+        <blockquote style="border-left:3px solid var(--blue);padding-left:16px;margin:20px 0;font-family:var(--font-body);font-size:14px;color:var(--navy);font-style:italic;line-height:1.8;">"We work every day with service users who have cancer. I lost my father and my sister to cancer, and several of our service users in palliative care are fighting cancer. We realise the importance of Cancer Research to reduce people's suffering."</blockquote>
+        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;">This is what we mean when we say <em>care is at the heart of what we do.</em> It is not a slogan — it is the reason this company exists.</p>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <hr style="border:none;border-top:1px solid var(--border);margin:72px 0;">
+
+    <!-- Story 2: Homeless Hampers -->
+    <div class="csr-story-block" style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;">
+      <div class="csr-story-content">
+        <span class="eyebrow" style="color:var(--blue);">+ Homeless Hampers, Leeds</span>
+        <h3 style="font-family:var(--font-heading);font-size:28px;color:var(--navy);margin:12px 0 16px;line-height:1.25;">Spreading Warmth &amp; Hope in Our Community</h3>
+        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;margin-bottom:16px;">Since 2021, Winserve has made annual donations to <strong>Homeless Hampers</strong> — a Leeds-based charity providing warm clothing and essentials to those sleeping rough. We began donating due to the significant number of homeless people in Leeds who have served in the military, a cause close to our hearts as an Armed Forces Covenant signatory.</p>
+        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;margin-bottom:16px;">In 2023, we gifted <strong>&pound;500 worth of warm clothing</strong> — scarves, hats, coats, thermals, leggings, underwear, and jumpers — items that do more than provide comfort. In the coldest months, warm clothing saves lives, reducing the risk of cold-related illnesses like pneumonia among those most vulnerable.</p>
+        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;">Through our work with local councils, we support many individuals who have experienced homelessness in the past. Giving back to those still facing it is something we are proud to do year after year.</p>
       </div>
       <div>
-        <p style="font-family:var(--font-body);font-size:15px;color:#555;line-height:1.85;margin-bottom:20px;">We believe that organisations have a responsibility to give back to the communities they serve. At Winserve, our commitment to social responsibility goes beyond our day-to-day care work.</p>
-        <p style="font-family:var(--font-body);font-size:15px;color:#555;line-height:1.85;margin-bottom:20px;">We make regular donations to charitable causes that align with our values — supporting organisations focused on elderly welfare, mental health, disability, and community wellbeing. We are also proud signatories of the Armed Forces Covenant, recognising and supporting those who have served our country.</p>
-        <p style="font-family:var(--font-body);font-size:15px;color:#555;line-height:1.85;">As a Real Living Wage employer, we also believe that social responsibility starts with your own team — paying fairly, investing in development, and creating a workplace where people genuinely want to come to work.</p>
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/homeless-clotehs.png" alt="Winserve team members with Homeless Hampers donation boxes" style="width:100%;border-radius:10px;object-fit:cover;max-height:380px;">
+        <p style="font-family:var(--font-body);font-size:12px;color:#888;margin-top:10px;text-align:center;font-style:italic;">Our team with Tina, lead manager of Homeless Hampers Leeds</p>
       </div>
     </div>
+
   </div>
 </section>
 

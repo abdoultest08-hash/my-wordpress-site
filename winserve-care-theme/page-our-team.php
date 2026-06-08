@@ -51,6 +51,59 @@
   </div>
 </div>
 
+<!-- CARER TRAITS SECTION -->
+<section style="padding:80px 0;background:var(--section-bg);">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:64px;align-items:center;">
+
+      <div>
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/carer-traits--.png" alt="Winserve carers in training and on a home visit" style="width:100%;border-radius:10px;">
+      </div>
+
+      <div>
+        <span class="eyebrow">+ What We Look For</span>
+        <h2 style="font-family:var(--font-heading);font-size:32px;color:var(--navy);margin:12px 0 20px;line-height:1.25;">The Key Traits of a Great Carer</h2>
+        <p style="font-family:var(--font-body);font-size:14px;color:#555;line-height:1.85;margin-bottom:28px;">At Winserve, we ensure our staff have the right mix of personal qualities, professional skills, and dedication to supporting others. These are the traits we look for in every member of our care team.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+          <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;">
+            <div style="font-family:var(--font-heading);font-size:15px;color:var(--navy);font-weight:600;margin-bottom:6px;">❤ Compassion &amp; Empathy</div>
+            <p style="font-family:var(--font-body);font-size:12.5px;color:#666;line-height:1.7;margin:0;">We truly care about the well-being of the people we support — building trust and making every person feel valued.</p>
+          </div>
+
+          <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;">
+            <div style="font-family:var(--font-heading);font-size:15px;color:var(--navy);font-weight:600;margin-bottom:6px;">⏱ Patience</div>
+            <p style="font-family:var(--font-body);font-size:12.5px;color:#666;line-height:1.7;margin:0;">Calm and composed even in stressful situations — giving people the time they need to express themselves.</p>
+          </div>
+
+          <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;">
+            <div style="font-family:var(--font-heading);font-size:15px;color:var(--navy);font-weight:600;margin-bottom:6px;">💬 Good Communication</div>
+            <p style="font-family:var(--font-body);font-size:12.5px;color:#666;line-height:1.7;margin:0;">Listening actively, speaking clearly, respecting people's choices — both in words and body language.</p>
+          </div>
+
+          <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;">
+            <div style="font-family:var(--font-heading);font-size:15px;color:var(--navy);font-weight:600;margin-bottom:6px;">✓ Reliability</div>
+            <p style="font-family:var(--font-body);font-size:12.5px;color:#666;line-height:1.7;margin:0;">Dependable, on time, and trustworthy — because families place their most sensitive trust in our hands.</p>
+          </div>
+
+          <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;">
+            <div style="font-family:var(--font-heading);font-size:15px;color:var(--navy);font-weight:600;margin-bottom:6px;">🔄 Flexibility</div>
+            <p style="font-family:var(--font-body);font-size:12.5px;color:#666;line-height:1.7;margin:0;">Adaptable to evolving needs — every person is unique and our carers adjust to deliver the right care at the right time.</p>
+          </div>
+
+          <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;">
+            <div style="font-family:var(--font-heading);font-size:15px;color:var(--navy);font-weight:600;margin-bottom:6px;">⭐ Going the Extra Mile</div>
+            <p style="font-family:var(--font-body);font-size:12.5px;color:#666;line-height:1.7;margin:0;">Remembering special occasions, learning personal histories, brightening someone's day — that is what sets a great carer apart.</p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- CTA Banner (careers focused) -->
 <section class="cta-banner">
   <div class="container cta-banner-inner">
