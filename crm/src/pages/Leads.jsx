@@ -34,15 +34,17 @@ export default function Leads() {
       "Email":          l.email,
       "Phone":          l.phone,
       "Status":         l.status,
+      "Copy Version":   l.copy_version || "",
+      "Pitch Type":     l.pitch_type   || "",
       "Deal Value (£)": l.deal_value || 0,
       "Notes":          l.notes,
       "Logo URL":       l.logo_url,
       "GMB URL":        l.gmb_url,
       "Email Sent At":  l.email_sent_at ? new Date(l.email_sent_at).toLocaleString() : "",
-      "Replied At":     l.replied_at   ? new Date(l.replied_at).toLocaleString()   : "",
-      "Meeting At":     l.meeting_at   ? new Date(l.meeting_at).toLocaleString()   : "",
-      "Closed At":      l.closed_at    ? new Date(l.closed_at).toLocaleString()    : "",
-      "Added":          l.created_at   ? new Date(l.created_at).toLocaleString()   : "",
+      "Replied At":     l.replied_at    ? new Date(l.replied_at).toLocaleString()    : "",
+      "Meeting At":     l.meeting_at    ? new Date(l.meeting_at).toLocaleString()    : "",
+      "Closed At":      l.closed_at     ? new Date(l.closed_at).toLocaleString()     : "",
+      "Added":          l.created_at    ? new Date(l.created_at).toLocaleString()    : "",
     }))
 
     const ws = XLSX.utils.json_to_sheet(rows)
@@ -74,6 +76,8 @@ export default function Leads() {
         notes:         r.notes         || r["Notes"]         || "",
         logo_url:      r.logo_url      || r["Logo URL"]      || "",
         gmb_url:       r.gmb_url       || r["GMB URL"]       || "",
+        copy_version:  r.copy_version  || r["Copy Version"]  || "v1",
+        pitch_type:    r.pitch_type    || r["Pitch Type"]    || "new",
         status:        "pending",
       })).filter(r => r.email && r.business_name)
 
@@ -151,13 +155,15 @@ export default function Leads() {
               <th className="text-left px-4 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide hidden md:table-cell">Industry</th>
               <th className="text-left px-4 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide hidden lg:table-cell">City</th>
               <th className="text-left px-4 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide">Status</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide hidden xl:table-cell">Copy</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide hidden xl:table-cell">Pitch</th>
               <th className="text-left px-4 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide hidden lg:table-cell">Email Sent</th>
               <th className="text-left px-4 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide hidden xl:table-cell">Added</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {filtered.length === 0 && (
-              <tr><td colSpan={6} className="text-center py-12 text-gray-400">No leads found</td></tr>
+              <tr><td colSpan={8} className="text-center py-12 text-gray-400">No leads found</td></tr>
             )}
             {filtered.map(lead => {
               const cfg = STATUS_CONFIG[lead.status] ?? STATUS_CONFIG.pending
@@ -182,6 +188,18 @@ export default function Leads() {
                       <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`}></span>
                       {cfg.label}
                     </span>
+                  </td>
+                  <td className="px-4 py-3 hidden xl:table-cell">
+                    {lead.copy_version && (
+                      <span className="px-2 py-0.5 rounded text-xs font-mono bg-gray-100 text-gray-600">{lead.copy_version}</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 hidden xl:table-cell">
+                    {lead.pitch_type && (
+                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${lead.pitch_type === "new" ? "bg-purple-100 text-purple-600" : "bg-blue-100 text-blue-600"}`}>
+                        {lead.pitch_type}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-gray-400 text-xs hidden lg:table-cell">{fmtDate(lead.email_sent_at)}</td>
                   <td className="px-4 py-3 text-gray-400 text-xs hidden xl:table-cell">{fmtDate(lead.created_at)}</td>

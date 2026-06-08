@@ -1,11 +1,13 @@
 import { NavLink } from "react-router-dom"
-import { LayoutDashboard, Users, Kanban, BarChart3, Settings } from "lucide-react"
+import { LayoutDashboard, Users, Kanban, BarChart3, Calculator, Clock } from "lucide-react"
 
 const links = [
-  { to: "/",         icon: LayoutDashboard, label: "Dashboard"  },
-  { to: "/pipeline", icon: Kanban,          label: "Pipeline"   },
-  { to: "/leads",    icon: Users,           label: "Leads"      },
-  { to: "/kpis",     icon: BarChart3,       label: "KPIs"       },
+  { to: "/",          icon: LayoutDashboard, label: "Dashboard"  },
+  { to: "/pipeline",  icon: Kanban,          label: "Pipeline"   },
+  { to: "/leads",     icon: Users,           label: "Leads"      },
+  { to: "/kpis",      icon: BarChart3,       label: "KPIs"       },
+  { to: "/followup",  icon: Clock,           label: "Follow-Up"  },
+  { to: "/calculator",icon: Calculator,      label: "Calculator" },
 ]
 
 export default function Sidebar() {

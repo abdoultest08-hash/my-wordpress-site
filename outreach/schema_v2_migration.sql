@@ -16,3 +16,7 @@ alter table email_log
 -- Indexes for filtering by version in CRM/KPI queries
 create index if not exists leads_copy_version_idx on leads(copy_version);
 create index if not exists leads_pitch_type_idx   on leads(pitch_type);
+
+-- Reply quality tags (Hot / Warm / Cold / Wrong person)
+alter table replies
+  add column if not exists quality_tag text;
