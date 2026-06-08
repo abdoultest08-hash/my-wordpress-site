@@ -8,6 +8,8 @@ outreach/outreach_log.json
 outreach/local_log.json
 outreach/test_output.html
 outreach/test_screenshot.png
+outreach/test_minimal.html
+outreach/test_minimal.png
 outreach/__pycache__/
 token*.json
 credentials.json
