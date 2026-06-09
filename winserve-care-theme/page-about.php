@@ -154,6 +154,31 @@
   </div>
 </section>
 
+<!-- CERTIFICATES OF RECOGNITION -->
+<section style="padding:64px 0;background:var(--section-bg);border-top:1px solid var(--border);">
+  <div class="container" style="text-align:center;">
+    <span class="eyebrow">+ Formally Recognised</span>
+    <h2 style="font-family:var(--font-heading);font-size:32px;color:var(--navy);margin:12px 0 8px;">Certificates of Recognition</h2>
+    <p style="font-family:var(--font-body);font-size:14px;color:#666;max-width:580px;margin:0 auto 40px;line-height:1.8;">Our commitment to veterans and the wider community has been formally recognised by two respected organisations.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:960px;margin:0 auto;">
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/cert-homeless-soldier.jpg" alt="Homeless Soldier Project Certificate 2026 — Winserve Care Services UK" style="width:100%;display:block;">
+        <div style="padding:16px 20px;border-top:1px solid var(--border);">
+          <p style="font-family:var(--font-heading);font-size:15px;color:var(--navy);font-weight:600;margin-bottom:4px;">Homeless Soldier Project</p>
+          <p style="font-family:var(--font-body);font-size:12.5px;color:#777;">Certificate of Support &mdash; 2026</p>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/cert-royal-fusiliers.jpg" alt="Royal Regiment of Fusiliers Certificate of Appreciation 2025 — Winserve Care Services UK" style="width:100%;display:block;">
+        <div style="padding:16px 20px;border-top:1px solid var(--border);">
+          <p style="font-family:var(--font-heading);font-size:15px;color:var(--navy);font-weight:600;margin-bottom:4px;">Royal Regiment of Fusiliers</p>
+          <p style="font-family:var(--font-body);font-size:12.5px;color:#777;">Certificate of Appreciation &mdash; Friend of the Regiment &mdash; 2025</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- SECTION 5: OUR GOALS & MISSION -->
 <section class="values-section">
   <div class="container">
