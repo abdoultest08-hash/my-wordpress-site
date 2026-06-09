@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Winserve — Financial Dashboard 2026</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    body { background: #0f1117; }
+    .card { background: #1a1d27; border: 1px solid #2a2d3a; }
+    .kpi-positive { color: #34d399; }
+    .kpi-negative { color: #f87171; }
+    .kpi-neutral  { color: #60a5fa; }
+    .chart-title  { color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  </style>
+</head>
+<body class="text-white min-h-screen p-6">
+
+  <!-- Header -->
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-white">Winserve Homecare</h1>
+      <p class="text-slate-400 text-sm mt-1">Financial Dashboard — 2026</p>
+    </div>
+    <div class="text-right">
+      <p class="text-xs text-slate-500">Last updated</p>
+      <p class="text-sm text-slate-300" id="last-updated"></p>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+    <div class="card rounded-xl p-4">
+      <p class="chart-title mb-2">Total Revenue</p>
+      <p class="text-2xl font-bold kpi-neutral">£2.15M</p>
+      <p class="text-xs text-slate-500 mt-1">YTD Annual</p>
+    </div>
+    <div class="card rounded-xl p-4">
+      <p class="chart-title mb-2">Total Expenses</p>
+      <p class="text-2xl font-bold text-slate-300">£2.03M</p>
+      <p class="text-xs text-slate-500 mt-1">YTD Annual</p>
+    </div>
+    <div class="card rounded-xl p-4">
+      <p class="chart-title mb-2">Net Profit</p>
+      <p class="text-2xl font-bold kpi-positive">£114,420</p>
+      <p class="text-xs text-slate-500 mt-1">5.3% margin</p>
+    </div>
+    <div class="card rounded-xl p-4">
+      <p class="chart-title mb-2">Net Cash Position</p>
+      <p class="text-2xl font-bold kpi-negative">(£62,569)</p>
+      <p class="text-xs text-slate-500 mt-1">YTD</p>
+    </div>
+    <div class="card rounded-xl p-4">
+      <p class="chart-title mb-2">Closing Balance</p>
+      <p class="text-2xl font-bold kpi-positive">£107,431</p>
+      <p class="text-xs text-slate-500 mt-1">Current</p>
+    </div>
+  </div>
+
+  <!-- Row 2: Revenue vs Expenses + Cash Flow -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+    <div class="card rounded-xl p-5">
+      <p class="chart-title mb-4">Monthly Revenue vs Expenses vs Net Profit</p>
+      <div style="height:280px">
+        <canvas id="revExpChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card rounded-xl p-5">
+      <p class="chart-title mb-4">Cash Flow — Opening vs Closing Balance</p>
+      <div style="height:280px">
+        <canvas id="cashFlowChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Row 3: Revenue by Client Type + Expenses by Category -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+    <div class="card rounded-xl p-5">
+      <p class="chart-title mb-4">Revenue by Client Type (Monthly)</p>
+      <div style="height:300px">
+        <canvas id="clientTypeChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card rounded-xl p-5">
+      <p class="chart-title mb-4">Top Expense Categories (YTD)</p>
+      <div style="height:300px">
+        <canvas id="expCatChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Row 4: Location split + Contract Type split + MoM -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+
+    <div class="card rounded-xl p-5">
+      <p class="chart-title mb-4">Revenue by Location</p>
+      <div style="height:220px">
+        <canvas id="locationChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card rounded-xl p-5">
+      <p class="chart-title mb-4">Revenue by Contract Type</p>
+      <div style="height:220px">
+        <canvas id="contractChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card rounded-xl p-5">
+      <p class="chart-title mb-4">Profit Margin by Month</p>
+      <div style="height:220px">
+        <canvas id="marginChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Row 5: Monthly P&L Table -->
+  <div class="card rounded-xl p-5 mb-6">
+    <p class="chart-title mb-4">Monthly P&L Summary</p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-slate-500 border-b border-slate-700">
+            <th class="text-left py-2 pr-4">Metric</th>
+            <th class="text-right py-2 px-2">Jan</th>
+            <th class="text-right py-2 px-2">Feb</th>
+            <th class="text-right py-2 px-2">Mar</th>
+            <th class="text-right py-2 px-2">Apr</th>
+            <th class="text-right py-2 px-2">May</th>
+            <th class="text-right py-2 px-2">Jun</th>
+            <th class="text-right py-2 px-2 text-white font-semibold">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody id="plTableBody" class="divide-y divide-slate-800"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // ─── DATA ────────────────────────────────────────────────────────────────
+    const months = ['Jan','Feb','Mar','Apr','May','Jun'];
+
+    const revenue    = [504774.53, 536344.34, 445629.28, 443601.64, 191135.06, 24091.55];
+    const expenses   = [474513.70, 428524.75, 597921.72, 530195.76, 0, 0];
+    const netProfit  = [30260.83, 107819.59, -152292.44, -86594.12, 191135.06, 24091.55];
+    const margin     = [6.0, 20.1, -34.2, -19.5, 100.0, 100.0];
+    const cashIn     = [267699.01, 509355.68, 493957.52, 469562.16, 185210.87, 42801.41];
+    const cashOut    = [474513.70, 428524.75, 597921.72, 530195.76, 0, 0];
+    const opening    = [170000, -36814.69, 44016.24, -59947.96, -120581.56, 64629.31];
+    const closing    = [-36814.69, 44016.24, -59947.96, -120581.56, 64629.31, 107430.72];
+
+    const clientData = {
+      'Cornwall Council': [312746.92, 317684.99, 278551.12, 266315.64, 129929.83, 0],
+      'Cornwall NHS':     [19651.50,  13225.17,  10525.02,  7081.80,   0,          0],
+      'Cornwall Private': [25019.03,  25072.42,  26667.85,  28717.32,  0,          9069.21],
+      'Leeds Council':    [46721.80,  76847.45,  19508.00,  53293.70,  21496.40,   0],
+      'Leeds NHS':        [83361.41,  83945.35,  95705.61,  68142.19,  39708.83,   0],
+      'Leeds Private':    [17273.87,  19568.96,  14671.68,  20050.99,  0,          15022.34],
+    };
+
+    const expCategories = {
+      'Payroll':            941640.23,
+      'Payroll PAYE':       393216.08,
+      'Director Pension':   160001.00,
+      'Accommodation':      89993.52,
+      'Fleet Finance':      90779.90,
+      'Payroll Pension':    43457.56,
+      'HMRC Plan':          53684.59,
+      'Insurance':          31110.60,
+      'Legal Fees':         29698.89,
+      'Bank Loans':         29682.68,
+      'Agency Staff':       17680.00,
+      'Training':           16836.49,
+      'Fuel':               13762.74,
+      'Credit Cards':       23091.19,
+    };
+
+    // ─── HELPERS ─────────────────────────────────────────────────────────────
+    const fmt = (n) => n === 0 ? '—' :
+      (n < 0 ? '(' : '') + '£' + Math.abs(n).toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2}) + (n < 0 ? ')' : '');
+
+    const COLORS = {
+      blue:   '#60a5fa', green: '#34d399', red: '#f87171',
+      purple: '#a78bfa', amber: '#fbbf24', cyan: '#22d3ee',
+      slate:  '#94a3b8', indigo:'#818cf8',
+    };
+
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.borderColor = '#2a2d3a';
+
+    // ─── 1. Revenue vs Expenses vs Net Profit ────────────────────────────────
+    new Chart(document.getElementById('revExpChart'), {
+      data: {
+        labels: months,
+        datasets: [
+          {
+            type: 'bar', label: 'Revenue',
+            data: revenue, backgroundColor: '#3b82f620', borderColor: COLORS.blue,
+            borderWidth: 1.5, borderRadius: 4,
+          },
+          {
+            type: 'bar', label: 'Expenses',
+            data: expenses.map(v => v || null),
+            backgroundColor: '#ef444420', borderColor: COLORS.red,
+            borderWidth: 1.5, borderRadius: 4,
+          },
+          {
+            type: 'line', label: 'Net Profit',
+            data: netProfit, borderColor: COLORS.green,
+            backgroundColor: '#34d39915', fill: true,
+            tension: 0.4, pointRadius: 4, borderWidth: 2,
+          },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { boxWidth: 12, padding: 16 } } },
+        scales: {
+          y: { ticks: { callback: v => '£' + (v/1000).toFixed(0) + 'k' } }
+        }
+      }
+    });
+
+    // ─── 2. Cash Flow ─────────────────────────────────────────────────────────
+    new Chart(document.getElementById('cashFlowChart'), {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [
+          {
+            label: 'Opening Balance', data: opening,
+            borderColor: COLORS.purple, backgroundColor: '#a78bfa10',
+            fill: false, tension: 0.4, pointRadius: 4, borderWidth: 2,
+          },
+          {
+            label: 'Closing Balance', data: closing,
+            borderColor: COLORS.amber, backgroundColor: '#fbbf2415',
+            fill: true, tension: 0.4, pointRadius: 4, borderWidth: 2,
+          },
+          {
+            label: 'Cash In', data: cashIn,
+            borderColor: COLORS.cyan, fill: false,
+            tension: 0.4, pointRadius: 3, borderWidth: 1.5, borderDash: [4,3],
+          },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { boxWidth: 12, padding: 16 } } },
+        scales: {
+          y: { ticks: { callback: v => '£' + (v/1000).toFixed(0) + 'k' } }
+        }
+      }
+    });
+
+    // ─── 3. Revenue by Client Type (stacked bar) ─────────────────────────────
+    const clientColors = [COLORS.blue, COLORS.cyan, COLORS.indigo, COLORS.amber, COLORS.green, COLORS.purple];
+    new Chart(document.getElementById('clientTypeChart'), {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: Object.entries(clientData).map(([label, data], i) => ({
+          label, data,
+          backgroundColor: clientColors[i] + '99',
+          borderColor: clientColors[i],
+          borderWidth: 1, borderRadius: 2,
+        }))
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { boxWidth: 10, padding: 10, font: { size: 11 } } } },
+        scales: {
+          x: { stacked: true },
+          y: { stacked: true, ticks: { callback: v => '£' + (v/1000).toFixed(0) + 'k' } }
+        }
+      }
+    });
+
+    // ─── 4. Top Expense Categories (horizontal bar) ───────────────────────────
+    const sortedExp = Object.entries(expCategories).sort((a,b) => b[1]-a[1]).slice(0,10);
+    new Chart(document.getElementById('expCatChart'), {
+      type: 'bar',
+      data: {
+        labels: sortedExp.map(e => e[0]),
+        datasets: [{
+          label: 'YTD Spend',
+          data: sortedExp.map(e => e[1]),
+          backgroundColor: sortedExp.map((_,i) => `hsl(${210 + i*15}, 60%, ${55 - i*2}%)`),
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { callback: v => '£' + (v/1000).toFixed(0) + 'k' } }
+        }
+      }
+    });
+
+    // ─── 5. Location Pie ──────────────────────────────────────────────────────
+    new Chart(document.getElementById('locationChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Cornwall', 'Leeds'],
+        datasets: [{
+          data: [1470257.82, 675318.58],
+          backgroundColor: [COLORS.blue + 'cc', COLORS.amber + 'cc'],
+          borderColor: ['#1a1d27'],
+          borderWidth: 3,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { padding: 16 } },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: £${(ctx.raw/1000).toFixed(0)}k (${ctx.label === 'Cornwall' ? '68.5' : '31.5'}%)` } }
+        },
+        cutout: '65%',
+      }
+    });
+
+    // ─── 6. Contract Type Pie ─────────────────────────────────────────────────
+    new Chart(document.getElementById('contractChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Council', 'NHS', 'Private'],
+        datasets: [{
+          data: [1523095.85, 421346.88, 201133.67],
+          backgroundColor: [COLORS.green + 'cc', COLORS.purple + 'cc', COLORS.cyan + 'cc'],
+          borderColor: ['#1a1d27'],
+          borderWidth: 3,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { padding: 16 } },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: £${(ctx.raw/1000).toFixed(0)}k` } }
+        },
+        cutout: '65%',
+      }
+    });
+
+    // ─── 7. Margin Line ───────────────────────────────────────────────────────
+    new Chart(document.getElementById('marginChart'), {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [{
+          label: 'Profit Margin %',
+          data: margin,
+          backgroundColor: margin.map(v => v >= 0 ? '#34d39966' : '#f8717166'),
+          borderColor: margin.map(v => v >= 0 ? COLORS.green : COLORS.red),
+          borderWidth: 1.5, borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { ticks: { callback: v => v + '%' } }
+        }
+      }
+    });
+
+    // ─── P&L Table ────────────────────────────────────────────────────────────
+    const plRows = [
+      { label: 'Total Revenue',    data: revenue,   total: 2145576.40, positive: true  },
+      { label: 'Total Expenses',   data: expenses,  total: 2031155.93, positive: false },
+      { label: 'Net Profit/(Loss)',data: netProfit,  total: 114420.47,  positive: null  },
+      { label: 'Cash Inflows',     data: cashIn,    total: 1968586.65, positive: true  },
+      { label: 'Cash Outflows',    data: cashOut,   total: 2031155.93, positive: false },
+      { label: 'Net Cash Flow',    data: cashIn.map((v,i) => v - cashOut[i]), total: -62569.28, positive: null },
+    ];
+
+    const tbody = document.getElementById('plTableBody');
+    plRows.forEach(row => {
+      const tr = document.createElement('tr');
+      const color = (v) => v > 0 ? 'text-emerald-400' : v < 0 ? 'text-red-400' : 'text-slate-400';
+      tr.innerHTML = `
+        <td class="py-2 pr-4 text-slate-300 font-medium">${row.label}</td>
+        ${row.data.map(v => `<td class="text-right py-2 px-2 text-xs ${color(v)}">${fmt(v)}</td>`).join('')}
+        <td class="text-right py-2 px-2 font-semibold ${color(row.total)}">${fmt(row.total)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // ─── Last updated ─────────────────────────────────────────────────────────
+    document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'short', year: 'numeric'
+    });
+  </script>
+
+</body>
+</html>
