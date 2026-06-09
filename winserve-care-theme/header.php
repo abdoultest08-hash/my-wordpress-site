@@ -8,6 +8,7 @@
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
+<!-- Topbar -->
 <div class="topbar">
   <div class="topbar-inner container">
     <div class="topbar-left">
@@ -15,10 +16,14 @@
         <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
         0113 340 8777
       </a>
-      <a href="mailto:info@winservecare.co.uk" class="topbar-link">
+      <a href="mailto:enquiries@winservecare.co.uk" class="topbar-link">
         <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-        info@winservecare.co.uk
+        enquiries@winservecare.co.uk
       </a>
+      <span class="topbar-link topbar-hours">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Mon–Fri 08:00–17:00
+      </span>
     </div>
     <div class="topbar-right">
       <a href="https://www.facebook.com/WinserveCareUK/" target="_blank" rel="noopener" aria-label="Facebook" class="topbar-social">
@@ -34,15 +39,15 @@
   </div>
 </div>
 
+<!-- Site Header -->
 <header class="site-header" id="site-header">
   <div class="container">
     <nav class="nav-inner" role="navigation" aria-label="Primary">
+
       <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo" aria-label="Winserve Care Services Home">
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-white-stacked.png" alt="Winserve Care Services Ltd" height="70" style="width:auto;max-width:120px;">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-white-stacked.png" alt="Winserve Care Services Ltd" height="70" style="width:auto;max-width:110px;">
       </a>
-      <button class="menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
+
       <div class="primary-nav" id="primary-nav">
         <a href="<?php echo esc_url(home_url('/')); ?>">Home</a>
         <a href="<?php echo esc_url(home_url('/about')); ?>">About Us</a>
@@ -51,8 +56,26 @@
         <a href="<?php echo esc_url(home_url('/vacancies')); ?>">Vacancies</a>
         <a href="https://portal.winservecare.co.uk/" target="_blank" rel="noopener">Staff Portal</a>
         <a href="<?php echo esc_url(home_url('/blog')); ?>">Blog</a>
-        <a href="<?php echo esc_url(home_url('/contact')); ?>">Contact Us</a>
+        <a href="<?php echo esc_url(home_url('/contact')); ?>" class="nav-contact-btn">Contact Us</a>
       </div>
+
+      <button class="menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
     </nav>
   </div>
 </header>
+
+<script>
+(function(){
+  var btn = document.getElementById('menu-toggle');
+  var nav = document.getElementById('primary-nav');
+  if(btn && nav){
+    btn.addEventListener('click', function(){
+      var open = nav.classList.toggle('nav-open');
+      btn.setAttribute('aria-expanded', open);
+    });
+  }
+})();
+</script>
