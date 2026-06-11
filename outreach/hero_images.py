@@ -52,8 +52,34 @@ def lerp_colour(c1, c2, t):
     return tuple(int(c1[i] + (c2[i] - c1[i]) * t) for i in range(3))
 
 
+def find_real_photo(industry: str) -> str | None:
+    """Return path to a real photo for this industry, or None."""
+    low = industry.lower()
+    mapping = [
+        (["plumb"],                          ["plumber", "plumbing"]),
+        (["roof", "gutter"],                 ["roof", "roofer"]),
+        (["electr"],                         ["electric", "electrician"]),
+        (["clean", "maid"],                  ["clean", "cleaning"]),
+        (["lands", "lawn", "tree"],          ["landscap", "landscaper"]),
+        (["hvac", "heat", "air", "gas"],     ["hvac"]),
+        (["handy", "remod", "construct"],    ["handyman"]),
+        (["paint"],                          ["paint", "painter"]),
+    ]
+    for keywords, filenames in mapping:
+        if any(k in low for k in keywords):
+            for fname in filenames:
+                path = os.path.join(OUT_DIR, f"{fname}.jpg")
+                if os.path.exists(path):
+                    return path
+    return None
+
+
 def make_hero(industry: str) -> str:
-    """Generate hero image for industry, save, and return file path."""
+    """Return real photo if available, otherwise generate gradient fallback."""
+    real = find_real_photo(industry)
+    if real:
+        return real
+
     slug = industry.lower().replace(" ", "_")[:20]
     out_path = os.path.join(OUT_DIR, f"{slug}.jpg")
     if os.path.exists(out_path):
