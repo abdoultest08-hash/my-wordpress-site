@@ -86,10 +86,6 @@ def get_access_token(account: dict) -> str:
     token_data  = json.loads(token_path.read_text())
     creds_data  = json.loads(CREDS_FILE.read_text())["installed"]
 
-    # Google auth library saves keys as "token" not "access_token"
-    if "token" in token_data and "access_token" not in token_data:
-        token_data["access_token"] = token_data["token"]
-
     refresh_token = token_data.get("refresh_token") or token_data.get("_refresh_token")
 
     import requests as req
@@ -101,10 +97,13 @@ def get_access_token(account: dict) -> str:
             "grant_type":    "refresh_token",
         })
         if r.status_code == 200:
-            token_data["access_token"] = r.json()["access_token"]
+            new_token = r.json()["access_token"]
+            token_data["access_token"] = new_token
+            token_data["token"] = new_token
             token_path.write_text(json.dumps(token_data))
 
-    return token_data["access_token"]
+    # Support both "access_token" and "token" key formats
+    return token_data.get("access_token") or token_data.get("token")
 
 # ── Account picker ────────────────────────────────────────────────────────────
 def get_available_accounts(send_log: dict) -> list[dict]:
