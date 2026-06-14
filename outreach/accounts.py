@@ -82,20 +82,27 @@ CREDS_FILE = BASE / "credentials.json"
 
 def get_access_token(account: dict) -> str:
     """Return a valid access token for an account, refreshing if needed."""
-    token_data  = json.loads(Path(account["token_file"]).read_text())
+    token_path  = Path(account["token_file"])
+    token_data  = json.loads(token_path.read_text())
     creds_data  = json.loads(CREDS_FILE.read_text())["installed"]
 
+    # Google auth library saves keys as "token" not "access_token"
+    if "token" in token_data and "access_token" not in token_data:
+        token_data["access_token"] = token_data["token"]
+
+    refresh_token = token_data.get("refresh_token") or token_data.get("_refresh_token")
+
     import requests as req
-    if "refresh_token" in token_data:
+    if refresh_token:
         r = req.post("https://oauth2.googleapis.com/token", data={
             "client_id":     creds_data["client_id"],
             "client_secret": creds_data["client_secret"],
-            "refresh_token": token_data["refresh_token"],
+            "refresh_token": refresh_token,
             "grant_type":    "refresh_token",
         })
         if r.status_code == 200:
             token_data["access_token"] = r.json()["access_token"]
-            Path(account["token_file"]).write_text(json.dumps(token_data))
+            token_path.write_text(json.dumps(token_data))
 
     return token_data["access_token"]
 
