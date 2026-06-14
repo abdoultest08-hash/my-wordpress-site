@@ -191,7 +191,7 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--leads",    default="leads_example.xlsx")
+    parser.add_argument("--leads",    default="leads_ready.xlsx")
     parser.add_argument("--limit",    type=int, default=10)
     parser.add_argument("--no-send",  action="store_true")
     parser.add_argument("--draft",    action="store_true")
