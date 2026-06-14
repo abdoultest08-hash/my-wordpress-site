@@ -43,7 +43,7 @@ def get_access_token() -> str:
             token_data["access_token"] = r.json()["access_token"]
             TOKEN_FILE.write_text(json.dumps(token_data))
 
-    return token_data["access_token"]
+    return token_data.get("access_token") or token_data.get("token")
 
 
 def build_subject(lead: dict) -> str:
@@ -141,7 +141,7 @@ def create_draft(lead: dict, screenshot_path: str, your_name: str, your_email: s
         "refresh_token": token_data["refresh_token"],
         "grant_type":    "refresh_token",
     })
-    token = r.json().get("access_token", token_data["access_token"])
+    token = r.json().get("access_token") or token_data.get("access_token") or token_data.get("token")
     resp = requests.post(
         "https://gmail.googleapis.com/gmail/v1/users/me/drafts",
         headers={"Authorization": f"Bearer {token}"},
