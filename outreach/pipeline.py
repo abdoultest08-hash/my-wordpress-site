@@ -171,7 +171,7 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
         print(f"  ✓ CRM updated → Email Sent")
 
         # ── 7. Human delay before next send ──────────────────────────────────
-        if i < len(leads):
+        if i < len(leads) and not draft_mode:
             remaining = sum(a.get("remaining", 0) for a in [account])
             delay = random_send_delay(remaining)
             mins  = delay // 60
