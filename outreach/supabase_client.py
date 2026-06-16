@@ -126,11 +126,9 @@ def mark_site_generated(lead_id: str, screenshot_path: str):
 
 def mark_draft_created(lead_id: str, from_account: str, subject: str, draft_id: str,
                        copy_version: str = "v1", pitch_type: str = "new"):
-    """Marks a lead as having a draft ready (not yet sent) — distinct from email_sent
-    so the pipeline won't create a duplicate draft on a rerun."""
-    # Reuses existing leads columns only (no schema change needed in Supabase)
+    """Records that a Gmail draft was created without changing status to sent.
+    Sets email_sent_from so reruns can detect the draft already exists."""
     data = {
-        "status":          "draft_created",
         "email_sent_from": from_account,
         "copy_version":    copy_version,
         "pitch_type":      pitch_type,
@@ -231,7 +229,7 @@ def get_send_log() -> dict:
 def get_lead_by_email(email: str) -> dict | None:
     if not _check_connectivity():
         return None
-    rows = _get("leads", f"email=eq.{email}&select=id,status")
+    rows = _get("leads", f"email=eq.{email}&select=id,status,email_sent_from")
     return rows[0] if rows else None
 
 

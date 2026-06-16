@@ -106,8 +106,10 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
             existing = get_lead_by_email(email)
             if existing:
                 lead_id = existing["id"]
-                if existing["status"] in ("email_sent", "draft_created"):
-                    print(f"  ✓ Already emailed/drafted — skipping")
+                already_sent    = existing["status"] == "email_sent"
+                already_drafted = existing.get("email_sent_from") and existing["status"] != "email_sent"
+                if already_sent or already_drafted:
+                    print(f"  ✓ Already {'emailed' if already_sent else 'drafted'} — skipping")
                     continue
         print(f"  ✓ CRM: lead saved (id: {lead_id[:8]}...)")
 
