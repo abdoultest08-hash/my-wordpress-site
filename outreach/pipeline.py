@@ -142,10 +142,14 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
             continue
 
         # ── 4. Pick sending account ───────────────────────────────────────────
-        account = pick_account(send_log)
-        if not account:
-            print(f"  ⚠ All accounts hit daily limit — stopping")
-            break
+        if draft_mode:
+            # Drafts aren't real sends — round-robin accounts, ignore daily warm-up cap
+            account = {**ACCOUNTS[(i - 1) % len(ACCOUNTS)], "remaining": "∞"}
+        else:
+            account = pick_account(send_log)
+            if not account:
+                print(f"  ⚠ All accounts hit daily limit — stopping")
+                break
         print(f"  → Sending from: {account['email']} ({account['remaining']} left today)")
 
         # ── 5. Send / draft ───────────────────────────────────────────────────
@@ -166,9 +170,11 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
 
         # ── 6. Update CRM + send log ──────────────────────────────────────────
         mark_email_sent(lead_id, account["email"], subject, msg_id, COPY_VERSION, pitch)
-        send_log = log_send(send_log, account["email"])
-        increment_send_count(account["email"])
-        print(f"  ✓ CRM updated → Email Sent")
+        if not draft_mode:
+            # Only real sends count against the daily warm-up limit — drafts are free
+            send_log = log_send(send_log, account["email"])
+            increment_send_count(account["email"])
+        print(f"  ✓ CRM updated → {'Draft Created' if draft_mode else 'Email Sent'}")
 
         # ── 7. Human delay before next send ──────────────────────────────────
         if i < len(leads) and not draft_mode:
