@@ -159,7 +159,7 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
         try:
             if draft_mode:
                 msg_id = create_draft(lead, str(png_file), account["name"], account["email"],
-                                      YOUR_WEBSITE, COPY_VERSION)
+                                      YOUR_WEBSITE, COPY_VERSION, account=account)
                 print(f"  ✓ Draft created")
             else:
                 msg_id = send_email(lead, str(png_file), account, YOUR_WEBSITE, COPY_VERSION)

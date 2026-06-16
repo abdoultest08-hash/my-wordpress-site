@@ -127,21 +127,12 @@ def send_email(lead: dict, screenshot_path: str, account: dict, your_website: st
 
 
 def create_draft(lead: dict, screenshot_path: str, your_name: str, your_email: str,
-                 your_website: str, copy_version: str = "v1") -> str:
-    """Creates a Gmail draft. Returns draft ID."""
+                 your_website: str, copy_version: str = "v1", account: dict | None = None) -> str:
+    """Creates a Gmail draft in the given account's mailbox. Returns draft ID."""
     msg  = _build_mime(lead, screenshot_path, your_name, your_email,
                        your_website, copy_version)
     raw  = base64.urlsafe_b64encode(msg.as_bytes()).decode()
-    # Refresh token for default account
-    token_data  = json.loads((Path(__file__).parent / "token.json").read_text())
-    creds_data  = json.loads((Path(__file__).parent / "credentials.json").read_text())["installed"]
-    r = requests.post("https://oauth2.googleapis.com/token", data={
-        "client_id":     creds_data["client_id"],
-        "client_secret": creds_data["client_secret"],
-        "refresh_token": token_data["refresh_token"],
-        "grant_type":    "refresh_token",
-    })
-    token = r.json().get("access_token") or token_data.get("access_token") or token_data.get("token")
+    token = get_access_token_for_account(account) if account else get_access_token()
     resp = requests.post(
         "https://gmail.googleapis.com/gmail/v1/users/me/drafts",
         headers={"Authorization": f"Bearer {token}"},
