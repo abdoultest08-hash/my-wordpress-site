@@ -169,12 +169,14 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
             continue
 
         # ── 6. Update CRM + send log ──────────────────────────────────────────
-        mark_email_sent(lead_id, account["email"], subject, msg_id, COPY_VERSION, pitch)
-        if not draft_mode:
-            # Only real sends count against the daily warm-up limit — drafts are free
+        if draft_mode:
+            # Leave status as "site_generated" — you'll flip it to sent manually once you hit Send
+            print(f"  ✓ CRM left at 'site_generated' (draft only)")
+        else:
+            mark_email_sent(lead_id, account["email"], subject, msg_id, COPY_VERSION, pitch)
             send_log = log_send(send_log, account["email"])
             increment_send_count(account["email"])
-        print(f"  ✓ CRM updated → {'Draft Created' if draft_mode else 'Email Sent'}")
+            print(f"  ✓ CRM updated → Email Sent")
 
         # ── 7. Human delay before next send ──────────────────────────────────
         if i < len(leads) and not draft_mode:
