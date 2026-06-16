@@ -33,7 +33,7 @@ import openpyxl
 from generate_site   import generate_mock_site
 from gmail_draft     import send_email, create_draft, build_subject
 from accounts        import pick_account, log_send, random_send_delay, is_business_hours, ACCOUNTS
-from supabase_client import (upsert_lead, mark_site_generated, mark_email_sent,
+from supabase_client import (upsert_lead, mark_site_generated, mark_email_sent, mark_draft_created,
                               increment_send_count, get_send_log, get_lead_by_email)
 
 BASE  = Path(__file__).parent
@@ -106,8 +106,8 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
             existing = get_lead_by_email(email)
             if existing:
                 lead_id = existing["id"]
-                if existing["status"] == "email_sent":
-                    print(f"  ✓ Already emailed — skipping")
+                if existing["status"] in ("email_sent", "draft_created"):
+                    print(f"  ✓ Already emailed/drafted — skipping")
                     continue
         print(f"  ✓ CRM: lead saved (id: {lead_id[:8]}...)")
 
@@ -170,8 +170,10 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
 
         # ── 6. Update CRM + send log ──────────────────────────────────────────
         if draft_mode:
-            # Leave status as "site_generated" — you'll flip it to sent manually once you hit Send
-            print(f"  ✓ CRM left at 'site_generated' (draft only)")
+            # Marks as "draft_created" (not "email_sent") so you flip it manually once you hit Send,
+            # and so a rerun won't create a duplicate draft for this lead.
+            mark_draft_created(lead_id, account["email"], subject, msg_id, COPY_VERSION, pitch)
+            print(f"  ✓ CRM updated → Draft Created")
         else:
             mark_email_sent(lead_id, account["email"], subject, msg_id, COPY_VERSION, pitch)
             send_log = log_send(send_log, account["email"])

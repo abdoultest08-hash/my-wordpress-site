@@ -124,6 +124,23 @@ def mark_site_generated(lead_id: str, screenshot_path: str):
     })
 
 
+def mark_draft_created(lead_id: str, from_account: str, subject: str, draft_id: str,
+                       copy_version: str = "v1", pitch_type: str = "new"):
+    """Marks a lead as having a draft ready (not yet sent) — distinct from email_sent
+    so the pipeline won't create a duplicate draft on a rerun."""
+    # Reuses existing leads columns only (no schema change needed in Supabase)
+    data = {
+        "status":          "draft_created",
+        "email_sent_from": from_account,
+        "copy_version":    copy_version,
+        "pitch_type":      pitch_type,
+    }
+    if not _check_connectivity():
+        _local_append({"op": "mark_draft_created", "lead_id": lead_id, "patch": data})
+        return
+    _patch("leads", "id", lead_id, data)
+
+
 def mark_email_sent(lead_id: str, from_account: str, subject: str, gmail_id: str,
                     copy_version: str = "v1", pitch_type: str = "new"):
     data = {
