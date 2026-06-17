@@ -33,6 +33,11 @@ INDUSTRY_PALETTES = {
     "detailing":    ((20, 20, 35),   (35, 35, 65),   (55, 55, 100)),
     "auto":         ((20, 20, 35),   (35, 35, 65),   (55, 55, 100)),
     "floor":        ((35, 25, 15),   (65, 50, 30),   (95, 75, 45)),
+    "fence":        ((30, 35, 25),   (55, 65, 45),   (80, 95, 65)),
+    "concrete":     ((40, 40, 40),   (75, 75, 75),   (110, 110, 110)),
+    "chimney":      ((30, 20, 15),   (60, 40, 30),   (90, 60, 45)),
+    "waterdamage":  ((15, 30, 50),   (25, 55, 90),   (40, 85, 130)),
+    "restoration":  ((15, 30, 50),   (25, 55, 90),   (40, 85, 130)),
     "handyman":     ((25, 30, 35),   (45, 55, 65),   (70, 85, 100)),
     "remodel":      ((25, 30, 35),   (45, 55, 65),   (70, 85, 100)),
     "construct":    ((25, 30, 35),   (45, 55, 65),   (70, 85, 100)),
@@ -56,14 +61,20 @@ def find_real_photo(industry: str) -> str | None:
     """Return path to a real photo for this industry, or None."""
     low = industry.lower()
     mapping = [
-        (["plumb"],                          ["plumber", "plumbing"]),
-        (["roof", "gutter"],                 ["roof", "roofer"]),
-        (["electr"],                         ["electric", "electrician"]),
-        (["clean", "maid"],                  ["clean", "cleaning"]),
-        (["lands", "lawn", "tree"],          ["landscap", "landscaper"]),
-        (["hvac", "heat", "air", "gas"],     ["hvac"]),
-        (["handy", "remod", "construct"],    ["handyman"]),
-        (["paint"],                          ["paint", "painter"]),
+        (["plumb"],                               ["plumber", "plumbing"]),
+        (["roof", "gutter", "chimney"],           ["chimney", "roof", "roofer"]),
+        (["electr", "eletric"],                   ["electric", "electrician"]),
+        (["clean", "maid", "janitor", "janitorial", "upholstery"], ["clean", "cleaning"]),
+        (["lands", "lawn", "tree", "arborist", "sod"], ["landscap", "landscaper"]),
+        (["hvac", "heat", "air condition", "mechanical"], ["hvac"]),
+        (["handy", "remod", "construct", "general contractor", "fence", "concrete", "demo"], ["handyman"]),
+        (["paint"],                               ["paint", "painter"]),
+        (["pest", "exterminator"],                ["pest"]),
+        (["floor"],                               ["floor"]),
+        (["fence"],                               ["fence"]),
+        (["concrete"],                            ["concrete"]),
+        (["water damage", "restoration"],         ["waterdamage"]),
+        (["detail", "car wash", "auto"],          ["detailing"]),
     ]
     for keywords, filenames in mapping:
         if any(k in low for k in keywords):
