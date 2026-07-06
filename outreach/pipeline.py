@@ -51,6 +51,34 @@ def slug(name: str) -> str:
     return "".join(c if c.isalnum() else "_" for c in name.lower()).strip("_")
 
 
+def clean_name(name: str) -> str:
+    """Strip corporate suffixes so emails read naturally (e.g. 'ABC Plumbing' not 'ABC Plumbing Ltd')."""
+    import re
+    suffixes = r"\b(ltd\.?|limited|llc\.?|inc\.?|corp\.?|co\.?|llp\.?|plc\.?)\b"
+    return re.sub(suffixes, "", name, flags=re.IGNORECASE).strip(" ,.")
+
+
+# Industries we can actually build a good mock site for.
+# Leads whose industry matches none of these are skipped.
+TARGET_KEYWORDS = [
+    "plumb", "roof", "gutter", "chimney",
+    "electr", "eletric",
+    "clean", "maid", "janitor", "upholstery",
+    "lands", "lawn", "tree", "arborist", "sod",
+    "hvac", "heat", "air condition", "mechanical",
+    "handy", "remodel", "construct", "contractor", "fence", "concrete", "demo",
+    "paint",
+    "pest", "exterminator",
+    "floor",
+    "water damage", "restoration",
+    "detail", "car wash",
+]
+
+def is_target_niche(industry: str) -> bool:
+    low = (industry or "").lower()
+    return any(kw in low for kw in TARGET_KEYWORDS)
+
+
 def read_leads(xlsx_path: str, limit: int) -> list[dict]:
     wb      = openpyxl.load_workbook(xlsx_path)
     ws      = wb.active
@@ -98,6 +126,14 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
             lead["address"] = lead.get("Address", "")
         if not lead.get("pitch_type"):
             lead["pitch_type"] = "new"
+
+        # Skip niches we can't build a good mock site for
+        if not is_target_niche(lead.get("industry", "")):
+            print(f"  ⏭ Skipping — industry '{lead.get('industry')}' not in target niches")
+            continue
+
+        # Clean business name — strip Ltd/Limited/LLC etc for natural-sounding emails
+        lead["business_name"] = clean_name(lead["business_name"])
 
         # ── 1. Upsert into Supabase ───────────────────────────────────────────
         lead_id = upsert_lead(lead)
