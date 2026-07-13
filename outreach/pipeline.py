@@ -31,6 +31,7 @@ from pathlib import Path
 import openpyxl
 
 from generate_site   import generate_mock_site
+from hero_images     import find_real_photo
 from gmail_draft     import send_email, create_draft, build_subject
 from accounts        import pick_account, log_send, random_send_delay, is_business_hours, ACCOUNTS
 from supabase_client import (upsert_lead, mark_site_generated, mark_email_sent, mark_draft_created,
@@ -130,6 +131,11 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
         # Skip niches we can't build a good mock site for
         if not is_target_niche(lead.get("industry", "")):
             print(f"  ⏭ Skipping — industry '{lead.get('industry')}' not in target niches")
+            continue
+
+        # Skip if no real hero photo exists for this industry (gradient only = lower quality)
+        if not find_real_photo(lead.get("industry", "")):
+            print(f"  ⏭ Skipping — no hero photo for '{lead.get('industry')}'")
             continue
 
         # Clean business name — strip Ltd/Limited/LLC etc for natural-sounding emails
