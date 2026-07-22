@@ -102,14 +102,18 @@ def upsert_lead(lead: dict) -> str | None:
         _local_append({"op": "upsert_lead", "data": payload, "fake_id": fake_id})
         return fake_id
 
-    h = {**_headers(), "Prefer": "resolution=merge-duplicates,return=representation"}
+    # Use ignore-duplicates so existing leads (with their status/draft data) are never overwritten
+    h = {**_headers(), "Prefer": "resolution=ignore-duplicates,return=representation"}
     r = requests.post(f"{SUPABASE_URL}/rest/v1/leads", headers=h, json=payload)
-    if r.status_code == 409:
-        # Already exists — fetch the existing lead id by email
-        r2 = requests.get(f"{SUPABASE_URL}/rest/v1/leads?email=eq.{payload['email']}&select=id", headers=_headers())
+    if r.status_code in (409, 200) and not r.json():
+        # Row already existed and was ignored — fetch the existing id
+        r2 = requests.get(f"{SUPABASE_URL}/rest/v1/leads?email=eq.{payload['email']}&select=id",
+                          headers=_headers())
         if r2.ok and r2.json():
             return r2.json()[0]["id"]
-    r.raise_for_status()
+        return None
+    if not r.ok:
+        r.raise_for_status()
     result = r.json()
     return result[0]["id"] if result else None
 

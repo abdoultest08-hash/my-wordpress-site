@@ -143,16 +143,19 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
 
         # ── 1. Upsert into Supabase ───────────────────────────────────────────
         lead_id = upsert_lead(lead)
-        if not lead_id:
-            # Already exists — get existing ID
-            existing = get_lead_by_email(email)
-            if existing:
+        # Always check current state — upsert may have returned an existing ID
+        existing = get_lead_by_email(email)
+        if existing:
+            if not lead_id:
                 lead_id = existing["id"]
-                already_sent    = existing["status"] == "email_sent"
-                already_drafted = existing.get("email_sent_from") and existing["status"] != "email_sent"
-                if already_sent or already_drafted:
-                    print(f"  ✓ Already {'emailed' if already_sent else 'drafted'} — skipping")
-                    continue
+            already_sent    = existing["status"] == "email_sent"
+            already_drafted = existing.get("email_sent_from") and existing["status"] != "email_sent"
+            if already_sent or already_drafted:
+                print(f"  ✓ Already {'emailed' if already_sent else 'drafted'} — skipping")
+                continue
+        if not lead_id:
+            print(f"  ✗ Could not save lead to CRM — skipping")
+            continue
         print(f"  ✓ CRM: lead saved (id: {lead_id[:8]}...)")
 
         # ── 2. Generate mock site ─────────────────────────────────────────────
