@@ -53,23 +53,48 @@ def build_subject(lead: dict) -> str:
 
 def build_email_body(lead: dict, your_name: str, your_website: str, copy_version: str = "v1") -> str:
     """
-    Returns the HTML email body.
+    Returns the HTML email body, tailored to industry niche.
     copy_version is logged to CRM for A/B tracking.
     pitch_type: 'new' = no website, 'upgrade' = has website.
+    niche: 'trades' | 'care' | 'accountants'
     """
+    from accounts import classify_niche
     biz        = lead["business_name"]
     industry   = lead.get("industry", "service businesses")
     city       = lead.get("city", "your area")
     pitch_type = lead.get("pitch_type", "new")
+    niche      = classify_niche(industry)
 
-    if pitch_type == "upgrade":
-        para1 = f"Heard about {biz} from someone the other day. They said your work is solid but the website doesn't really reflect that."
-        para2 = "I put together a quick mock-up of what an updated version could look like."
-        para3 = f"Most {industry}s in your area pick up 5+ extra quote requests a month just from Google."
+    if niche == "care":
+        if pitch_type == "upgrade":
+            para1 = f"I came across {biz} while doing some research on care providers in {city}. Your reviews speak for themselves — but the website doesn't quite match the standard of care you clearly provide."
+            para2 = "I put together a quick mock-up showing what a more professional, trust-building site could look like."
+            para3 = "Families searching for care in your area often decide in under 60 seconds based purely on how a website looks. A strong first impression can make a real difference in who calls you first."
+        else:
+            para1 = f"I came across {biz} while looking at care providers in {city}. The work looks great — but without a website, families searching online for care are finding your competitors first."
+            para2 = "I built a quick mock-up to show what a professional site could look like for your agency."
+            para3 = "A clean, reassuring website is often the first thing families check before making contact. It builds trust before you even pick up the phone."
+
+    elif niche == "accountants":
+        if pitch_type == "upgrade":
+            para1 = f"I spotted {biz} while researching accountants in {city}. Strong reputation — but the website might be costing you new clients who judge on first impressions."
+            para2 = "I put together a quick concept showing what a sharper, more conversion-focused site could look like."
+            para3 = "Most accounting firms we've worked with see a noticeable uptick in enquiries just from cleaning up their web presence and making it easier for people to get in touch."
+        else:
+            para1 = f"I came across {biz} while looking at accountants in {city}. No website means you're invisible to anyone searching for an accountant right now."
+            para2 = "I put together a quick mock-up to show what a professional site could look like — clean, credible, and built to get enquiries."
+            para3 = "Most small accounting practices that add a proper website start picking up 3–6 new client enquiries a month from Google alone."
+
     else:
-        para1 = f"Heard about {biz} from someone the other day. They said your work is solid but you don't have a website yet, which means you're probably missing out on quote requests every month."
-        para2 = "I put together a quick mock-up of what one could look like for you."
-        para3 = f"Most {industry}s in your area pick up 5+ extra quote requests a month just from Google."
+        # Default: trades
+        if pitch_type == "upgrade":
+            para1 = f"Heard about {biz} from someone the other day. They said your work is solid but the website doesn't really reflect that."
+            para2 = "I put together a quick mock-up of what an updated version could look like."
+            para3 = f"Most {industry}s in your area pick up 5+ extra quote requests a month just from Google."
+        else:
+            para1 = f"Heard about {biz} from someone the other day. They said your work is solid but you don't have a website yet, which means you're probably missing out on quote requests every month."
+            para2 = "I put together a quick mock-up of what one could look like for you."
+            para3 = f"Most {industry}s in your area pick up 5+ extra quote requests a month just from Google."
 
     return f"""<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#222;font-size:15px;line-height:1.8">
 
@@ -91,7 +116,7 @@ def build_email_body(lead: dict, your_name: str, your_website: str, copy_version
   Abdoul Sandwidi
 </p>
 
-</div><!-- cv:{copy_version} pt:{pitch_type} -->"""
+</div><!-- cv:{copy_version} pt:{pitch_type} niche:{niche} -->"""
 
 
 def _build_mime(lead: dict, screenshot_path: str, from_name: str, from_email: str,

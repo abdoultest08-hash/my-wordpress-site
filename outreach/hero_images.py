@@ -75,6 +75,12 @@ def find_real_photo(industry: str) -> str | None:
         (["concrete"],                            ["concrete"]),
         (["water damage", "restoration"],         ["waterdamage"]),
         (["detail", "car wash", "auto"],          ["detailing"]),
+        (["care", "carer", "caregiver", "home care", "domiciliary", "nursing",
+          "elderly", "senior", "supported living", "live-in", "respite",
+          "disability", "personal care"],          ["care", "homecare"]),
+        (["accountant", "accounting", "bookkeep", "tax", "payroll", "chartered",
+          "cpa", "cfa", "auditor", "financial advisor", "wealth", "finance",
+          "insolvency"],                            ["accountant", "accounting"]),
     ]
     for keywords, filenames in mapping:
         if any(k in low for k in keywords):

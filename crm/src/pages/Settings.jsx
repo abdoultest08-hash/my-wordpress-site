@@ -3,8 +3,10 @@ import { getFollowUpSettings, saveFollowUpSettings } from "../lib/utils"
 import { Save, CheckCircle, Clock, Zap } from "lucide-react"
 
 const ACCOUNTS = [
-  { email: "sitesbyabs@gmail.com",     start: "2026-06-03" },
-  { email: "pagesforlocals@gmail.com", start: "2026-06-03" },
+  { email: "sitesbyabs@gmail.com",        start: "2026-06-03", niche: "Trades" },
+  { email: "pagesforlocals@gmail.com",    start: "2026-06-03", niche: "Trades" },
+  { email: "sitesforcare@gmail.com",      start: null,         niche: "Care" },
+  { email: "sitesforaccounts@gmail.com",  start: null,         niche: "Accountants" },
 ]
 
 export default function Settings() {
@@ -92,9 +94,14 @@ export default function Settings() {
             <div key={acc.email} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div>
                 <div className="text-sm font-medium text-gray-900">{acc.email}</div>
-                <div className="text-xs text-gray-400">Started {new Date(acc.start).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" })}</div>
+                <div className="text-xs text-gray-400">
+                  {acc.niche} ·{" "}
+                  {acc.start
+                    ? `Started ${new Date(acc.start).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" })}`
+                    : "Not yet active"}
+                </div>
               </div>
-              <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+              <div className={`w-2.5 h-2.5 rounded-full ${acc.start ? "bg-green-400" : "bg-gray-300"}`}></div>
             </div>
           ))}
         </div>

@@ -33,7 +33,7 @@ import openpyxl
 from generate_site   import generate_mock_site
 from hero_images     import find_real_photo
 from gmail_draft     import send_email, create_draft, build_subject
-from accounts        import pick_account, log_send, random_send_delay, is_business_hours, ACCOUNTS
+from accounts        import pick_account, pick_draft_account, log_send, random_send_delay, is_business_hours, ACCOUNTS, classify_niche
 from supabase_client import (upsert_lead, mark_site_generated, mark_email_sent, mark_draft_created,
                               increment_send_count, get_send_log, get_lead_by_email)
 
@@ -62,6 +62,7 @@ def clean_name(name: str) -> str:
 # Industries we can actually build a good mock site for.
 # Leads whose industry matches none of these are skipped.
 TARGET_KEYWORDS = [
+    # Trades
     "plumb", "roof", "gutter", "chimney",
     "electr", "eletric",
     "clean", "maid", "janitor", "upholstery",
@@ -73,6 +74,12 @@ TARGET_KEYWORDS = [
     "floor",
     "water damage", "restoration",
     "detail", "car wash",
+    # Care
+    "care", "carer", "caregiver", "home care", "domiciliary", "nursing",
+    "elderly", "senior", "supported living", "live-in", "respite",
+    # Accountants
+    "accountant", "accounting", "bookkeep", "tax", "payroll", "chartered",
+    "cpa", "auditor", "financial advisor",
 ]
 
 def is_target_niche(industry: str) -> bool:
@@ -188,12 +195,12 @@ def run(leads_file: str, limit: int, no_send: bool = False, draft_mode: bool = F
             print(f"  ⏭ --no-send: skipping email")
             continue
 
-        # ── 4. Pick sending account ───────────────────────────────────────────
+        # ── 4. Pick sending account (niche-matched) ───────────────────────────
+        niche = classify_niche(lead.get("industry", ""))
         if draft_mode:
-            # Drafts aren't real sends — round-robin accounts, ignore daily warm-up cap
-            account = {**ACCOUNTS[(i - 1) % len(ACCOUNTS)], "remaining": "∞"}
+            account = pick_draft_account(i - 1, niche)
         else:
-            account = pick_account(send_log)
+            account = pick_account(send_log, niche)
             if not account:
                 print(f"  ⚠ All accounts hit daily limit — stopping")
                 break

@@ -21,14 +21,61 @@ ACCOUNTS = [
         "name":       "Abdoul Sandwidi",
         "token_file": BASE / "token.json",
         "start_date": date(2026, 6, 3),
+        "niches":     ["trades"],          # plumbers, roofers, electricians, etc.
     },
     {
         "email":      "pagesforlocals@gmail.com",
         "name":       "Abdoul Sandwidi",
         "token_file": BASE / "token_pagesforlocals.json",
         "start_date": date(2026, 6, 3),
+        "niches":     ["trades"],          # second trades account
     },
+    # ── Add new accounts below as you create them ─────────────────────────────
+    # {
+    #     "email":      "sitesforcare@gmail.com",
+    #     "name":       "Abdoul Sandwidi",
+    #     "token_file": BASE / "token_sitesforcare.json",
+    #     "start_date": date(2026, 7, 22),
+    #     "niches":     ["care"],
+    # },
+    # {
+    #     "email":      "sitesforaccounts@gmail.com",
+    #     "name":       "Abdoul Sandwidi",
+    #     "token_file": BASE / "token_sitesforaccounts.json",
+    #     "start_date": date(2026, 7, 22),
+    #     "niches":     ["accountants"],
+    # },
 ]
+
+# ── Niche → keyword classifier ────────────────────────────────────────────────
+NICHE_KEYWORDS = {
+    "trades": [
+        "plumb", "roof", "gutter", "chimney", "electr", "eletric",
+        "clean", "maid", "janitor", "upholstery", "lands", "lawn", "tree",
+        "arborist", "sod", "hvac", "heat", "air condition", "mechanical",
+        "handy", "remodel", "construct", "contractor", "fence", "concrete",
+        "demo", "paint", "pest", "exterminator", "floor", "water damage",
+        "restoration", "detail", "car wash",
+    ],
+    "care": [
+        "care", "carer", "caregiver", "home care", "domiciliary", "nursing",
+        "elderly", "senior", "supported living", "live-in", "respite",
+        "disability", "personal care",
+    ],
+    "accountants": [
+        "accountant", "accounting", "bookkeep", "tax", "payroll", "chartered",
+        "cpa", "cfa", "auditor", "financial advisor", "wealth management",
+        "finance", "insolvency",
+    ],
+}
+
+def classify_niche(industry: str) -> str:
+    """Return the niche label for an industry string, or 'trades' as default."""
+    low = (industry or "").lower()
+    for niche, keywords in NICHE_KEYWORDS.items():
+        if any(kw in low for kw in keywords):
+            return niche
+    return "trades"
 
 # ── Warm-up schedule ──────────────────────────────────────────────────────────
 # Returns max emails allowed per day based on account age
@@ -121,13 +168,21 @@ def get_available_accounts(send_log: dict) -> list[dict]:
             available.append({**acct, "remaining": remaining, "sent_today": sent_today})
     return available
 
-def pick_account(send_log: dict) -> dict | None:
-    """Pick the account with the most remaining quota today (round-robin style)."""
+def pick_account(send_log: dict, niche: str = "trades") -> dict | None:
+    """Pick the best available account for a given niche today."""
     available = get_available_accounts(send_log)
     if not available:
         return None
-    # Pick the one with most remaining to balance load
-    return max(available, key=lambda a: a["remaining"])
+    # Prefer accounts whose niche list includes this niche
+    niche_matched = [a for a in available if niche in a.get("niches", ["trades"])]
+    pool = niche_matched if niche_matched else available
+    return max(pool, key=lambda a: a["remaining"])
+
+def pick_draft_account(i: int, niche: str = "trades") -> dict:
+    """Round-robin account for draft mode, filtered by niche."""
+    niche_accounts = [a for a in ACCOUNTS if niche in a.get("niches", ["trades"])]
+    pool = niche_accounts if niche_accounts else ACCOUNTS
+    return {**pool[i % len(pool)], "remaining": "∞"}
 
 def log_send(send_log: dict, email: str) -> dict:
     """Increment the send count for an account."""
