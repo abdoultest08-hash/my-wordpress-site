@@ -11,6 +11,7 @@ $bg_img = get_theme_mod( 'hero_bg_image', get_template_directory_uri() . '/asset
             <div class="hero-content">
                 <span class="hero-label">CQC Registered &amp; Rated Good &mdash; Leeds</span>
                 <h1 class="hero-headline">Care that puts people <em>first</em></h1>
+                <p class="hero-tagline">Care is at the heart of what we do.</p>
                 <p class="hero-subline">We are a supported living and domiciliary care provider based in Leeds. Trusted by local councils and NHS partners since 2022 to deliver consistent, high-quality care for people with complex needs.</p>
                 <div class="hero-cta">
                     <a class="btn btn-primary" href="<?php echo esc_url( home_url( '/free-assessment/' ) ); ?>">Request a Free Assessment</a>

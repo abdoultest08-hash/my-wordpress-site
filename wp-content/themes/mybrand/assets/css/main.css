@@ -286,6 +286,13 @@ ul { list-style: none; }
     font-style: normal;
     color: #6DB8F0;
 }
+.hero-tagline {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    color: rgba(255,255,255,.9);
+    margin-bottom: var(--space-md);
+    font-style: italic;
+}
 .hero-subline {
     font-size: 1.1rem;
     color: rgba(255,255,255,.78);
