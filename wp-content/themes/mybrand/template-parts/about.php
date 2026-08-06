@@ -1,6 +1,6 @@
 <?php
 $imgdir    = get_template_directory_uri() . '/assets/images';
-$about_img = get_theme_mod( 'about_image', $imgdir . '/team-with-user.png' );
+$about_img = get_theme_mod( 'about_image', $imgdir . '/team-with-user.jpg' );
 ?>
 <section id="about" class="section section-about">
     <div class="container about-inner">
@@ -62,27 +62,27 @@ $about_img = get_theme_mod( 'about_image', $imgdir . '/team-with-user.png' );
         </div>
         <div class="activities-grid">
             <div class="activity-card">
-                <img src="<?php echo esc_url( $imgdir . '/activity-beach.png' ); ?>" alt="Service users enjoying a day at the beach with Winserve carers" loading="lazy">
+                <img src="<?php echo esc_url( $imgdir . '/activity-beach.jpg' ); ?>" alt="Service users enjoying a day at the beach with Winserve carers" loading="lazy">
                 <p>A day at the beach</p>
             </div>
             <div class="activity-card">
-                <img src="<?php echo esc_url( $imgdir . '/activity-farm-stable.png' ); ?>" alt="Supported service user helping out at a farm" loading="lazy">
+                <img src="<?php echo esc_url( $imgdir . '/activity-farm-stable.jpg' ); ?>" alt="Supported service user helping out at a farm" loading="lazy">
                 <p>Farm activities</p>
             </div>
             <div class="activity-card">
-                <img src="<?php echo esc_url( $imgdir . '/activity-swing.png' ); ?>" alt="Carer supporting service user on a swing" loading="lazy">
+                <img src="<?php echo esc_url( $imgdir . '/activity-swing.jpg' ); ?>" alt="Carer supporting service user on a swing" loading="lazy">
                 <p>Getting outdoors</p>
             </div>
             <div class="activity-card">
-                <img src="<?php echo esc_url( $imgdir . '/activity-garden.png' ); ?>" alt="Service user gardening independently" loading="lazy">
+                <img src="<?php echo esc_url( $imgdir . '/activity-garden.jpg' ); ?>" alt="Service user gardening independently" loading="lazy">
                 <p>Gardening &amp; growing</p>
             </div>
             <div class="activity-card">
-                <img src="<?php echo esc_url( $imgdir . '/home-social.png' ); ?>" alt="Service users socialising at home" loading="lazy">
+                <img src="<?php echo esc_url( $imgdir . '/home-social.jpg' ); ?>" alt="Service users socialising at home" loading="lazy">
                 <p>Social time at home</p>
             </div>
             <div class="activity-card">
-                <img src="<?php echo esc_url( $imgdir . '/activity-art-kitchen.png' ); ?>" alt="Service user doing art in the kitchen" loading="lazy">
+                <img src="<?php echo esc_url( $imgdir . '/activity-art-kitchen.jpg' ); ?>" alt="Service user doing art in the kitchen" loading="lazy">
                 <p>Creative activities</p>
             </div>
         </div>

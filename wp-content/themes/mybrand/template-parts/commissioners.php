@@ -39,7 +39,7 @@ $features = [
 
         <!-- Training photo strip above the grid -->
         <div class="comm-training-strip">
-            <img src="<?php echo esc_url( $imgdir . '/team-training-1.png' ); ?>" alt="Winserve staff training session" loading="lazy">
+            <img src="<?php echo esc_url( $imgdir . '/team-training-1.jpg' ); ?>" alt="Winserve staff training session" loading="lazy">
             <div class="comm-training-caption">
                 <span class="section-label">For Commissioners</span>
                 <h2 class="section-title">Why local authorities choose Winserve</h2>
