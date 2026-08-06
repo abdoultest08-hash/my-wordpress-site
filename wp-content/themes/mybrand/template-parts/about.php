@@ -1,36 +1,37 @@
 <?php
-$about_img = get_theme_mod( 'about_image', 'https://images.unsplash.com/photo-1559839914-17aae19cec71?auto=format&fit=crop&w=900&q=80' );
+$about_img = get_theme_mod( 'about_image', get_template_directory_uri() . '/assets/images/about-team.jpg' );
 ?>
 <section id="about" class="section section-about">
     <div class="container about-inner">
 
         <div class="about-img-col">
             <?php if ( $about_img ) : ?>
-                <img class="about-img" src="<?php echo esc_url( $about_img ); ?>" alt="<?php esc_attr_e( 'Winserve care team member with service user', 'mybrand' ); ?>" loading="lazy">
+                <img class="about-img" src="<?php echo esc_url( $about_img ); ?>" alt="Winserve care team with service user" loading="lazy">
             <?php else : ?>
                 <div class="about-img-placeholder">
-                    <span><?php esc_html_e( 'Add image via Customizer', 'mybrand' ); ?></span>
+                    <span>Add image via Customizer</span>
                 </div>
             <?php endif; ?>
             <div class="about-img-badge">
-                <strong>10+</strong>
-                <span><?php esc_html_e( 'Years of Care', 'mybrand' ); ?></span>
+                <strong>2022</strong>
+                <span>Trusted by NHS &amp; Councils</span>
             </div>
         </div>
 
         <div class="about-content-col">
-            <span class="section-label"><?php esc_html_e( 'Who We Are', 'mybrand' ); ?></span>
-            <h2 class="section-title"><?php esc_html_e( 'Dedicated to Transforming Lives Through Quality Care', 'mybrand' ); ?></h2>
-            <p class="about-text"><?php esc_html_e( 'Winserve Care Services was founded with a single purpose: to provide exceptional, compassionate care that empowers individuals to live fulfilling, independent lives. We are a CQC registered provider delivering specialist support across supported living, learning disabilities, autism, mental health, and complex care needs.', 'mybrand' ); ?></p>
-            <p class="about-text"><?php esc_html_e( 'Every member of our team is trained to the highest standard, and every care package is individually designed around the person — not a system.', 'mybrand' ); ?></p>
+            <span class="section-label">Who We Are</span>
+            <h2 class="section-title">Care is at the heart of everything we do</h2>
+            <p class="about-text">Winserve Care Services was built on a simple belief: that everyone deserves to be supported with dignity and genuine care. We are a CQC registered provider based in Leeds, delivering supported living and domiciliary care for adults with learning disabilities, autism, mental health needs, and complex support requirements.</p>
+            <p class="about-text">We have built strong relationships with local councils and NHS commissioners since 2022, who trust us with their most complex placements because they know we will not cut corners. When a local authority needs a provider that will actually show up for their service users, they call us.</p>
 
             <ul class="about-bullets">
                 <?php
                 $bullets = [
-                    __( 'CQC Registered Provider — rated Good', 'mybrand' ),
-                    __( 'Trained, DBS-checked staff with ongoing CPD', 'mybrand' ),
-                    __( 'Personalised care plans reviewed regularly', 'mybrand' ),
-                    __( 'Working in partnership with local authorities and NHS', 'mybrand' ),
+                    'CQC Registered and Rated Good — inspected June 2025',
+                    'Specialists in supported living, including 3:1 ratio packages',
+                    'Trusted by Leeds City Council and NHS partners since 2022',
+                    'Around 40 trained and DBS-checked staff',
+                    'Private packages available directly to families',
                 ];
                 foreach ( $bullets as $bullet ) :
                 ?>
@@ -45,10 +46,10 @@ $about_img = get_theme_mod( 'about_image', 'https://images.unsplash.com/photo-15
 
             <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem;">
                 <a class="btn btn-primary" href="<?php echo esc_url( home_url( '/about-us/' ) ); ?>">
-                    <?php esc_html_e( 'About Winserve', 'mybrand' ); ?>
+                    About Winserve
                 </a>
                 <a class="btn btn-outline-blue" href="<?php echo esc_url( home_url( '/free-assessment/' ) ); ?>">
-                    <?php esc_html_e( 'Book Free Assessment', 'mybrand' ); ?>
+                    Book Free Assessment
                 </a>
             </div>
         </div>

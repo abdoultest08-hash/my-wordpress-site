@@ -2,27 +2,27 @@
 $steps = [
     [
         'num'   => '1',
-        'title' => __( 'Get in Touch', 'mybrand' ),
-        'desc'  => __( 'Contact us by phone, email, or complete our online referral form. Our friendly team will respond within 24 hours to discuss your needs.', 'mybrand' ),
+        'title' => 'Get in touch',
+        'desc'  => 'Call us, send an email, or fill in the form on this page. Our team will get back to you within 24 hours to have a proper conversation about what you need.',
     ],
     [
         'num'   => '2',
-        'title' => __( 'Free Assessment', 'mybrand' ),
-        'desc'  => __( 'We conduct a comprehensive needs assessment — at no cost — to understand the individual\'s requirements, preferences, and goals.', 'mybrand' ),
+        'title' => 'Free assessment',
+        'desc'  => 'We visit the person at a time that works for them, learn about their daily life, preferences, and what they want from their care. No cost, no pressure.',
     ],
     [
         'num'   => '3',
-        'title' => __( 'Tailored Care Begins', 'mybrand' ),
-        'desc'  => __( 'We create a personalised support plan and match the right team members. Care can start quickly — often within days of assessment.', 'mybrand' ),
+        'title' => 'Care starts',
+        'desc'  => 'We put together a care plan, match the right team members, and get started. For commissioner referrals we can often mobilise within a matter of days.',
     ],
 ];
 ?>
 <section class="section section-blue">
     <div class="container">
         <div class="section-header text-center">
-            <span class="section-label"><?php esc_html_e( 'Simple Process', 'mybrand' ); ?></span>
-            <h2 class="section-title"><?php esc_html_e( 'How We Get Started', 'mybrand' ); ?></h2>
-            <p class="section-desc"><?php esc_html_e( 'Getting the right care in place doesn\'t have to be complicated. Here\'s how we work with families, individuals, and commissioners.', 'mybrand' ); ?></p>
+            <span class="section-label">Simple Process</span>
+            <h2 class="section-title">How we get started</h2>
+            <p class="section-desc">Getting care in place should not be complicated. Here is how we work with families, individuals, and commissioners.</p>
         </div>
 
         <div class="how-it-works-grid">
@@ -37,7 +37,7 @@ $steps = [
 
         <div class="section-cta text-center">
             <a class="btn btn-primary" href="<?php echo esc_url( home_url( '/free-assessment/' ) ); ?>">
-                <?php esc_html_e( 'Request Your Free Assessment', 'mybrand' ); ?>
+                Request Your Free Assessment
             </a>
         </div>
     </div>
