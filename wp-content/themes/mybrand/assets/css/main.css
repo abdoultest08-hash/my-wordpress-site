@@ -1132,3 +1132,86 @@ ul { list-style: none; }
     *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
     html { scroll-behavior: auto; }
 }
+
+/* ==============================================
+   SERVICE CARD IMAGE VARIANT
+   ============================================== */
+.service-card-img {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    margin: calc(-1 * var(--space-xl)) calc(-1 * var(--space-lg)) var(--space-md);
+    width: calc(100% + (var(--space-lg) * 2));
+}
+.service-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.service-card:hover .service-card-img img { transform: scale(1.04); }
+.service-card-body { flex: 1; display: flex; flex-direction: column; }
+
+/* ==============================================
+   ACTIVITIES STRIP
+   ============================================== */
+.activities-section { padding-block: var(--space-2xl); }
+.activities-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: var(--space-xl);
+}
+.activity-card {
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 4/3;
+    background: var(--color-primary);
+}
+.activity-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+    opacity: 0.92;
+}
+.activity-card:hover img { transform: scale(1.05); opacity: 1; }
+.activity-card p {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(14,42,71,0.85), transparent);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 1.5rem 1rem 0.75rem;
+    margin: 0;
+}
+
+/* ==============================================
+   COMMISSIONER TRAINING STRIP
+   ============================================== */
+.comm-training-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.comm-training-strip img {
+    width: 100%;
+    border-radius: var(--border-radius-lg);
+    object-fit: cover;
+    max-height: 340px;
+}
+@media (max-width: 768px) {
+    .activities-grid { grid-template-columns: 1fr 1fr; }
+    .comm-training-strip { grid-template-columns: 1fr; }
+    .comm-training-strip img { max-height: 220px; }
+    .service-card-img { height: 140px; }
+}
+@media (max-width: 480px) {
+    .activities-grid { grid-template-columns: 1fr; }
+}

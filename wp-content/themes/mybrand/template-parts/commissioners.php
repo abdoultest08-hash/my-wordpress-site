@@ -1,4 +1,6 @@
 <?php
+$imgdir = get_template_directory_uri() . '/assets/images';
+
 $features = [
     [
         'title' => 'CQC Registered and Rated Good',
@@ -34,20 +36,21 @@ $features = [
 ?>
 <section class="section section-dark">
     <div class="container">
-        <div class="section-header" style="display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;">
-            <div>
+
+        <!-- Training photo strip above the grid -->
+        <div class="comm-training-strip">
+            <img src="<?php echo esc_url( $imgdir . '/team-training-1.png' ); ?>" alt="Winserve staff training session" loading="lazy">
+            <div class="comm-training-caption">
                 <span class="section-label">For Commissioners</span>
                 <h2 class="section-title">Why local authorities choose Winserve</h2>
-                <p class="section-desc" style="margin-inline:0;">We have worked with Leeds City Council and NHS partners since 2022. They come to us because we deliver on what we promise and we are honest when things need to change.</p>
-            </div>
-            <div style="flex-shrink:0;">
-                <a class="btn btn-outline" href="<?php echo esc_url( home_url( '/for-commissioners/' ) ); ?>">
+                <p class="section-desc" style="margin-inline:0;">We have worked with Leeds City Council and NHS partners since 2022. They come to us because we deliver on what we promise and we are honest when things need to change. Pictured: one of our regular staff training sessions.</p>
+                <a class="btn btn-outline" href="<?php echo esc_url( home_url( '/for-commissioners/' ) ); ?>" style="margin-top:1.5rem;display:inline-flex;">
                     Commissioner Information
                 </a>
             </div>
         </div>
 
-        <div class="commissioners-grid">
+        <div class="commissioners-grid" style="margin-top:3rem;">
             <?php foreach ( $features as $feature ) : ?>
                 <div class="comm-card">
                     <div class="comm-card-icon" aria-hidden="true">

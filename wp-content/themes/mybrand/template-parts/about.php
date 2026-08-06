@@ -1,17 +1,12 @@
 <?php
-$about_img = get_theme_mod( 'about_image', get_template_directory_uri() . '/assets/images/about-team.jpg' );
+$imgdir    = get_template_directory_uri() . '/assets/images';
+$about_img = get_theme_mod( 'about_image', $imgdir . '/team-with-user.png' );
 ?>
 <section id="about" class="section section-about">
     <div class="container about-inner">
 
         <div class="about-img-col">
-            <?php if ( $about_img ) : ?>
-                <img class="about-img" src="<?php echo esc_url( $about_img ); ?>" alt="Winserve care team with service user" loading="lazy">
-            <?php else : ?>
-                <div class="about-img-placeholder">
-                    <span>Add image via Customizer</span>
-                </div>
-            <?php endif; ?>
+            <img class="about-img" src="<?php echo esc_url( $about_img ); ?>" alt="Winserve team with service user" loading="lazy">
             <div class="about-img-badge">
                 <strong>2022</strong>
                 <span>Trusted by NHS &amp; Councils</span>
@@ -54,5 +49,42 @@ $about_img = get_theme_mod( 'about_image', get_template_directory_uri() . '/asse
             </div>
         </div>
 
+    </div>
+</section>
+
+<!-- Activities strip — real photos from the field -->
+<section class="section section-light activities-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-label">Life with Winserve</span>
+            <h2 class="section-title">More than just care visits</h2>
+            <p class="section-desc">Our team supports service users to get out, stay active, and do the things they enjoy. These are real moments from our work.</p>
+        </div>
+        <div class="activities-grid">
+            <div class="activity-card">
+                <img src="<?php echo esc_url( $imgdir . '/activity-beach.png' ); ?>" alt="Service users enjoying a day at the beach with Winserve carers" loading="lazy">
+                <p>A day at the beach</p>
+            </div>
+            <div class="activity-card">
+                <img src="<?php echo esc_url( $imgdir . '/activity-farm-stable.png' ); ?>" alt="Supported service user helping out at a farm" loading="lazy">
+                <p>Farm activities</p>
+            </div>
+            <div class="activity-card">
+                <img src="<?php echo esc_url( $imgdir . '/activity-swing.png' ); ?>" alt="Carer supporting service user on a swing" loading="lazy">
+                <p>Getting outdoors</p>
+            </div>
+            <div class="activity-card">
+                <img src="<?php echo esc_url( $imgdir . '/activity-garden.png' ); ?>" alt="Service user gardening independently" loading="lazy">
+                <p>Gardening &amp; growing</p>
+            </div>
+            <div class="activity-card">
+                <img src="<?php echo esc_url( $imgdir . '/home-social.png' ); ?>" alt="Service users socialising at home" loading="lazy">
+                <p>Social time at home</p>
+            </div>
+            <div class="activity-card">
+                <img src="<?php echo esc_url( $imgdir . '/activity-art-kitchen.png' ); ?>" alt="Service user doing art in the kitchen" loading="lazy">
+                <p>Creative activities</p>
+            </div>
+        </div>
     </div>
 </section>
