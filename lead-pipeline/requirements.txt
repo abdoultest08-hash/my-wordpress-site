@@ -1,0 +1,5 @@
+# STEP 2 (async website checks)
+httpx>=0.27
+
+# Only needed if your lead list is .xlsx rather than .csv
+openpyxl>=3.1

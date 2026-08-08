@@ -1,0 +1,15 @@
+# Lead data is personal data (names, emails, phone numbers) — never commit it.
+data/
+output/
+output_*/
+*.xlsx
+*.xls
+*.csv
+!tests/**/*.csv
+
+# Caches
+*_cache.jsonl
+__pycache__/
+*.pyc
+.venv/
+venv/
