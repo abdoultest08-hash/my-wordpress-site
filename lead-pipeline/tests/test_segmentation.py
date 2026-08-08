@@ -12,7 +12,8 @@ import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from clean_leads import CLEAN_COLUMNS, normalize_row  # noqa: E402
+from clean_leads import (CLEAN_COLUMNS, clean, detect_franchise,  # noqa: E402
+                         normalize_row)
 from common import (normalize_email, normalize_phone_uk, normalize_url,  # noqa: E402
                     registrable_domain, write_csv)
 from segment_leads import (INSTANTLY_COLUMNS, notes_for_hr_offer,  # noqa: E402
@@ -259,11 +260,126 @@ def test_segment_split() -> None:
               all(r["personalization_notes"] for r in rows_b))
 
 
+def _contact(lead_id: str, company: str, title: str) -> dict:
+    return {"lead_id": lead_id, "company": company, "job_title": title}
+
+
+def test_franchise_detection() -> None:
+    print("\nfranchise detection")
+
+    # A large care group: one company, many employees. Must NOT be a franchise.
+    group = [_contact(f"ld_{i}", name, title) for i, (name, title) in enumerate([
+        ("Cygnet", "Managing Director"),
+        ("Cygnet Health Care", "Regional Nurse Director"),
+        ("Cygnet", "Director of Operations"),
+        ("Cygnet Health Care", "Executive Assistant to Managing Director"),
+        ("Cygnet", "Finance Director"),
+    ])]
+    is_fr, _ = detect_franchise(group)
+    check("care group is not a franchise", not is_fr)
+
+    # A franchise network: many owners behind one head-office domain.
+    group = [_contact(f"ld_{i}", "Radfield Home Care", title)
+             for i, title in enumerate([
+                 "Director / Co-owner", "Director / Owner", "Owner / Director",
+                 "Director and Owner", "Managing Director"])]
+    is_fr, _ = detect_franchise(group)
+    check("multiple owners means franchise", is_fr)
+
+    # Named branches behind one brand.
+    group = [_contact(f"ld_{i}", name, "Director") for i, name in enumerate([
+        "Bluebird Care", "Bluebird Care Carlisle", "Bluebird Care Walsall",
+        "Bluebird Care Rushcliffe & Melton", "Bluebird Care Bradford"])]
+    is_fr, labels = detect_franchise(group)
+    check("named branches mean franchise", is_fr)
+    check("branch labels exclude the shared brand",
+          all("bluebird" not in v for v in labels.values()), str(labels))
+    check("branch label captured", "walsall" in labels.values(), str(labels))
+
+    # Spelling variants of one company must not look like branches.
+    group = [_contact(f"ld_{i}", name, title) for i, (name, title) in enumerate([
+        ("Nurse Plus UK", "Director"),
+        ("Nurseplus UK", "Operations Director"),
+        ("Nurse Plus UK", "Registered Manager"),
+        ("Nurseplus UK", "Finance Director"),
+    ])]
+    is_fr, _ = detect_franchise(group)
+    check("spelling variants are not a franchise", not is_fr)
+
+    # Generic sector words are not branch identities.
+    group = [_contact(f"ld_{i}", name, "Director") for i, name in enumerate([
+        "Prosperity Care", "Prosperity Care & Wellbeing",
+        "Prosperity Care Services", "Prosperity Care Ltd"])]
+    is_fr, _ = detect_franchise(group)
+    check("generic suffixes are not branches", not is_fr, "flagged as franchise")
+
+    # Small teams never qualify, even with two owners.
+    group = [_contact("ld_1", "Smith Care", "Owner"),
+             _contact("ld_2", "Smith Care", "Co-owner")]
+    is_fr, _ = detect_franchise(group)
+    check("two-person company is not a franchise", not is_fr)
+
+
+def test_franchise_dedupe_end_to_end() -> None:
+    print("\nfranchise dedupe (end to end)")
+
+    def raw(row_no, first, company, title, email):
+        return {"_row_number": row_no, "_raw": {}, "first_name": first,
+                "last_name": "X", "company": company, "job_title": title,
+                "email": email, "website": "https://brand.co.uk",
+                "email_status": "good"}
+
+    rows = [
+        raw(2, "A", "Brand Care", "Owner & Managing Director", "a@brand.co.uk"),
+        raw(3, "B", "Brand Care", "Owner / Director", "b@brand.co.uk"),
+        raw(4, "C", "Brand Care Leeds", "Director", "c@brand.co.uk"),
+        raw(5, "D", "Brand Care", "Care Coordinator", "d@brand.co.uk"),
+        raw(6, "E", "Brand Care", "Administrator", "e@brand.co.uk"),
+    ]
+
+    with tempfile.TemporaryDirectory() as tmp:
+        src = os.path.join(tmp, "leads.csv")
+        with open(src, "w", encoding="utf-8", newline="") as fh:
+            writer = csv.DictWriter(
+                fh, fieldnames=["first_name", "last_name", "company",
+                                "job_title", "email", "website", "email_status"])
+            writer.writeheader()
+            for row in rows:
+                writer.writerow({k: v for k, v in row.items()
+                                 if not k.startswith("_")})
+
+        stats = clean(src, tmp, max_per_domain=1, keep_franchise_branches=True)
+        check("franchise network detected",
+              stats["franchise_networks"] == 1, str(stats["franchise_networks"]))
+        with open(stats["paths"]["clean"], newline="", encoding="utf-8") as fh:
+            kept = list(csv.DictReader(fh))
+        emails = {r["email"] for r in kept}
+        check("both owners kept", {"a@brand.co.uk", "b@brand.co.uk"} <= emails,
+              str(emails))
+        check("named branch kept", "c@brand.co.uk" in emails, str(emails))
+        check("non-owner staff dropped",
+              "d@brand.co.uk" not in emails and "e@brand.co.uk" not in emails,
+              str(emails))
+        check("extras marked as franchise branches",
+              sum(1 for r in kept if r["is_franchise_branch"] == "yes") ==
+              len(kept) - 1,
+              str([(r["email"], r["is_franchise_branch"]) for r in kept]))
+
+        # Same data with the feature off collapses to a single contact.
+        off = os.path.join(tmp, "off")
+        stats_off = clean(src, off, max_per_domain=1,
+                          keep_franchise_branches=False)
+        check("--no-franchise-branches collapses to one",
+              stats_off["clean_leads"] == 1, str(stats_off["clean_leads"]))
+
+
 if __name__ == "__main__":
     test_normalizers()
     test_row_validation()
     test_issue_ranking()
     test_segment_split()
+    test_franchise_detection()
+    test_franchise_dedupe_end_to_end()
     print()
     if FAILURES:
         print(f"{len(FAILURES)} FAILED: {FAILURES}")

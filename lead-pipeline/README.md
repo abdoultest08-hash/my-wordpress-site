@@ -9,6 +9,9 @@ campaigns:
 | **A — Website Offer** | website scored `bad` | their site is old / broken / template — clear improvement opportunity |
 | **B — HR Automation Offer** | website scored `ok` or `good` | site is fine, so lead with onboarding / compliance automation |
 
+Franchise branch owners get their own copy of each file (`..._FRANCHISE.csv`) —
+same offer, but they share a mail domain with head office, so send them slowly.
+
 ## Install
 
 ```bash
@@ -45,6 +48,8 @@ At ~30 concurrent requests, 800 sites takes roughly 5–10 minutes.
 | `--concurrency N` | 30 | parallel site checks; 50–75 is fine on a good connection |
 | `--timeout S` | 20 | per-request timeout in seconds |
 | `--max-per-domain N` | 1 | contacts to keep per company domain |
+| `--no-franchise-branches` | off | collapse franchise networks to one contact too |
+| `--franchise-in-main` | off | put franchise branches in the main files |
 | `--drop-risky` | off | send catch-all / "risky" verified emails to needs_review |
 | `--refresh` | off | ignore the cache and re-check every site |
 | `--sheet NAME` | first | which worksheet to read from an `.xlsx` |
@@ -60,6 +65,8 @@ You can also run the steps individually: `clean_leads.py`, `check_sites.py`,
 |---|---|
 | `segment_a_website_offer.csv` | **Instantly import** — leads with bad websites |
 | `segment_b_hr_automation_offer.csv` | **Instantly import** — leads with ok/good websites |
+| `segment_a_website_offer_FRANCHISE.csv` | franchise branch owners, bad sites — send slowly |
+| `segment_b_hr_automation_offer_FRANCHISE.csv` | franchise branch owners, ok/good sites — send slowly |
 | `clean_leads.csv` | every lead that passed validation, deduped |
 | `site_checks.csv` | full audit detail per site (35 columns) |
 | `needs_review.csv` | rejected rows + why |
@@ -97,6 +104,28 @@ Every input row ends up in exactly one of these — nothing is silently dropped.
 Directory and social URLs (Facebook, CQC, carehome.co.uk, Yell…) are recognised
 as "not their own website". Those leads are **kept and flagged**, not reviewed —
 having no real site is the strongest Website Offer signal there is.
+
+### Franchises vs care groups
+
+Domain dedupe assumes one website means one company. That is wrong for
+franchise networks, where dozens of independently-owned businesses sit behind
+one head-office domain — collapsing them to a single lead throws away real
+prospects. A large care group is the opposite case: fifty employees of one
+company, which genuinely should collapse to one.
+
+A domain is treated as a franchise network when it has at least four contacts
+**and** either two or more owner-titled contacts (one company has one owner; a
+franchise network has many) or three or more distinct branch names once the
+shared brand and generic sector words are stripped. The three-name threshold
+exists because a single odd name is nearly always a spelling variant —
+"Nurse Plus UK" and "Nurseplus UK" are one company, not two.
+
+Inside a franchise network the pipeline keeps one contact per named branch plus
+every owner-titled contact; ordinary staff still collapse. Those extra leads are
+marked `is_franchise_branch=yes` and routed to the `_FRANCHISE` files.
+
+Note that private registries such as `uk.com` are treated as public suffixes, so
+`agency-a.uk.com` and `agency-b.uk.com` count as different companies.
 
 ## STEP 2 — how a site is scored
 
@@ -160,7 +189,7 @@ are at the top of Segment A.
 
 ```bash
 python3 tests/test_site_scoring.py    # analyser, scorer, async fetch + cache
-python3 tests/test_segmentation.py    # normalizers, validation, segment split
+python3 tests/test_segmentation.py    # normalizers, validation, franchises, segments
 ```
 
 The scoring tests run against fixture pages (modern, stale WordPress, GoDaddy

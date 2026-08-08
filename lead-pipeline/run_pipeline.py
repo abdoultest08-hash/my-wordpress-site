@@ -53,6 +53,10 @@ def main() -> None:
     ap.add_argument("--timeout", type=float, default=20.0)
     ap.add_argument("--max-per-domain", type=int, default=1)
     ap.add_argument("--drop-risky", action="store_true")
+    ap.add_argument("--no-franchise-branches", action="store_true",
+                    help="collapse franchise networks to one contact per domain")
+    ap.add_argument("--franchise-in-main", action="store_true",
+                    help="put franchise branches in the main segment files")
     ap.add_argument("--refresh", action="store_true")
     ap.add_argument("--map", default=None)
     ap.add_argument("--preview", type=int, default=10)
@@ -63,7 +67,8 @@ def main() -> None:
 
     # -------- STEP 1 --------
     clean_stats = clean(args.input, args.outdir, args.max_per_domain,
-                        args.drop_risky, args.sheet, overrides)
+                        args.drop_risky, args.sheet, overrides,
+                        not args.no_franchise_branches)
     leads_path = clean_stats["paths"]["clean"]
 
     with open(leads_path, "r", encoding="utf-8-sig", newline="") as fh:
@@ -85,7 +90,8 @@ def main() -> None:
     write_csv(checks_path, results, SITE_COLUMNS)
 
     # -------- STEP 3 --------
-    seg_stats = segment(audit_path, checks_path, args.outdir)
+    seg_stats = segment(audit_path, checks_path, args.outdir,
+                        not args.franchise_in_main)
 
     # -------- STEP 4 --------
     quality = collections.Counter(r.get("website_quality", "") for r in results)
@@ -105,6 +111,8 @@ def main() -> None:
     print(f"  Removed: duplicate emails      {clean_stats['email_duplicates_removed']}")
     print(f"  Removed: duplicate domains     {clean_stats['domain_duplicates_removed']}"
           f"  (max {args.max_per_domain}/domain, kept in domain_duplicates.csv)")
+    print(f"  Kept: franchise branches       {clean_stats['franchise_branches_kept']}"
+          f"  (across {clean_stats['franchise_networks']} networks)")
     print(f"  Clean leads                    {clean_stats['clean_leads']}")
     print("-" * 72)
     print(f"STEP 2 — website audit ({audited} sites checked)")
@@ -127,6 +135,11 @@ def main() -> None:
           f"   -> {os.path.basename(seg_stats['paths']['segment_a'])}")
     print(f"  B  HR Automation  (ok/good)    {seg_stats['segment_b']:>5}"
           f"   -> {os.path.basename(seg_stats['paths']['segment_b'])}")
+    if seg_stats.get("franchise_a") or seg_stats.get("franchise_b"):
+        print(f"  A  Website Offer  FRANCHISE    {seg_stats['franchise_a']:>5}"
+              f"   -> send these slowly, shared mail domain")
+        print(f"  B  HR Automation  FRANCHISE    {seg_stats['franchise_b']:>5}"
+              f"   -> send these slowly, shared mail domain")
     if seg_stats["unchecked"]:
         print(f"  unchecked                      {seg_stats['unchecked']:>5}")
     print("-" * 72)

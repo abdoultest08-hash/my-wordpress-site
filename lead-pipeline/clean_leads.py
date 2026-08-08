@@ -61,11 +61,101 @@ OFF_ICP_PATTERNS = re.compile(
     r"\b(architect|architecture|software|recruitment agency|law firm|"
     r"solicitor|accountancy|insurance broker|university|council)\b", re.I)
 
+# --------------------------------------------------------------------------
+# Franchise detection
+# --------------------------------------------------------------------------
+# Franchise networks (Home Instead, Bluebird Care, Radfield) put dozens of
+# independently-owned businesses behind one head-office domain. Plain domain
+# dedupe would collapse them into a single lead and throw away real prospects,
+# while a large care group (one company, many employees) genuinely should
+# collapse to one. These rules tell the two cases apart.
+
+FRANCHISE_MIN_CONTACTS = 4
+OWNER_TITLE_RE = re.compile(r"\b(owner|founder|proprietor|franchisee)\b", re.I)
+
+# Words that describe the sector rather than a specific branch, so "Cygnet"
+# vs "Cygnet Health Care" reads as one company while "Bluebird Care Carlisle"
+# reads as a branch.
+GENERIC_BRAND_TOKENS = {
+    "care", "cares", "caring", "carers", "health", "healthcare", "home",
+    "homes", "homecare", "senior", "seniors", "living", "support", "supported",
+    "services", "service", "group", "holdings", "uk", "ltd", "limited", "llp",
+    "plc", "cic", "nursing", "medical", "solutions", "agency", "agencies",
+    "people", "team", "national", "the", "and", "of", "at", "for", "in",
+    "company", "co", "domiciliary", "community", "quality", "professional",
+}
+
+TITLE_BRANCH_PATTERNS = [
+    re.compile(r"\b([A-Z][\w'&-]*(?:\s+[A-Z][\w'&-]*)*)\s+franchise\b"),
+    re.compile(r"\bfranchise\s+(?:owner\s+)?(?:for|in|at)\s+"
+               r"([A-Z][\w'&-]*(?:\s+[A-Z][\w'&-]*)*)"),
+    re.compile(r"\bat\s+([A-Z][\w'&-]*(?:\s+[A-Z][\w'&-]*)*)"),
+    re.compile(r",\s*([A-Z][\w'&-]*(?:\s+[A-Z][\w'&-]*)*)\s*$"),
+]
+
+
+def _tokens(text: str) -> List[str]:
+    return [t for t in re.split(r"[^A-Za-z0-9'&]+", (text or "").lower()) if t]
+
+
+def _strip_generic(tokens: List[str]) -> List[str]:
+    return [t for t in tokens if t not in GENERIC_BRAND_TOKENS and not t.isdigit()]
+
+
+def _branch_from_title(job_title: str) -> str:
+    for pattern in TITLE_BRANCH_PATTERNS:
+        match = pattern.search(job_title or "")
+        if match:
+            label = " ".join(_strip_generic(_tokens(match.group(1))))
+            if label:
+                return label
+    return ""
+
+
+def detect_franchise(group: List[dict]) -> Tuple[bool, Dict[str, str]]:
+    """Decide whether a shared domain is a franchise network.
+
+    Returns (is_franchise, {lead_id: branch_label}). A branch label is the part
+    of a company name or job title that identifies a specific branch once the
+    shared brand and generic sector words are removed.
+    """
+    labels: Dict[str, str] = {}
+    if len(group) < FRANCHISE_MIN_CONTACTS:
+        return False, labels
+
+    name_tokens = [_tokens(l["company"]) for l in group]
+    shortest = min((len(t) for t in name_tokens if t), default=0)
+    prefix_len = 0
+    for i in range(shortest):
+        column = {t[i] for t in name_tokens if len(t) > i}
+        if len(column) == 1:
+            prefix_len += 1
+        else:
+            break
+
+    for lead, tokens in zip(group, name_tokens):
+        label = " ".join(_strip_generic(tokens[prefix_len:]))
+        if not label:
+            label = _branch_from_title(lead["job_title"])
+        labels[lead["lead_id"]] = label
+
+    distinct = {v for v in labels.values() if v}
+    owners = sum(1 for l in group if OWNER_TITLE_RE.search(l["job_title"] or ""))
+
+    # Two thresholds, both deliberately conservative. A single odd label is
+    # usually just a spelling variant of the same company ("Nurse Plus UK" vs
+    # "Nurseplus UK"), so branch names alone need three of them. Two or more
+    # owner-titled contacts is strong evidence on its own: one company has one
+    # owner, a franchise network has many.
+    is_franchise = len(distinct) >= 3 or owners >= 2
+    return is_franchise, labels
+
 CLEAN_COLUMNS = [
     "lead_id", "first_name", "last_name", "full_name", "job_title",
     "seniority", "email", "email_domain", "email_type", "email_status",
     "phone", "phone_pretty", "company", "website", "domain", "linkedin",
-    "service_focus", "flags", "source_row",
+    "service_focus", "is_franchise_branch", "franchise_branch", "flags",
+    "source_row",
 ]
 
 REVIEW_COLUMNS = [
@@ -198,7 +288,8 @@ def clean(input_path: str,
           max_per_domain: int = 1,
           drop_risky: bool = False,
           sheet: Optional[str] = None,
-          overrides: Optional[Dict[str, str]] = None) -> Dict[str, object]:
+          overrides: Optional[Dict[str, str]] = None,
+          keep_franchise_branches: bool = True) -> Dict[str, object]:
     rows, header_map = read_table(input_path, overrides, sheet)
     log(f"[clean] read {len(rows)} rows from {os.path.basename(input_path)}")
     log(f"[clean] mapped columns: {json.dumps(header_map, ensure_ascii=False)}")
@@ -234,17 +325,51 @@ def clean(input_path: str,
     deduped_email = list(by_email.values())
 
     # --- dedupe by domain (keep the most senior/complete contact) ---
-    kept: List[dict] = []
-    domain_dupes: List[dict] = []
-    seen: Dict[str, List[dict]] = {}
+    groups: Dict[str, List[dict]] = {}
     for lead in sorted(deduped_email, key=dedupe_rank, reverse=True):
         key = lead["domain"] or f"__nodomain__{lead['lead_id']}"
-        bucket = seen.setdefault(key, [])
-        if len(bucket) < max_per_domain:
-            bucket.append(lead)
-            kept.append(lead)
-        else:
-            domain_dupes.append({**lead, "duplicate_of": bucket[0]["lead_id"]})
+        groups.setdefault(key, []).append(lead)
+
+    kept: List[dict] = []
+    domain_dupes: List[dict] = []
+    franchise_networks = 0
+
+    for group in groups.values():
+        for lead in group:
+            lead["is_franchise_branch"] = "no"
+            lead["franchise_branch"] = ""
+
+        primary = group[:max_per_domain]
+        rest = group[max_per_domain:]
+        kept.extend(primary)
+
+        is_franchise, labels = (False, {})
+        if keep_franchise_branches and rest:
+            is_franchise, labels = detect_franchise(group)
+
+        if not is_franchise:
+            for lead in rest:
+                domain_dupes.append({**lead, "duplicate_of": primary[0]["lead_id"]})
+            continue
+
+        franchise_networks += 1
+        # One lead per distinct branch, plus every owner-titled contact: in a
+        # franchise each of those is a separate business, not a colleague.
+        seen_labels = {labels.get(l["lead_id"], "") for l in primary}
+        for lead in rest:
+            label = labels.get(lead["lead_id"], "")
+            is_owner = bool(OWNER_TITLE_RE.search(lead["job_title"] or ""))
+            new_branch = bool(label) and label not in seen_labels
+            if new_branch or is_owner:
+                if label:
+                    seen_labels.add(label)
+                lead["is_franchise_branch"] = "yes"
+                lead["franchise_branch"] = label
+                lead["flags"] = "; ".join(filter(
+                    None, [lead["flags"], "franchise_branch_of_" + lead["domain"]]))
+                kept.append(lead)
+            else:
+                domain_dupes.append({**lead, "duplicate_of": primary[0]["lead_id"]})
 
     # Company-name collision across different domains (franchise branches,
     # rebrands). Flagged, not dropped — the domains are genuinely different.
@@ -272,7 +397,10 @@ def clean(input_path: str,
     write_csv(paths["email_dupes"], email_dupes, CLEAN_COLUMNS + ["duplicate_of"])
     write_csv(paths["domain_dupes"], domain_dupes, CLEAN_COLUMNS + ["duplicate_of"])
 
+    franchise_kept = sum(1 for l in kept if l.get("is_franchise_branch") == "yes")
     stats = {
+        "franchise_networks": franchise_networks,
+        "franchise_branches_kept": franchise_kept,
         "input_rows": len(rows),
         "passed_validation": len(leads),
         "needs_review": len(review),
@@ -283,7 +411,9 @@ def clean(input_path: str,
     }
     log(f"[clean] {stats['clean_leads']} clean | {stats['needs_review']} review | "
         f"{stats['email_duplicates_removed']} email dupes | "
-        f"{stats['domain_duplicates_removed']} domain dupes")
+        f"{stats['domain_duplicates_removed']} domain dupes | "
+        f"{franchise_kept} franchise branches across "
+        f"{franchise_networks} networks")
     return stats
 
 
@@ -296,13 +426,15 @@ def main() -> None:
                     help="contacts to keep per company domain (default 1)")
     ap.add_argument("--drop-risky", action="store_true",
                     help="send verifier 'risky'/catch-all emails to needs_review")
+    ap.add_argument("--no-franchise-branches", action="store_true",
+                    help="collapse franchise networks to one contact per domain")
     ap.add_argument("--map", default=None,
                     help='JSON override, e.g. \'{"email":"Work Email"}\'')
     args = ap.parse_args()
 
     overrides = json.loads(args.map) if args.map else None
     clean(args.input, args.outdir, args.max_per_domain, args.drop_risky,
-          args.sheet, overrides)
+          args.sheet, overrides, not args.no_franchise_branches)
 
 
 if __name__ == "__main__":

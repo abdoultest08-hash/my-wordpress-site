@@ -25,7 +25,7 @@ INSTANTLY_COLUMNS = [
     # --- supporting custom fields ---
     "phone", "job_title", "service_focus", "website_quality", "website_score",
     "website_reasons", "website_issue", "email_status", "email_type",
-    "linkedin", "domain", "lead_id",
+    "linkedin", "domain", "is_franchise_branch", "franchise_branch", "lead_id",
 ]
 
 # Sales-relevance order: whichever of these matches first becomes the hook.
@@ -109,7 +109,14 @@ def notes_for_hr_offer(lead: dict) -> str:
     return ". ".join(parts) + "."
 
 
-def segment(leads_path: str, checks_path: str, outdir: str) -> Dict[str, object]:
+def segment(leads_path: str, checks_path: str, outdir: str,
+            split_franchise: bool = True) -> Dict[str, object]:
+    """Join audit results onto leads and write the campaign files.
+
+    Franchise branch owners share a mail domain with their head office, so by
+    default they go to their own files: same offer, but sent slowly rather than
+    all at once, to protect sending reputation.
+    """
     with open(leads_path, "r", encoding="utf-8-sig", newline="") as fh:
         leads = list(csv.DictReader(fh))
     with open(checks_path, "r", encoding="utf-8-sig", newline="") as fh:
@@ -117,6 +124,8 @@ def segment(leads_path: str, checks_path: str, outdir: str) -> Dict[str, object]
 
     segment_a: List[dict] = []
     segment_b: List[dict] = []
+    franchise_a: List[dict] = []
+    franchise_b: List[dict] = []
     unchecked: List[dict] = []
 
     for lead in leads:
@@ -134,14 +143,15 @@ def segment(leads_path: str, checks_path: str, outdir: str) -> Dict[str, object]
         issues = rank_issues(row["website_reasons"])
         row["website_issue"] = issues[0] if issues else ""
 
+        is_branch = (row.get("is_franchise_branch") == "yes") and split_franchise
         if row["website_quality"] == "bad":
             row["personalization_notes"] = notes_for_website_offer(row, issues)
-            segment_a.append(row)
+            (franchise_a if is_branch else segment_a).append(row)
         else:
             row["personalization_notes"] = notes_for_hr_offer(row)
-            segment_b.append(row)
+            (franchise_b if is_branch else segment_b).append(row)
 
-    for bucket in (segment_a, segment_b):
+    for bucket in (segment_a, segment_b, franchise_a, franchise_b):
         bucket.sort(key=lambda r: (int(r.get("website_score") or 0),
                                    r.get("company", "").lower()))
 
@@ -153,15 +163,27 @@ def segment(leads_path: str, checks_path: str, outdir: str) -> Dict[str, object]
     write_csv(paths["segment_a"], segment_a, INSTANTLY_COLUMNS)
     write_csv(paths["segment_b"], segment_b, INSTANTLY_COLUMNS)
 
+    if franchise_a or franchise_b:
+        paths["franchise_a"] = os.path.join(
+            outdir, "segment_a_website_offer_FRANCHISE.csv")
+        paths["franchise_b"] = os.path.join(
+            outdir, "segment_b_hr_automation_offer_FRANCHISE.csv")
+        write_csv(paths["franchise_a"], franchise_a, INSTANTLY_COLUMNS)
+        write_csv(paths["franchise_b"], franchise_b, INSTANTLY_COLUMNS)
+
     if unchecked:
         paths["unchecked"] = os.path.join(outdir, "unchecked_leads.csv")
         write_csv(paths["unchecked"], unchecked, list(leads[0].keys()))
 
     log(f"[segment] A (website offer)={len(segment_a)}  "
-        f"B (hr automation)={len(segment_b)}  unchecked={len(unchecked)}")
+        f"B (hr automation)={len(segment_b)}  "
+        f"franchise A/B={len(franchise_a)}/{len(franchise_b)}  "
+        f"unchecked={len(unchecked)}")
     return {
         "segment_a": len(segment_a),
         "segment_b": len(segment_b),
+        "franchise_a": len(franchise_a),
+        "franchise_b": len(franchise_b),
         "unchecked": len(unchecked),
         "paths": paths,
     }
@@ -172,8 +194,11 @@ def main() -> None:
     ap.add_argument("--leads", default="output/clean_leads.csv")
     ap.add_argument("--checks", default="output/site_checks.csv")
     ap.add_argument("--outdir", default="output")
+    ap.add_argument("--franchise-in-main", action="store_true",
+                    help="put franchise branches in the main files instead of "
+                         "their own")
     args = ap.parse_args()
-    segment(args.leads, args.checks, args.outdir)
+    segment(args.leads, args.checks, args.outdir, not args.franchise_in_main)
 
 
 if __name__ == "__main__":

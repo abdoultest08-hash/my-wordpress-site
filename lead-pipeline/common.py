@@ -471,6 +471,9 @@ NON_WEBSITE_HOSTS = {
 PUBLIC_SUFFIX_TWO_LEVEL = {
     "co.uk", "org.uk", "ltd.uk", "plc.uk", "me.uk", "net.uk", "sch.uk",
     "ac.uk", "gov.uk", "nhs.uk", "com.au", "co.nz", "co.za", "com.br",
+    # Private registries that resell subdomains: unrelated businesses live
+    # under these, so they must not collapse into one "domain".
+    "uk.com", "uk.net", "gb.com", "gb.net", "eu.com", "co.com", "org.es",
 }
 
 
