@@ -18,6 +18,9 @@ same offer, but they share a mail domain with head office, so send them slowly.
 pip install -r requirements.txt
 ```
 
+New to the command line? **[SETUP.md](SETUP.md)** walks through the whole thing
+step by step for Mac and Windows.
+
 Needs Python 3.9+. `openpyxl` is only required for `.xlsx` input.
 
 **Network:** STEP 2 makes one outbound HTTPS request per lead. Run it somewhere
