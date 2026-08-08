@@ -14,14 +14,22 @@ same offer, but they share a mail domain with head office, so send them slowly.
 
 ## Install
 
+Nothing to install. Python 3.9+ and the standard library are enough — `.xlsx`
+files are read by a built-in zip/XML reader and websites are fetched over
+`urllib` on a thread pool.
+
 ```bash
-pip install -r requirements.txt
+python3 run_pipeline.py --input leads.xlsx
 ```
+
+Optionally, `pip install -r requirements.txt` adds `httpx` (true async sockets,
+so the audit scales past ~50 concurrent requests) and `openpyxl` (more tolerant
+spreadsheet parsing). Both are detected automatically and produce identical
+results — the test suite asserts that. Use them if the install works; skip them
+if it doesn't.
 
 New to the command line? **[SETUP.md](SETUP.md)** walks through the whole thing
 step by step for Mac and Windows.
-
-Needs Python 3.9+. `openpyxl` is only required for `.xlsx` input.
 
 **Network:** STEP 2 makes one outbound HTTPS request per lead. Run it somewhere
 with unrestricted outbound access — behind a filtering proxy every site comes
@@ -41,7 +49,9 @@ Results are cached per lead in `output/site_checks_cache.jsonl`, so an
 interrupted run picks up where it left off and re-runs cost nothing. Pass
 `--refresh` to force a fresh check.
 
-At ~30 concurrent requests, 800 sites takes roughly 5–10 minutes.
+At ~30 concurrent requests, 800 sites takes roughly 5–10 minutes. With httpx
+installed you can raise `--concurrency` to 75+; on the built-in backend each
+request holds a real thread, so keep it at or below ~50.
 
 ### Useful flags
 
@@ -55,6 +65,7 @@ At ~30 concurrent requests, 800 sites takes roughly 5–10 minutes.
 | `--franchise-in-main` | off | put franchise branches in the main files |
 | `--drop-risky` | off | send catch-all / "risky" verified emails to needs_review |
 | `--refresh` | off | ignore the cache and re-check every site |
+| `--no-httpx` | off | force the dependency-free urllib backend |
 | `--sheet NAME` | first | which worksheet to read from an `.xlsx` |
 | `--map JSON` | — | override column detection, e.g. `'{"email":"Work Email"}'` |
 | `--preview N` | 10 | rows to print from each output file |
@@ -197,7 +208,9 @@ python3 tests/test_segmentation.py    # normalizers, validation, franchises, seg
 
 The scoring tests run against fixture pages (modern, stale WordPress, GoDaddy
 builder, 1990s HTML, parked domain) and the fetch tests against a throwaway
-local HTTP server, so the whole suite runs offline.
+local HTTP server, so the whole suite runs offline. When httpx or openpyxl are
+installed, the suite additionally runs both backends and both spreadsheet
+readers and asserts they agree.
 
 ## Re-running on a new list
 

@@ -52,19 +52,21 @@ should see `run_pipeline.py` in the list.
 
 ---
 
-## 4. Install the two packages it needs
+## 4. (Optional) Install two speed-up packages
 
-**Mac:**
+**You can skip this entirely.** The pipeline works with nothing installed.
+
+If you want the faster version:
+
 ```bash
-pip3 install -r requirements.txt
+pip3 install -r requirements.txt      # Mac
+pip install -r requirements.txt       # Windows
 ```
 
-**Windows:**
-```powershell
-pip install -r requirements.txt
-```
-
-You only ever do this once.
+If that errors — `externally-managed-environment` is a common one on newer
+Macs — **just move on to step 5**. The pipeline detects what's missing and uses
+built-in replacements that give exactly the same results, only a little
+slower.
 
 ---
 
@@ -143,6 +145,9 @@ one header in Excel first.
 
 **"python: command not found"** — Python isn't installed, or on Windows you
 missed the "Add to PATH" tickbox. Reinstall with that box ticked.
+
+**`pip install` fails** — ignore it and carry on. Step 4 is optional; nothing
+downstream needs it.
 
 **"No such file or directory: leads.xlsx"** — the spreadsheet isn't in the same
 folder as `run_pipeline.py`, or the name doesn't match exactly (including the

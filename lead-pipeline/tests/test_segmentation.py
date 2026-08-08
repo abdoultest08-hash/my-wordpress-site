@@ -14,7 +14,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from clean_leads import (CLEAN_COLUMNS, clean, detect_franchise,  # noqa: E402
                          normalize_row)
-from common import (normalize_email, normalize_phone_uk, normalize_url,  # noqa: E402
+from common import (_read_xlsx_stdlib, normalize_email,  # noqa: E402
+                    normalize_phone_uk, normalize_url, read_xlsx,
                     registrable_domain, write_csv)
 from segment_leads import (INSTANTLY_COLUMNS, notes_for_hr_offer,  # noqa: E402
                            notes_for_website_offer, rank_issues, segment)
@@ -373,7 +374,57 @@ def test_franchise_dedupe_end_to_end() -> None:
               stats_off["clean_leads"] == 1, str(stats_off["clean_leads"]))
 
 
+def test_stdlib_xlsx_reader() -> None:
+    print("\nbuilt-in xlsx reader (no openpyxl)")
+    try:
+        import openpyxl
+    except ImportError:
+        print("  SKIP  openpyxl not installed, nothing to compare against")
+        return
+
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "sample.xlsx")
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Leads"
+        ws.append(["First Name", "Last Name", "Email", "Company Phone Number"])
+        ws.append(["Sarah", "O'Brien", "sarah@care.co.uk", "020 7946 0123"])
+        ws.append(["Ann-Marie", "Smith", "ann@care.co.uk", 442079460124])
+        ws.append(["Iwona", "Kowalczyk — Nowak", "iwona@care.co.uk", ""])
+        wb.save(path)
+
+        grid = _read_xlsx_stdlib(path)
+        check("built-in reader finds every row", len(grid) == 4, str(len(grid)))
+        check("header row read", grid[0][0] == "First Name", str(grid[0]))
+        check("apostrophes survive", grid[1][1] == "O'Brien", str(grid[1]))
+        check("phone kept as text", grid[1][3] == "020 7946 0123", str(grid[1]))
+        check("numeric cell not mangled", grid[2][3] == "442079460124", str(grid[2]))
+        check("non-ascii survives", "Nowak" in grid[3][1], str(grid[3]))
+
+        # Both readers must agree, or results would differ by machine.
+        via_openpyxl, _ = read_xlsx(path)
+        import builtins
+        real_import = builtins.__import__
+
+        def blocked(name, *args, **kwargs):
+            if name == "openpyxl":
+                raise ImportError("blocked for test")
+            return real_import(name, *args, **kwargs)
+
+        builtins.__import__ = blocked
+        try:
+            via_stdlib, _ = read_xlsx(path)
+        finally:
+            builtins.__import__ = real_import
+
+        strip = lambda rows: [{k: v for k, v in r.items() if k != "_raw"}
+                              for r in rows]
+        check("both readers agree", strip(via_openpyxl) == strip(via_stdlib),
+              f"{strip(via_openpyxl)} != {strip(via_stdlib)}")
+
+
 if __name__ == "__main__":
+    test_stdlib_xlsx_reader()
     test_normalizers()
     test_row_validation()
     test_issue_ranking()

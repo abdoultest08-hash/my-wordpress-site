@@ -21,6 +21,7 @@ import threading
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import check_sites  # noqa: E402
 from check_sites import analyse_html, run_checks, score_site  # noqa: E402
 
 YEAR = dt.date.today().year
@@ -276,8 +277,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         pass
 
 
-def test_async_fetch() -> None:
-    print("\nrun_checks() against a local server")
+def test_async_fetch(prefer_stdlib: bool = False) -> None:
+    label = "urllib (no-install)" if prefer_stdlib else "httpx"
+    print(f"\nrun_checks() against a local server [{label} backend]")
     sock = socket.socket()
     sock.bind(("127.0.0.1", 0))
     port = sock.getsockname()[1]
@@ -292,7 +294,8 @@ def test_async_fetch() -> None:
                   "website": f"http://127.0.0.1:{port}{name}"}
                  for name in ROUTES]
         with tempfile.TemporaryDirectory() as tmp:
-            results = asyncio.run(run_checks(leads, tmp, concurrency=5, timeout=10))
+            results = asyncio.run(run_checks(leads, tmp, concurrency=5, timeout=10,
+                                             prefer_stdlib=prefer_stdlib))
             by_id = {r["lead_id"]: r for r in results}
 
             check("all leads returned", len(results) == len(leads),
@@ -325,7 +328,8 @@ def test_async_fetch() -> None:
                   isinstance(by_id["ld_good"]["load_seconds"], float))
 
             # Second run must come entirely from the JSONL cache.
-            cached = asyncio.run(run_checks(leads, tmp, concurrency=5, timeout=10))
+            cached = asyncio.run(run_checks(leads, tmp, concurrency=5, timeout=10,
+                                            prefer_stdlib=prefer_stdlib))
             check("cache replays every lead", len(cached) == len(leads))
             check("cache preserves scores",
                   {r["lead_id"]: r["website_score"] for r in cached} ==
@@ -338,7 +342,11 @@ def test_async_fetch() -> None:
 if __name__ == "__main__":
     test_analyse()
     test_scoring()
-    test_async_fetch()
+    test_async_fetch(prefer_stdlib=False)
+    if check_sites.HAVE_HTTPX:
+        # The fallback must reach the same verdicts as httpx, or a laptop
+        # without httpx would silently score every site differently.
+        test_async_fetch(prefer_stdlib=True)
     print()
     if FAILURES:
         print(f"{len(FAILURES)} FAILED: {FAILURES}")

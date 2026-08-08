@@ -58,6 +58,8 @@ def main() -> None:
     ap.add_argument("--franchise-in-main", action="store_true",
                     help="put franchise branches in the main segment files")
     ap.add_argument("--refresh", action="store_true")
+    ap.add_argument("--no-httpx", action="store_true",
+                    help="force the dependency-free urllib backend")
     ap.add_argument("--map", default=None)
     ap.add_argument("--preview", type=int, default=10)
     args = ap.parse_args()
@@ -85,7 +87,7 @@ def main() -> None:
     # -------- STEP 2 --------
     from check_sites import SITE_COLUMNS, run_checks
     results = asyncio.run(run_checks(leads, args.outdir, args.concurrency,
-                                     args.timeout, args.refresh))
+                                     args.timeout, args.refresh, args.no_httpx))
     checks_path = os.path.join(args.outdir, "site_checks.csv")
     write_csv(checks_path, results, SITE_COLUMNS)
 

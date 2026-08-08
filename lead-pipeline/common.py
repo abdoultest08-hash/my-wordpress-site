@@ -1,7 +1,7 @@
 """Shared helpers: CSV I/O, header mapping, and field normalization.
 
-Stdlib only, so cleaning and segmenting run anywhere Python 3.9+ does.
-Only check_sites.py needs a third-party package (httpx).
+Stdlib only — including the .xlsx reader — so the whole pipeline runs anywhere
+Python 3.9+ does, with nothing to install.
 """
 
 from __future__ import annotations
@@ -143,20 +143,111 @@ def read_csv(path: str,
     return rows, header_map
 
 
+_XL_MAIN = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
+_XL_REL = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
+
+
+def _column_index(ref: str) -> int:
+    """'A' -> 0, 'B' -> 1, 'AA' -> 26."""
+    index = 0
+    for char in ref:
+        if not char.isalpha():
+            break
+        index = index * 26 + (ord(char.upper()) - 64)
+    return index - 1
+
+
+def _text_of(node) -> str:
+    return "".join(t.text or "" for t in node.iter() if t.tag == _XL_MAIN + "t")
+
+
+def _read_xlsx_stdlib(path: str, sheet: Optional[str] = None) -> List[List[str]]:
+    """Minimal .xlsx reader (zip + XML), so no dependency is required.
+
+    Handles shared strings, inline strings and plain values — everything a lead
+    export contains. Formulas resolve to their cached value, same as openpyxl's
+    data_only mode.
+    """
+    import xml.etree.ElementTree as ET
+    import zipfile
+
+    with zipfile.ZipFile(path) as archive:
+        names = set(archive.namelist())
+
+        shared: List[str] = []
+        if "xl/sharedStrings.xml" in names:
+            for item in ET.fromstring(archive.read("xl/sharedStrings.xml")):
+                shared.append(_text_of(item))
+
+        targets: List[Tuple[str, str]] = []
+        if "xl/workbook.xml" in names and "xl/_rels/workbook.xml.rels" in names:
+            rels = {r.get("Id"): r.get("Target")
+                    for r in ET.fromstring(archive.read("xl/_rels/workbook.xml.rels"))}
+            for node in ET.fromstring(archive.read("xl/workbook.xml")).iter():
+                if node.tag == _XL_MAIN + "sheet":
+                    targets.append((node.get("name") or "",
+                                    rels.get(node.get(_XL_REL + "id"), "")))
+
+        target = ""
+        if sheet:
+            for name, rel in targets:
+                if name == sheet:
+                    target = rel
+                    break
+            if not target:
+                raise SystemExit(
+                    f"Worksheet {sheet!r} not found. Available: "
+                    f"{[n for n, _ in targets]}")
+        elif targets:
+            target = targets[0][1]
+
+        if target:
+            target = target.lstrip("/")
+            if not target.startswith("xl/"):
+                target = "xl/" + target
+        if target not in names:
+            candidates = sorted(n for n in names
+                                if n.startswith("xl/worksheets/") and
+                                n.endswith(".xml"))
+            if not candidates:
+                raise SystemExit(f"No worksheet found inside {path}")
+            target = candidates[0]
+
+        grid: List[List[str]] = []
+        for row in ET.fromstring(archive.read(target)).iter(_XL_MAIN + "row"):
+            cells: Dict[int, str] = {}
+            for position, cell in enumerate(row.findall(_XL_MAIN + "c")):
+                ref = cell.get("r") or ""
+                index = _column_index(ref) if ref and ref[0].isalpha() else position
+                kind = cell.get("t")
+                value_node = cell.find(_XL_MAIN + "v")
+                if kind == "s" and value_node is not None:
+                    try:
+                        value = shared[int(value_node.text or "0")]
+                    except (ValueError, IndexError):
+                        value = ""
+                elif kind == "inlineStr":
+                    inline = cell.find(_XL_MAIN + "is")
+                    value = _text_of(inline) if inline is not None else ""
+                elif value_node is not None:
+                    value = value_node.text or ""
+                else:
+                    value = ""
+                if index >= 0:
+                    cells[index] = value.strip()
+            width = max(cells) + 1 if cells else 0
+            grid.append([cells.get(i, "") for i in range(width)])
+        return grid
+
+
 def read_xlsx(path: str,
               overrides: Optional[Dict[str, str]] = None,
               sheet: Optional[str] = None) -> Tuple[List[dict], Dict[str, str]]:
-    """Read the first (or named) worksheet. Requires openpyxl."""
-    try:
-        import openpyxl
-    except ImportError:  # pragma: no cover
-        raise SystemExit(
-            "Reading .xlsx needs openpyxl. Run:  pip install openpyxl\n"
-            "(or export the sheet to CSV and pass that instead)")
+    """Read the first (or named) worksheet.
 
-    wb = openpyxl.load_workbook(path, data_only=True)
-    ws = wb[sheet] if sheet else wb.worksheets[0]
-
+    Uses openpyxl when it is installed and falls back to the built-in reader
+    above otherwise, so .xlsx input works on a stock Python.
+    """
     def cell(v) -> str:
         if v is None:
             return ""
@@ -164,7 +255,15 @@ def read_xlsx(path: str,
             return str(int(v))       # stop phone/postcode turning into 1.234e+10
         return str(v).strip()
 
-    grid = list(ws.iter_rows(values_only=True))
+    try:
+        import openpyxl
+    except ImportError:
+        grid = [[cell(v) for v in row] for row in _read_xlsx_stdlib(path, sheet)]
+    else:
+        wb = openpyxl.load_workbook(path, data_only=True)
+        ws = wb[sheet] if sheet else wb.worksheets[0]
+        grid = [[cell(v) for v in row] for row in ws.iter_rows(values_only=True)]
+
     if not grid:
         return [], {}
 
@@ -173,7 +272,7 @@ def read_xlsx(path: str,
 
     rows: List[dict] = []
     for i, values in enumerate(grid[1:], start=2):
-        raw = {headers[j]: cell(v) for j, v in enumerate(values) if j < len(headers)}
+        raw = {headers[j]: v for j, v in enumerate(values) if j < len(headers)}
         if not any(raw.values()):
             continue                 # trailing blank rows Excel loves to keep
         row: dict = {"_row_number": i, "_raw": raw}

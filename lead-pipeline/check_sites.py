@@ -6,7 +6,9 @@ For every clean lead, fetch the homepage once and score the site "bad" / "ok"
 Results stream to a JSONL cache as they complete, so an interrupted run
 resumes instead of re-fetching. Delete the cache to force a fresh check.
 
-Requires: pip install httpx
+Uses httpx when it is installed and falls back to urllib on a thread pool
+otherwise, so no dependency is required. Both backends return identical
+verdicts; the test suite asserts it.
 """
 
 from __future__ import annotations
@@ -21,18 +23,32 @@ import re
 import ssl
 import sys
 import time
+import urllib.error
+import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlsplit, urlunsplit
 
+# httpx gives true async sockets and is used when available. Without it the
+# pipeline falls back to urllib on a thread pool so it runs on a stock Python
+# with nothing to install.
 try:
     import httpx
+    HAVE_HTTPX = True
 except ImportError:  # pragma: no cover
-    raise SystemExit("check_sites.py needs httpx. Run:  pip install httpx")
+    httpx = None
+    HAVE_HTTPX = False
 
 from common import host_of, log, registrable_domain, write_csv
 
 USER_AGENT = ("Mozilla/5.0 (compatible; LeadSiteAudit/1.0; "
               "website quality check; +mailto:abuse@localhost)")
+
+DEFAULT_HEADERS = {
+    "User-Agent": USER_AGENT,
+    "Accept": "text/html,application/xhtml+xml",
+    "Accept-Language": "en-GB,en;q=0.9",
+}
 
 MAX_HTML_BYTES = 1_500_000     # stop reading past this; homepages are far smaller
 CURRENT_YEAR = dt.date.today().year
@@ -156,40 +172,131 @@ async def ssl_probe(host: str, timeout: float, port: int = 443) -> dict:
     return out
 
 
-async def fetch(client: "httpx.AsyncClient", url: str) -> dict:
-    """GET a URL, capping how much body we read. Never raises."""
-    started = time.perf_counter()
+def _error_result(url: str, exc: BaseException, started: float) -> dict:
+    name = type(exc).__name__
+    detail = str(exc)[:120]
+    return {"ok": False, "status": 0, "final_url": url, "html": "",
+            "html_bytes": 0, "elapsed": time.perf_counter() - started,
+            "headers": {}, "error": f"{name}: {detail}" if detail else name}
+
+
+def _decode(body: bytes, encoding: Optional[str]) -> str:
     try:
-        async with client.stream("GET", url) as response:
-            chunks: List[bytes] = []
-            total = 0
-            async for chunk in response.aiter_bytes():
-                chunks.append(chunk)
-                total += len(chunk)
-                if total >= MAX_HTML_BYTES:
-                    break
-            body = b"".join(chunks)
-            encoding = response.charset_encoding or "utf-8"
-            try:
-                html = body.decode(encoding, errors="replace")
-            except LookupError:
-                html = body.decode("utf-8", errors="replace")
-            return {
-                "ok": True,
-                "status": response.status_code,
-                "final_url": str(response.url),
-                "html": html,
-                "html_bytes": total,
-                "elapsed": time.perf_counter() - started,
-                "headers": {k.lower(): v for k, v in response.headers.items()},
-                "error": "",
-            }
-    except Exception as exc:
-        name = type(exc).__name__
-        detail = str(exc)[:120]
-        return {"ok": False, "status": 0, "final_url": url, "html": "",
-                "html_bytes": 0, "elapsed": time.perf_counter() - started,
-                "headers": {}, "error": f"{name}: {detail}" if detail else name}
+        return body.decode(encoding or "utf-8", errors="replace")
+    except LookupError:
+        return body.decode("utf-8", errors="replace")
+
+
+class HttpxBackend:
+    """Preferred backend: real async I/O over one connection pool."""
+
+    def __init__(self, verify: bool, timeout: float, concurrency: int):
+        self._client = httpx.AsyncClient(
+            verify=verify,
+            follow_redirects=True,
+            timeout=httpx.Timeout(timeout, connect=min(timeout, 10.0)),
+            limits=httpx.Limits(max_connections=concurrency,
+                                max_keepalive_connections=concurrency),
+            headers=DEFAULT_HEADERS,
+        )
+
+    async def get(self, url: str) -> dict:
+        started = time.perf_counter()
+        try:
+            async with self._client.stream("GET", url) as response:
+                chunks: List[bytes] = []
+                total = 0
+                async for chunk in response.aiter_bytes():
+                    chunks.append(chunk)
+                    total += len(chunk)
+                    if total >= MAX_HTML_BYTES:
+                        break
+                return {
+                    "ok": True,
+                    "status": response.status_code,
+                    "final_url": str(response.url),
+                    "html": _decode(b"".join(chunks), response.charset_encoding),
+                    "html_bytes": total,
+                    "elapsed": time.perf_counter() - started,
+                    "headers": {k.lower(): v for k, v in response.headers.items()},
+                    "error": "",
+                }
+        except Exception as exc:
+            return _error_result(url, exc, started)
+
+    async def aclose(self) -> None:
+        await self._client.aclose()
+
+
+class StdlibBackend:
+    """Fallback backend using urllib on a thread pool — no pip install needed.
+
+    Slower than httpx (a thread per in-flight request rather than true async
+    sockets) but for a few thousand homepages the wall-clock difference is
+    minutes, and it means the pipeline runs on a stock Python.
+    """
+
+    def __init__(self, verify: bool, timeout: float, concurrency: int):
+        self._timeout = timeout
+        self._context = (ssl.create_default_context() if verify
+                         else ssl._create_unverified_context())
+        self._pool = ThreadPoolExecutor(max_workers=max(concurrency, 1),
+                                        thread_name_prefix="site-check")
+
+    def _get_sync(self, url: str) -> dict:
+        started = time.perf_counter()
+        # Identity encoding: urllib will not transparently gunzip for us.
+        headers = dict(DEFAULT_HEADERS, **{"Accept-Encoding": "identity"})
+        request = urllib.request.Request(url, headers=headers, method="GET")
+        try:
+            opener = urllib.request.build_opener(
+                urllib.request.HTTPSHandler(context=self._context))
+            response = opener.open(request, timeout=self._timeout)
+        except urllib.error.HTTPError as exc:
+            # 4xx/5xx is a real response, not a transport failure.
+            response = exc
+        except Exception as exc:
+            return _error_result(url, exc, started)
+
+        try:
+            with response:
+                body = response.read(MAX_HTML_BYTES)
+                charset = None
+                content_type = response.headers.get("Content-Type", "")
+                match = re.search(r"charset=([\w-]+)", content_type, re.I)
+                if match:
+                    charset = match.group(1)
+                return {
+                    "ok": True,
+                    "status": getattr(response, "status", None) or response.getcode(),
+                    "final_url": response.geturl(),
+                    "html": _decode(body, charset),
+                    "html_bytes": len(body),
+                    "elapsed": time.perf_counter() - started,
+                    "headers": {k.lower(): v for k, v in response.headers.items()},
+                    "error": "",
+                }
+        except Exception as exc:
+            return _error_result(url, exc, started)
+
+    async def get(self, url: str) -> dict:
+        loop = asyncio.get_running_loop()
+        return await loop.run_in_executor(self._pool, self._get_sync, url)
+
+    async def aclose(self) -> None:
+        self._pool.shutdown(wait=False)
+
+
+def make_backend(verify: bool, timeout: float, concurrency: int,
+                 prefer_stdlib: bool = False):
+    if HAVE_HTTPX and not prefer_stdlib:
+        return HttpxBackend(verify, timeout, concurrency)
+    return StdlibBackend(verify, timeout, concurrency)
+
+
+async def fetch(client, url: str) -> dict:
+    """GET a URL through whichever backend is in use. Never raises."""
+    return await client.get(url)
 
 
 def _is_tls_error(error: str) -> bool:
@@ -566,7 +673,8 @@ async def run_checks(leads: List[dict],
                      outdir: str,
                      concurrency: int = 30,
                      timeout: float = 20.0,
-                     refresh: bool = False) -> List[dict]:
+                     refresh: bool = False,
+                     prefer_stdlib: bool = False) -> List[dict]:
     os.makedirs(outdir, exist_ok=True)
     cache_path = os.path.join(outdir, "site_checks_cache.jsonl")
     if refresh and os.path.exists(cache_path):
@@ -580,40 +688,34 @@ async def run_checks(leads: List[dict],
     results: List[dict] = [cache[l["lead_id"]] for l in leads if l["lead_id"] in cache]
 
     if todo:
-        limits = httpx.Limits(max_connections=concurrency,
-                              max_keepalive_connections=concurrency)
-        common_kwargs = dict(
-            follow_redirects=True,
-            timeout=httpx.Timeout(timeout, connect=min(timeout, 10.0)),
-            limits=limits,
-            headers={"User-Agent": USER_AGENT,
-                     "Accept": "text/html,application/xhtml+xml",
-                     "Accept-Language": "en-GB,en;q=0.9"},
-        )
+        backend_name = "httpx" if (HAVE_HTTPX and not prefer_stdlib) else "urllib"
+        log(f"[sites] http backend: {backend_name}")
+        secure = make_backend(True, timeout, concurrency, prefer_stdlib)
+        insecure = make_backend(False, timeout, concurrency, prefer_stdlib)
         sem = asyncio.Semaphore(concurrency)
         started = time.perf_counter()
         done = 0
 
         cache_fh = open(cache_path, "a", encoding="utf-8")
         try:
-            async with httpx.AsyncClient(verify=True, **common_kwargs) as secure, \
-                       httpx.AsyncClient(verify=False, **common_kwargs) as insecure:
-                tasks = [asyncio.create_task(
-                            check_one(l, secure, insecure, sem, timeout))
-                         for l in todo]
-                for coro in asyncio.as_completed(tasks):
-                    record = await coro
-                    results.append(record)
-                    cache_fh.write(json.dumps(record, ensure_ascii=False) + "\n")
-                    cache_fh.flush()
-                    done += 1
-                    if done % 25 == 0 or done == len(todo):
-                        rate = done / max(time.perf_counter() - started, 0.01)
-                        remaining = (len(todo) - done) / max(rate, 0.01)
-                        log(f"[sites] {done}/{len(todo)} checked "
-                            f"({rate:.1f}/s, ~{remaining:.0f}s left)")
+            tasks = [asyncio.create_task(
+                        check_one(l, secure, insecure, sem, timeout))
+                     for l in todo]
+            for coro in asyncio.as_completed(tasks):
+                record = await coro
+                results.append(record)
+                cache_fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+                cache_fh.flush()
+                done += 1
+                if done % 25 == 0 or done == len(todo):
+                    rate = done / max(time.perf_counter() - started, 0.01)
+                    remaining = (len(todo) - done) / max(rate, 0.01)
+                    log(f"[sites] {done}/{len(todo)} checked "
+                        f"({rate:.1f}/s, ~{remaining:.0f}s left)")
         finally:
             cache_fh.close()
+            await secure.aclose()
+            await insecure.aclose()
 
     order = {l["lead_id"]: i for i, l in enumerate(leads)}
     results.sort(key=lambda r: order.get(r["lead_id"], 10**9))
@@ -641,6 +743,8 @@ def main() -> None:
     ap.add_argument("--timeout", type=float, default=20.0)
     ap.add_argument("--limit", type=int, default=0, help="check only the first N")
     ap.add_argument("--refresh", action="store_true", help="ignore the cache")
+    ap.add_argument("--no-httpx", action="store_true",
+                    help="force the dependency-free urllib backend")
     args = ap.parse_args()
 
     with open(args.leads, "r", encoding="utf-8-sig", newline="") as fh:
@@ -649,7 +753,7 @@ def main() -> None:
         leads = leads[: args.limit]
 
     results = asyncio.run(run_checks(leads, args.outdir, args.concurrency,
-                                     args.timeout, args.refresh))
+                                     args.timeout, args.refresh, args.no_httpx))
     out_path = os.path.join(args.outdir, "site_checks.csv")
     write_csv(out_path, results, SITE_COLUMNS)
     log(f"[sites] wrote {out_path}")

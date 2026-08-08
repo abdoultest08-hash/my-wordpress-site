@@ -1,5 +1,10 @@
-# STEP 2 (async website checks)
+# Both are OPTIONAL — the pipeline runs on a stock Python with no installs.
+# Installing them is a speed/robustness upgrade, not a requirement.
+
+# Faster website checking (true async sockets instead of a thread pool).
+# Without it, check_sites.py falls back to urllib automatically.
 httpx>=0.27
 
-# Only needed if your lead list is .xlsx rather than .csv
+# Slightly more tolerant .xlsx parsing. Without it, a built-in zip+XML
+# reader handles the spreadsheet instead.
 openpyxl>=3.1
