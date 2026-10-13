@@ -2,6 +2,8 @@ import { Composition, Folder } from "remotion";
 import { HelloWorld } from "./HelloWorld";
 import { Logo } from "./HelloWorld/Logo";
 import { Title } from "./HelloWorld/Title";
+import { Lookbook } from "./Lookbook/Lookbook";
+import { brownTracksuitA, brownTracksuitB } from "./Lookbook/edits";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -51,6 +53,26 @@ export const RemotionRoot: React.FC = () => {
         }}
       />
 
+      <Folder name="Celeste">
+        <Composition
+          id="BrownTracksuitA"
+          component={Lookbook}
+          durationInFrames={Math.round(18.125 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={brownTracksuitA}
+        />
+        <Composition
+          id="BrownTracksuitB"
+          component={Lookbook}
+          durationInFrames={15 * 30}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={brownTracksuitB}
+        />
+      </Folder>
     </>
   );
 };
