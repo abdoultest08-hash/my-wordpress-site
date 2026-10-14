@@ -10,10 +10,12 @@ import {
 } from "remotion";
 
 export type Shot = {
-  // File inside public/, e.g. "clips/clip2.mp4"
+  // File inside public/, e.g. "graded/clip2.mp4"
   src: string;
   // Where to start inside the source clip, in seconds
   from: number;
+  // Soft cross-dissolve from the previous shot instead of a hard cut
+  fade?: boolean;
 };
 
 export type LookbookProps = {
@@ -21,7 +23,13 @@ export type LookbookProps = {
   // Cut times in seconds; cuts[i] is where shots[i] starts, last entry is the end
   cuts: number[];
   audio: string;
+  // Fade the picture out to this colour over the last frames
+  fadeOutTo?: string;
 };
+
+// Length of a cross-dissolve, centred on the cut
+const FADE_FRAMES = 8;
+const FADE_OUT_FRAMES = 15;
 
 const ShotView: React.FC<{ shot: Shot; index: number; durationInFrames: number }> = ({
   shot,
@@ -34,12 +42,15 @@ const ShotView: React.FC<{ shot: Shot; index: number; durationInFrames: number }
   const zoom = interpolate(frame, [0, durationInFrames], index % 2 === 0 ? [1, 1.06] : [1.06, 1], {
     extrapolateRight: "clamp",
   });
+  const opacity = shot.fade
+    ? interpolate(frame, [0, FADE_FRAMES], [0, 1], { extrapolateRight: "clamp" })
+    : 1;
 
   return (
-    <AbsoluteFill style={{ transform: `scale(${zoom})` }}>
+    <AbsoluteFill style={{ transform: `scale(${zoom})`, opacity }}>
       <OffthreadVideo
         src={staticFile(shot.src)}
-        trimBefore={Math.round(shot.from * fps)}
+        trimBefore={Math.max(0, Math.round(shot.from * fps) - (shot.fade ? FADE_FRAMES / 2 : 0))}
         muted
         style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
@@ -47,21 +58,37 @@ const ShotView: React.FC<{ shot: Shot; index: number; durationInFrames: number }
   );
 };
 
-export const Lookbook: React.FC<LookbookProps> = ({ shots, cuts, audio }) => {
+export const Lookbook: React.FC<LookbookProps> = ({ shots, cuts, audio, fadeOutTo }) => {
+  const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
   const toFrame = (s: number) => Math.round(s * fps);
 
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
       {shots.map((shot, i) => {
-        const start = toFrame(cuts[i]);
-        const length = toFrame(cuts[i + 1]) - start;
+        // A fading shot starts half a dissolve early; every shot runs a little
+        // past its cut so there is always a picture underneath the next fade.
+        const start = toFrame(cuts[i]) - (shot.fade ? FADE_FRAMES / 2 : 0);
+        const end = toFrame(cuts[i + 1]) + (i < shots.length - 1 ? FADE_FRAMES : 0);
         return (
-          <Sequence key={i} from={start} durationInFrames={length}>
-            <ShotView shot={shot} index={i} durationInFrames={length} />
+          <Sequence key={i} from={start} durationInFrames={end - start}>
+            <ShotView shot={shot} index={i} durationInFrames={end - start} />
           </Sequence>
         );
       })}
+      {fadeOutTo ? (
+        <AbsoluteFill
+          style={{
+            backgroundColor: fadeOutTo,
+            opacity: interpolate(
+              frame,
+              [durationInFrames - FADE_OUT_FRAMES, durationInFrames - 1],
+              [0, 1],
+              { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+            ),
+          }}
+        />
+      ) : null}
       <Audio
         src={staticFile(audio)}
         volume={(f) =>
