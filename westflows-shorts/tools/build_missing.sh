@@ -4,7 +4,7 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 slug=$1
-if pgrep -f "tools/[b]uild_short.py" >/dev/null; then echo "build already running"; exit 0; fi
+if pgrep -f "^python3 tools/[b]uild_short.py" >/dev/null; then echo "build already running"; exit 0; fi
 for spec in library/$slug/shorts/*.json; do
   name=$(python3 -c "import json,sys;s=json.load(open(sys.argv[1]));print(f\"{s['id']}-{s['name']}\")" "$spec")
   [ -f "out/$slug/$name.mp4" ] && continue
