@@ -1,17 +1,119 @@
 {
- "slug": "house-pt3", "id": "03", "name": "capital-appreciation",
- "from": 500, "to": 644,
- "parts": [[519.85, 527.3], [501.6, 519.0], [527.9, 534.8], [545.3, 554.9], [566.8, 567.5], [569.0, 576.3], [631.5, 643.1]],
+ "slug": "house-pt3",
+ "id": "03",
+ "name": "capital-appreciation",
+ "from": 500,
+ "to": 644,
+ "parts": [
+  [
+   519.85,
+   527.3
+  ],
+  [
+   501.6,
+   519.0
+  ],
+  [
+   527.9,
+   534.8
+  ],
+  [
+   545.3,
+   554.9
+  ],
+  [
+   566.8,
+   567.5
+  ],
+  [
+   569.0,
+   576.3
+  ],
+  [
+   631.5,
+   643.1
+  ]
+ ],
  "cta": "calculator",
- "hook": "All that work for £250 a month?",
- "highlight": ["250", "350,", "lucky.", "capital", "appreciation,", "120", "160.", "160", "220.", "70%", "money."],
+ "hook": "All that work for \u00a3250 a month?",
+ "highlight": [
+  "250",
+  "350,",
+  "lucky.",
+  "capital",
+  "appreciation,",
+  "120",
+  "160.",
+  "160",
+  "220.",
+  "70%",
+  "money."
+ ],
  "graphics": [
-  {"type": "stat", "at": 523.1, "until": 527.3, "value": 250, "prefix": "£", "label": "a month, if you're lucky"},
-  {"type": "list", "at": 503.4, "until": 513.6, "title": "The cash-heavy way", "items": [
-    {"text": "Drop in cash", "at": 503.5}, {"text": "Renovate", "at": 505.3}, {"text": "Remortgage", "at": 506.3}, {"text": "Pay everyone off", "at": 508.6}]},
-  {"type": "zoom", "at": 532.9, "until": 534.8, "scale": 1.18},
-  {"type": "stat", "at": 553.6, "until": 554.9, "value": 160, "prefix": "£", "suffix": "k", "label": "total cost"},
-  {"type": "stat", "at": 572.5, "until": 576.3, "value": 220, "prefix": "£", "suffix": "k", "label": "worth in 5 years"},
-  {"type": "stat", "at": 636.9, "until": 641.1, "value": 70, "suffix": "%", "label": "remortgage, pull your money out"}
+  {
+   "type": "stat",
+   "at": 523.1,
+   "until": 527.3,
+   "value": 250,
+   "prefix": "\u00a3",
+   "label": "a month, if you're lucky"
+  },
+  {
+   "type": "list",
+   "at": 503.4,
+   "until": 513.6,
+   "title": "The cash-heavy way",
+   "items": [
+    {
+     "text": "Drop in cash",
+     "at": 503.5
+    },
+    {
+     "text": "Renovate",
+     "at": 505.3
+    },
+    {
+     "text": "Remortgage",
+     "at": 506.3
+    },
+    {
+     "text": "Pay everyone off",
+     "at": 508.6
+    }
+   ]
+  },
+  {
+   "type": "zoom",
+   "at": 532.9,
+   "until": 534.8,
+   "scale": 1.18
+  },
+  {
+   "type": "stat",
+   "at": 553.6,
+   "until": 555.5,
+   "value": 160,
+   "prefix": "\u00a3",
+   "suffix": "k",
+   "label": "total cost"
+  },
+  {
+   "type": "stat",
+   "at": 572.5,
+   "until": 576.3,
+   "value": 220,
+   "prefix": "\u00a3",
+   "suffix": "k",
+   "label": "worth in 5 years"
+  },
+  {
+   "type": "stat",
+   "at": 636.9,
+   "until": 641.1,
+   "value": 70,
+   "suffix": "%",
+   "label": "remortgage, pull your money out",
+   "top": 1120
+  }
  ]
 }
