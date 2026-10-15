@@ -3,23 +3,29 @@ import { staticFile } from "remotion";
 
 // Defaults. Overwrite from library/STYLE.md after reference analysis.
 export const brand = {
-  accent: "#FF8D48",
+  accent: "#F6A404", // amber orange measured from the reference captions (site brand is #FF8D48)
   ink: "#17181c",
   white: "#ffffff",
-  captionFont: "Anton",
-  captionSize: 96,
-  captionTop: 1130, // px from top, inside the safe zone
+  // Captions match reference/: Montserrat ExtraBold caps, white, soft shadow, no outline,
+  // 2-4 words per page, keywords (not every word) in orange, sitting low (~1500px)
+  captionFont: "Montserrat",
+  captionWeight: 800,
+  captionSize: 56,
+  captionTop: 1480,
+  captionWidth: 760,
   captionColour: "#ffffff",
-  captionStroke: 10,
-  wordsPerPage: 3,
+  captionStroke: 0,
+  wordsPerPage: 4,
   uppercase: true,
-  hookFont: "Anton",
-  hookSize: 78,
+  karaoke: false, // true = colour the word being spoken; false = colour only props.highlight words
+  hookFont: "Montserrat",
+  hookSize: 68,
   hookTop: 260,
-  hookBg: "#FF8D48",
+  hookBg: "#F6A404",
   hookColour: "#17181c",
   hookSeconds: 2.2,
   bodyFont: "Inter",
+  graphicFont: "Anton", // stat numbers and list titles (you liked these in the demo)
   graphicTop: 300, // stat cards and lists sit above the face, below the top UI
   labelTop: 960, // small tags sit just above the captions
   endBg: "#ffffff",
@@ -33,5 +39,6 @@ export const ctaText = {
   landlord: "Landlords: see how it works. Link in bio",
 } as const;
 
+loadFont({ family: "Montserrat", url: staticFile("brand/fonts/Montserrat.ttf"), weight: "100 900" });
 loadFont({ family: "Anton", url: staticFile("brand/fonts/Anton-Regular.ttf") });
 loadFont({ family: "Inter", url: staticFile("brand/fonts/Inter.ttf"), weight: "100 900" });

@@ -3,14 +3,19 @@ Usage: python3 transcribe.py AUDIO OUT.json [model]   (default small.en; try med
 Also writes OUT.txt: one line per sentence with [mm:ss] for reading and shortlisting.
 The prompt includes fillers on purpose: Whisper copies the prompt's style, so it writes down
 "um", "uh", "erm" instead of silently skipping them, which lets plan_cuts.py cut them out."""
-import json, sys
+import json, sys, wave
+import numpy as np
 from faster_whisper import WhisperModel
 
 src, out = sys.argv[1], sys.argv[2]
 size = sys.argv[3] if len(sys.argv) > 3 else "small.en"
 model = WhisperModel(size, device="cpu", compute_type="int8")
+# Read the 16 kHz mono WAV ourselves: faster-whisper's own decoder breaks on some PyAV versions
+with wave.open(src) as wf:
+    assert wf.getframerate() == 16000 and wf.getnchannels() == 1, "expects 16 kHz mono WAV (see Section 5.1)"
+    audio = np.frombuffer(wf.readframes(wf.getnframes()), np.int16).astype(np.float32) / 32768
 segs, _ = model.transcribe(
-    src, language="en", word_timestamps=True, vad_filter=True,
+    audio, language="en", word_timestamps=True, vad_filter=True,
     initial_prompt=("Umm, so, uh, I- I bought my first, erm, buy-to-let. Like, you know, the BTL, "
                     "HMO, BRR, serviced accommodation, SA, SDLT, stamp duty, remortgage, LTV, "
                     "bridging, Article 4, consent to let, West Flows."),

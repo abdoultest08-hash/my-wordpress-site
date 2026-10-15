@@ -71,7 +71,7 @@ const Stat: React.FC<Extract<Graphic, { type: "stat" }> & { durationInFrames: nu
           transform: `scale(${0.6 + 0.4 * enter}) translateY(${(1 - enter) * 40}px)`,
         }}
       >
-        <div style={{ fontFamily: brand.captionFont, fontSize: 170, lineHeight: 1, color: brand.accent }}>
+        <div style={{ fontFamily: brand.graphicFont, fontSize: 170, lineHeight: 1, color: brand.accent }}>
           {g.prefix ?? ""}
           {formatNumber(count, g.decimals ?? 0)}
           {g.suffix ?? ""}
@@ -111,7 +111,7 @@ const List: React.FC<Extract<Graphic, { type: "list" }> & { durationInFrames: nu
         }}
       >
         {g.title ? (
-          <div style={{ fontFamily: brand.captionFont, fontSize: 64, textTransform: "uppercase", marginBottom: 14 }}>
+          <div style={{ fontFamily: brand.graphicFont, fontSize: 64, textTransform: "uppercase", marginBottom: 14 }}>
             {g.title}
           </div>
         ) : null}

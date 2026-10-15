@@ -23,6 +23,7 @@ export type TalkingShortProps = {
   segments: Segment[];
   words: Word[];
   hook?: string;
+  highlight?: string[]; // caption words to colour orange, e.g. ["£150k", "commercial"]
   broll?: Broll[];
   graphics?: Graphic[];
   music?: string | null;
@@ -79,7 +80,9 @@ const toPages = (words: Word[], max: number): Page[] => {
   return pages;
 };
 
-const Captions: React.FC<{ words: Word[] }> = ({ words }) => {
+const norm = (t: string) => t.toLowerCase().replace(/[^a-z0-9£%']/g, "");
+
+const Captions: React.FC<{ words: Word[]; highlight: string[] }> = ({ words, highlight }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps;
@@ -92,31 +95,36 @@ const Captions: React.FC<{ words: Word[] }> = ({ words }) => {
     durationInFrames: 6,
     config: { damping: 200 },
   });
-  let active = 0;
-  page.words.forEach((w, i) => {
-    if (w.start <= t) active = i;
-  });
+  let active = -1;
+  if (brand.karaoke) {
+    page.words.forEach((w, i) => {
+      if (w.start <= t) active = i;
+    });
+  }
+  const keys = new Set(highlight.map(norm));
   return (
     <AbsoluteFill style={{ alignItems: "center" }}>
       <div
         style={{
           position: "absolute",
           top: brand.captionTop,
-          width: 900,
+          width: brand.captionWidth,
           textAlign: "center",
+          textWrap: "balance",
           transform: `scale(${0.9 + 0.1 * pop})`,
           fontFamily: brand.captionFont,
+          fontWeight: brand.captionWeight,
           fontSize: brand.captionSize,
-          lineHeight: 1.05,
+          lineHeight: 1.12,
           color: brand.captionColour,
           textTransform: brand.uppercase ? "uppercase" : "none",
-          WebkitTextStroke: `${brand.captionStroke}px ${brand.ink}`,
+          WebkitTextStroke: brand.captionStroke ? `${brand.captionStroke}px ${brand.ink}` : undefined,
           paintOrder: "stroke fill",
-          textShadow: "0 6px 18px rgba(0,0,0,0.45)",
+          textShadow: "0 2px 4px rgba(0,0,0,0.6), 0 4px 16px rgba(0,0,0,0.45)",
         }}
       >
         {page.words.map((w, i) => (
-          <span key={i} style={{ color: i === active ? brand.accent : undefined }}>
+          <span key={i} style={{ color: i === active || keys.has(norm(w.text)) ? brand.accent : undefined }}>
             {w.text}
             {i < page.words.length - 1 ? " " : ""}
           </span>
@@ -143,6 +151,7 @@ const Hook: React.FC<{ text: string }> = ({ text }) => {
           background: brand.hookBg,
           color: brand.hookColour,
           fontFamily: brand.hookFont,
+          fontWeight: 900,
           fontSize: brand.hookSize,
           lineHeight: 1.05,
           textAlign: "center",
@@ -239,7 +248,7 @@ export const TalkingShort: React.FC<TalkingShortProps> = (p) => {
         ),
       )}
       <Sequence durationInFrames={f(speechEnd)}>
-        <Captions words={words} />
+        <Captions words={words} highlight={p.highlight ?? []} />
       </Sequence>
       {p.hook ? (
         <Sequence durationInFrames={f(brand.hookSeconds) + 10}>
