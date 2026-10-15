@@ -71,3 +71,24 @@ export const tracksuitMix: LookbookProps = {
     { src: "graded/clip56.mp4", from: 12.3 }, // black: final pose, fades to white
   ],
 };
+
+// Women's sofa edit, brown tracksuit + corset & jeans (12s). Both looks were shot on the same
+// cream sofa set, so the edit alternates them as one story. Cuts sit on the beats of the
+// "Womens creamy set" soundtrack (~54 BPM, a beat every 1.1s).
+export const sofaEdit: LookbookProps = {
+  audio: "audio/womens-creamy-12s.m4a",
+  fadeOutTo: "white",
+  cuts: [0, 1.11, 2.29, 3.42, 4.42, 5.67, 6.63, 7.71, 8.79, 9.94, 12.14],
+  shots: [
+    { src: "graded/CJ-41.mp4", from: 0.0 }, // corset: seated close, hand in hair (hook)
+    { src: "graded/BRF-14.mp4", from: 3.5 }, // brown: push-in to face + chest logo
+    { src: "graded/CJ-32.mp4", from: 5.5 }, // corset: rose embroidery detail
+    { src: "graded/BRF-21.mp4", from: 22.0 }, // brown: chest logo embroidery close-up
+    { src: "graded/CJ-42.mp4", from: 0.5 }, // corset: side profile, hand at hair
+    { src: "graded/BRF-21.mp4", from: 3.0 }, // brown: sofa selfie, playful
+    { src: "graded/CJ-40.mp4", from: 5.0 }, // corset: slide down the rose jeans
+    { src: "graded/clip22.mp4", from: 5.6 }, // brown: laughing close-up
+    { src: "graded/CJ-41.mp4", from: 4.3 }, // corset: stands up, full outfit
+    { src: "graded/BRF-14.mp4", from: 0.0, fade: true }, // brown: seated smile, fades to white
+  ],
+};
