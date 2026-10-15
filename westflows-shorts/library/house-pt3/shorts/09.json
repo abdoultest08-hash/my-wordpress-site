@@ -1,7 +1,7 @@
 {
  "slug": "house-pt3", "id": "09", "name": "undersell-overdeliver",
  "from": 166, "to": 192,
- "parts": [[176.2, 183.8], [166.9, 176.0], [186.5, 191.3]],
+ "parts": [[176.2, 183.8], [167.0, 176.0], [186.5, 191.3]],
  "cta": "calculator",
  "hook": "Undersell. Overdeliver. Always.",
  "highlight": ["undersell", "overdeliver.", "oversell", "underdeliver", "expectations.", "delays", "oversold", "underdelivered,"],
