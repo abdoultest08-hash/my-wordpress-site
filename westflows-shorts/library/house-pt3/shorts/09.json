@@ -1,0 +1,13 @@
+{
+ "slug": "house-pt3", "id": "09", "name": "undersell-overdeliver",
+ "from": 166, "to": 192,
+ "parts": [[176.2, 183.8], [166.9, 176.0], [186.5, 191.3]],
+ "cta": "calculator",
+ "hook": "Undersell. Overdeliver. Always.",
+ "highlight": ["undersell", "overdeliver.", "oversell", "underdeliver", "expectations.", "delays", "oversold", "underdelivered,"],
+ "graphics": [
+  {"type": "label", "at": 179.1, "until": 180.7, "text": "Undersell + overdeliver"},
+  {"type": "label", "at": 181.5, "until": 183.8, "text": "Never the other way round"},
+  {"type": "zoom", "at": 186.5, "until": 188.9, "scale": 1.15}
+ ]
+}

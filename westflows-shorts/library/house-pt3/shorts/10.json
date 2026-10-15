@@ -1,0 +1,15 @@
+{
+ "slug": "house-pt3", "id": "10", "name": "dont-reinvent-the-wheel",
+ "from": 829, "to": 1143,
+ "parts": [[842.7, 853.2], [829.9, 835.2], [838.8, 842.1], [1135.3, 1140.1], [1142.1, 1142.5]],
+ "cta": "calculator",
+ "hook": "Stop trying to reinvent the wheel",
+ "highlight": ["reinvent", "wheel.", "working", "better", "revolutionary.", "money."],
+ "fixAt": {"1135.57": "not"},
+ "graphics": [
+  {"type": "list", "at": 845.9, "until": 853.2, "title": "Take what works and", "items": [
+    {"text": "Make it better", "at": 848.6}, {"text": "Make it efficient", "at": 849.5}, {"text": "Make more money", "at": 850.7}, {"text": "Save time", "at": 851.5}]},
+  {"type": "label", "at": 831.1, "until": 835.2, "text": "AI changes everything?"},
+  {"type": "zoom", "at": 1135.3, "until": 1136.9, "scale": 1.2}
+ ]
+}
