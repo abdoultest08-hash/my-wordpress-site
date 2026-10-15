@@ -1,0 +1,15 @@
+{
+ "slug": "house-pt3", "id": "02", "name": "supply-and-demand",
+ "from": 433, "to": 471,
+ "parts": [[433.6, 470.1]],
+ "drops": [[449.7, 450.02], [460.4, 461.6]],
+ "cta": "calculator",
+ "hook": "Check this before starting ANY business",
+ "highlight": ["demand", "supply", "houses", "pink", "live,"],
+ "graphics": [
+  {"type": "label", "at": 436.7, "until": 439.2, "text": "Supply & demand"},
+  {"type": "zoom", "at": 439.8, "until": 441.4, "scale": 1.15},
+  {"type": "list", "at": 462.0, "until": 470.1, "title": "UK housing", "items": [
+    {"text": "Always demand", "at": 462.6}, {"text": "Not enough houses", "at": 465.9}, {"text": "Too many people looking", "at": 467.1}]}
+ ]
+}

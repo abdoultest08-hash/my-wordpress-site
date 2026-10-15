@@ -1,0 +1,16 @@
+{
+ "slug": "house-pt3", "id": "01", "name": "middleman",
+ "from": 1458, "to": 1505,
+ "parts": [[1460.1, 1471.0], [1472.6, 1503.0], [1504.1, 1504.6]],
+ "drops": [[1480.5, 1483.05], [1499.85, 1501.3]],
+ "cta": "landlord",
+ "hook": "£250 a month from houses I don't own",
+ "highlight": ["houses.", "middleman,", "commission.", "£1,250", "1K.", "1.25", "£250", "wheel?"],
+ "graphics": [
+  {"type": "label", "at": 1468.0, "until": 1471.0, "text": "The middleman"},
+  {"type": "stat", "at": 1485.5, "until": 1487.3, "value": 1000, "prefix": "£", "label": "investor wants"},
+  {"type": "stat", "at": 1489.3, "until": 1493.2, "value": 1250, "prefix": "£", "label": "provider pays"},
+  {"type": "stat", "at": 1496.9, "until": 1499.8, "value": 250, "prefix": "£", "label": "per house, every month"},
+  {"type": "zoom", "at": 1501.6, "until": 1503.0, "scale": 1.2}
+ ]
+}

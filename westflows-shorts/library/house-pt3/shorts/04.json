@@ -1,0 +1,17 @@
+{
+ "slug": "house-pt3", "id": "04", "name": "salesman",
+ "from": 262, "to": 390,
+ "parts": [[375.6, 381.5], [262.8, 286.2], [383.1, 389.2]],
+ "drops": [[266.5, 268.7], [271.2, 275.4]],
+ "cta": "calculator",
+ "hook": "The job that makes you unstoppable",
+ "highlight": ["salesman,", "salesman.", "nothing", "commission,", "guaranteed.", "100", "2%", "interested."],
+ "fix": {"shot": "shut"},
+ "fixAt": {"377.16": "it"},
+ "graphics": [
+  {"type": "zoom", "at": 379.8, "until": 381.5, "scale": 1.2},
+  {"type": "label", "at": 268.9, "until": 270.8, "text": "Commission only"},
+  {"type": "stat", "at": 278.3, "until": 281.4, "value": 2, "suffix": "%", "label": "closing rate on 100 calls"},
+  {"type": "stat", "at": 281.9, "until": 284.8, "value": 0, "label": "the next day"}
+ ]
+}

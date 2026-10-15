@@ -20,14 +20,14 @@ export const brand = {
   karaoke: false, // true = colour the word being spoken; false = colour only props.highlight words
   hookFont: "Montserrat",
   hookSize: 68,
-  hookTop: 260,
+  hookTop: 215, // just inside the top safe zone, above the head in a close crop
   hookBg: "#F6A404",
   hookColour: "#17181c",
   hookSeconds: 2.2,
   bodyFont: "Inter",
   graphicFont: "Anton", // stat numbers and list titles (you liked these in the demo)
-  graphicTop: 300, // stat cards and lists sit above the face, below the top UI
-  labelTop: 960, // small tags sit just above the captions
+  graphicTop: 860, // stat cards and lists sit on the chest: clear of the face and the captions
+  labelTop: 1360, // small tags sit just above the captions
   endBg: "#ffffff",
   logo: "", // e.g. "brand/logo.png" once added to public/brand/
   endCardText: "Free deal calculator: link in bio",

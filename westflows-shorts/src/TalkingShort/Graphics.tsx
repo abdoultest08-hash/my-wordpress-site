@@ -54,7 +54,7 @@ const formatNumber = (n: number, decimals: number) =>
 
 const Stat: React.FC<Extract<Graphic, { type: "stat" }> & { durationInFrames: number }> = (g) => {
   const { frame, fps, enter, exit } = useEnterExit(g.durationInFrames);
-  const count = interpolate(frame, [0, Math.round(0.8 * fps)], [0, g.value], {
+  const count = interpolate(frame, [0, Math.round(0.5 * fps)], [0, g.value], {
     ...clamp,
     easing: Easing.out(Easing.cubic),
   });
