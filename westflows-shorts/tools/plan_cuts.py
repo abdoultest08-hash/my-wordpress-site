@@ -47,7 +47,8 @@ def plan_part(a, b):
                 continue
             x = [norm(words[j]["text"]) for j in idx[:n]]
             y = [norm(words[j]["text"]) for j in idx[n:]]
-            if x == y and words[idx[n]]["start"] - words[idx[n - 1]]["end"] < 1.0:
+            ends_sentence = words[idx[n - 1]]["text"].rstrip()[-1:] in ".?!"  # "everybody. Everybody" is not a stutter
+            if x == y and not ends_sentence and words[idx[n]]["start"] - words[idx[n - 1]]["end"] < 1.0:
                 for j in idx[:n]:
                     why[j] = "repeat"
     if no_trim:
