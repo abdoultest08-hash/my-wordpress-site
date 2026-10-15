@@ -1,6 +1,7 @@
 import {
   AbsoluteFill,
   Audio,
+  Img,
   interpolate,
   OffthreadVideo,
   Sequence,
@@ -10,9 +11,9 @@ import {
 } from "remotion";
 
 export type Shot = {
-  // File inside public/, e.g. "graded/clip2.mp4"
+  // File inside public/: a video ("graded/clip2.mp4") or a still photo ("photos/cj-tag.jpg")
   src: string;
-  // Where to start inside the source clip, in seconds
+  // Where to start inside the source clip, in seconds (ignored for photos)
   from: number;
   // Soft cross-dissolve from the previous shot instead of a hard cut
   fade?: boolean;
@@ -46,14 +47,20 @@ const ShotView: React.FC<{ shot: Shot; index: number; durationInFrames: number }
     ? interpolate(frame, [0, FADE_FRAMES], [0, 1], { extrapolateRight: "clamp" })
     : 1;
 
+  const style = { width: "100%", height: "100%", objectFit: "cover" } as const;
+
   return (
     <AbsoluteFill style={{ transform: `scale(${zoom})`, opacity }}>
-      <OffthreadVideo
-        src={staticFile(shot.src)}
-        trimBefore={Math.max(0, Math.round(shot.from * fps) - (shot.fade ? FADE_FRAMES / 2 : 0))}
-        muted
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-      />
+      {/\.(jpe?g|png)$/i.test(shot.src) ? (
+        <Img src={staticFile(shot.src)} style={style} />
+      ) : (
+        <OffthreadVideo
+          src={staticFile(shot.src)}
+          trimBefore={Math.max(0, Math.round(shot.from * fps) - (shot.fade ? FADE_FRAMES / 2 : 0))}
+          muted
+          style={style}
+        />
+      )}
     </AbsoluteFill>
   );
 };

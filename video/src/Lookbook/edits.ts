@@ -92,3 +92,58 @@ export const sofaEdit: LookbookProps = {
     { src: "graded/BRF-14.mp4", from: 0.0, fade: true }, // brown: seated smile, fades to white
   ],
 };
+
+// Cut times (seconds) for a list of beat positions, given the song's beat length
+const onBeats = (beatSeconds: number, beats: number[]) =>
+  beats.map((b) => Math.round(b * beatSeconds * 1000) / 1000);
+
+// Sofa edit remix on "Gunna - pop it" (14.1s). The track pulses every 1.173s; videos change on
+// the pulse and product photos flash in on the half-pulse for item close-ups.
+export const sofaRemixGunna: LookbookProps = {
+  audio: "audio/gunna-remix.m4a",
+  fadeOutTo: "white",
+  cuts: onBeats(1.173, [0, 1, 1.5, 2, 3, 4, 4.5, 5, 6, 7, 7.5, 8, 9, 10, 11, 12]),
+  shots: [
+    { src: "graded/BRF-21.mp4", from: 0.5 }, // brown: sofa selfie with phone (hook)
+    { src: "photos/brf-chestlogo.jpg", from: 0 }, // photo: brown chest logo
+    { src: "photos/cj-roses.jpg", from: 0 }, // photo: rose embroidery
+    { src: "graded/CJ-41.mp4", from: 0.0 }, // corset: hand in hair
+    { src: "graded/BRF-14.mp4", from: 3.5 }, // brown: push-in to face + logo
+    { src: "photos/cj-corsetprint.jpg", from: 0 }, // photo: corset print + hand
+    { src: "photos/brf-hood.jpg", from: 0 }, // photo: brown, hands on hood
+    { src: "graded/CJ-40.mp4", from: 5.0 }, // corset: slide down the rose jeans
+    { src: "graded/clip22.mp4", from: 0.3 }, // brown: lying on sofa, peace sign
+    { src: "photos/cj-tag.jpg", from: 0 }, // photo: Céleste pocket tag
+    { src: "photos/brf-backprint.jpg", from: 0 }, // photo: brown back print
+    { src: "graded/CJ-42.mp4", from: 0.5 }, // corset: side profile
+    { src: "graded/BRF-21.mp4", from: 22.0 }, // brown: chest logo embroidery close-up
+    { src: "graded/CJ-41.mp4", from: 4.3 }, // corset: stands up, full outfit
+    { src: "graded/clip22.mp4", from: 5.6 }, // brown: laughing close-up, fades to white
+  ],
+};
+
+// Studio version on "Rose Nere" (13.9s), opening on the drop. 112 BPM: videos hold two beats,
+// product photos flash for one.
+export const studioRoseNere: LookbookProps = {
+  audio: "audio/rose-nere-drop.m4a",
+  fadeOutTo: "white",
+  cuts: onBeats(0.5341, [0, 2, 4, 5, 6, 8, 10, 11, 12, 14, 16, 17, 18, 20, 22, 23, 26]),
+  shots: [
+    { src: "graded/clip28.mp4", from: 8.0 }, // brown: over-the-shoulder look (hook)
+    { src: "graded/CJ-65.mp4", from: 3.5 }, // corset: front pose
+    { src: "photos/brf-chestlogo.jpg", from: 0 }, // photo: brown chest logo
+    { src: "photos/cj-corsetprint.jpg", from: 0 }, // photo: corset print
+    { src: "graded/clip2.mp4", from: 10.0 }, // brown: full body
+    { src: "graded/CJ-65.mp4", from: 9.3 }, // corset: lace-up back
+    { src: "photos/brf-backprint.jpg", from: 0 }, // photo: brown back print
+    { src: "photos/cj-tag.jpg", from: 0 }, // photo: pocket tag
+    { src: "graded/clip28.mp4", from: 2.0 }, // brown: looking down at hoodie
+    { src: "graded/CJ-23.mp4", from: 26.0 }, // corset: crouching pose
+    { src: "photos/cj-roses.jpg", from: 0 }, // photo: rose embroidery
+    { src: "photos/brf-hood.jpg", from: 0 }, // photo: brown, hands on hood
+    { src: "graded/c2jog.mp4", from: 0 }, // brown: jogger logo close-up
+    { src: "graded/CJ-65.mp4", from: 12.5 }, // corset: front pose
+    { src: "photos/cj-sunglasses.jpg", from: 0 }, // photo: corset, sunglasses
+    { src: "graded/clip28.mp4", from: 16.0 }, // brown: final pose, fades to white
+  ],
+};

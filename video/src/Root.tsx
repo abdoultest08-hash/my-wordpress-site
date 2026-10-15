@@ -3,7 +3,14 @@ import { HelloWorld } from "./HelloWorld";
 import { Logo } from "./HelloWorld/Logo";
 import { Title } from "./HelloWorld/Title";
 import { Lookbook } from "./Lookbook/Lookbook";
-import { brownTracksuitA, brownTracksuitB, sofaEdit, tracksuitMix } from "./Lookbook/edits";
+import {
+  brownTracksuitA,
+  brownTracksuitB,
+  sofaEdit,
+  sofaRemixGunna,
+  studioRoseNere,
+  tracksuitMix,
+} from "./Lookbook/edits";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -89,6 +96,24 @@ export const RemotionRoot: React.FC = () => {
           width={1080}
           height={1920}
           defaultProps={sofaEdit}
+        />
+        <Composition
+          id="SofaRemixGunna"
+          component={Lookbook}
+          durationInFrames={Math.round(12 * 1.173 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={sofaRemixGunna}
+        />
+        <Composition
+          id="StudioRoseNere"
+          component={Lookbook}
+          durationInFrames={Math.round(26 * 0.5341 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={studioRoseNere}
         />
       </Folder>
     </>
