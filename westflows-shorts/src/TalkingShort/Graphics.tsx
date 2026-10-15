@@ -13,6 +13,7 @@ import { brand } from "../brand";
 export type Graphic =
   | {
       type: "stat"; // big number that counts up, e.g. £1,250 / 6.2%
+      top?: number; // px from top; build_short.py sets it from where the face is
       at: number;
       dur: number;
       value: number;
@@ -23,6 +24,7 @@ export type Graphic =
     }
   | {
       type: "list"; // ticklist, each item appears at its own time
+      top?: number;
       at: number;
       dur: number;
       title?: string;
@@ -64,7 +66,7 @@ const Stat: React.FC<Extract<Graphic, { type: "stat" }> & { durationInFrames: nu
         style={{
           ...card,
           position: "absolute",
-          top: brand.graphicTop,
+          top: g.top ?? brand.graphicTop,
           padding: "26px 56px 30px",
           textAlign: "center",
           opacity: exit,
@@ -103,7 +105,7 @@ const List: React.FC<Extract<Graphic, { type: "list" }> & { durationInFrames: nu
         style={{
           ...card,
           position: "absolute",
-          top: brand.graphicTop,
+          top: g.top ?? brand.graphicTop,
           width: 820,
           padding: "34px 44px",
           opacity: exit,
