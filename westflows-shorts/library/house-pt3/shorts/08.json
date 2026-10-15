@@ -1,0 +1,16 @@
+{
+ "slug": "house-pt3", "id": "08", "name": "total-addressable-market",
+ "from": 999, "to": 1069,
+ "parts": [[999.6, 1010.8], [1028.4, 1059.2], [1060.1, 1068.3]],
+ "drops": [[1036.3, 1038.3], [1062.1, 1064.5]],
+ "cta": "calculator",
+ "hook": "Why property has the biggest market",
+ "highlight": ["TAM,", "everybody.", "house", "shrinks", "milk."],
+ "fix": {"SuperYa.": "superyacht.", "SuperYa,": "superyacht,", "open.": "up."},
+ "graphics": [
+  {"type": "label", "at": 1001.3, "until": 1003.2, "text": "Total addressable market"},
+  {"type": "zoom", "at": 1007.7, "until": 1010.8, "scale": 1.15},
+  {"type": "list", "at": 1028.4, "until": 1053.7, "title": "Market shrinks", "items": [
+    {"text": "Ferrari", "at": 1029.2}, {"text": "Bugatti", "at": 1041.9}, {"text": "Superyacht", "at": 1047.5}, {"text": "Boeing 707", "at": 1051.5}]}
+ ]
+}

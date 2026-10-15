@@ -1,0 +1,15 @@
+{
+ "slug": "house-pt3", "id": "07", "name": "cool-idea-vs-good-business",
+ "from": 869, "to": 986,
+ "parts": [[981.6, 985.8], [869.1, 892.4], [897.6, 899.95], [905.7, 906.1], [906.7, 916.2], [917.4, 917.9], [921.4, 936.9]],
+ "cta": "calculator",
+ "hook": "Cool idea or good business?",
+ "highlight": ["cool,", "feasible.", "once", "year.", "chickens.", "eggs.", "Predictable.", "predictability."],
+ "graphics": [
+  {"type": "label", "at": 886.3, "until": 888.1, "text": "Once a year"},
+  {"type": "label", "at": 913.8, "until": 916.2, "text": "Eggs every day"},
+  {"type": "zoom", "at": 917.4, "until": 917.9, "scale": 1.2},
+  {"type": "stat", "at": 929.9, "until": 932.2, "value": 10, "label": "sales today"},
+  {"type": "stat", "at": 932.4, "until": 935.3, "value": 0, "label": "sales for 2 weeks"}
+ ]
+}
