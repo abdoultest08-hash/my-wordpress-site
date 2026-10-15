@@ -40,6 +40,21 @@ os.makedirs(os.path.join(ROOT, f"out/{slug}"), exist_ok=True)
 # Only the footage the short uses is cut from the 4K file (slicing 4K HEVC is ~8x slower than
 # real time). Blocks = the parts, padded and merged, laid end to end in source.mp4.
 PAD = 0.3
+ALL_WORDS = json.load(open(os.path.join(ROOT, f"library/{slug}/transcript.json")))["words"]
+
+
+def whole_words(a, b):
+    """Widen a range so it never starts or ends part-way through a word."""
+    for w in ALL_WORDS:
+        if w["start"] < a < w["end"]:
+            a = w["start"] - 0.02
+        if w["start"] < b < w["end"]:
+            b = w["end"] + 0.02
+    return [round(a, 3), round(b, 3)]
+
+
+if spec.get("parts"):
+    spec["parts"] = [whole_words(a, b) for a, b in spec["parts"]]
 blocks = []
 for a, b in sorted(spec.get("parts") or [[spec["from"], spec["to"]]]):
     a, b = max(a - PAD, 0), b + PAD
@@ -119,12 +134,14 @@ props["words"] = words
 
 
 # 4. Map long-video times to the output timeline
-def out_t(x):
+def out_t(x, end=False):
+    """end=True: x is when something should disappear, so a time just after a cut snaps back
+    to the end of the segment before it instead of jumping to whatever plays next."""
     x = local(x)
     off, best = 0.0, None
     for s in props["segments"]:
-        if s["from"] <= x < s["to"]:
-            return round(off + x - s["from"], 3)
+        if s["from"] <= x < s["to"] or (end and s["from"] < x <= s["to"] + 0.5):
+            return round(off + min(x, s["to"]) - s["from"], 3)
         if s["from"] > x and (best is None or s["from"] - x < best[0]):
             best = (s["from"] - x, off)
         off += s["to"] - s["from"]
@@ -156,7 +173,7 @@ for g in spec.get("graphics", []):
         top = card_top(g["at"])
         if top is not None:
             g["top"] = top
-    at, until = out_t(g.pop("at")), out_t(g.pop("until"))
+    at, until = out_t(g.pop("at")), out_t(g.pop("until"), end=True)
     g["at"], g["dur"] = at, max(round(until - at, 3), 0.8)
     if "items" in g:
         g["items"] = [{"text": i["text"], "at": out_t(i["at"])} for i in g["items"]]
