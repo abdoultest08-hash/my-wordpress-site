@@ -760,3 +760,6 @@ After I pick:
   ```
   Stat and list cards sit at `brand.graphicTop`, labels at `brand.labelTop`. Zoom is capped at 1.3.
 - Theme: orange `#FF8D48` accent on captions, hook, stats, ticks. Keep it.
+- Post copy: after the videos are approved, write "Video NN copy" for every video in
+  `library/<slug>/COPY.md`, in the style of `library/COPY_STYLE.md` (built from real posts).
+  Send the file with the videos so each video and its copy share the same number.
