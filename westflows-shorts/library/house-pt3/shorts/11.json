@@ -1,0 +1,19 @@
+{
+ "slug": "house-pt3", "id": "11", "name": "middleman-long",
+ "from": 1427, "to": 1505,
+ "parts": [[1460.1, 1471.0], [1427.68, 1441.0], [1442.26, 1455.4], [1472.6, 1503.0], [1504.1, 1504.6]],
+ "drops": [[1480.5, 1483.05], [1499.85, 1501.3]],
+ "cta": "landlord",
+ "hook": "£250 a month from houses I don't own",
+ "highlight": ["houses.", "middleman,", "commission.", "tenders", "emergency", "investors", "£1,250", "1K.", "1.25", "£250", "wheel?"],
+ "graphics": [
+  {"type": "label", "at": 1468.0, "until": 1471.0, "text": "The middleman"},
+  {"type": "list", "at": 1434.4, "until": 1441.0, "title": "Who I'm looking at", "items": [
+    {"text": "Short-term accommodation", "at": 1438.2}, {"text": "Emergency accommodation", "at": 1439.4}, {"text": "Supported living", "at": 1440.4}]},
+  {"type": "label", "at": 1447.3, "until": 1449.2, "text": "Pool of investors"},
+  {"type": "stat", "at": 1485.5, "until": 1487.3, "value": 1000, "prefix": "£", "label": "investor wants"},
+  {"type": "stat", "at": 1489.3, "until": 1493.2, "value": 1250, "prefix": "£", "label": "provider pays"},
+  {"type": "stat", "at": 1496.9, "until": 1499.8, "value": 250, "prefix": "£", "label": "per house, every month"},
+  {"type": "zoom", "at": 1501.6, "until": 1503.0, "scale": 1.2}
+ ]
+}

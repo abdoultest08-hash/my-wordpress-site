@@ -1,0 +1,20 @@
+{
+ "slug": "house-pt3", "id": "14", "name": "council-clients-long",
+ "from": 699, "to": 792,
+ "parts": [[757.5, 769.6], [699.13, 705.5], [709.75, 714.6], [717.2, 728.6], [731.4, 743.1], [747.6, 755.2], [770.19, 777.4], [780.65, 788.6], [789.75, 791.7]],
+ "cta": "landlord",
+ "hook": "The client that never goes bust",
+ "highlight": ["council", "government", "NHS,", "tax", "bust.", "homeless.", "150", "1.5", "15", "us", "90%", "money.", "lucrative."],
+ "fix": {"sit.": "stay."},
+ "graphics": [
+  {"type": "label", "at": 759.5, "until": 762.7, "text": "Council · Government · NHS"},
+  {"type": "zoom", "at": 768.8, "until": 769.6, "scale": 1.2},
+  {"type": "stat", "at": 733.5, "until": 735.3, "value": 1.5, "prefix": "£", "suffix": "m", "decimals": 1, "label": "to buy 10 houses"},
+  {"type": "stat", "at": 736.6, "until": 740.5, "value": 15, "prefix": "£", "suffix": "k", "label": "a month to rent 10"},
+  {"type": "list", "at": 747.6, "until": 755.2, "title": "Where you come in", "items": [
+    {"text": "Rent-to-rent", "at": 747.7}, {"text": "Lease to housing associations", "at": 750.2}]},
+  {"type": "stat", "at": 773.6, "until": 777.4, "value": 90, "suffix": "%", "label": "of the time, no invoice problems"},
+  {"type": "list", "at": 781.9, "until": 791.7, "title": "What I'm looking into", "items": [
+    {"text": "Social housing", "at": 782.0}, {"text": "Emergency accommodation", "at": 784.6}, {"text": "Supported living", "at": 786.5}]}
+ ]
+}

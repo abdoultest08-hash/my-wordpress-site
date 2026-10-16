@@ -1,0 +1,183 @@
+{
+ "slug": "house-pt3",
+ "id": "15",
+ "name": "government-contracts-long",
+ "from": 1177,
+ "to": 1422,
+ "parts": [
+  [
+   1364.55,
+   1372.6
+  ],
+  [
+   1177.82,
+   1180.6
+  ],
+  [
+   1184.84,
+   1193.45
+  ],
+  [
+   1211.08,
+   1215.75
+  ],
+  [
+   1228.36,
+   1234.4
+  ],
+  [
+   1237.98,
+   1245.35
+  ],
+  [
+   1259.42,
+   1274.5
+  ],
+  [
+   1374.1,
+   1393.95
+  ],
+  [
+   1394.6,
+   1410.2
+  ],
+  [
+   1410.7,
+   1412.4
+  ],
+  [
+   1416.1,
+   1421.4
+  ]
+ ],
+ "cta": "landlord",
+ "hook": "Find companies that just got paid",
+ "highlight": [
+  "yesterday,",
+  "Money.",
+  "money.",
+  "contracts.",
+  "tender.",
+  "Indeed",
+  "10",
+  "million",
+  "guaranteed",
+  "outreach.",
+  "wheel.",
+  "requirements,",
+  "providers."
+ ],
+ "fixAt": {
+  "1232.14": "interview",
+  "1269.92": "submit",
+  "1270.02": "your"
+ },
+ "graphics": [
+  {
+   "type": "zoom",
+   "at": 1369.5,
+   "until": 1372.6,
+   "scale": 1.2
+  },
+  {
+   "type": "label",
+   "at": 1179.5,
+   "until": 1180.6,
+   "text": "Government contracts"
+  },
+  {
+   "type": "label",
+   "at": 1215.0,
+   "until": 1215.75,
+   "text": "The tender"
+  },
+  {
+   "type": "list",
+   "at": 1228.36,
+   "until": 1234.4,
+   "title": "A tender is like",
+   "items": [
+    {
+     "text": "Posting a job on Indeed",
+     "at": 1228.8
+    },
+    {
+     "text": "Reviewing applications",
+     "at": 1231.2
+    },
+    {
+     "text": "Picking the winner",
+     "at": 1233.4
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "at": 1259.42,
+   "until": 1267.7,
+   "title": "To apply you need",
+   "items": [
+    {
+     "text": "A real business",
+     "at": 1261.9
+    },
+    {
+     "text": "Public liability insurance",
+     "at": 1263.8
+    },
+    {
+     "text": "The paperwork",
+     "at": 1267.2
+    }
+   ]
+  },
+  {
+   "type": "stat",
+   "at": 1379.9,
+   "until": 1380.9,
+   "value": 10,
+   "prefix": "\u00a3",
+   "suffix": "m",
+   "label": "5-year contract"
+  },
+  {
+   "type": "stat",
+   "at": 1382.6,
+   "until": 1384.5,
+   "value": 2,
+   "prefix": "\u00a3",
+   "suffix": "m",
+   "label": "paid out every year"
+  },
+  {
+   "type": "list",
+   "at": 1416.1,
+   "until": 1421.4,
+   "title": "What you offer",
+   "items": [
+    {
+     "text": "Better",
+     "at": 1418.6
+    },
+    {
+     "text": "Faster",
+     "at": 1419.4
+    },
+    {
+     "text": "More money",
+     "at": 1420.1
+    },
+    {
+     "text": "Saves time",
+     "at": 1420.9
+    }
+   ]
+  }
+ ],
+ "drops": [
+  [
+   1264.8,
+   1266.5
+  ]
+ ]
+}

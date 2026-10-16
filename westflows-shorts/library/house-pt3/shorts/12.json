@@ -1,0 +1,19 @@
+{
+ "slug": "house-pt3", "id": "12", "name": "supply-and-demand-long",
+ "from": 400, "to": 614,
+ "parts": [[400.16, 403.3], [433.6, 470.1], [582.38, 613.4]],
+ "drops": [[449.7, 450.02], [460.4, 461.6], [600.15, 601.65]],
+ "cta": "calculator",
+ "hook": "Want to be a businessman? Learn this first",
+ "highlight": ["businessman,", "demand", "demand.", "supply", "supply.", "houses", "houses.", "pink", "Jordans.", "hundred", "thousand", "triple", "up."],
+ "graphics": [
+  {"type": "label", "at": 436.7, "until": 439.2, "text": "Supply & demand"},
+  {"type": "zoom", "at": 439.8, "until": 441.4, "scale": 1.15},
+  {"type": "list", "at": 462.0, "until": 470.1, "title": "UK housing", "items": [
+    {"text": "Always demand", "at": 462.6}, {"text": "Not enough houses", "at": 465.9}, {"text": "Too many people looking", "at": 467.1}]},
+  {"type": "stat", "at": 590.7, "until": 593.3, "value": 100, "label": "pairs made"},
+  {"type": "stat", "at": 593.7, "until": 596.0, "value": 1000, "label": "people want them"},
+  {"type": "stat", "at": 605.4, "until": 608.6, "value": 3, "suffix": "x", "label": "the price"},
+  {"type": "zoom", "at": 613.0, "until": 613.4, "scale": 1.2}
+ ]
+}
