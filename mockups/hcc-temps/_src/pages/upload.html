@@ -1,0 +1,88 @@
+<!--title:Upload Documents · HCC-Temps|key:upload-->
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="crumbs">Private link · <span id="refTop"></span></div>
+      <h1 id="hello">Hi Priya, let's get you ready to work</h1>
+      <p class="lead">Upload the documents below for your <b id="roleTop">Senior Care Assistant</b> application. Do what you can now and come back to this link later. It works for 14 days.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap upload-wrap">
+      <div>
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap">
+          <h2 style="font-size:clamp(24px,3vw,32px);color:var(--ink)">Your checklist</h2>
+          <span id="progressText" style="font-weight:700;color:var(--navy)"></span>
+        </div>
+        <div class="progress" role="progressbar" aria-labelledby="progressText" id="bar"><i style="width:0"></i></div>
+        <div class="doc-list" id="docs"></div>
+        <div class="form-actions">
+          <button class="btn btn-navy" type="button" id="sendDocs">Send documents to HCC</button>
+          <span class="form-note">You can send what you have now. We'll remind you about anything missing.</span>
+        </div>
+        <div id="sent" class="form-card" style="margin-top:24px" hidden></div>
+      </div>
+      <aside style="display:grid;gap:16px">
+        <div class="side-card">
+          <h3>Your reference</h3>
+          <div class="ref" id="refSide"></div>
+          <p style="font-size:14px;color:var(--muted)">Every file you upload is renamed with this reference, your name, the document type and today's date, so our compliance team can find it straight away.</p>
+        </div>
+        <div class="side-card" style="background:var(--white);border:1px solid var(--line)">
+          <div class="lock"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Your documents are stored securely and only HCC's compliance team can see them. They are never public.</span></div>
+          <div class="lock"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Photos from your phone are fine. Make sure all four corners and the text are clear.</span></div>
+        </div>
+        <div class="help" style="margin-top:0">
+          <h3>Stuck on a document?</h3>
+          <p>Call us and we'll talk you through it.</p>
+          <div class="line">0330 321 3124</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  var cand = { ref: 'HCC-001234', first: 'Priya', last: 'Shah', role: 'Senior Care Assistant' };
+  try { var saved = JSON.parse(sessionStorage.getItem('hcc-candidate') || 'null'); if (saved) cand = saved; } catch (x) {}
+  var roleName = cand.role.split(',')[0];
+  document.getElementById('hello').textContent = 'Hi ' + cand.first + ', let\'s get you ready to work';
+  document.getElementById('roleTop').textContent = roleName;
+  document.getElementById('refTop').textContent = cand.ref;
+  document.getElementById('refSide').textContent = cand.ref;
+  var list = HCC.checklistFor(roleName), done = {};
+  var ICON_DOC = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>';
+  var ICON_OK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>';
+  var docs = document.getElementById('docs');
+  docs.innerHTML = list.map(function (d, i) {
+    return '<div class="doc" id="doc' + i + '"><div class="ico">' + ICON_DOC + '</div><div><h3>' + HCC.esc(d[0]) + '<span class="req' + (d[2] ? '' : ' opt') + '">' + (d[2] ? 'Required' : 'Optional') + '</span></h3><p>' + HCC.esc(d[1]) + '</p><div class="renamed" aria-live="polite"></div></div>' +
+      '<div class="act"><label class="btn btn-ghost btn-sm" for="file' + i + '">Upload</label><input type="file" id="file' + i + '" accept=".pdf,.jpg,.jpeg,.png,.heic,.doc,.docx" data-i="' + i + '"></div></div>';
+  }).join('');
+  var required = list.filter(function (d) { return d[2]; }).length;
+  function progress() {
+    var n = list.filter(function (d, i) { return d[2] && done[i]; }).length;
+    document.querySelector('#bar i').style.width = (n / required * 100) + '%';
+    document.getElementById('bar').setAttribute('aria-valuenow', String(Math.round(n / required * 100)));
+    document.getElementById('progressText').textContent = n + ' of ' + required + ' required documents';
+  }
+  docs.addEventListener('change', function (e) {
+    var input = e.target; if (!input.files || !input.files[0]) return;
+    var i = +input.dataset.i, row = document.getElementById('doc' + i);
+    done[i] = true;
+    row.classList.add('done'); row.querySelector('.ico').innerHTML = ICON_OK;
+    row.querySelector('.renamed').textContent = 'Saved as ' + HCC.renamed(cand.ref, cand.first, cand.last, list[i][0], input.files[0].name);
+    row.querySelector('label.btn').textContent = 'Replace';
+    progress();
+  });
+  progress();
+  document.getElementById('sendDocs').addEventListener('click', function () {
+    var missing = list.filter(function (d, i) { return d[2] && !done[i]; }).map(function (d) { return d[0]; });
+    var out = document.getElementById('sent');
+    out.innerHTML = '<h2 style="font-size:28px;color:var(--ink)">' + (missing.length ? 'Thanks, we\'ve got what you sent' : 'All done, thank you') + '</h2>' +
+      '<p class="sub">' + (missing.length ? 'Still to upload: <b>' + missing.map(HCC.esc).join(', ') + '</b>. Use the same link when you have them.' : 'Our compliance team will check your documents and call you, usually within 2 working days.') + '</p>' +
+      '<p class="form-note" style="margin-top:12px">On the live site HCC gets an email: "' + cand.ref + ' ' + cand.first + ' ' + cand.last + ' uploaded ' + Object.keys(done).length + ' document(s)".</p>';
+    out.hidden = false; out.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+})();
+</script>

@@ -1,0 +1,75 @@
+<!--title:Register · HCC-Temps|key:register-->
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="crumbs"><a href="index.html">Home</a> / Register</div>
+      <h1>Register with HCC-Temps</h1>
+      <p class="lead">Not seen the right job yet? Register once and we'll offer you shifts that match your role and area.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2 style="font-size:clamp(26px,3vw,36px);color:var(--ink)">1. What do you do?</h2>
+      <div class="role-group">Healthcare</div>
+      <div class="roles" id="rolesHealth"></div>
+      <div class="role-group">Hospitality</div>
+      <div class="roles" id="rolesHosp"></div>
+      <div class="role-group">Admin</div>
+      <div class="roles" id="rolesAdmin"></div>
+
+      <div style="max-width:880px;margin:56px auto 0">
+        <form class="form-card" id="regForm" data-success="regDone" novalidate>
+          <h2>2. Your details</h2>
+          <p class="sub">Registering as: <b id="chosen" style="color:var(--navy)">choose a role above</b></p>
+          <div class="form-grid">
+            <div class="f"><label for="first">First name</label><input type="text" id="first" name="first" autocomplete="given-name"></div>
+            <div class="f"><label for="last">Last name</label><input type="text" id="last" name="last" autocomplete="family-name"></div>
+            <div class="f"><label for="phone">Mobile number</label><input type="tel" id="phone" name="phone" autocomplete="tel"></div>
+            <div class="f"><label for="email">Email</label><input type="email" id="email" name="email" autocomplete="email"></div>
+            <div class="f"><label for="postcode">Postcode</label><input type="text" id="postcode" name="postcode" autocomplete="postal-code"></div>
+            <div class="f"><label for="travel">How far will you travel?</label><select id="travel" name="travel"><option>Up to 5 miles</option><option selected>Up to 10 miles</option><option>Up to 20 miles</option><option>Anywhere</option></select></div>
+            <div class="f full">
+              <label class="drop" for="cv"><input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx">
+                <strong>Upload your CV</strong> or drag it here<br><span class="form-note">PDF or Word, up to 5MB</span>
+                <div class="file-name" aria-live="polite"></div>
+              </label>
+            </div>
+            <label class="consent full"><input type="checkbox" name="consent">I agree HCC-Temps can store my details to find me work, as set out in the privacy policy.</label>
+          </div>
+          <div class="form-actions"><button class="btn btn-navy" type="submit">Register</button><span class="error-msg" role="alert"></span></div>
+        </form>
+        <div id="regDone" class="form-card" hidden></div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  var ROLES = {
+    rolesHealth: [['Registered Nurse', 'RGN / RMN', 'img/nurse.jpg'], ['Healthcare Assistant', 'Care homes and hospitals', 'img/hero.jpg'], ['Senior Care Assistant', 'Senior carer roles', 'img/carer.jpg']],
+    rolesHosp: [['Chef', 'Cooks and chefs', 'img/chef.jpg'], ['Kitchen Assistant', 'Prep and porters', 'img/kitchen.jpg'], ['Catering / Hospitality', 'Events, cafes, front of house', 'img/barista.jpg'], ['Housekeeping', 'Hotels and care homes', 'img/housekeeping.jpg'], ['Cleaner', 'Offices, schools, homes', 'img/cleaner.jpg']],
+    rolesAdmin: [['Receptionist / Admin', 'Front desk and office', 'img/reception.jpg']]
+  };
+  var chosen = '';
+  Object.keys(ROLES).forEach(function (id) {
+    document.getElementById(id).innerHTML = ROLES[id].map(function (r) {
+      return '<button type="button" class="role-pick" aria-pressed="false" data-role="' + r[0] + '"><img src="' + r[2] + '" alt="" width="96" height="96" loading="lazy"><span><b>' + r[0] + '</b><small>' + r[1] + '</small></span></button>';
+    }).join('');
+  });
+  document.querySelectorAll('.role-pick').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.role-pick').forEach(function (o) { o.setAttribute('aria-pressed', 'false'); });
+      b.setAttribute('aria-pressed', 'true');
+      chosen = b.dataset.role;
+      document.getElementById('chosen').textContent = chosen;
+      document.getElementById('regForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  var form = document.getElementById('regForm');
+  form.addEventListener('submit', function (e) {
+    if (!chosen) { e.preventDefault(); e.stopImmediatePropagation(); form.querySelector('.error-msg').textContent = 'Please choose your role first.'; }
+  });
+  HCC.initApply(form, function () { return chosen; });
+})();
+</script>

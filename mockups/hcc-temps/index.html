@@ -3,319 +3,43 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
-<style>
-/* Layout: Michael Page structure (expanding photo hero, dark search band, bold stat cards)
-   dressed in the HCC-Temps logo palette, with Hirework's cards, steps and CTA band. */
-:root {
-  --ink: #171A45;        /* deep navy for dark bands, derived from the logo navy */
-  --navy: #2D338C;       /* logo: navy figure */
-  --aqua: #6DC0B8;       /* logo: centre figure + wordmark */
-  --aqua-deep: #237D74;  /* aqua darkened for text and buttons on white */
-  --aqua-tint: #DDF1EE;
-  --sun: #F3D45E;        /* logo: yellow figure, used for the main calls to action */
-  --coral: #D93831;      /* logo: red figure */
-  --cocoa: #7C4925;      /* logo: brown figure */
-  --paper: #F4F8F7;
-  --white: #FFFFFF;
-  --text: #1E2140;
-  --muted: #5B6078;
-  --line: #E1E7E6;
-  --display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
-  --body: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
-  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
-  --header-h: 72px;
-  color-scheme: light;
-}
-*, *::before, *::after { box-sizing: border-box; }
-html, body { overflow-x: clip; }
-body { background: var(--white); color: var(--text); font-family: var(--body); font-size: 16px; line-height: 1.55; }
-img { max-width: 100%; display: block; }
-a { color: inherit; }
-h1, h2, h3 { font-family: var(--display); font-weight: 800; line-height: 1.04; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
-p { margin: 0; }
-.wrap { width: 100%; max-width: 1200px; margin-inline: auto; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
-.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--aqua-deep); }
-:focus-visible { outline: 3px solid var(--navy); outline-offset: 3px; }
+<link rel="stylesheet" href="assets/site.css">
 
-/* Mockup ribbon */
-.ribbon { background: var(--ink); color: var(--white); font-size: 13px; text-align: center; padding-block: 6px; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
-.ribbon b { color: var(--sun); font-weight: 600; }
-
-/* Buttons */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 24px; border-radius: 999px; font: 700 15px/1 var(--body); text-decoration: none; border: 2px solid transparent; cursor: pointer; transition: background .2s, color .2s, border-color .2s, transform .15s; white-space: nowrap; }
-.btn:hover { transform: translateY(-1px); }
-.btn-sun { background: var(--sun); color: var(--ink); }
-.btn-navy { background: var(--navy); color: var(--white); }
-.btn-aqua { background: var(--aqua-deep); color: var(--white); }
-.btn-ghost { background: transparent; color: var(--navy); border-color: var(--navy); }
-.btn-ghost-light { background: transparent; color: var(--white); border-color: rgba(255,255,255,.7); }
-.btn-sm { min-height: 40px; padding: 0 18px; font-size: 14px; }
-.pulse { position: relative; isolation: isolate; }
-.pulse::before, .pulse::after { content: ""; position: absolute; inset: -2px; border-radius: inherit; background: var(--sun); z-index: -1; animation: ring 2.2s ease-out infinite; }
-.pulse::after { animation-delay: 1.1s; }
-@keyframes ring { from { transform: scale(1); opacity: .65; } to { transform: scale(1.18, 1.5); opacity: 0; } }
-
-/* Header */
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--white); }
-.site-header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: var(--white); border-bottom: 1px solid var(--line); }
-.site-header .wrap { height: var(--header-h); display: flex; align-items: center; gap: 24px; }
-.logo img { height: 46px; width: auto; }
-.nav { display: flex; gap: 22px; margin-left: auto; }
-.nav a { text-decoration: none; font-weight: 600; font-size: 15px; color: var(--text); padding-block: 6px; border-bottom: 2px solid transparent; }
-.nav a:hover { border-color: var(--aqua); }
-.header-cta { display: flex; gap: 10px; }
-.menu-toggle { display: none; width: 44px; height: 44px; border-radius: 10px; border: 2px solid var(--navy); background: var(--white); margin-left: auto; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; }
-.menu-toggle span { width: 20px; height: 2.5px; background: var(--navy); border-radius: 2px; }
-.mobile-nav { border-top: 1px solid var(--line); padding-block: 12px 20px; padding-left: var(--gutter-l); padding-right: var(--gutter-r); display: grid; gap: 4px; background: var(--white); }
-.mobile-nav[hidden] { display: none; }
-.mobile-nav a { padding: 12px 4px; font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--line); }
-.mobile-nav .btn { margin-top: 12px; }
-@media (max-width: 1020px) { .nav { display: none; } .header-cta .btn-ghost { display: none; } }
-@media (max-width: 640px) { .header-cta { display: none; } .menu-toggle { display: flex; } .logo img { height: 40px; } }
-
-/* Hero: sticky stage, photo grows from a framed card to full bleed as you scroll */
-.hero-track { position: relative; height: 230vh; background: var(--white); }
-.hero-stage { position: sticky; top: calc(var(--header-h) + env(safe-area-inset-top, 0px)); height: calc(100svh - var(--header-h) - env(safe-area-inset-top, 0px)); min-height: 520px; overflow: hidden; }
-.hero-frame, .hero-photo { position: absolute; will-change: left, top, width, height; }
-.hero-frame { background: var(--aqua); }
-.hero-photo { overflow: hidden; background: var(--aqua-tint); }
-.hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 28%; }
-.hero-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(23,26,69,.82) 0%, rgba(23,26,69,.62) 45%, rgba(23,26,69,.35) 100%); opacity: 0; }
-.dots { position: absolute; inset: 0; pointer-events: none; }
-.dots i { position: absolute; border-radius: 50%; }
-.hero-copy { position: absolute; left: 0; right: 0; top: clamp(28px, 7vh, 72px); z-index: 3; text-align: center; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
-.hero-copy h1 { font-size: clamp(38px, 6.4vw, 76px); color: var(--ink); max-width: 15ch; margin-inline: auto; transition: color .35s; }
-.hero-copy p { margin: 18px auto 0; max-width: 46ch; font-size: clamp(16px, 1.6vw, 19px); color: var(--muted); transition: color .35s; }
-.hero-actions { margin-top: 26px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-.hero-actions .btn { min-height: 54px; padding: 0 28px; font-size: 16px; }
-.hero-actions .join { background: var(--navy); color: var(--white); }
-.hero-stage.is-dark h1 { color: var(--white); text-shadow: 0 2px 24px rgba(0,0,0,.25); }
-.hero-stage.is-dark p { color: rgba(255,255,255,.9); }
-.hero-stage.is-dark .join { background: var(--white); color: var(--navy); }
-.scroll-hint { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 3; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--white); opacity: 0; transition: opacity .3s; }
-.hero-stage.is-dark .scroll-hint { opacity: .85; }
-
-/* Search band + featured jobs */
-.next-move { background: var(--ink); color: var(--white); padding-block: 88px 96px; }
-.next-move h2 { font-size: clamp(32px, 4.4vw, 52px); text-align: center; }
-.search { margin: 32px auto 0; max-width: 860px; display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; }
-.field { background: var(--white); border-radius: 14px; padding: 10px 16px 8px; display: grid; gap: 2px; }
-.field label { font-size: 12px; font-weight: 700; color: var(--ink); }
-.field input { border: 0; outline: 0; font: 500 16px var(--body); color: var(--text); background: transparent; padding: 2px 0 4px; min-width: 0; }
-.field:focus-within { box-shadow: 0 0 0 3px var(--aqua); }
-.search .btn { min-height: 100%; border-radius: 14px; padding: 0 30px; }
-.browse { margin: 18px auto 0; max-width: 860px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 14px; }
-.browse span { color: rgba(255,255,255,.7); margin-right: 4px; }
-.chip { border: 1px solid rgba(255,255,255,.28); color: var(--white); background: transparent; border-radius: 999px; padding: 8px 14px; font: 600 14px var(--body); cursor: pointer; }
-.chip:hover, .chip[aria-pressed="true"] { background: var(--aqua); border-color: var(--aqua); color: var(--ink); }
-.toast { margin: 14px auto 0; max-width: 860px; font-size: 14px; color: var(--sun); min-height: 22px; }
-
-.featured-head { margin-top: 72px; display: flex; align-items: end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.featured-head h2 { text-align: left; font-size: clamp(28px, 3.6vw, 42px); }
-.featured-head p { color: rgba(255,255,255,.72); margin-top: 8px; }
-.jobs { margin-top: 28px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-.job { background: var(--white); color: var(--text); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; transition: transform .2s, box-shadow .2s; }
-.job:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(0,0,0,.28); }
-.job-media { position: relative; aspect-ratio: 16 / 10; }
-.job-media img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
-.badge { position: absolute; top: 12px; left: 12px; border-radius: 999px; padding: 5px 11px; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
-.badge.urgent { background: var(--coral); color: var(--white); }
-.badge.new { background: var(--sun); color: var(--ink); }
-.job-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
-.sector { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-.sector.health { color: var(--aqua-deep); }
-.sector.hosp { color: var(--coral); }
-.sector.chef { color: var(--cocoa); }
-.job h3 { font-family: var(--body); font-weight: 700; font-size: 19px; line-height: 1.25; letter-spacing: 0; }
-.meta { display: grid; gap: 6px; font-size: 14px; color: var(--muted); }
-.meta div { display: flex; align-items: center; gap: 8px; }
-.meta svg { flex: none; color: var(--aqua-deep); }
-.meta .pay { color: var(--text); font-weight: 700; }
-.job-foot { margin-top: auto; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); }
-.tag { font-size: 12px; font-weight: 600; background: var(--paper); color: var(--muted); border-radius: 8px; padding: 4px 8px; }
-.apply-link { font-weight: 700; font-size: 14px; color: var(--navy); text-decoration: none; display: inline-flex; gap: 6px; align-items: center; }
-.job.extra { display: none; }
-.jobs.expanded .job.extra { display: flex; animation: rise .45s ease both; }
-@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-.jobs-more { margin-top: 32px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
-.placeholder-note { margin-top: 14px; text-align: center; font-size: 13px; color: rgba(255,255,255,.55); }
-
-/* Steps */
-.steps-sec { padding-block: 104px; background: var(--white); }
-.sec-head { text-align: center; max-width: 720px; margin-inline: auto; }
-.sec-head h2 { font-size: clamp(32px, 4.2vw, 50px); color: var(--ink); margin-top: 10px; }
-.sec-head p { margin-top: 14px; color: var(--muted); font-size: 18px; }
-.steps { margin-top: 64px; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
-.steps-visual { position: relative; padding: 28px 28px 28px 0; max-width: 480px; justify-self: center; width: 100%; }
-.steps-visual .block { position: absolute; top: 0; right: 0; width: 72%; height: 78%; background: var(--sun); border-radius: 26px; }
-.steps-visual .block2 { position: absolute; bottom: 0; left: -14px; width: 42%; height: 36%; background: var(--aqua); border-radius: 22px; }
-.steps-visual .photo { position: relative; border-radius: 22px; overflow: hidden; aspect-ratio: 4 / 5; }
-.steps-visual .photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
-.ui-card { position: absolute; right: -6px; bottom: 56px; width: min(290px, 78%); background: var(--white); border-radius: 16px; box-shadow: 0 20px 46px rgba(23,26,69,.22); padding: 16px 18px; font-size: 14px; }
-.ui-card .ui-title { font-weight: 700; color: var(--ink); display: flex; justify-content: space-between; gap: 8px; }
-.ui-card .ui-step { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--aqua-deep); }
-.ui-rows { margin-top: 10px; display: grid; gap: 7px; }
-.ui-row { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); }
-.ui-row b { color: var(--text); font-weight: 600; }
-.ok { color: var(--aqua-deep); font-weight: 700; }
-.wait { color: var(--cocoa); font-weight: 700; }
-.ui-card.swap { animation: rise .35s ease both; }
-.step-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-.step-btn { width: 100%; text-align: left; background: transparent; border: 0; border-radius: 16px; padding: 16px 18px; display: grid; grid-template-columns: 48px 1fr; gap: 4px 14px; cursor: pointer; font: inherit; color: inherit; transition: background .2s; }
-.step-btn .num { grid-row: span 2; width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font: 800 18px var(--display); background: var(--paper); color: var(--navy); transition: background .2s, color .2s; }
-.step-btn .t { font-weight: 700; font-size: 18px; color: var(--ink); align-self: end; }
-.step-btn .d { font-size: 15px; color: var(--muted); max-height: 0; overflow: hidden; transition: max-height .3s; }
-.step-btn[aria-current="step"] { background: var(--paper); }
-.step-btn[aria-current="step"] .num { background: var(--navy); color: var(--white); }
-.step-btn[aria-current="step"] .d { max-height: 80px; }
-.step-btn:hover .num { background: var(--aqua-tint); }
-.step-btn[aria-current="step"]:hover .num { background: var(--navy); }
-
-/* Stats band */
-.stats-band { padding-block: 0 104px; }
-.stats { background: var(--navy); color: var(--white); border-radius: 28px; padding: 44px 48px; display: grid; grid-template-columns: 1.1fr 2fr; gap: 32px; align-items: center; position: relative; overflow: hidden; }
-.stats::after { content: ""; position: absolute; right: -60px; top: -80px; width: 260px; height: 260px; border-radius: 50%; background: var(--aqua); opacity: .18; }
-.stats h2 { font-size: clamp(26px, 3vw, 36px); }
-.stats .btn { margin-top: 20px; }
-.nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; position: relative; z-index: 1; }
-.num-big { font: 800 clamp(30px, 3.6vw, 46px)/1 var(--display); color: var(--sun); font-variant-numeric: tabular-nums; }
-.num-label { margin-top: 8px; font-size: 14px; color: rgba(255,255,255,.82); }
-.tbc { display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); background: var(--aqua); border-radius: 6px; padding: 2px 6px; }
-
-/* Blog */
-.blog { padding-block: 0 104px; }
-.row-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.row-head h2 { font-size: clamp(28px, 3.4vw, 40px); color: var(--ink); }
-.link-arrow { font-weight: 700; color: var(--navy); text-decoration: none; display: inline-flex; gap: 6px; align-items: center; }
-.posts { margin-top: 28px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
-.post img { aspect-ratio: 3 / 2; width: 100%; height: auto; object-fit: cover; border-radius: 16px; }
-.post .cat { margin-top: 16px; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--coral); }
-.post h3 { margin-top: 6px; font-family: var(--body); font-size: 19px; font-weight: 700; line-height: 1.3; letter-spacing: 0; color: var(--ink); }
-.post p { margin-top: 6px; font-size: 14px; color: var(--muted); }
-
-/* Why HCC: Michael Page collage */
-.why { background: var(--paper); padding-block: 104px 120px; overflow: hidden; }
-.why h2 { font-size: clamp(34px, 5vw, 64px); color: var(--ink); text-align: center; max-width: 18ch; margin-inline: auto; }
-.collage { position: relative; margin: 64px auto 0; max-width: 1040px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
-.stripes { position: absolute; inset: 22% -6% -4% 18%; background: repeating-linear-gradient(-58deg, transparent 0 34px, var(--aqua) 34px 56px); opacity: .55; border-radius: 4px; z-index: 0; }
-.c-stat { position: relative; z-index: 1; background: var(--sun); padding: 40px 36px; text-align: center; align-self: start; }
-.c-stat .big { font: 800 clamp(64px, 9vw, 112px)/.95 var(--display); color: var(--ink); }
-.c-stat .lbl { margin-top: 10px; font: 800 clamp(22px, 2.6vw, 32px)/1.08 var(--display); color: var(--ink); }
-.c-dark { position: relative; z-index: 2; background: var(--ink); color: var(--white); padding: 36px 32px; transform: rotate(2.4deg); margin-top: 120px; align-self: start; font: 800 clamp(22px, 2.5vw, 30px)/1.12 var(--display); text-align: center; }
-.c-quote { position: relative; z-index: 1; background: var(--white); padding: 32px 34px; font-size: 17px; line-height: 1.6; box-shadow: 0 10px 30px rgba(23,26,69,.08); }
-.c-quote cite { display: block; margin-top: 18px; font: 700 17px var(--body); font-style: normal; color: var(--ink); }
-.c-quote.q1 { margin-top: -40px; margin-right: 24px; }
-.c-quote.q1::after { content: ""; position: absolute; left: 6%; right: 4%; bottom: -26px; height: 30px; background: var(--aqua); transform: rotate(-1.2deg); z-index: -1; }
-.c-quote.q2 { margin-top: -10px; }
-.c-pill { position: absolute; z-index: 3; left: 46%; top: 48%; transform: translate(-50%, -50%) rotate(-6deg); background: var(--coral); color: var(--white); border-radius: 999px; padding: 12px 22px; font: 800 18px var(--display); white-space: nowrap; }
-.collage-nav { margin-top: 44px; display: flex; justify-content: center; gap: 12px; }
-.round { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--ink); background: transparent; color: var(--ink); display: grid; place-items: center; cursor: pointer; }
-.round:hover { background: var(--ink); color: var(--white); }
-
-/* Review */
-.review { padding-block: 112px; background: var(--white); }
-.review-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 64px; align-items: center; }
-.stars { display: flex; gap: 4px; color: var(--sun); }
-.review blockquote { margin: 20px 0 0; font: 600 clamp(22px, 2.6vw, 32px)/1.3 var(--body); color: var(--ink); }
-.review .who { margin-top: 26px; font-weight: 700; color: var(--ink); }
-.review .role { color: var(--muted); font-size: 15px; }
-.review .controls { margin-top: 28px; display: flex; gap: 10px; }
-.review-photo { position: relative; padding: 0 0 26px 26px; max-width: 460px; justify-self: center; width: 100%; }
-.review-photo::before { content: ""; position: absolute; left: 0; bottom: 0; width: 70%; height: 70%; border-radius: 24px; background: var(--aqua); }
-.review-photo img { position: relative; border-radius: 22px; aspect-ratio: 1; width: 100%; height: auto; object-fit: cover; object-position: center 20%; border: 6px solid var(--white); }
-.review-photo .dotgrid { position: absolute; right: -10px; top: -14px; width: 120px; height: 90px; background-image: radial-gradient(var(--coral) 2.2px, transparent 2.6px); background-size: 16px 16px; }
-.quote-mark { font: 800 120px/0.6 var(--display); color: var(--aqua-tint); height: 50px; }
-
-/* Get started CTA */
-.cta { background: var(--ink); color: var(--white); padding-block: 120px; position: relative; overflow: hidden; text-align: center; }
-.cta h2 { font-size: clamp(36px, 5vw, 60px); }
-.cta p { margin: 16px auto 0; max-width: 52ch; color: rgba(255,255,255,.8); font-size: 18px; }
-.cta .hero-actions { margin-top: 32px; }
-.float { position: absolute; border-radius: 50%; overflow: hidden; border: 5px solid var(--white); box-shadow: 0 10px 30px rgba(0,0,0,.35); animation: bob 6s ease-in-out infinite; }
-.float img { width: 100%; height: 100%; object-fit: cover; }
-.float.f1 { width: 92px; height: 92px; left: 8%; top: 18%; }
-.float.f2 { width: 74px; height: 74px; left: 15%; bottom: 14%; animation-delay: -2s; }
-.float.f3 { width: 96px; height: 96px; right: 9%; top: 24%; animation-delay: -4s; }
-.float.f4 { width: 66px; height: 66px; right: 17%; bottom: 12%; animation-delay: -1s; }
-.blob { position: absolute; border-radius: 50%; }
-@keyframes bob { 50% { transform: translateY(-12px); } }
-
-/* Footer */
-.footer { background: #0F1133; color: rgba(255,255,255,.78); padding-block: 72px 32px; font-size: 15px; }
-.foot-grid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr) 1.2fr; gap: 32px; }
-.foot-logo { background: var(--white); border-radius: 16px; padding: 12px 16px; display: inline-block; }
-.foot-logo img { height: 52px; width: auto; }
-.footer h4 { margin: 0 0 14px; color: var(--white); font-size: 15px; font-weight: 700; }
-.footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.footer a { text-decoration: none; }
-.footer a:hover { color: var(--aqua); }
-.foot-about { margin-top: 18px; max-width: 34ch; }
-.foot-bottom { margin-top: 48px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.14); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 13px; color: rgba(255,255,255,.6); }
-.foot-bottom nav { display: flex; gap: 18px; flex-wrap: wrap; }
-
-/* Responsive */
-@media (max-width: 960px) {
-  .jobs, .posts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .steps, .review-grid { grid-template-columns: 1fr; gap: 48px; }
-  .stats { grid-template-columns: 1fr; padding: 36px 28px; }
-  .foot-grid { grid-template-columns: 1fr 1fr; }
-  .foot-grid > :first-child { grid-column: 1 / -1; }
-}
-@media (max-width: 720px) {
-  .search { grid-template-columns: 1fr; }
-  .search .btn { min-height: 52px; }
-  .nums { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 16px; }
-  .collage { grid-template-columns: 1fr; gap: 20px; }
-  .c-dark { margin-top: 0; transform: rotate(1.5deg); }
-  .c-quote.q1 { margin: 0; }
-  .c-quote.q2 { margin: 26px 0 0; }
-  .c-pill { display: none; }
-  .stripes { inset: 30% -20% 10% -20%; }
-  .float.f2, .float.f4 { display: none; }
-  .float.f1 { left: 4%; top: 6%; width: 64px; height: 64px; }
-  .float.f3 { right: 4%; top: auto; bottom: 6%; width: 64px; height: 64px; }
-}
-@media (max-width: 600px) {
-  .jobs, .posts { grid-template-columns: 1fr; }
-  .next-move, .steps-sec, .why, .review, .cta { padding-block: 72px; }
-  .stats-band, .blog { padding-block: 0 72px; }
-  .steps-visual { padding-right: 16px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-  .hero-track { height: auto; }
-  .hero-stage { position: relative; top: 0; }
-}
-</style>
-
-<div class="ribbon">Homepage mockup v1 for HCC-Temps · <b>photos are AI placeholders, figures and quotes are samples to confirm</b></div>
+<div class="topbar">
+  <div class="wrap">
+    <span class="slogan"><span class="figs" aria-hidden="true"><i style="background:var(--cocoa)"></i><i style="background:var(--navy)"></i><i style="background:var(--white)"></i><i style="background:var(--coral)"></i><i style="background:var(--sun)"></i></span>Temping made easy <em>· Care and hospitality staff since 2006</em></span>
+    <span class="quick">
+      <a href="upload.html" class="hide-sm">Upload documents</a>
+      <a href="contact.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>0330 321 3124</a>
+    </span>
+  </div>
+</div>
 
 <header class="site-header">
   <div class="wrap">
-    <a class="logo" href="#top" aria-label="HCC-Temps home"><img src="img/logo.png" alt="HCC-Temps, temping made easy" width="266" height="144"></a>
+    <a class="logo" href="index.html" aria-label="HCC-Temps home"><img src="img/logo.png" alt="HCC-Temps, temping made easy" width="266" height="144"></a>
     <nav class="nav" aria-label="Main">
-      <a href="#jobs">Find jobs</a>
-      <a href="#how">For candidates</a>
-      <a href="#why">For clients</a>
-      <a href="#why">About us</a>
-      <a href="#blog">Blog</a>
-      <a href="#footer">Contact</a>
+      <a href="jobs.html" data-key="jobs">Find jobs</a>
+      <a href="register.html" data-key="register">For candidates</a>
+      <a href="clients.html" data-key="clients">For clients</a>
+      <a href="about.html" data-key="about">About us</a>
+      <a href="index.html#blog" data-key="blog">Blog</a>
+      <a href="contact.html" data-key="contact">Contact</a>
     </nav>
     <div class="header-cta">
-      <a class="btn btn-ghost btn-sm" href="#footer">Request cover</a>
-      <a class="btn btn-aqua btn-sm" href="#how">Register</a>
+      <a class="btn btn-ghost btn-sm" href="clients.html#request">Request cover</a>
+      <a class="btn btn-aqua btn-sm" href="register.html">Register</a>
     </div>
     <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Open menu"><span></span><span></span><span></span></button>
   </div>
   <nav class="mobile-nav" id="mobileNav" aria-label="Mobile" hidden>
-    <a href="#jobs">Find jobs</a>
-    <a href="#how">For candidates</a>
-    <a href="#why">For clients</a>
-    <a href="#blog">Blog</a>
-    <a href="#footer">Contact</a>
-    <a class="btn btn-aqua" href="#how">Register as a candidate</a>
-    <a class="btn btn-ghost" href="#footer">Request cover</a>
+    <a href="jobs.html">Find jobs</a>
+    <a href="register.html">For candidates</a>
+    <a href="clients.html">For clients</a>
+    <a href="about.html">About us</a>
+    <a href="contact.html">Contact</a>
+    <a class="btn btn-aqua" href="register.html">Register as a candidate</a>
+    <a class="btn btn-ghost" href="clients.html#request">Request cover</a>
   </nav>
 </header>
 
@@ -332,11 +56,11 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
         <h1>Care and hospitality work, made easy</h1>
         <p>HCC-Temps finds nurses, carers, chefs and hospitality staff for shifts across the UK. Find your next shift, or get cover for yours.</p>
         <div class="hero-actions">
-          <a class="btn btn-sun pulse" href="#jobs">
+          <a class="btn btn-sun pulse" href="jobs.html">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
             Search jobs
           </a>
-          <a class="btn join" href="#footer">Join as a company</a>
+          <a class="btn join" href="clients.html">Join as a company</a>
         </div>
       </div>
       <div class="scroll-hint" aria-hidden="true">Scroll</div>
@@ -353,11 +77,11 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
       </form>
       <div class="browse" aria-label="Browse by sector">
         <span>Browse by sector</span>
-        <button class="chip" type="button" aria-pressed="false">Healthcare</button>
-        <button class="chip" type="button" aria-pressed="false">Hospitality</button>
-        <button class="chip" type="button" aria-pressed="false">Chefs</button>
-        <button class="chip" type="button" aria-pressed="false">Housekeeping &amp; cleaning</button>
-        <button class="chip" type="button" aria-pressed="false">Admin &amp; reception</button>
+        <button class="chip" type="button" aria-pressed="false" data-sector="healthcare">Healthcare</button>
+        <button class="chip" type="button" aria-pressed="false" data-sector="hospitality">Hospitality</button>
+        <button class="chip" type="button" aria-pressed="false" data-sector="chefs">Chefs</button>
+        <button class="chip" type="button" aria-pressed="false" data-sector="housekeeping">Housekeeping &amp; cleaning</button>
+        <button class="chip" type="button" aria-pressed="false" data-sector="admin">Admin &amp; reception</button>
       </div>
       <p class="toast" id="toast" role="status" aria-live="polite"></p>
 
@@ -366,123 +90,14 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
           <h2>Find the work that works for you</h2>
           <p>New shifts are added every day. These are a few of the latest.</p>
         </div>
-        <a class="btn btn-ghost-light btn-sm" href="#jobs">View all 85 vacancies</a>
+        <a class="btn btn-ghost-light btn-sm" href="jobs.html">View all 85 vacancies</a>
       </div>
 
-      <div class="jobs" id="jobGrid">
-        <article class="job">
-          <div class="job-media"><img src="img/nurse.jpg" alt="Nurse talking with two residents in a care home lounge" width="720" height="540" loading="lazy"><span class="badge urgent">Urgent</span></div>
-          <div class="job-body">
-            <span class="sector health">Healthcare</span>
-            <h3>Registered Staff Nurse (RGN)</h3>
-            <div class="meta">
-              <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Solihull, B90</div>
-              <div class="pay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M16 6.5A4 4 0 0 0 9 9v3m0 0v6h8M6 12h8"/></svg>£24.00 – £26.50 per hour</div>
-            </div>
-            <div class="job-foot"><span class="tag">Temporary · Days &amp; nights</span><a class="apply-link" href="#how">Apply <span aria-hidden="true">→</span></a></div>
-          </div>
-        </article>
-        <article class="job">
-          <div class="job-media"><img src="img/chef.jpg" alt="Chef plating meals in a stainless steel kitchen" width="720" height="540" loading="lazy"><span class="badge new">New</span></div>
-          <div class="job-body">
-            <span class="sector chef">Chefs</span>
-            <h3>Care Home Chef</h3>
-            <div class="meta">
-              <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Maryport, Cumbria</div>
-              <div class="pay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M16 6.5A4 4 0 0 0 9 9v3m0 0v6h8M6 12h8"/></svg>£14.00 – £15.50 per hour</div>
-            </div>
-            <div class="job-foot"><span class="tag">Temporary · Weekdays</span><a class="apply-link" href="#how">Apply <span aria-hidden="true">→</span></a></div>
-          </div>
-        </article>
-        <article class="job">
-          <div class="job-media"><img src="img/carer.jpg" alt="Care assistant walking arm in arm with an older man in a garden" width="720" height="540" loading="lazy"></div>
-          <div class="job-body">
-            <span class="sector health">Healthcare</span>
-            <h3>Senior Care Assistant</h3>
-            <div class="meta">
-              <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Basingstoke, Hampshire</div>
-              <div class="pay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M16 6.5A4 4 0 0 0 9 9v3m0 0v6h8M6 12h8"/></svg>£14.20 – £15.00 per hour</div>
-            </div>
-            <div class="job-foot"><span class="tag">Temporary · Long days</span><a class="apply-link" href="#how">Apply <span aria-hidden="true">→</span></a></div>
-          </div>
-        </article>
-        <article class="job">
-          <div class="job-media"><img src="img/kitchen.jpg" alt="Kitchen assistant chopping vegetables in a commercial kitchen" width="720" height="540" loading="lazy"><span class="badge new">New</span></div>
-          <div class="job-body">
-            <span class="sector hosp">Hospitality</span>
-            <h3>School Kitchen Assistant</h3>
-            <div class="meta">
-              <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>London</div>
-              <div class="pay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M16 6.5A4 4 0 0 0 9 9v3m0 0v6h8M6 12h8"/></svg>£12.75 – £13.50 per hour</div>
-            </div>
-            <div class="job-foot"><span class="tag">Temporary · Term time</span><a class="apply-link" href="#how">Apply <span aria-hidden="true">→</span></a></div>
-          </div>
-        </article>
-        <article class="job">
-          <div class="job-media"><img src="img/barista.jpg" alt="Barista pouring latte art at a cafe counter" width="720" height="540" loading="lazy"></div>
-          <div class="job-body">
-            <span class="sector hosp">Hospitality</span>
-            <h3>Temp Barista</h3>
-            <div class="meta">
-              <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Central London</div>
-              <div class="pay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M16 6.5A4 4 0 0 0 9 9v3m0 0v6h8M6 12h8"/></svg>£12.60 – £13.20 per hour</div>
-            </div>
-            <div class="job-foot"><span class="tag">Temporary · Flexible</span><a class="apply-link" href="#how">Apply <span aria-hidden="true">→</span></a></div>
-          </div>
-        </article>
-        <article class="job">
-          <div class="job-media"><img src="img/cleaner.jpg" alt="Cleaner sweeping the floor of an office reception" width="720" height="540" loading="lazy"><span class="badge urgent">Urgent</span></div>
-          <div class="job-body">
-            <span class="sector hosp">Housekeeping &amp; cleaning</span>
-            <h3>Temp Cleaner</h3>
-            <div class="meta">
-              <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Catford, SE6</div>
-              <div class="pay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M16 6.5A4 4 0 0 0 9 9v3m0 0v6h8M6 12h8"/></svg>£12.21 – £12.75 per hour</div>
-            </div>
-            <div class="job-foot"><span class="tag">Temporary · Early starts</span><a class="apply-link" href="#how">Apply <span aria-hidden="true">→</span></a></div>
-          </div>
-        </article>
-        <article class="job extra">
-          <div class="job-media"><img src="img/housekeeping.jpg" alt="Hotel housekeeper making a bed with white sheets" width="720" height="540" loading="lazy"></div>
-          <div class="job-body">
-            <span class="sector hosp">Housekeeping &amp; cleaning</span>
-            <h3>Hotel Housekeeper</h3>
-            <div class="meta">
-              <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Southampton</div>
-              <div class="pay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M16 6.5A4 4 0 0 0 9 9v3m0 0v6h8M6 12h8"/></svg>£12.40 – £13.00 per hour</div>
-            </div>
-            <div class="job-foot"><span class="tag">Temporary · Weekends</span><a class="apply-link" href="#how">Apply <span aria-hidden="true">→</span></a></div>
-          </div>
-        </article>
-        <article class="job extra">
-          <div class="job-media"><img src="img/hospman.jpg" alt="Hospitality worker in a black shirt standing in a hotel restaurant" width="500" height="500" loading="lazy"><span class="badge new">New</span></div>
-          <div class="job-body">
-            <span class="sector hosp">Hospitality</span>
-            <h3>Events Hospitality Assistant</h3>
-            <div class="meta">
-              <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Newcastle, NE20</div>
-              <div class="pay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M16 6.5A4 4 0 0 0 9 9v3m0 0v6h8M6 12h8"/></svg>£12.50 – £13.25 per hour</div>
-            </div>
-            <div class="job-foot"><span class="tag">Temporary · Evenings</span><a class="apply-link" href="#how">Apply <span aria-hidden="true">→</span></a></div>
-          </div>
-        </article>
-        <article class="job extra">
-          <div class="job-media"><img src="img/reception.jpg" alt="Receptionist smiling behind an office front desk" width="720" height="540" loading="lazy"></div>
-          <div class="job-body">
-            <span class="sector health">Admin &amp; reception</span>
-            <h3>Care Home Receptionist</h3>
-            <div class="meta">
-              <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Guildford, Surrey</div>
-              <div class="pay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M16 6.5A4 4 0 0 0 9 9v3m0 0v6h8M6 12h8"/></svg>£12.80 – £13.40 per hour</div>
-            </div>
-            <div class="job-foot"><span class="tag">Temp to perm · Weekdays</span><a class="apply-link" href="#how">Apply <span aria-hidden="true">→</span></a></div>
-          </div>
-        </article>
-      </div>
+      <div class="jobs" id="jobGrid"></div>
       <div class="jobs-more">
         <button class="btn btn-sun" id="moreJobs" type="button" aria-controls="jobGrid" aria-expanded="false">Show more jobs</button>
       </div>
-      <p class="placeholder-note">Job titles and towns are taken from HCC's live Job Board. Pay rates are placeholders.</p>
+      <p class="placeholder-note">Job titles and towns are from HCC's live Job Board. Pay rates are placeholders.</p>
     </div>
   </section>
 
@@ -516,7 +131,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
       <div class="stats">
         <div>
           <h2>Over 100 jobs open right now</h2>
-          <a class="btn btn-sun" href="#jobs">Browse jobs now</a>
+          <a class="btn btn-sun" href="jobs.html">Browse jobs now</a>
         </div>
         <div class="nums">
           <div><div class="num-big">100+</div><div class="num-label">Live vacancies</div><span class="tbc">Confirm</span></div>
@@ -532,7 +147,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
     <div class="wrap">
       <div class="row-head">
         <h2>From the HCC blog</h2>
-        <a class="link-arrow" href="#blog">View all posts <span aria-hidden="true">→</span></a>
+        <a class="link-arrow" href="index.html#blog">View all posts <span aria-hidden="true">→</span></a>
       </div>
       <div class="posts">
         <article class="post">
@@ -601,6 +216,37 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
     </div>
   </section>
 
+
+  <section class="section alt" id="faq" aria-labelledby="faqTitle">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Questions</span>
+        <h2 id="faqTitle">Frequently asked questions</h2>
+        <p>Draft answers for HCC to confirm.</p>
+      </div>
+      <div class="faq-tabs" role="tablist" aria-label="Who is asking">
+        <button role="tab" id="tabCand" aria-selected="true" aria-controls="faqCand" type="button">I'm looking for work</button>
+        <button role="tab" id="tabEmp" aria-selected="false" aria-controls="faqEmp" type="button" tabindex="-1">I need staff</button>
+      </div>
+      <div class="faq" id="faqCand" role="tabpanel" aria-labelledby="tabCand">
+        <details open><summary>How do I apply for a job?</summary><p>Find a role on the Job Board and press Apply. We only ask for your name, phone, email and CV. It takes about a minute.</p></details>
+        <details><summary>What documents will I need?</summary><p>It depends on the role. Most people need photo ID, proof of right to work and proof of address. Care roles also need a DBS and training certificates, and nurses need their NMC PIN. We email you a checklist for your role after you apply.</p></details>
+        <details><summary>I don't have a DBS. Can I still apply?</summary><p>Yes. Apply as normal and tell us. We can help you apply for one.</p></details>
+        <details><summary>How quickly can I start work?</summary><p>Once your documents are checked and your references are back, you can start picking shifts. For many people this takes a few days.</p></details>
+        <details><summary>Can I choose my own shifts?</summary><p>Yes. Tell us when you're available and we offer you shifts that fit. You can say no to any shift.</p></details>
+        <details><summary>How and when do I get paid?</summary><p>Draft: you are paid weekly for the hours on your approved timesheets. HCC to confirm pay day and method.</p></details>
+      </div>
+      <div class="faq" id="faqEmp" role="tabpanel" aria-labelledby="tabEmp" hidden>
+        <details open><summary>How quickly can you send staff?</summary><p>For urgent cover we often fill shifts on the same day. Call us on 0330 321 3124 for anything needed in the next 24 hours.</p></details>
+        <details><summary>Which roles can you cover?</summary><p>Registered nurses, healthcare assistants, senior carers, chefs, kitchen assistants, catering and hospitality staff, housekeepers, cleaners and reception staff.</p></details>
+        <details><summary>Are your staff vetted?</summary><p>Yes. We check right to work, ID, DBS, references and role-specific training before anyone is placed with you.</p></details>
+        <details><summary>Where do you supply staff?</summary><p>Across England, including London, the South, the Midlands and the North.</p></details>
+        <details><summary>Can I book the same temp each week?</summary><p>Yes. Many clients ask for the same people so residents and guests see familiar faces. We do our best to keep them with you.</p></details>
+        <details><summary>How much does it cost?</summary><p>Draft: rates depend on the role, location and shift times. Request cover and we send you a quote. HCC to confirm wording.</p></details>
+      </div>
+    </div>
+  </section>
+
   <section class="cta" aria-label="Get started">
     <div class="blob" style="width:18px;height:18px;background:var(--coral);left:24%;top:30%" aria-hidden="true"></div>
     <div class="blob" style="width:12px;height:12px;background:var(--sun);right:28%;top:18%" aria-hidden="true"></div>
@@ -614,56 +260,82 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
       <h2>Get started today</h2>
       <p>Register in a minute and we'll be in touch about shifts near you. Need staff? Tell us what you need and we'll call you back.</p>
       <div class="hero-actions">
-        <a class="btn btn-sun pulse" href="#jobs">Browse jobs now</a>
-        <a class="btn btn-ghost-light" href="#footer">Join as a company</a>
+        <a class="btn btn-sun pulse" href="jobs.html">Browse jobs now</a>
+        <a class="btn btn-ghost-light" href="clients.html">Join as a company</a>
       </div>
     </div>
   </section>
 </main>
 
+<section class="accred" aria-labelledby="accredTitle">
+  <div class="wrap accred-head">
+    <span class="eyebrow">Accredited provider</span>
+    <h2 id="accredTitle">Recognised standards you can check</h2>
+  </div>
+  <div class="marquee">
+    <div class="marquee-track">
+      <div class="accred-item wide"><img src="img/accred/disability-confident.png" alt="Disability Confident Committed employer" width="437" height="204" loading="lazy"></div>
+      <div class="accred-item wide"><img src="img/accred/rec.png" alt="REC Corporate Member" width="405" height="93" loading="lazy"></div>
+      <div class="accred-item"><img src="img/accred/iso-27001.png" alt="ISO 27001 certified, information security" width="190" height="191" loading="lazy"></div>
+      <div class="accred-item"><img src="img/accred/iso-9001.png" alt="ISO 9001:2015 certified, quality management" width="194" height="195" loading="lazy"></div>
+      <div class="accred-item"><img src="img/accred/iso-14001.png" alt="ISO 14001:2015 certified, environmental management" width="177" height="187" loading="lazy"></div>
+      <div class="accred-item"><img src="img/accred/ico.png" alt="Registered with the Information Commissioner's Office" width="194" height="195" loading="lazy"></div>
+      <div class="accred-item wide" aria-hidden="true"><img src="img/accred/disability-confident.png" alt="" width="437" height="204" loading="lazy"></div>
+      <div class="accred-item wide" aria-hidden="true"><img src="img/accred/rec.png" alt="" width="405" height="93" loading="lazy"></div>
+      <div class="accred-item" aria-hidden="true"><img src="img/accred/iso-27001.png" alt="" width="190" height="191" loading="lazy"></div>
+      <div class="accred-item" aria-hidden="true"><img src="img/accred/iso-9001.png" alt="" width="194" height="195" loading="lazy"></div>
+      <div class="accred-item" aria-hidden="true"><img src="img/accred/iso-14001.png" alt="" width="177" height="187" loading="lazy"></div>
+      <div class="accred-item" aria-hidden="true"><img src="img/accred/ico.png" alt="" width="194" height="195" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
 <footer class="footer" id="footer">
+  <div class="brand-stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <span class="foot-logo"><img src="img/logo.png" alt="HCC-Temps" width="266" height="144" loading="lazy"></span>
-        <p class="foot-about">Recruitment agency supplying registered nurses, healthcare assistants, chefs and hospitality staff across the UK.</p>
+        <a class="foot-logo" href="index.html"><img src="img/logo.png" alt="HCC-Temps" width="266" height="144" loading="lazy"></a>
+        <p class="foot-about">Recruitment agency supplying registered nurses, healthcare assistants, chefs, kitchen and hospitality staff across England since 2006.</p>
+        <div class="socials">
+          <a href="contact.html" aria-label="X"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.7 8 10.3h-6.3l-4.9-6.4L5.3 21H2.2l7.3-8.3L1.8 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg></a>
+          <a href="contact.html" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.1c.5-1 1.8-2 3.7-2 4 0 4.7 2.6 4.7 6V21h-4v-5.2c0-1.2 0-2.8-1.7-2.8s-2 1.3-2 2.7V21h-4z"/></svg></a>
+          <a href="contact.html" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+          <a href="contact.html" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.6V11H7v4h2.5v7h4v-7H16l.6-4h-3.1V8.9c0-.6.3-.9.5-.9z"/></svg></a>
+        </div>
       </div>
       <div>
         <h4>Candidates</h4>
-        <ul><li><a href="#jobs">Find jobs</a></li><li><a href="#how">Register</a></li><li><a href="#how">Upload documents</a></li><li><a href="#how">How it works</a></li></ul>
+        <ul><li><a href="jobs.html">Find jobs</a></li><li><a href="register.html">Register</a></li><li><a href="upload.html">Upload documents</a></li><li><a href="index.html#how">How it works</a></li></ul>
       </div>
       <div>
         <h4>Clients</h4>
-        <ul><li><a href="#footer">Request cover</a></li><li><a href="#why">Healthcare staffing</a></li><li><a href="#why">Hospitality staffing</a></li></ul>
+        <ul><li><a href="clients.html#request">Request cover</a></li><li><a href="clients.html">Healthcare staffing</a></li><li><a href="clients.html">Hospitality staffing</a></li></ul>
       </div>
       <div>
         <h4>Company</h4>
-        <ul><li><a href="#why">About us</a></li><li><a href="#blog">Blog</a></li><li><a href="#footer">Carbon Reduction Plan</a></li><li><a href="#footer">Modern Slavery Policy</a></li></ul>
+        <ul><li><a href="about.html">About us</a></li><li><a href="index.html#blog">Blog</a></li><li><a href="contact.html">Carbon Reduction Plan 2025</a></li><li><a href="contact.html">Modern Slavery Policy 2025</a></li></ul>
       </div>
       <div>
         <h4>Contact</h4>
-        <ul><li>hello@hcctemps.co.uk</li><li>+44 (0)330 321 3124</li></ul>
+        <ul class="foot-contact">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>0330 321 3124</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>hello@hcctemps.co.uk</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>London, UK</li>
+        </ul>
       </div>
     </div>
     <div class="foot-bottom">
-      <span>© 2026 HCC-Temps</span>
-      <nav aria-label="Legal"><a href="#footer">Privacy policy</a><a href="#footer">Terms &amp; conditions</a></nav>
+      <span>© 2026 HCC-Temps · Website mockup v2, photos are placeholders</span>
+      <nav aria-label="Legal"><a href="contact.html">Privacy policy</a><a href="contact.html">Terms &amp; conditions</a></nav>
     </div>
   </div>
 </footer>
 
+<script src="assets/site.js"></script>
 <script>
 (function () {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* Mobile menu */
-  var toggle = document.getElementById('menuToggle'), mnav = document.getElementById('mobileNav');
-  toggle.addEventListener('click', function () {
-    var open = mnav.hidden;
-    mnav.hidden = !open;
-    toggle.setAttribute('aria-expanded', String(open));
-  });
-  mnav.addEventListener('click', function (e) { if (e.target.closest('a')) { mnav.hidden = true; toggle.setAttribute('aria-expanded', 'false'); } });
 
   /* Hero: framed photo grows to full bleed as the page scrolls */
   var track = document.getElementById('heroTrack'), stage = document.getElementById('heroStage');
@@ -708,18 +380,19 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
     e.preventDefault();
     var q = document.getElementById('q').value.trim() || 'all roles';
     var w = document.getElementById('where').value.trim() || 'anywhere';
-    toast.textContent = 'On the live site this opens the Job Board showing ' + q + ' in ' + w + '.';
+    window.location.href = 'jobs.html#' + encodeURIComponent((document.getElementById('q').value.trim() || 'all').toLowerCase().replace(/[^a-z0-9]+/g, '-'));
   });
   document.querySelectorAll('.chip').forEach(function (c) {
     c.addEventListener('click', function () {
       var on = c.getAttribute('aria-pressed') !== 'true';
       document.querySelectorAll('.chip').forEach(function (o) { o.setAttribute('aria-pressed', 'false'); });
       c.setAttribute('aria-pressed', String(on));
-      toast.textContent = on ? 'On the live site this opens the Job Board filtered to ' + c.textContent + '.' : '';
+      if (on) window.location.href = 'jobs.html#' + c.dataset.sector;
     });
   });
 
-  /* Featured jobs: first click expands, second goes to the full Job Board */
+  /* Featured jobs from the shared list: 6 shown, 3 more on expand */
+  document.getElementById('jobGrid').innerHTML = HCC.JOBS.slice(0, 9).map(function (j, i) { return HCC.card(j, i >= 6); }).join('');
   var more = document.getElementById('moreJobs'), grid = document.getElementById('jobGrid');
   more.addEventListener('click', function () {
     if (!grid.classList.contains('expanded')) {
@@ -727,8 +400,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
       more.setAttribute('aria-expanded', 'true');
       more.textContent = 'See all 85 vacancies →';
     } else {
-      toast.textContent = 'On the live site this opens the full Job Board with all 85 vacancies.';
-      toast.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+      window.location.href = 'jobs.html';
     }
   });
 
@@ -785,4 +457,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   document.getElementById('revPrev').addEventListener('click', function () { showReview(ri - 1); });
   document.getElementById('revNext').addEventListener('click', function () { showReview(ri + 1); });
 })();
+
+  HCC.initFaqTabs();
 </script>

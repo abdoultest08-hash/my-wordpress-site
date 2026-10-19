@@ -1,0 +1,80 @@
+<!--title:For Clients · HCC-Temps|key:clients-->
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="crumbs"><a href="index.html">Home</a> / For clients</div>
+      <h1>Vetted staff for your shifts, often the same day</h1>
+      <p class="lead">Nurses, carers, chefs, kitchen and hospitality staff for care homes, hospitals, hotels and schools across England.</p>
+      <div class="hero-actions" style="justify-content:flex-start">
+        <a class="btn btn-sun pulse" href="#request">Request cover</a>
+        <a class="btn btn-ghost-light" href="contact.html">Call 0330 321 3124</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">Who we supply</span><h2>Staff for every part of your service</h2></div>
+      <div class="sector-cards">
+        <div class="s-card"><img src="img/nurse.jpg" alt="" width="720" height="540" loading="lazy"><div><h3>Nursing</h3><p>RGNs and RMNs with a current NMC PIN.</p></div></div>
+        <div class="s-card"><img src="img/carer.jpg" alt="" width="720" height="540" loading="lazy"><div><h3>Care</h3><p>Healthcare assistants and senior carers.</p></div></div>
+        <div class="s-card"><img src="img/chef.jpg" alt="" width="720" height="540" loading="lazy"><div><h3>Kitchen</h3><p>Chefs, cooks and kitchen assistants.</p></div></div>
+        <div class="s-card"><img src="img/housekeeping.jpg" alt="" width="720" height="540" loading="lazy"><div><h3>Hospitality &amp; housekeeping</h3><p>Catering, housekeeping, cleaning and reception.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">How it works</span><h2>Three steps to cover</h2></div>
+      <ol class="client-steps" style="padding:0">
+        <li><h3>Tell us what you need</h3><p>Role, dates, shift times and any skills or training required.</p></li>
+        <li><h3>We match and confirm</h3><p>We send vetted staff and confirm names by email before the shift.</p></li>
+        <li><h3>They arrive ready to work</h3><p>Compliance checks done, profiles sent ahead, timesheets handled by us.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="request">
+    <div class="wrap" style="max-width:920px">
+      <form class="form-card" id="coverForm" novalidate>
+        <span class="eyebrow">Request cover</span>
+        <h2 style="margin-top:8px">Tell us about the shifts</h2>
+        <p class="sub">We'll call you back to confirm. For cover in the next 24 hours, please call 0330 321 3124.</p>
+        <div class="form-grid">
+          <div class="f"><label for="org">Organisation</label><input type="text" id="org" autocomplete="organization" placeholder="e.g. Willow Court Care Home"></div>
+          <div class="f"><label for="cn">Your name</label><input type="text" id="cn" autocomplete="name"></div>
+          <div class="f"><label for="ce">Email</label><input type="email" id="ce" autocomplete="email"></div>
+          <div class="f"><label for="cp">Phone</label><input type="tel" id="cp" autocomplete="tel"></div>
+          <div class="f"><label for="role">Role needed</label><select id="role"><option>Registered Nurse</option><option>Healthcare Assistant</option><option>Senior Care Assistant</option><option>Chef</option><option>Kitchen Assistant</option><option>Catering / Hospitality</option><option>Housekeeping</option><option>Cleaner</option><option>Receptionist / Admin</option></select></div>
+          <div class="f"><label for="num">Number of staff</label><input type="number" id="num" min="1" value="1"></div>
+          <div class="f"><label for="from">First shift date</label><input type="date" id="from"></div>
+          <div class="f"><label for="pc">Site postcode</label><input type="text" id="pc" autocomplete="postal-code"></div>
+          <div class="f full"><label for="notes">Shift times and anything else we should know</label><textarea id="notes" placeholder="e.g. 3 long days, 08:00 to 20:00, manual handling training needed"></textarea></div>
+        </div>
+        <div class="form-actions"><button class="btn btn-navy" type="submit">Send request</button><span class="form-note">Goes to the client services team, subject tagged [COVER REQUEST].</span></div>
+        <p role="status" aria-live="polite" id="coverDone" style="margin-top:12px;font-weight:600;color:var(--aqua-deep)"></p>
+      </form>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">Questions</span><h2>Hiring through HCC-Temps</h2><p>Draft answers for HCC to confirm.</p></div>
+      <div class="faq">
+        <details open><summary>How quickly can you send staff?</summary><p>For urgent cover we often fill shifts on the same day. Call us for anything in the next 24 hours.</p></details>
+        <details><summary>What checks do your staff have?</summary><p>Right to work, photo ID, enhanced DBS where needed, two references and role-specific training. Nurses' NMC PINs are checked before every placement.</p></details>
+        <details><summary>Can we have the same staff each week?</summary><p>Yes. Ask for named temps and we will keep them with you wherever we can.</p></details>
+        <details><summary>Do you offer temp to perm?</summary><p>Yes. If you'd like to keep someone permanently, talk to us about the options.</p></details>
+        <details><summary>How are timesheets and invoices handled?</summary><p>Draft: you approve timesheets weekly and we invoice you for the hours worked. HCC to confirm process.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+document.getElementById('coverForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var org = document.getElementById('org').value.trim() || 'your site';
+  document.getElementById('coverDone').textContent = 'Mockup: on the live site this request is emailed to HCC and ' + org + ' gets an automatic confirmation.';
+});
+</script>
