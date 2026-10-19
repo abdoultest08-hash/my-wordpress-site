@@ -35,7 +35,7 @@
 		<button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Open menu"><span></span><span></span><span></span></button>
 	</div>
 	<nav class="mobile-nav" id="mobileNav" aria-label="Mobile" hidden>
-		<?php hcc_menu(); ?>
+		<?php hcc_menu( true ); ?>
 		<a class="btn btn-aqua" href="<?php echo esc_url( hcc_page_url( 'register', '/register/' ) ); ?>">Register as a candidate</a>
 		<a class="btn btn-ghost" href="<?php echo esc_url( hcc_page_url( 'clients', '/for-clients/' ) . '#request' ); ?>">Request cover</a>
 	</nav>

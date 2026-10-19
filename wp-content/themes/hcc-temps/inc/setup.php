@@ -179,22 +179,55 @@ function hcc_stars() {
 }
 
 /** Fallback main menu when none is assigned under Appearance → Menus. */
-function hcc_menu_fallback() {
+function hcc_menu_fallback( $mobile = false ) {
 	$items = array(
 		array( hcc_jobs_url(), 'Find jobs', is_post_type_archive( 'job_vacancies' ) || is_singular( 'job_vacancies' ) ),
 		array( hcc_page_url( 'register', '/register/' ), 'For candidates', is_page_template( 'templates/register.php' ) ),
 		array( hcc_page_url( 'clients', '/for-clients/' ), 'For clients', is_page_template( 'templates/clients.php' ) ),
 		array( hcc_page_url( 'about', '/about-us/' ), 'About us', is_page_template( 'templates/about.php' ) ),
-		array( get_permalink( get_option( 'page_for_posts' ) ) ? get_permalink( get_option( 'page_for_posts' ) ) : home_url( '/#blog' ), 'Blog', is_home() || is_singular( 'post' ) ),
+		array( get_permalink( get_option( 'page_for_posts' ) ) ? get_permalink( get_option( 'page_for_posts' ) ) : home_url( '/#blog' ), 'Blog', ( is_home() && ! is_front_page() ) || is_singular( 'post' ) ),
 		array( hcc_page_url( 'contact', '/contact/' ), 'Contact', is_page_template( 'templates/contact.php' ) ),
 	);
 	foreach ( $items as $i ) {
+		if ( 'Contact' === $i[1] ) {
+			hcc_login_menu( $mobile );
+		}
 		printf( '<a href="%s"%s>%s</a>', esc_url( $i[0] ), $i[2] ? ' aria-current="page"' : '', esc_html( $i[1] ) );
 	}
 }
 
+/**
+ * "Log in" menu item with Candidate and Staff options (a dropdown on desktop,
+ * two plain links in the mobile menu). Logged-in users see their portal instead.
+ */
+function hcc_login_menu( $mobile = false ) {
+	if ( ! function_exists( 'hcc_login_url' ) ) {
+		return;
+	}
+	if ( is_user_logged_in() && ( hcc_is_staff() || hcc_applicant_for_user( get_current_user_id() ) ) ) {
+		$url = hcc_is_staff() ? hcc_staff_url() : hcc_portal_url();
+		printf( '<a href="%s">%s</a>', esc_url( $url ), hcc_is_staff() ? 'Staff portal' : 'My application' );
+		if ( $mobile ) {
+			printf( '<a href="%s">Log out</a>', esc_url( wp_logout_url( home_url( '/' ) ) ) );
+		}
+		return;
+	}
+	$cand  = hcc_login_url();
+	$staff = add_query_arg( 'for', 'staff', hcc_login_url() );
+	if ( $mobile ) {
+		printf( '<a href="%s">Candidate login</a><a href="%s">Staff login</a>', esc_url( $cand ), esc_url( $staff ) );
+		return;
+	}
+	printf(
+		'<div class="nav-drop"><a href="%1$s" class="nav-drop-toggle" aria-haspopup="true"%3$s>Log in <span aria-hidden="true">▾</span></a><div class="nav-drop-menu"><a href="%1$s">Candidate login</a><a href="%2$s">Staff login</a></div></div>',
+		esc_url( $cand ),
+		esc_url( $staff ),
+		is_page_template( 'templates/portal-login.php' ) ? ' aria-current="page"' : ''
+	);
+}
+
 /** Render the primary menu as plain links (keeps the header markup flat). */
-function hcc_menu() {
+function hcc_menu( $mobile = false ) {
 	if ( has_nav_menu( 'primary' ) ) {
 		$locations = get_nav_menu_locations();
 		$items     = wp_get_nav_menu_items( $locations['primary'] );
@@ -205,9 +238,10 @@ function hcc_menu() {
 			$current = untrailingslashit( $item->url ) === untrailingslashit( home_url( add_query_arg( array() ) ) );
 			printf( '<a href="%s"%s>%s</a>', esc_url( $item->url ), $current ? ' aria-current="page"' : '', esc_html( $item->title ) );
 		}
+		hcc_login_menu( $mobile );
 		return;
 	}
-	hcc_menu_fallback();
+	hcc_menu_fallback( $mobile );
 }
 
 

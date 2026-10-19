@@ -57,18 +57,59 @@ get_header();
 <?php
 /* ================= LIST ================= */
 if ( 'list' === $view ) :
-	$args  = wp_unslash( $_GET );
-	$query = hcc_staff_query( $args );
+	$args = wp_unslash( $_GET );
+	$period         = isset( $args['period'] ) && isset( hcc_periods()[ $args['period'] ] ) ? $args['period'] : '30d';
+	$args['period'] = $period;
+	$query          = hcc_staff_query( $args );
 	$total = (int) $query->found_posts;
 	$sel   = function ( $k ) use ( $args ) { return isset( $args[ $k ] ) ? sanitize_text_field( $args[ $k ] ) : ''; };
 	// Stage counts for the summary chips.
 	$chips = array();
 	foreach ( array_keys( $stages ) as $st ) {
-		$chips[ $st ] = count( get_posts( array( 'post_type' => 'hcc_applicant', 'post_status' => 'private', 'numberposts' => -1, 'fields' => 'ids', 'meta_key' => '_hcc_stage', 'meta_value' => $st ) ) );
+		$chip_q = array( 'post_type' => 'hcc_applicant', 'post_status' => 'private', 'numberposts' => -1, 'fields' => 'ids', 'meta_key' => '_hcc_stage', 'meta_value' => $st );
+		if ( hcc_period_start( $period ) ) {
+			$chip_q['date_query'] = array( array( 'after' => gmdate( 'Y-m-d H:i:s', hcc_period_start( $period ) ), 'column' => 'post_date_gmt' ) );
+		}
+		$chips[ $st ] = count( get_posts( $chip_q ) );
 	}
+	$dash = hcc_dashboard( $period );
 	?>
+			<div class="dash-head">
+				<h2 class="portal-h">Overview</h2>
+				<nav class="period-chips" aria-label="Period">
+					<?php foreach ( hcc_periods() as $pk => $pv ) : ?>
+						<a href="<?php echo esc_url( add_query_arg( array( 'period' => $pk, 'pg' => false ) ) ); ?>"<?php echo $period === $pk ? ' aria-current="true"' : ''; ?>><?php echo esc_html( $pv[1] ); ?></a>
+					<?php endforeach; ?>
+				</nav>
+			</div>
+			<div class="kpis">
+				<div class="kpi"><span>Applications</span><b><?php echo (int) $dash['total']; ?></b><small><?php echo esc_html( hcc_periods()[ $period ][1] ); ?></small></div>
+				<div class="kpi"><span>In the pipeline</span><b><?php echo (int) $dash['pipeline']; ?></b><small><?php echo (int) $dash['new']; ?> new, not yet invited</small></div>
+				<div class="kpi warn"><span>Waiting for review</span><b><?php echo (int) $dash['review']; ?></b><small>candidates with documents to check</small></div>
+				<div class="kpi good"><span>Ready to work</span><b><?php echo (int) $dash['ready']; ?></b><small><?php echo $dash['total'] ? (int) round( $dash['ready'] / $dash['total'] * 100 ) : 0; ?>% of applications</small></div>
+				<div class="kpi"><span>Average onboarding</span><b><?php echo null === $dash['avg_days'] ? '–' : esc_html( $dash['avg_days'] ) . '<i> days</i>'; ?></b><small>from applying to ready to work</small></div>
+				<div class="kpi"><span>Average time to invite</span><b><?php echo null === $dash['avg_invite'] ? '–' : esc_html( $dash['avg_invite'] ) . '<i> days</i>'; ?></b><small>from applying to portal invite</small></div>
+			</div>
+			<div class="outstanding">
+				<h3>Outstanding documents <span class="small">for candidates invited, uploading or in checks</span></h3>
+				<div class="table-wrap">
+					<table class="apps compact">
+						<thead><tr><th>Document</th><th>Not uploaded</th><th>Waiting for review</th><th>Needs amendment</th></tr></thead>
+						<tbody>
+							<?php foreach ( $dash['docs'] as $dk => $dv ) : ?>
+								<tr><td><b><?php echo esc_html( $dv['label'] ); ?></b><?php echo $dv['required'] ? '' : ' <span class="small">(if applies)</span>'; ?></td>
+								<td><?php echo $dv['required'] ? '<span class="count-pill' . ( $dv['missing'] ? ' red' : '' ) . '">' . (int) $dv['missing'] . '</span>' : '<span class="small">–</span>'; ?></td>
+								<td><span class="count-pill<?php echo $dv['review'] ? ' amber' : ''; ?>"><?php echo (int) $dv['review']; ?></span></td>
+								<td><span class="count-pill<?php echo $dv['amend'] ? ' red' : ''; ?>"><?php echo (int) $dv['amend']; ?></span></td></tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<h2 class="portal-h" style="margin:36px 0 14px">Applications</h2>
 			<div class="chips-row">
-				<a class="stage-chip<?php echo '' === $sel( 'stage' ) ? ' on' : ''; ?>" href="<?php echo esc_url( remove_query_arg( array( 'stage', 'pg' ) ) ); ?>">All <b><?php echo (int) array_sum( $chips ); ?></b></a>
+				<a class="stage-chip<?php echo '' === $sel( 'stage' ) ? ' on' : ''; ?>" href="<?php echo esc_url( remove_query_arg( array( 'stage', 'pg' ) ) ); ?>">All stages <b><?php echo (int) array_sum( $chips ); ?></b></a>
 				<?php foreach ( $stages as $st => $label ) : ?>
 					<a class="stage-chip s-<?php echo esc_attr( $st ); ?><?php echo $sel( 'stage' ) === $st ? ' on' : ''; ?>" href="<?php echo esc_url( add_query_arg( array( 'stage' => $st, 'pg' => false ) ) ); ?>"><?php echo esc_html( $label ); ?> <b><?php echo (int) $chips[ $st ]; ?></b></a>
 				<?php endforeach; ?>
@@ -76,6 +117,7 @@ if ( 'list' === $view ) :
 
 			<form class="staff-filters" method="get" action="<?php echo esc_url( hcc_staff_url() ); ?>">
 				<?php if ( $sel( 'stage' ) ) : ?><input type="hidden" name="stage" value="<?php echo esc_attr( $sel( 'stage' ) ); ?>"><?php endif; ?>
+				<input type="hidden" name="period" value="<?php echo esc_attr( $period ); ?>">
 				<div class="f grow"><label for="s">Search</label><input type="text" id="s" name="s" value="<?php echo esc_attr( $sel( 's' ) ); ?>" placeholder="Name, reference, email or phone"></div>
 				<div class="f"><label for="sector">Sector</label><select id="sector" name="sector"><option value="">All sectors</option><?php foreach ( hcc_applicant_values( '_hcc_sector' ) as $v ) : ?><option<?php selected( $sel( 'sector' ), $v ); ?>><?php echo esc_html( $v ); ?></option><?php endforeach; ?></select></div>
 				<div class="f"><label for="type">Role</label><select id="type" name="type"><option value="">All roles</option><?php foreach ( hcc_applicant_values( '_hcc_role_type' ) as $v ) : ?><option<?php selected( $sel( 'type' ), $v ); ?>><?php echo esc_html( $v ); ?></option><?php endforeach; ?></select></div>
@@ -88,7 +130,10 @@ if ( 'list' === $view ) :
 
 			<div class="results-bar">
 				<span class="n"><?php echo (int) ( $sel( 'docs' ) ? $query->post_count : $total ); ?> applications</span>
-				<a class="btn btn-ghost btn-sm" href="<?php echo esc_url( wp_nonce_url( add_query_arg( array_merge( $args, array( 'action' => 'hcc_export' ) ), admin_url( 'admin-post.php' ) ), 'hcc_export' ) ); ?>">Export to spreadsheet</a>
+				<span class="folder-actions">
+					<a class="btn btn-ghost btn-sm" href="<?php echo esc_url( wp_nonce_url( add_query_arg( array_merge( $args, array( 'period' => $period, 'action' => 'hcc_export' ) ), admin_url( 'admin-post.php' ) ), 'hcc_export' ) ); ?>">Export all records (Excel)</a>
+					<a class="btn btn-ghost btn-sm" href="<?php echo esc_url( wp_nonce_url( add_query_arg( array_merge( $args, array( 'period' => $period, 'action' => 'hcc_export_log' ) ), admin_url( 'admin-post.php' ) ), 'hcc_export' ) ); ?>">Export activity log (Excel)</a>
+				</span>
 			</div>
 
 			<div class="table-wrap">
@@ -150,6 +195,7 @@ elseif ( 'candidate' === $view ) :
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"><?php $nonce(); ?><input type="hidden" name="do" value="reset"><button class="btn btn-ghost btn-sm" type="submit">Send password reset</button></form>
 					<?php endif; ?>
 					<a class="btn btn-navy btn-sm" href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'action' => 'hcc_zip', 'a' => $id ), admin_url( 'admin-post.php' ) ), 'hcc_zip_' . $id ) ); ?>">Download all (zip)</a>
+					<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'action' => 'hcc_report', 'a' => $id ), admin_url( 'admin-post.php' ) ), 'hcc_report_' . $id ) ); ?>">Candidate report</a>
 				</div>
 			</div>
 

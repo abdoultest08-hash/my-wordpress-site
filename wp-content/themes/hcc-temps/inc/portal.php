@@ -119,6 +119,9 @@ function hcc_set_stage( $id, $stage ) {
 	$stages = hcc_stages();
 	if ( isset( $stages[ $stage ] ) && get_post_meta( $id, '_hcc_stage', true ) !== $stage ) {
 		update_post_meta( $id, '_hcc_stage', $stage );
+		$times           = hcc_pget( $id, 'stage_times' );
+		$times[ $stage ] = time();
+		update_post_meta( $id, '_hcc_stage_times', $times );
 		hcc_log( $id, 'Stage changed to ' . $stages[ $stage ] );
 	}
 }
@@ -364,6 +367,9 @@ add_action( 'admin_post_hcc_file', function () {
 	$path = $name ? hcc_private_dir( $id ) . '/' . basename( $name ) : '';
 	if ( ! $path || ! is_readable( $path ) ) {
 		wp_die( 'File not found.', 404 );
+	}
+	if ( ! empty( $_GET['dl'] ) ) {
+		hcc_log( $id, 'Downloaded ' . basename( $path ) );
 	}
 	$type = wp_check_filetype( $path );
 	nocache_headers();
@@ -617,24 +623,141 @@ add_action( 'admin_post_hcc_add_staff', function () {
 	exit;
 } );
 
-/** CSV export of the current filtered list. */
+/** Spreadsheet (CSV) of every record in the current filter: one row per candidate. */
 add_action( 'admin_post_hcc_export', function () {
 	if ( ! hcc_is_staff() || ! check_admin_referer( 'hcc_export' ) ) {
 		wp_die( 'Not allowed.', 403 );
 	}
-	$q = hcc_staff_query( wp_unslash( $_GET ), -1 );
-	nocache_headers();
-	header( 'Content-Type: text/csv; charset=utf-8' );
-	header( 'Content-Disposition: attachment; filename="hcc-applications-' . current_time( 'Y-m-d' ) . '.csv"' );
-	$out = fopen( 'php://output', 'w' );
-	fputcsv( $out, array( 'Reference', 'First name', 'Last name', 'Email', 'Phone', 'Sector', 'Role', 'Applied for', 'Stage', 'Documents approved', 'Applied', 'Last update' ) );
+	$q      = hcc_staff_query( wp_unslash( $_GET ), -1 );
+	$defs   = hcc_portal_docs();
+	$labels = hcc_doc_statuses();
 	$stages = hcc_stages();
+	$date   = function ( $t ) { return $t ? wp_date( 'Y-m-d H:i', (int) $t ) : ''; };
+	hcc_csv_headers( 'hcc-candidate-records' );
+	$out  = fopen( 'php://output', 'w' );
+	$head = array( 'Reference', 'First name', 'Last name', 'Email', 'Phone', 'Postcode', 'Right to work', 'Sector', 'Role', 'Applied for', 'Stage', 'Applied', 'Invited', 'Password set', 'First upload', 'Checks started', 'Ready to work', 'Days to ready', 'Required approved', 'Documents to fix' );
+	foreach ( $defs as $d ) {
+		$head[] = $d[0] . ' status';
+		$head[] = $d[0] . ' uploaded';
+	}
+	$head = array_merge( $head, array( 'Share code', 'Notes (internal)', 'Notes (to candidate)', 'Last activity' ) );
+	fputcsv( $out, $head );
 	foreach ( $q->posts as $p ) {
-		$m = function ( $k ) use ( $p ) { return get_post_meta( $p->ID, '_hcc_' . $k, true ); };
-		$c = hcc_doc_counts( $p->ID );
-		fputcsv( $out, array( $m( 'ref' ), $m( 'first' ), $m( 'last' ), $m( 'email' ), $m( 'phone' ), $m( 'sector' ), $m( 'role_type' ), $m( 'role' ), isset( $stages[ $m( 'stage' ) ] ) ? $stages[ $m( 'stage' ) ] : '', $c['approved'] . '/' . $c['required'], get_the_date( 'Y-m-d', $p ), $m( 'updated' ) ? wp_date( 'Y-m-d', (int) $m( 'updated' ) ) : '' ) );
+		$id    = $p->ID;
+		$m     = function ( $k ) use ( $id ) { return get_post_meta( $id, '_hcc_' . $k, true ); };
+		$c     = hcc_doc_counts( $id );
+		$times = hcc_pget( $id, 'stage_times' );
+		$docs  = hcc_pget( $id, 'pdocs' );
+		$uid   = (int) $m( 'user_id' );
+		$first = 0;
+		foreach ( $docs as $d ) {
+			foreach ( isset( $d['files'] ) ? $d['files'] : array() as $f ) {
+				$first = $first ? min( $first, (int) $f['time'] ) : (int) $f['time'];
+			}
+		}
+		$applied = get_post_time( 'U', true, $id );
+		$ready   = isset( $times['ready'] ) ? $times['ready'] : 0;
+		$notes   = hcc_pget( $id, 'notes' );
+		$row     = array(
+			$m( 'ref' ), $m( 'first' ), $m( 'last' ), $m( 'email' ), $m( 'phone' ), $m( 'postcode' ), $m( 'rtw' ), $m( 'sector' ), $m( 'role_type' ), $m( 'role' ),
+			isset( $stages[ $m( 'stage' ) ] ) ? $stages[ $m( 'stage' ) ] : '', $date( $applied ), $date( $m( 'invited' ) ), $uid ? $date( get_user_meta( $uid, 'hcc_password_set', true ) ) : '',
+			$date( $first ), $date( isset( $times['checks'] ) ? $times['checks'] : 0 ), $date( $ready ), $ready ? round( ( $ready - $applied ) / DAY_IN_SECONDS, 1 ) : '',
+			$c['approved'] . '/' . $c['required'], $c['amend'],
+		);
+		foreach ( $defs as $key => $d ) {
+			$st    = isset( $docs[ $key ]['status'] ) ? $docs[ $key ]['status'] : '';
+			$row[] = $labels[ $st ][0];
+			$row[] = ! empty( $docs[ $key ]['files'] ) ? $date( end( $docs[ $key ]['files'] )['time'] ) : '';
+		}
+		$row[] = isset( $docs['sharecode']['code'] ) ? $docs['sharecode']['code'] : '';
+		$row[] = count( array_filter( $notes, function ( $n ) { return empty( $n['visible'] ); } ) );
+		$row[] = count( array_filter( $notes, function ( $n ) { return ! empty( $n['visible'] ); } ) );
+		$row[] = $date( $m( 'updated' ) );
+		fputcsv( $out, $row );
 	}
 	fclose( $out );
+	exit;
+} );
+
+/** Spreadsheet of every activity-log entry for the candidates in the current filter. */
+add_action( 'admin_post_hcc_export_log', function () {
+	if ( ! hcc_is_staff() || ! check_admin_referer( 'hcc_export' ) ) {
+		wp_die( 'Not allowed.', 403 );
+	}
+	$q = hcc_staff_query( wp_unslash( $_GET ), -1 );
+	hcc_csv_headers( 'hcc-activity-log' );
+	$out = fopen( 'php://output', 'w' );
+	fputcsv( $out, array( 'Date', 'Reference', 'Candidate', 'Activity', 'By' ) );
+	foreach ( $q->posts as $p ) {
+		$name = get_post_meta( $p->ID, '_hcc_first', true ) . ' ' . get_post_meta( $p->ID, '_hcc_last', true );
+		foreach ( hcc_pget( $p->ID, 'log' ) as $e ) {
+			fputcsv( $out, array( wp_date( 'Y-m-d H:i', (int) $e['time'] ), get_post_meta( $p->ID, '_hcc_ref', true ), $name, $e['text'], $e['by'] ) );
+		}
+	}
+	fclose( $out );
+	exit;
+} );
+
+function hcc_csv_headers( $name ) {
+	nocache_headers();
+	header( 'Content-Type: text/csv; charset=utf-8' );
+	header( 'Content-Disposition: attachment; filename="' . $name . '-' . current_time( 'Y-m-d' ) . '.csv"' );
+	echo "\xEF\xBB\xBF"; // Byte order mark so Excel reads £ and accents correctly.
+}
+
+/** Printable report for one candidate: details, documents, notes and full activity log. */
+add_action( 'admin_post_hcc_report', function () {
+	$id = isset( $_GET['a'] ) ? absint( $_GET['a'] ) : 0;
+	if ( ! $id || 'hcc_applicant' !== get_post_type( $id ) || ! hcc_is_staff() || ! check_admin_referer( 'hcc_report_' . $id ) ) {
+		wp_die( 'Not allowed.', 403 );
+	}
+	hcc_log( $id, 'Downloaded candidate report' );
+	$m      = function ( $k ) use ( $id ) { return get_post_meta( $id, '_hcc_' . $k, true ); };
+	$defs   = hcc_portal_docs( $m( 'role' ) );
+	$docs   = hcc_pget( $id, 'pdocs' );
+	$labels = hcc_doc_statuses();
+	$stages = hcc_stages();
+	$times  = hcc_pget( $id, 'stage_times' );
+	$d      = function ( $t ) { return $t ? esc_html( wp_date( 'j M Y, H:i', (int) $t ) ) : '–'; };
+	$name   = $m( 'first' ) . ' ' . $m( 'last' );
+	header( 'Content-Type: text/html; charset=utf-8' );
+	?><!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title><?php echo esc_html( $m( 'ref' ) . ' ' . $name ); ?> report</title>
+	<style>
+		body { font: 13px/1.5 Arial, sans-serif; color: #1E2140; margin: 32px; }
+		h1 { font-size: 24px; margin: 0; } h2 { font-size: 15px; margin: 26px 0 8px; border-bottom: 2px solid #6DC0B8; padding-bottom: 4px; }
+		table { width: 100%; border-collapse: collapse; } th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #DDE5E3; vertical-align: top; }
+		th { background: #F4F8F7; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+		.top { display: flex; justify-content: space-between; align-items: center; gap: 20px; border-bottom: 6px solid #6DC0B8; padding-bottom: 14px; }
+		.top img { height: 56px; } .muted { color: #5B6078; } .print { margin: 18px 0; } button { padding: 8px 16px; border-radius: 999px; border: 0; background: #2D338C; color: #fff; font-weight: bold; cursor: pointer; }
+		@media print { .print { display: none; } body { margin: 0; } }
+	</style></head><body>
+	<div class="top"><div><h1><?php echo esc_html( $name ); ?></h1><div class="muted"><?php echo esc_html( $m( 'ref' ) . ' · ' . $m( 'role' ) . ' · ' . $m( 'sector' ) ); ?></div></div><img src="<?php echo esc_url( hcc_logo_url() ); ?>" alt="HCC-Temps"></div>
+	<p class="print"><button onclick="window.print()">Print or save as PDF</button> <span class="muted">Report created <?php echo esc_html( wp_date( 'j M Y, H:i' ) ); ?> by <?php echo esc_html( wp_get_current_user()->display_name ); ?></span></p>
+	<h2>Details</h2>
+	<table><tbody>
+		<tr><th>Email</th><td><?php echo esc_html( $m( 'email' ) ); ?></td><th>Phone</th><td><?php echo esc_html( $m( 'phone' ) ); ?></td></tr>
+		<tr><th>Postcode</th><td><?php echo esc_html( $m( 'postcode' ) ); ?></td><th>Right to work</th><td><?php echo esc_html( $m( 'rtw' ) ); ?></td></tr>
+		<tr><th>Stage</th><td><?php echo esc_html( isset( $stages[ $m( 'stage' ) ] ) ? $stages[ $m( 'stage' ) ] : '' ); ?></td><th>Applied</th><td><?php echo $d( get_post_time( 'U', true, $id ) ); ?></td></tr>
+		<tr><th>Invited</th><td><?php echo $d( $m( 'invited' ) ); ?></td><th>Ready to work</th><td><?php echo $d( isset( $times['ready'] ) ? $times['ready'] : 0 ); ?></td></tr>
+	</tbody></table>
+	<h2>Documents</h2>
+	<table><thead><tr><th>Document</th><th>Status</th><th>Files</th><th>Checked</th></tr></thead><tbody>
+	<?php foreach ( $defs as $key => $def ) : $doc = isset( $docs[ $key ] ) ? $docs[ $key ] : array(); $st = isset( $doc['status'] ) ? $doc['status'] : ''; ?>
+		<tr><td><?php echo esc_html( $def[0] ); ?></td><td><?php echo esc_html( $labels[ $st ][0] ); ?><?php echo ! empty( $doc['reason'] ) ? '<br><span class="muted">' . esc_html( $doc['reason'] ) . '</span>' : ''; ?></td>
+		<td><?php foreach ( isset( $doc['files'] ) ? $doc['files'] : array() as $f ) { echo esc_html( $f['file'] ) . ' <span class="muted">(' . $d( $f['time'] ) . ')</span><br>'; } echo ! empty( $doc['code'] ) ? 'Share code ' . esc_html( $doc['code'] ) : ''; ?></td>
+		<td><?php echo ! empty( $doc['by'] ) ? esc_html( $doc['by'] ) . '<br><span class="muted">' . $d( $doc['checked'] ) . '</span>' : '–'; ?></td></tr>
+	<?php endforeach; ?>
+	</tbody></table>
+	<h2>Notes</h2>
+	<table><thead><tr><th>Date</th><th>By</th><th>Visibility</th><th>Note</th></tr></thead><tbody>
+	<?php foreach ( hcc_pget( $id, 'notes' ) as $n ) : ?><tr><td><?php echo $d( $n['time'] ); ?></td><td><?php echo esc_html( $n['by'] ); ?></td><td><?php echo ! empty( $n['visible'] ) ? 'Shared with candidate' : 'Internal'; ?></td><td><?php echo nl2br( esc_html( $n['text'] ) ); ?></td></tr><?php endforeach; ?>
+	</tbody></table>
+	<h2>Activity log</h2>
+	<table><thead><tr><th>Date</th><th>Activity</th><th>By</th></tr></thead><tbody>
+	<?php foreach ( hcc_pget( $id, 'log' ) as $e ) : ?><tr><td><?php echo $d( $e['time'] ); ?></td><td><?php echo esc_html( $e['text'] ); ?></td><td><?php echo esc_html( $e['by'] ); ?></td></tr><?php endforeach; ?>
+	</tbody></table>
+	</body></html>
+	<?php
 	exit;
 } );
 
@@ -668,6 +791,8 @@ function hcc_staff_query( $args, $per_page = 20 ) {
 	$to   = ! empty( $args['to'] ) ? sanitize_text_field( $args['to'] ) : '';
 	if ( $from || $to ) {
 		$q['date_query'] = array( array_filter( array( 'after' => $from, 'before' => $to, 'inclusive' => true ) ) );
+	} elseif ( ! empty( $args['period'] ) && hcc_period_start( $args['period'] ) ) {
+		$q['date_query'] = array( array( 'after' => gmdate( 'Y-m-d H:i:s', hcc_period_start( $args['period'] ) ), 'column' => 'post_date_gmt' ) );
 	}
 	$sort = isset( $args['sort'] ) ? sanitize_key( $args['sort'] ) : 'new';
 	if ( 'old' === $sort ) {
@@ -740,21 +865,27 @@ function hcc_sample_image( $path, $title, $name ) {
 }
 
 function hcc_create_demo_candidates() {
+	// name, role, stage, document statuses, days since applying, days to invite, days to ready.
 	$people = array(
-		array( 'Priya', 'Shah', 'Senior Care Assistant', 'documents', array( 'passport' => 'approved', 'rtw' => 'approved', 'dbs' => 'pending', 'training' => 'amend' ) ),
-		array( 'Daniel', 'Adeyemi', 'Events Hospitality Assistant', 'invited', array() ),
-		array( 'Grace', 'Owusu', 'Healthcare Assistant', 'checks', array( 'passport' => 'approved', 'licence' => 'approved', 'rtw' => 'approved', 'dbs' => 'approved', 'training' => 'approved' ) ),
-		array( 'Tom', 'Reed', 'Care Home Chef', 'new', array() ),
-		array( 'Marta', 'Kowalska', 'Kitchen Assistant', 'documents', array( 'passport' => 'pending', 'rtw' => 'pending', 'sharecode' => 'pending' ) ),
-		array( 'Aisha', 'Bello', 'Registered Staff Nurse (RGN)', 'ready', array( 'passport' => 'approved', 'rtw' => 'approved', 'dbs' => 'approved', 'training' => 'approved' ) ),
-		array( 'Liam', 'Carter', 'Temp Cleaner', 'new', array() ),
-		array( 'Sofia', 'Rossi', 'Care Home Receptionist', 'closed', array() ),
+		array( 'Priya', 'Shah', 'Senior Care Assistant', 'documents', array( 'passport' => 'approved', 'rtw' => 'approved', 'dbs' => 'pending', 'training' => 'amend' ), 9, 1, 0 ),
+		array( 'Daniel', 'Adeyemi', 'Events Hospitality Assistant', 'invited', array(), 4, 2, 0 ),
+		array( 'Grace', 'Owusu', 'Healthcare Assistant', 'checks', array( 'passport' => 'approved', 'licence' => 'approved', 'rtw' => 'approved', 'dbs' => 'approved', 'training' => 'approved' ), 21, 1, 0 ),
+		array( 'Tom', 'Reed', 'Care Home Chef', 'new', array(), 0.3, 0, 0 ),
+		array( 'Marta', 'Kowalska', 'Kitchen Assistant', 'documents', array( 'passport' => 'pending', 'rtw' => 'pending', 'sharecode' => 'pending' ), 13, 2, 0 ),
+		array( 'Aisha', 'Bello', 'Registered Staff Nurse (RGN)', 'ready', array( 'passport' => 'approved', 'rtw' => 'approved', 'dbs' => 'approved', 'training' => 'approved' ), 48, 1, 8 ),
+		array( 'Liam', 'Carter', 'Temp Cleaner', 'new', array(), 2, 0, 0 ),
+		array( 'Sofia', 'Rossi', 'Care Home Receptionist', 'closed', array(), 140, 0, 0 ),
+		array( 'Kwame', 'Mensah', 'Healthcare Assistant', 'ready', array( 'passport' => 'approved', 'rtw' => 'approved', 'dbs' => 'approved', 'training' => 'approved' ), 95, 1, 12 ),
+		array( 'Ella', 'Brooks', 'Hotel Housekeeper', 'documents', array( 'passport' => 'approved', 'dbs' => 'amend' ), 35, 3, 0 ),
+		array( 'Omar', 'Haddad', 'Temp Chef', 'ready', array( 'passport' => 'approved', 'rtw' => 'approved', 'dbs' => 'approved', 'training' => 'approved' ), 230, 2, 6 ),
+		array( 'Nina', 'Kaur', 'Registered Staff Nurse (RGN)', 'invited', array(), 1, 0.5, 0 ),
 	);
 	$defs  = hcc_portal_docs();
 	$made  = array();
 	foreach ( $people as $k => $p ) {
-		$ref = hcc_next_ref();
-		$id  = wp_insert_post( array( 'post_type' => 'hcc_applicant', 'post_status' => 'private', 'post_title' => $ref . ' · ' . $p[0] . ' ' . $p[1] . ' · ' . $p[2], 'post_date' => gmdate( 'Y-m-d H:i:s', time() - ( 8 - $k ) * DAY_IN_SECONDS ) ) );
+		$ref     = hcc_next_ref();
+		$applied = time() - (int) ( $p[5] * DAY_IN_SECONDS );
+		$id      = wp_insert_post( array( 'post_type' => 'hcc_applicant', 'post_status' => 'private', 'post_title' => $ref . ' · ' . $p[0] . ' ' . $p[1] . ' · ' . $p[2], 'post_date' => get_date_from_gmt( gmdate( 'Y-m-d H:i:s', $applied ) ), 'post_date_gmt' => gmdate( 'Y-m-d H:i:s', $applied ) ) );
 		$job = get_posts( array( 'post_type' => 'job_vacancies', 'title' => $p[2], 'numberposts' => 1, 'fields' => 'ids' ) );
 		$meta = array( 'ref' => $ref, 'first' => $p[0], 'last' => $p[1], 'email' => strtolower( $p[0] ) . '.' . strtolower( $p[1] ) . '@example.com', 'phone' => '07700 9001' . str_pad( (string) $k, 2, '0', STR_PAD_LEFT ), 'postcode' => 'SO15 2AA', 'rtw' => 'Yes', 'role' => $p[2], 'demo' => 1 );
 		foreach ( $meta as $mk => $mv ) {
@@ -776,10 +907,21 @@ function hcc_create_demo_candidates() {
 		}
 		update_post_meta( $id, '_hcc_pdocs', $docs );
 		update_post_meta( $id, '_hcc_stage', $p[3] );
+		$invited = $p[6] ? $applied + (int) ( $p[6] * DAY_IN_SECONDS ) : 0;
+		$times   = array( 'new' => $applied );
+		if ( $invited ) {
+			$times['invited'] = $invited;
+			update_post_meta( $id, '_hcc_invited', $invited );
+		}
+		if ( $p[7] ) {
+			$times['checks'] = $applied + (int) ( ( $p[7] - 1 ) * DAY_IN_SECONDS );
+			$times['ready']  = $applied + (int) ( $p[7] * DAY_IN_SECONDS );
+		}
+		update_post_meta( $id, '_hcc_stage_times', $times );
 		update_post_meta( $id, '_hcc_log', array(
-			array( 'time' => time() - ( 8 - $k ) * DAY_IN_SECONDS, 'text' => 'Applied with CV', 'by' => 'Candidate' ),
+			array( 'time' => $applied, 'text' => 'Applied with CV', 'by' => 'Candidate' ),
 		) );
-		update_post_meta( $id, '_hcc_updated', time() - $k * HOUR_IN_SECONDS );
+		update_post_meta( $id, '_hcc_updated', min( time(), $applied + DAY_IN_SECONDS * max( 1, $p[7] ) ) );
 		if ( 'new' !== $p[3] ) {
 			$uid = wp_insert_user( array( 'user_login' => $meta['email'], 'user_email' => $meta['email'], 'user_pass' => 'Demo-Candidate-2026', 'first_name' => $p[0], 'last_name' => $p[1], 'display_name' => $p[0] . ' ' . $p[1], 'role' => 'hcc_candidate' ) );
 			if ( ! is_wp_error( $uid ) ) {
@@ -788,9 +930,12 @@ function hcc_create_demo_candidates() {
 				update_user_meta( $uid, 'hcc_demo', 1 );
 			}
 			$log   = hcc_pget( $id, 'log' );
-			$log[] = array( 'time' => time() - ( 7 - $k ) * DAY_IN_SECONDS, 'text' => 'Invited to the candidate portal', 'by' => 'Demo Staff' );
+			$log[] = array( 'time' => $invited, 'text' => 'Invited to the candidate portal', 'by' => 'Demo Staff' );
 			foreach ( $p[4] as $key => $status ) {
-				$log[] = array( 'time' => time() - ( 6 - $k ) * DAY_IN_SECONDS, 'text' => 'Uploaded ' . $defs[ $key ][0], 'by' => $p[0] . ' ' . $p[1] );
+				$log[] = array( 'time' => min( time(), $invited + HOUR_IN_SECONDS * 5 ), 'text' => 'Uploaded ' . $defs[ $key ][0], 'by' => $p[0] . ' ' . $p[1] );
+			}
+			if ( ! empty( $times['ready'] ) ) {
+				$log[] = array( 'time' => $times['ready'], 'text' => 'Stage changed to Ready to work', 'by' => 'Demo Staff' );
 			}
 			update_post_meta( $id, '_hcc_log', $log );
 		}
@@ -848,7 +993,7 @@ add_action( 'hcc_demo_page_after', function () {
 	if ( isset( $_GET['candidates'] ) ) {
 		echo '<div class="notice notice-success"><p>' . ( '1' === $_GET['candidates'] ? 'Demo candidates created.' : 'Demo candidates and accounts removed.' ) . '</p></div>';
 	}
-	echo '<p>Creates 8 sample candidates at different stages, with sample documents, plus demo logins so you can try both portals.</p>';
+	echo '<p>Creates 12 sample candidates at different stages, with sample documents, plus demo logins so you can try both portals.</p>';
 	if ( $count ) {
 		echo '<table class="widefat striped" style="max-width:720px"><tbody>'
 			. '<tr><th>Staff portal</th><td><a href="' . esc_url( hcc_staff_url() ) . '">' . esc_html( hcc_staff_url() ) . '</a><br>Email <code>staff@example.com</code> · Password <code>Demo-Staff-2026</code></td></tr>'
@@ -858,7 +1003,7 @@ add_action( 'hcc_demo_page_after', function () {
 	echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline-block;margin-right:8px">';
 	echo '<input type="hidden" name="action" value="hcc_demo_candidates">';
 	wp_nonce_field( 'hcc_demo_candidates' );
-	submit_button( $count ? 'Add 8 more demo candidates' : 'Create demo candidates', 'primary', 'submit', false );
+	submit_button( $count ? 'Add 12 more demo candidates' : 'Create demo candidates', 'primary', 'submit', false );
 	echo '</form>';
 	if ( $count ) {
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline-block">';
@@ -925,3 +1070,109 @@ add_filter( 'login_url', function ( $url, $redirect ) {
 	$page = hcc_login_url();
 	return $redirect ? add_query_arg( 'redirect_to', rawurlencode( $redirect ), $page ) : $page;
 }, 10, 2 );
+
+/* ---------- Dashboard numbers ---------- */
+
+function hcc_periods() {
+	return array(
+		'24h' => array( DAY_IN_SECONDS, 'Last 24 hours' ),
+		'30d' => array( 30 * DAY_IN_SECONDS, '30 days' ),
+		'60d' => array( 60 * DAY_IN_SECONDS, '60 days' ),
+		'90d' => array( 90 * DAY_IN_SECONDS, '90 days' ),
+		'6m'  => array( 182 * DAY_IN_SECONDS, '6 months' ),
+		'12m' => array( 365 * DAY_IN_SECONDS, '12 months' ),
+		'all' => array( 0, 'All time' ),
+	);
+}
+
+/** Unix time a period starts, or 0 for all time. */
+function hcc_period_start( $key ) {
+	$p = hcc_periods();
+	return isset( $p[ $key ] ) && $p[ $key ][0] ? time() - $p[ $key ][0] : 0;
+}
+
+/** Numbers for the top of the Staff portal, for applications received in the period. */
+function hcc_dashboard( $period ) {
+	$args = array( 'post_type' => 'hcc_applicant', 'post_status' => 'private', 'numberposts' => -1, 'fields' => 'ids' );
+	if ( hcc_period_start( $period ) ) {
+		$args['date_query'] = array( array( 'after' => gmdate( 'Y-m-d H:i:s', hcc_period_start( $period ) ), 'column' => 'post_date_gmt' ) );
+	}
+	$ids  = get_posts( $args );
+	$defs = hcc_portal_docs();
+	$out  = array(
+		'total'    => count( $ids ),
+		'pipeline' => 0,
+		'new'      => 0,
+		'review'   => 0,
+		'ready'    => 0,
+		'closed'   => 0,
+		'docs'     => array(),
+		'days'     => array(),
+		'invite'   => array(),
+	);
+	foreach ( $defs as $key => $d ) {
+		$out['docs'][ $key ] = array( 'label' => $d[0], 'required' => $d[2], 'missing' => 0, 'review' => 0, 'amend' => 0 );
+	}
+	foreach ( $ids as $id ) {
+		$stage   = get_post_meta( $id, '_hcc_stage', true );
+		$applied = (int) get_post_time( 'U', true, $id );
+		$times   = hcc_pget( $id, 'stage_times' );
+		$invited = (int) get_post_meta( $id, '_hcc_invited', true );
+		if ( in_array( $stage, array( 'new', 'invited', 'documents', 'checks' ), true ) ) {
+			$out['pipeline']++;
+		}
+		if ( 'new' === $stage ) {
+			$out['new']++;
+		}
+		if ( 'ready' === $stage ) {
+			$out['ready']++;
+		}
+		if ( 'closed' === $stage ) {
+			$out['closed']++;
+		}
+		if ( ! empty( $times['ready'] ) ) {
+			$out['days'][] = ( $times['ready'] - $applied ) / DAY_IN_SECONDS;
+		}
+		if ( $invited ) {
+			$out['invite'][] = ( $invited - $applied ) / DAY_IN_SECONDS;
+		}
+		if ( ! in_array( $stage, array( 'invited', 'documents', 'checks' ), true ) ) {
+			continue;
+		}
+		$docs    = hcc_pget( $id, 'pdocs' );
+		$pending = false;
+		foreach ( $defs as $key => $d ) {
+			$st = isset( $docs[ $key ]['status'] ) ? $docs[ $key ]['status'] : '';
+			if ( '' === $st && $d[2] ) {
+				$out['docs'][ $key ]['missing']++;
+			} elseif ( 'pending' === $st ) {
+				$out['docs'][ $key ]['review']++;
+				$pending = true;
+			} elseif ( 'amend' === $st ) {
+				$out['docs'][ $key ]['amend']++;
+			}
+		}
+		$out['review'] += $pending ? 1 : 0;
+	}
+	$avg               = function ( $a ) { return $a ? round( array_sum( $a ) / count( $a ), 1 ) : null; };
+	$out['avg_days']   = $avg( $out['days'] );
+	$out['avg_invite'] = $avg( $out['invite'] );
+	return $out;
+}
+
+/* ---------- Activity: logins ---------- */
+
+function hcc_log_login( $user ) {
+	$app = hcc_applicant_for_user( $user->ID );
+	if ( $app ) {
+		hcc_log( $app, 'Logged in to the portal', $user );
+	}
+}
+add_action( 'wp_login', function ( $login, $user ) {
+	// With two-factor on, the login only counts once the code is accepted.
+	if ( class_exists( 'Two_Factor_Core' ) && Two_Factor_Core::is_user_using_two_factor( $user->ID ) ) {
+		return;
+	}
+	hcc_log_login( $user );
+}, 5, 2 );
+add_action( 'two_factor_user_authenticated', 'hcc_log_login' );
