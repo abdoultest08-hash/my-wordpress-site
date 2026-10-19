@@ -887,3 +887,41 @@ add_action( 'wp_login_failed', function () {
 		exit;
 	}
 } );
+
+/* ---------- WordPress.com / Jetpack hosting ---------- */
+
+/*
+ * Jetpack's "Log in with WordPress.com" (SSO) replaces the username and password
+ * form, and its styles also hide the two-factor code box. Portal users never have
+ * WordPress.com accounts, so switch it off and always show the normal form.
+ */
+add_filter( 'option_jetpack_active_modules', function ( $modules ) {
+	return is_array( $modules ) ? array_values( array_diff( $modules, array( 'sso' ) ) ) : $modules;
+} );
+add_filter( 'jetpack_active_modules', function ( $modules ) {
+	return is_array( $modules ) ? array_values( array_diff( $modules, array( 'sso' ) ) ) : $modules;
+} );
+add_filter( 'jetpack_sso_default_to_sso_login', '__return_false' );
+
+add_action( 'login_enqueue_scripts', function () {
+	?>
+	<style>
+		/* If SSO is still forced by the host, hide its button and show the real form and code box. */
+		.jetpack-sso-wrap, #jetpack-sso-wrap, .jetpack-sso-or, .jetpack-sso-toggle, .jetpack-sso-wrap__user { display: none !important; }
+		.jetpack-sso-form-display #loginform > p, .jetpack-sso-form-display #loginform > div, .jetpack-sso-form-display #loginform .user-pass-wrap,
+		#loginform p, #loginform .user-pass-wrap, #loginform input, #loginform label { display: block; }
+		#loginform input[type=checkbox] { display: inline-block; }
+		#loginform #authcode, #loginform input[name="two-factor-email-code"] { display: block !important; width: 100%; font-size: 24px; letter-spacing: .2em; text-align: center; }
+		#loginform .submit, #loginform #submit { display: block !important; }
+	</style>
+	<?php
+}, 20 );
+
+/** Send "Log in" links (after a password reset, or from wp-admin) to the branded login page. */
+add_filter( 'login_url', function ( $url, $redirect ) {
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return $url;
+	}
+	$page = hcc_login_url();
+	return $redirect ? add_query_arg( 'redirect_to', rawurlencode( $redirect ), $page ) : $page;
+}, 10, 2 );
