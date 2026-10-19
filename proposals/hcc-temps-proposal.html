@@ -1,0 +1,206 @@
+<title>HCC-Temps Website Proposal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a single-column proposal document, HCC palette used sparingly for structure. Deliberately light-only, like a printed proposal. */
+:root {
+  --ink: #171A45; --navy: #2D338C; --aqua: #6DC0B8; --aqua-deep: #237D74; --aqua-tint: #E4F4F2;
+  --sun: #F3D45E; --coral: #D93831; --cocoa: #7C4925;
+  --paper: #F5F8F7; --white: #FFFFFF; --text: #1E2140; --muted: #5B6078; --line: #DDE5E3;
+  --display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --body: "Figtree", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--text); font: 16px/1.6 var(--body); }
+.page { max-width: 880px; margin: 0 auto; padding-block: 40px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.sheet { background: var(--white); border-radius: 20px; box-shadow: 0 10px 40px rgba(23,26,69,.08); overflow: hidden; }
+.stripe { display: grid; grid-template-columns: 1fr 1fr 2fr 1fr 1fr; height: 8px; }
+.stripe i:nth-child(1) { background: var(--cocoa); } .stripe i:nth-child(2) { background: var(--navy); } .stripe i:nth-child(3) { background: var(--aqua); } .stripe i:nth-child(4) { background: var(--coral); } .stripe i:nth-child(5) { background: var(--sun); }
+.inner { padding: 48px clamp(20px, 6vw, 64px); }
+h1, h2, h3 { margin: 0; color: var(--ink); text-wrap: balance; }
+h1 { font: 800 clamp(34px, 5.4vw, 52px)/1.04 var(--display); letter-spacing: -0.02em; }
+h2 { font: 800 clamp(24px, 3vw, 30px)/1.15 var(--display); letter-spacing: -0.01em; }
+h3 { font: 700 18px/1.3 var(--body); }
+p { margin: 0; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--aqua-deep); }
+.meta { margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 14px; }
+.meta b { display: block; color: var(--ink); font-size: 15px; }
+.meta span { color: var(--muted); }
+.lead { margin-top: 18px; font-size: 18px; color: var(--muted); max-width: 60ch; }
+section { padding-top: 44px; margin-top: 44px; border-top: 1px solid var(--line); }
+section > p, section > ul, section > ol { margin-top: 14px; max-width: 68ch; }
+ul, ol { padding-left: 20px; }
+li + li { margin-top: 6px; }
+.grid2 { margin-top: 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.card { border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+.card h3 { margin-bottom: 8px; }
+.card ul { margin: 0; font-size: 15px; }
+.card.hl { background: var(--aqua-tint); border-color: transparent; }
+.flow { margin-top: 20px; list-style: none; padding: 0; display: grid; gap: 10px; counter-reset: f; }
+.flow li { margin: 0; display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start; background: var(--paper); border-radius: 14px; padding: 14px 16px; }
+.flow li::before { counter-increment: f; content: counter(f); width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--navy); color: var(--white); font: 800 16px var(--display); }
+.flow b { color: var(--ink); }
+.note { margin-top: 18px; background: var(--paper); border-left: 4px solid var(--aqua); border-radius: 0 12px 12px 0; padding: 14px 18px; font-size: 15px; max-width: none; }
+.table-wrap { margin-top: 20px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 520px; }
+th, td { text-align: left; padding: 13px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+td.num, th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+td small { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+tr.total td { border-bottom: 0; font-weight: 800; color: var(--ink); font-size: 18px; padding-top: 18px; }
+tr.total td.num { font: 800 24px var(--display); }
+.timeline { margin-top: 20px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.wk { border-radius: 16px; padding: 18px; min-height: 150px; }
+.wk:nth-child(1) { background: var(--aqua-tint); } .wk:nth-child(2) { background: #FBF2CF; } .wk:nth-child(3) { background: #E6E7F5; } .wk:nth-child(4) { background: var(--ink); color: var(--white); }
+.wk:nth-child(4) h3, .wk:nth-child(4) .eyebrow { color: var(--white); }
+.wk p { font-size: 14px; margin-top: 6px; }
+.terms { columns: 2; column-gap: 32px; font-size: 15px; }
+.terms li { break-inside: avoid; }
+.sign { margin-top: 24px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.sign div { border-top: 2px solid var(--ink); padding-top: 8px; font-size: 14px; color: var(--muted); min-height: 70px; }
+.edit { background: #FFF6D6; border-radius: 4px; padding: 0 4px; }
+@media (max-width: 720px) {
+  .grid2, .timeline, .sign { grid-template-columns: 1fr; }
+  .terms { columns: 1; }
+  .inner { padding-block: 32px; }
+}
+</style>
+
+<div class="page">
+  <article class="sheet">
+    <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="inner">
+      <span class="eyebrow">Website proposal</span>
+      <h1 style="margin-top:10px">A new website for HCC-Temps</h1>
+      <p class="lead">A faster, more colourful site that makes it simple for candidates to find a shift, apply in a minute and send their documents, and for clients to request cover.</p>
+      <div class="meta">
+        <div><span>Prepared for</span><b>HCC-Temps</b></div>
+        <div><span>Prepared by</span><b class="edit">[Your business name]</b></div>
+        <div><span>Date</span><b>20 October 2026</b></div>
+        <div><span>Valid until</span><b>19 November 2026</b></div>
+      </div>
+
+      <section>
+        <span class="eyebrow">1 · Summary</span>
+        <h2 style="margin-top:8px">What you've seen, and what we'll finish</h2>
+        <p>You have already reviewed the working demo of the new site. This proposal covers finishing it with your real content, adding the tools that let your team manage everything without a developer, moving your live jobs across, and launching on your domain.</p>
+        <div class="grid2">
+          <div class="card hl">
+            <h3>For candidates</h3>
+            <ul><li>Job Board with search and filters</li><li>Apply in about a minute: details and CV</li><li>Automatic email with a private link to upload documents</li><li>Checklist that matches the role they applied for</li><li>Register once for future shifts</li></ul>
+          </div>
+          <div class="card hl">
+            <h3>For clients</h3>
+            <ul><li>Request cover form, sent straight to your team</li><li>Clear sectors and roles you supply</li><li>Accreditations shown on every page</li><li>FAQs about hiring through HCC-Temps</li></ul>
+          </div>
+          <div class="card">
+            <h3>For your team</h3>
+            <ul><li>Every applicant in one list, with documents in or missing</li><li>Files renamed automatically with the candidate reference</li><li>Add, edit and close jobs yourselves</li><li>Edit roles, document checklists, FAQs, reviews and logos yourselves</li></ul>
+          </div>
+          <div class="card">
+            <h3>For Google</h3>
+            <ul><li>Jobs listed in Google Jobs automatically</li><li>Old page addresses redirected, so rankings carry over</li><li>Fast loading on phones</li><li>Clean page titles and descriptions</li></ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <span class="eyebrow">2 · How applications work</span>
+        <h2 style="margin-top:8px">Automatic from apply to upload</h2>
+        <p>Everything runs inside your own WordPress site. There are no extra subscriptions, and candidate data stays on your server.</p>
+        <ol class="flow">
+          <li><div><b>Candidate applies</b> with their name, phone, email and CV. They get a reference number such as HCC-001234.</div></li>
+          <li><div><b>Your team gets an email</b> tagged <b>[JOB APPLICATION]</b> with the candidate's details and the CV attached.</div></li>
+          <li><div><b>The candidate gets an email</b> with a private upload link and the list of documents their role needs. The link expires after 14 days, and your team can send a new one with one click.</div></li>
+          <li><div><b>They upload documents</b> from their phone, in one go or over several visits. Each file is renamed, for example HCC-001234_Shah-Priya_DBS_2026-10-20.pdf, and stored privately.</div></li>
+          <li><div><b>Your team is told</b> by email, and the applicant's record shows what is in and what is missing.</div></li>
+        </ol>
+        <p class="note">ID, DBS and right-to-work documents are never attached to emails and are never public. Only logged-in staff can download them.</p>
+      </section>
+
+      <section>
+        <span class="eyebrow">3 · Investment</span>
+        <h2 style="margin-top:8px">Pricing</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Item</th><th class="num">Price</th></tr></thead>
+            <tbody>
+              <tr><td>Design and build<small>Homepage, Job Board, job pages, register, for clients, about, contact, blog, document upload. Mobile-first, approved demo design.</small></td><td class="num">£2,400</td></tr>
+              <tr><td>Recruitment automation<small>Applications with CV, automatic emails, private document links, renamed files, applicant records, cover requests and contact routing.</small></td><td class="num">£1,200</td></tr>
+              <tr><td>Self-editing tools<small>Edit roles, photos and document checklists, FAQs, reviews, accreditation logos and homepage figures without a developer.</small></td><td class="num">£450</td></tr>
+              <tr><td>Migration and SEO<small>Move your live jobs and blog posts, redirect old addresses, Google Jobs listing, page titles, sitemap.</small></td><td class="num">£500</td></tr>
+              <tr><td>Launch, training and support<small>Email delivery set-up, testing every form, go-live, a 1-hour training session, written guide and 30 days of fixes.</small></td><td class="num">£400</td></tr>
+              <tr class="total"><td>Total</td><td class="num">£4,950</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="form-note" style="margin-top:10px;color:var(--muted);font-size:14px">Prices exclude VAT <span class="edit">[if applicable]</span>.</p>
+
+        <h3 style="margin-top:32px">Optional extras</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Extra</th><th class="num">Price</th></tr></thead>
+            <tbody>
+              <tr><td>Website chat assistant<small>Button-led chat that answers common questions and emails enquiries to the right team. No AI service, so no extra data-protection paperwork.</small></td><td class="num">£650</td></tr>
+              <tr><td>Link to your recruitment or compliance software<small>Send applicants and documents into your existing system automatically. Quoted once we know which system you use.</small></td><td class="num">from £750</td></tr>
+              <tr><td>Copywriting<small>Rewriting page text in a clear, friendly style.</small></td><td class="num">£150 per page</td></tr>
+              <tr><td>Care plan<small>Updates, daily backups, security monitoring, uptime checks and up to 1 hour of changes a month.</small></td><td class="num">£95 per month</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <span class="eyebrow">4 · Timeline</span>
+        <h2 style="margin-top:8px">Live in 4 weeks</h2>
+        <p>The 4 weeks start when we receive the deposit and your completed content questionnaire.</p>
+        <div class="timeline">
+          <div class="wk"><span class="eyebrow">Week 1</span><h3>Content</h3><p>Your feedback from the demo, real photos, logos, figures, FAQs and document lists added.</p></div>
+          <div class="wk"><span class="eyebrow">Week 2</span><h3>Tools and migration</h3><p>Self-editing tools built. Live jobs and blog moved across. Email set-up.</p></div>
+          <div class="wk"><span class="eyebrow">Week 3</span><h3>Review</h3><p>You test the full site on a private staging link. One round of changes.</p></div>
+          <div class="wk"><span class="eyebrow">Week 4</span><h3>Launch</h3><p>Go-live on your domain, final checks, training session. Support starts.</p></div>
+        </div>
+      </section>
+
+      <section>
+        <span class="eyebrow">5 · What we need from you</span>
+        <h2 style="margin-top:8px">Your content checklist</h2>
+        <p>We'll send a short online questionnaire covering:</p>
+        <div class="grid2">
+          <div class="card"><ul><li>Logo files, photos and any brand material</li><li>Accreditations to show (logo or name, we can source logos)</li><li>Reviews and testimonials, with permission to use names</li><li>Social media links</li><li>Your slogan</li></ul></div>
+          <div class="card"><ul><li>Roles to prioritise, and the documents each role needs</li><li>Your real onboarding steps and typical timeline</li><li>FAQs with your answers</li><li>Where each type of email should go</li><li>Hosting, WordPress and domain access</li></ul></div>
+        </div>
+      </section>
+
+      <section>
+        <span class="eyebrow">6 · Terms</span>
+        <h2 style="margin-top:8px">Payment and assumptions</h2>
+        <ul class="terms">
+          <li><b>Payment:</b> 40% to start, 40% when the staging site is ready for review, 20% on launch.</li>
+          <li><b>Changes:</b> one round of changes at review is included. Further work is quoted first.</li>
+          <li><b>Hosting and domain</b> stay in your name and are not included.</li>
+          <li><b>Photos:</b> the demo uses placeholder images. Real or licensed photos are supplied by you, or we can source licensed stock at cost.</li>
+          <li><b>Privacy policy:</b> we will flag the changes needed for document uploads. Final legal wording is your responsibility.</li>
+          <li><b>Ownership:</b> once paid in full, the website and its code are yours.</li>
+        </ul>
+      </section>
+
+      <section>
+        <span class="eyebrow">7 · Next steps</span>
+        <h2 style="margin-top:8px">Getting started</h2>
+        <ol>
+          <li>Confirm the package and any extras you'd like.</li>
+          <li>We send the invoice for the deposit and the content questionnaire.</li>
+          <li>Week 1 starts as soon as both are back.</li>
+        </ol>
+        <div class="sign">
+          <div>Signed for HCC-Temps · Date</div>
+          <div>Signed for <span class="edit">[Your business name]</span> · Date</div>
+        </div>
+      </section>
+    </div>
+  </article>
+</div>
