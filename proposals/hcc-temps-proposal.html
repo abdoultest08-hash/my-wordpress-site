@@ -58,6 +58,23 @@ li + li { margin-top: 4px; }
 .sign { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; padding-top: 8px; }
 .sign div { border-top: 2px solid var(--ink); padding-top: 6px; font-size: 13px; color: var(--muted); min-height: 46px; }
 .edit { background: #FFF1B8; border-radius: 4px; padding: 0 4px; }
+
+.pkg { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.pkg-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; background: var(--aqua-tint); }
+.pkg-head.b { background: #E6E7F5; }
+.pkg-head h3 { font: 800 17px var(--display); }
+.pkg-head .price-tag { font: 800 20px var(--display); color: var(--navy); white-space: nowrap; }
+.pkg-body { padding: 12px 16px 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 22px; }
+.pkg-body ul { padding-left: 16px; }
+.pkg-body h4 { margin: 4px 0 2px; font: 700 12px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--aqua-deep); }
+.paytable { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.paytable th, .paytable td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+.paytable th { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.paytable td.n, .paytable th.n { text-align: right; }
+.paytable tr.tot td { font-weight: 800; color: var(--ink); border-bottom: 0; font-size: 15px; }
+.steps.six { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 720px) { .pkg-body { grid-template-columns: 1fr; } .steps.six { grid-template-columns: 1fr 1fr; } }
+@media print { .pkg-head { padding: 8px 12px; } .pkg-body { padding: 8px 12px 10px; } .paytable th, .paytable td { padding: 6px 10px; } .pkg-head h3 { font-size: 14px; } .pkg-head .price-tag { font-size: 16px; } }
 @media (max-width: 720px) {
   .meta, .scope, .price, .terms, .sign { grid-template-columns: 1fr 1fr; }
   .steps { grid-template-columns: 1fr 1fr; }
@@ -97,9 +114,9 @@ li + li { margin-top: 4px; }
     <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     <div class="inner">
       <header class="head">
-        <span class="eyebrow">Website proposal</span>
-        <h1>Refreshing the HCC-Temps website</h1>
-        <p class="lead">A premium, simple website that makes it easy for candidates to find work and register, and gives companies a clear place to start working with you.</p>
+        <span class="eyebrow">Website and staff portal proposal</span>
+        <h1>A new website and candidate tracking for HCC-Temps</h1>
+        <p class="lead">A premium, easy-to-use website that puts candidate registration first, plus a secure portal where candidates upload their documents and your team tracks every application from CV to ready to work.</p>
         <div class="meta">
           <div><span>Prepared for</span><b>HCC-Temps</b></div>
           <div><span>Prepared by</span><b class="edit">[Your business name]</b></div>
@@ -110,85 +127,95 @@ li + li { margin-top: 4px; }
 
       <section class="block">
         <h2><span class="n">1</span>Scope of work</h2>
-        <div class="scope">
-          <div class="card hl">
-            <h3>Website refresh</h3>
+        <div class="pkg">
+          <div class="pkg-head"><h3>Package A · Website refresh</h3><span class="price-tag">£1,500</span></div>
+          <div class="pkg-body">
             <ul>
               <li>Premium, simple design based on the approved mockup</li>
               <li>Easy navigation on phone and desktop</li>
-              <li>Website copy updated throughout</li>
-              <li>Your logo, photos, slogan and accreditations added</li>
-            </ul>
-          </div>
-          <div class="card hl">
-            <h3>Candidates first</h3>
-            <ul>
               <li>Candidate registration as the main priority</li>
-              <li>Job Board with search and filters</li>
-              <li>Apply by submitting details and a CV</li>
               <li>Key roles featured: nurses, senior care assistants and cleaning staff</li>
             </ul>
-          </div>
-          <div class="card">
-            <h3>For companies</h3>
             <ul>
-              <li>Dedicated section for companies looking to work with you</li>
-              <li>Request cover form</li>
-              <li>Accreditations shown on every page</li>
+              <li>Section for companies looking to work with you, with a request cover form</li>
+              <li>All active job listings moved to the new site, with search and filters</li>
+              <li>Apply with details and CV, sent to your staffing email</li>
+              <li>Your logo, photos, slogan and accreditations; copy updated throughout</li>
             </ul>
           </div>
-          <div class="card">
-            <h3>Jobs and enquiries</h3>
-            <ul>
-              <li>All active job listings moved to the new website</li>
-              <li>Applications and enquiries sent to your staffing email, with the CV attached</li>
-              <li>Your team picks them up and starts onboarding as they do today</li>
-            </ul>
+        </div>
+        <div class="pkg">
+          <div class="pkg-head b"><h3>Package B · Staff portal and candidate tracking</h3><span class="price-tag">£2,200</span></div>
+          <div class="pkg-body">
+            <div>
+              <h4>For candidates</h4>
+              <ul>
+                <li>Invited after CV review, then set their own password</li>
+                <li>Secure login with a code sent by email</li>
+                <li>Progress bar from applied to ready to work</li>
+                <li>Document checklist: upload by phone camera or file, with photo tips</li>
+                <li>See each document's status and messages from your team</li>
+                <li>Automatic emails when anything changes</li>
+              </ul>
+            </div>
+            <div>
+              <h4>For your team</h4>
+              <ul>
+                <li>Dashboard: applications, pipeline, ready to work, average onboarding time, outstanding documents by type</li>
+                <li>Filter by last 24 hours, 30, 60 or 90 days, 6 or 12 months</li>
+                <li>Every candidate filterable by sector, role, stage and documents</li>
+                <li>Candidate folder: view, download, approve or request changes, internal and shared notes, full activity log</li>
+                <li>Downloadable candidate report, Excel export of all records and activity</li>
+                <li>Staff accounts with secure logins; files stored privately and renamed automatically</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
       <section class="block">
-        <h2><span class="n">2</span>Timeline: 14 days</h2>
-        <ol class="steps">
-          <li class="done"><span class="when">Done</span><b>Mockup</b>Created and shared for your feedback.</li>
-          <li><span class="when">Days 1–3</span><b>Requirements</b>You complete the client requirements list: logo, photos, slogans, accreditations.</li>
-          <li><span class="when">Days 4–8</span><b>Copy and pages</b>Website copy updated and main pages built.</li>
-          <li><span class="when">Days 9–11</span><b>Key roles</b>Nurses, senior care assistants and cleaning staff prioritised.</li>
-          <li><span class="when">Days 12–14</span><b>Jobs and launch</b>All job listings transferred, final checks, go live.</li>
+        <h2><span class="n">2</span>Timeline</h2>
+        <ol class="steps six">
+          <li class="done"><span class="when">Done</span><b>Mockup and demo</b>Website mockup and portal demo created and shared for feedback.</li>
+          <li><span class="when">Days 1–3</span><b>Requirements</b>You complete the requirements list: logo, photos, slogans, accreditations, document checks per role, email wording.</li>
+          <li><span class="when">Days 4–8</span><b>Website pages</b>Copy updated and main pages built, key roles prioritised.</li>
+          <li><span class="when">Days 9–14</span><b>Jobs and launch</b>All job listings transferred, final checks, website live.</li>
+          <li><span class="when">Days 15–22</span><b>Portal set-up</b>Your document lists, emails and staff accounts set up in the portal.</li>
+          <li><span class="when">Days 23–28</span><b>Testing and go-live</b>Your team tests with real scenarios, training session, portal live.</li>
         </ol>
-        <p class="small">Regular check-ins once the main pages are built. The 14 days start once the deposit and the completed requirements list are received.</p>
+        <p class="small">Regular check-ins once the main pages are built. Timings start once the deposit and the completed requirements list are received.</p>
       </section>
 
       <section class="block">
         <h2><span class="n">3</span>Investment</h2>
-        <div class="price">
-          <div class="total"><span>Total fixed price</span><div class="big">£1,500</div><span>Everything in the scope above</span></div>
-          <div class="split">
-            <div><span>Deposit to start (25%)</span><b>£375</b></div>
-            <div><span>On completion (75%)</span><b>£1,125</b></div>
-            <div><span class="small">VAT</span><span class="small edit">[Not VAT registered / + VAT]</span></div>
-          </div>
-        </div>
+        <table class="paytable">
+          <thead><tr><th>Package</th><th class="n">Deposit (25%)</th><th class="n">On completion (75%)</th><th class="n">Total</th></tr></thead>
+          <tbody>
+            <tr><td>A · Website refresh</td><td class="n">£375</td><td class="n">£1,125</td><td class="n">£1,500</td></tr>
+            <tr><td>B · Staff portal and candidate tracking</td><td class="n">£550</td><td class="n">£1,650</td><td class="n">£2,200</td></tr>
+            <tr class="tot"><td>Both packages</td><td class="n">£925</td><td class="n">£2,775</td><td class="n">£3,700</td></tr>
+          </tbody>
+        </table>
+        <p class="small">VAT: <span class="edit">[Not VAT registered / + VAT]</span>. Package A can go ahead on its own; Package B builds on Package A.</p>
       </section>
 
       <section class="block">
         <h2><span class="n">4</span>Terms</h2>
         <ul class="terms">
-          <li>Work starts when the deposit is received.</li>
-          <li>Final payment is due on completion, before go-live.</li>
+          <li>Work on each package starts when its deposit is received.</li>
+          <li>Final payment for each package is due on completion, before it goes live.</li>
           <li>Hosting and domain stay in your name and are not included.</li>
           <li>Photos and logos are supplied by you, or licensed stock is used.</li>
-          <li>Changes outside this scope are quoted before any work starts.</li>
-          <li>Once paid in full, the website is yours.</li>
+          <li>You remain responsible for candidate data and your privacy policy; we set the portal up to keep documents private.</li>
+          <li>Changes outside this scope are quoted before any work starts. Once paid in full, the website and portal are yours.</li>
         </ul>
       </section>
 
       <section class="block">
         <h2><span class="n">5</span>Next steps</h2>
-        <p>Reply to confirm, and we'll send the deposit invoice and the client requirements list the same day.</p>
+        <p>Reply to confirm which packages you'd like, and we'll send the deposit invoice and the requirements list the same day.</p>
         <div class="sign">
-          <div>Accepted for HCC-Temps · Name · Date</div>
+          <div>Accepted for HCC-Temps · Packages A / B · Name · Date</div>
           <div><span class="edit">[Your business name]</span> · Date</div>
         </div>
       </section>
