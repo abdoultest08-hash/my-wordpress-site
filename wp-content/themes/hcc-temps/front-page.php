@@ -92,7 +92,7 @@ $sectors   = hcc_filter_terms( 'job_sector' );
 				<ol class="step-list" id="stepList">
 					<li><button class="step-btn" type="button" data-step="0"><span class="num">1</span><span class="t">Find a role you like</span><span class="d">Search by role and town. Every job shows the pay, location and shift pattern up front.</span></button></li>
 					<li><button class="step-btn" type="button" data-step="1"><span class="num">2</span><span class="t">Apply in about a minute</span><span class="d">Your name, phone number, email and CV. That's all we ask for at this stage.</span></button></li>
-					<li><button class="step-btn" type="button" data-step="2"><span class="num">3</span><span class="t">Upload your documents</span><span class="d">We email you a private link with a checklist for your role. Upload now or come back later.</span></button></li>
+					<li><button class="step-btn" type="button" data-step="2"><span class="num">3</span><span class="t">Upload your documents</span><span class="d">Once we've reviewed your CV, we invite you to your own candidate portal to upload your documents.</span></button></li>
 					<li><button class="step-btn" type="button" data-step="3"><span class="num">4</span><span class="t">We check everything</span><span class="d">Our compliance team checks your DBS, right to work and references, then calls you.</span></button></li>
 					<li><button class="step-btn" type="button" data-step="4"><span class="num">5</span><span class="t">Start your shifts</span><span class="d">Pick shifts that suit you. We confirm each one by text and email.</span></button></li>
 				</ol>

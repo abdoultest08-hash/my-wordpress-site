@@ -138,7 +138,7 @@ function hcc_applicant_box( $post ) {
 		echo '</td><td>' . ( $f ? esc_html( wp_date( 'j M Y', (int) $f['time'] ) ) : '' ) . '</td></tr>';
 	}
 	echo '</tbody></table>';
-	echo '<p style="margin-top:16px"><a class="button" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=hcc_resend_link&applicant=' . $post->ID ), 'hcc_resend_' . $post->ID ) ) . '">Email the candidate a new upload link</a></p>';
+	echo '<p style="margin-top:16px"><a class="button button-primary" href="' . esc_url( hcc_staff_url( array( 'candidate' => $post->ID ) ) ) . '">Open in Staff portal</a></p>';
 }
 
 add_action( 'admin_post_hcc_download', function () {

@@ -135,7 +135,9 @@ function hcc_demo_page() {
 	echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="hcc_remove_demo">';
 	wp_nonce_field( 'hcc_remove_demo' );
 	submit_button( 'Remove demo jobs and posts', 'delete', 'submit', false, $ids ? array() : array( 'disabled' => 'disabled' ) );
-	echo '</form></div>';
+	echo '</form>';
+	do_action( 'hcc_demo_page_after' );
+	echo '</div>';
 }
 
 add_action( 'admin_post_hcc_remove_demo', function () {

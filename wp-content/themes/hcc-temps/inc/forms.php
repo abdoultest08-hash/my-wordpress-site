@@ -202,11 +202,20 @@ function hcc_handle_application() {
 		'[JOB APPLICATION] ' . $f['role'] . ' · ' . $f['first'] . ' ' . $f['last'] . ' (' . $ref . ')',
 		'<p>New ' . ( $f['job_id'] ? 'application' : 'registration' ) . ' from the website. The CV is attached.</p>'
 			. hcc_rows( array( 'Reference' => $ref, 'Job' => $job_line, 'Role' => $f['role'], 'Name' => $f['first'] . ' ' . $f['last'], 'Email' => $f['email'], 'Phone' => $f['phone'], 'Postcode' => $f['postcode'], 'Right to work' => $f['rtw'], 'Will travel' => $f['travel'] ) )
-			. hcc_button( admin_url( 'post.php?post=' . $id . '&action=edit' ), 'Open in WordPress' ),
+			. hcc_button( hcc_staff_url( array( 'candidate' => $id ) ), 'Review in Staff portal' ),
 		array( $cv ),
 		$f['email']
 	);
-	hcc_send_upload_email( $id );
+	// Documents are requested only after staff approve the CV and invite the candidate to the portal.
+	hcc_mail(
+		$f['email'],
+		'We have your application (' . $ref . ')',
+		'<p>Hi ' . esc_html( $f['first'] ) . ',</p><p>Thanks for applying for <b>' . esc_html( $f['role'] ) . '</b>. Our team will review your CV and be in touch.</p>'
+			. '<p>If we move forward, we will email you an invite to your candidate portal, where you can upload your documents and follow your progress.</p>'
+			. '<p>Your reference is <b>' . esc_html( $ref ) . '</b>. Questions? Call ' . esc_html( hcc_opt( 'phone' ) ) . '.</p>',
+		array(),
+		hcc_opt( 'email_jobs' )
+	);
 	hcc_back( array( 'hcc_ok' => 'applied', 'ref' => $ref ), 'apply' );
 }
 add_action( 'admin_post_nopriv_hcc_apply', 'hcc_handle_application' );

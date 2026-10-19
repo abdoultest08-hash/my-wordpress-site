@@ -15,11 +15,11 @@ if ( $ok ) : ?>
 	<div class="form-card success-card" id="apply" tabindex="-1">
 		<div class="tick"><?php echo hcc_icon( 'check', 30 ); ?></div>
 		<h2><?php echo $picker ? "Thanks, you're registered" : "Thanks, you've applied"; ?></h2>
-		<p>Your reference is <b><?php echo esc_html( $ref ); ?></b>. We've emailed you the next step.</p>
+		<p>Your reference is <b><?php echo esc_html( $ref ); ?></b>. We've emailed you a copy.</p>
 		<ol>
-			<li>Open the email from HCC-Temps (check your junk folder too)</li>
-			<li>Upload your documents using the private link</li>
-			<li>We check them and call you about shifts</li>
+			<li>Our team reviews your CV</li>
+			<li>If we move forward, we email you an invite to your candidate portal</li>
+			<li>You upload your documents there and follow your progress</li>
 		</ol>
 		<p class="form-note">No email within 10 minutes? Call <?php echo esc_html( hcc_opt( 'phone' ) ); ?>.</p>
 	</div>
