@@ -4,10 +4,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: a compact one-sheet proposal (A4-sized when saved as PDF), HCC logo colours as structure. Light-only by design, like a printed document. */
+/* Layout: a three-page proposal (A4 when saved as PDF). Page 1 scope and timeline, page 2 the candidate workflow, page 3 the staff pipeline, cost and next steps. Light-only by design, like a printed document. */
 :root {
   --ink: #171A45; --navy: #2D338C; --aqua: #6DC0B8; --aqua-deep: #237D74; --aqua-tint: #E4F4F2;
-  --sun: #F3D45E; --coral: #D93831; --cocoa: #7C4925;
+  --sun: #F3D45E; --sun-tint: #FBF2CF; --coral: #D93831; --coral-tint: #FBE3E1; --cocoa: #7C4925; --lilac: #E6E7F5;
   --paper: #EEF3F2; --white: #FFFFFF; --text: #1E2140; --muted: #5B6078; --line: #DDE5E3;
   --display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
   --body: "Figtree", "Segoe UI", system-ui, sans-serif;
@@ -15,120 +15,167 @@
 }
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); color: var(--text); font: 14.5px/1.55 var(--body); }
-.page { max-width: 820px; margin: 0 auto; padding-block: 32px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.doc { max-width: 860px; margin: 0 auto; padding-block: 32px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 24px; }
 .sheet { background: var(--white); border-radius: 16px; box-shadow: 0 10px 40px rgba(23,26,69,.08); overflow: hidden; }
 .stripe { display: grid; grid-template-columns: 1fr 1fr 2fr 1fr 1fr; height: 7px; }
 .stripe i:nth-child(1) { background: var(--cocoa); } .stripe i:nth-child(2) { background: var(--navy); } .stripe i:nth-child(3) { background: var(--aqua); } .stripe i:nth-child(4) { background: var(--coral); } .stripe i:nth-child(5) { background: var(--sun); }
-.inner { padding: 36px clamp(20px, 5vw, 48px) 40px; display: grid; gap: 26px; }
-h1, h2, h3 { margin: 0; color: var(--ink); text-wrap: balance; }
-h1 { font: 800 clamp(30px, 4.6vw, 40px)/1.05 var(--display); letter-spacing: -0.02em; }
+.inner { padding: 34px clamp(18px, 5vw, 46px) 38px; display: grid; gap: 24px; }
+h1, h2, h3, h4 { margin: 0; color: var(--ink); text-wrap: balance; }
+h1 { font: 800 clamp(28px, 4.4vw, 38px)/1.06 var(--display); letter-spacing: -0.02em; }
 h2 { font: 800 19px/1.2 var(--display); letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; }
 h2 .n { width: 26px; height: 26px; border-radius: 8px; background: var(--navy); color: var(--white); display: inline-grid; place-items: center; font-size: 13px; flex: none; }
+h3 { font: 700 15px var(--body); }
 p { margin: 0; }
 ul { margin: 0; padding-left: 18px; }
-li + li { margin-top: 4px; }
+li + li { margin-top: 3px; }
 .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--aqua-deep); }
+.small { font-size: 13px; color: var(--muted); }
+.lead { color: var(--muted); font-size: 16px; max-width: 64ch; }
 .head { display: grid; gap: 10px; }
-.lead { color: var(--muted); font-size: 16px; max-width: 62ch; }
-.meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; }
+.meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; }
 .meta span { color: var(--muted); display: block; }
 .meta b { color: var(--ink); }
-.block { display: grid; gap: 10px; }
-.scope { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.card { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
-.card h3 { font: 700 15px var(--body); margin-bottom: 6px; }
-.card.hl { background: var(--aqua-tint); border-color: transparent; }
-.steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
-.steps li { margin: 0; border-radius: 12px; padding: 12px; background: var(--paper); font-size: 13px; }
-.steps li b { display: block; color: var(--ink); font-size: 14px; margin-bottom: 2px; }
-.steps li .when { display: block; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--aqua-deep); margin-bottom: 4px; }
-.steps li.done { background: var(--aqua); }
-.steps li.done .when { color: var(--ink); }
-.price { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; align-items: stretch; }
-.total { background: var(--ink); color: var(--white); border-radius: 14px; padding: 18px 20px; display: grid; align-content: center; gap: 4px; }
-.total .big { font: 800 40px/1 var(--display); color: var(--sun); }
-.total span { color: rgba(255,255,255,.8); font-size: 13px; }
-.split { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
-.split div { display: flex; justify-content: space-between; gap: 12px; padding: 12px 16px; font-variant-numeric: tabular-nums; }
-.split div + div { border-top: 1px solid var(--line); }
-.split b { color: var(--ink); }
-.small { font-size: 13px; color: var(--muted); }
-.terms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 24px; font-size: 13px; color: var(--muted); padding-left: 18px; }
-.terms li { margin: 0; }
-.sign { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; padding-top: 8px; }
-.sign div { border-top: 2px solid var(--ink); padding-top: 6px; font-size: 13px; color: var(--muted); min-height: 46px; }
-.edit { background: #FFF1B8; border-radius: 4px; padding: 0 4px; }
+.block { display: grid; gap: 12px; }
+.page-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 
+/* Packages */
 .pkg { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
 .pkg-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; background: var(--aqua-tint); }
-.pkg-head.b { background: #E6E7F5; }
+.pkg-head.b { background: var(--lilac); }
 .pkg-head h3 { font: 800 17px var(--display); }
-.pkg-head .price-tag { font: 800 20px var(--display); color: var(--navy); white-space: nowrap; }
-.pkg-body { padding: 12px 16px 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 22px; }
-.pkg-body ul { padding-left: 16px; }
-.pkg-body h4 { margin: 4px 0 2px; font: 700 12px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--aqua-deep); }
-.paytable { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-.paytable th, .paytable td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
-.paytable th { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.paytable td.n, .paytable th.n { text-align: right; }
-.paytable tr.tot td { font-weight: 800; color: var(--ink); border-bottom: 0; font-size: 15px; }
-.steps.six { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-@media (max-width: 720px) { .pkg-body { grid-template-columns: 1fr; } .steps.six { grid-template-columns: 1fr 1fr; } }
-@media print { .pkg-head { padding: 8px 12px; } .pkg-body { padding: 8px 12px 10px; } .paytable th, .paytable td { padding: 6px 10px; } .pkg-head h3 { font-size: 14px; } .pkg-head .price-tag { font-size: 16px; } }
-@media (max-width: 720px) {
-  .meta, .scope, .price, .terms, .sign { grid-template-columns: 1fr 1fr; }
-  .steps { grid-template-columns: 1fr 1fr; }
-  .scope, .price, .terms, .sign { grid-template-columns: 1fr; }
+.pkg-head .tag { font: 800 20px var(--display); color: var(--navy); white-space: nowrap; }
+.pkg-body { padding: 12px 16px 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 24px; }
+.pkg-body h4 { margin: 2px 0 4px; font: 700 11px var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--aqua-deep); }
+.dep { display: flex; gap: 10px; align-items: center; background: var(--sun-tint); border-radius: 12px; padding: 10px 14px; font-size: 13.5px; }
+.dep b { color: var(--ink); }
+
+/* Swimlane workflow */
+.lanes { display: grid; grid-template-columns: 92px repeat(6, minmax(0, 1fr)); gap: 6px; font-size: 12px; }
+.lanes .hdr { font: 700 10.5px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-align: center; padding: 4px 2px; border-bottom: 2px solid var(--line); }
+.lanes .hdr b { display: block; font: 800 14px var(--display); color: var(--navy); letter-spacing: 0; }
+.lane-name { display: flex; align-items: center; font-weight: 800; font-size: 12px; color: var(--ink); border-radius: 10px; padding: 8px; }
+.lane-name.c { background: var(--aqua-tint); } .lane-name.a { background: var(--sun-tint); } .lane-name.t { background: var(--lilac); }
+.cell { position: relative; min-height: 64px; }
+.box { height: 100%; border-radius: 10px; padding: 8px 9px; line-height: 1.35; border: 1px solid transparent; }
+.box b { display: block; color: var(--ink); font-size: 12px; margin-bottom: 2px; }
+.box.c { background: var(--white); border-color: var(--aqua); }
+.box.a { background: var(--white); border-color: var(--sun); border-style: dashed; }
+.box.t { background: var(--white); border-color: var(--navy); }
+.box.loop { border-color: var(--coral); }
+.cell.arrow::after { content: "→"; position: absolute; right: -9px; top: 50%; transform: translateY(-50%); font-weight: 800; color: var(--muted); font-size: 13px; z-index: 1; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+.legend i { width: 14px; height: 10px; border-radius: 3px; border: 1.5px solid; display: inline-block; }
+
+/* Before / after */
+.compare { width: 100%; border-collapse: collapse; font-size: 13px; }
+.compare th, .compare td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.compare th { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.compare td:first-child { font-weight: 700; color: var(--ink); width: 22%; }
+.compare td:nth-child(2) { color: var(--muted); width: 36%; }
+.compare td:nth-child(3) { background: var(--aqua-tint); }
+.wins { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.win { border-radius: 12px; padding: 12px 14px; background: var(--paper); }
+.win b { display: block; font: 800 16px var(--display); color: var(--ink); margin-bottom: 3px; }
+.win:nth-child(1) { border-top: 4px solid var(--aqua); } .win:nth-child(2) { border-top: 4px solid var(--navy); } .win:nth-child(3) { border-top: 4px solid var(--sun); }
+
+/* Pipeline board */
+.board { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.col { background: var(--paper); border-radius: 12px; padding: 8px; display: grid; gap: 6px; align-content: start; }
+.col h4 { font: 800 12.5px var(--display); display: flex; justify-content: space-between; align-items: center; }
+.col h4 span { background: var(--white); border-radius: 999px; padding: 1px 8px; font: 700 11px var(--body); color: var(--navy); }
+.cand { background: var(--white); border-radius: 9px; padding: 7px 8px; font-size: 11.5px; line-height: 1.35; border-left: 3px solid var(--line); }
+.cand b { display: block; color: var(--ink); font-size: 12px; }
+.cand .pill { display: inline-block; margin-top: 3px; border-radius: 999px; padding: 1px 7px; font-size: 10.5px; font-weight: 700; }
+.pill.ok { background: var(--aqua-tint); color: var(--aqua-deep); } .pill.wait { background: var(--sun-tint); color: #6B5300; } .pill.fix { background: var(--coral-tint); color: #A3261F; }
+.col.s1 .cand { border-left-color: var(--navy); } .col.s2 .cand { border-left-color: var(--sun); } .col.s3 .cand { border-left-color: #E28A4E; } .col.s4 .cand { border-left-color: #4E7FC4; } .col.s5 .cand { border-left-color: var(--aqua); }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.kpi { border: 1px solid var(--line); border-top: 4px solid var(--navy); border-radius: 12px; padding: 10px 12px; }
+.kpi span { font-size: 11.5px; font-weight: 700; color: var(--muted); }
+.kpi b { display: block; font: 800 22px/1.1 var(--display); color: var(--ink); }
+.kpi small { font-size: 11px; color: var(--muted); }
+.kpi.w { border-top-color: var(--sun); } .kpi.g { border-top-color: var(--aqua); }
+.mock-note { font-size: 11.5px; color: var(--muted); font-style: italic; }
+
+/* Timeline */
+.phases { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: stretch; }
+.phase { border-radius: 14px; padding: 14px 16px; display: grid; gap: 6px; }
+.phase.a { background: var(--aqua-tint); } .phase.b { background: var(--lilac); }
+.phase .days { font: 800 22px var(--display); color: var(--navy); }
+.phase ul { font-size: 13px; }
+.then { display: grid; place-items: center; font-weight: 800; color: var(--muted); font-size: 12px; text-align: center; }
+.then b { font-size: 22px; color: var(--navy); }
+
+/* Cost */
+.cost { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.cost th, .cost td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+.cost th { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.cost td.n, .cost th.n { text-align: right; }
+.cost tr.tot td { font-weight: 800; color: var(--ink); border-bottom: 0; font-size: 16px; }
+.cost tr.tot td.n:last-child { font: 800 22px var(--display); color: var(--navy); }
+.terms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 24px; font-size: 13px; color: var(--muted); padding-left: 18px; }
+.terms li { margin: 0; }
+.next { counter-reset: s; list-style: none; padding: 0; display: grid; gap: 8px; }
+.next li { margin: 0; display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; font-size: 14px; }
+.next li::before { counter-increment: s; content: counter(s); width: 28px; height: 28px; border-radius: 8px; background: var(--sun); color: var(--ink); display: grid; place-items: center; font: 800 14px var(--display); }
+.next b { color: var(--ink); }
+.sign { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; padding-top: 6px; }
+.sign div { border-top: 2px solid var(--ink); padding-top: 6px; font-size: 13px; color: var(--muted); min-height: 44px; }
+
+@media (max-width: 760px) {
+  .meta, .pkg-body, .wins, .terms, .sign, .kpis { grid-template-columns: 1fr; }
+  .phases { grid-template-columns: 1fr; }
+  .then { padding: 4px 0; }
+  .board { grid-template-columns: 1fr 1fr; }
+  /* Workflow lanes become a single column of steps on phones. */
+  .lanes { grid-template-columns: 1fr; }
+  .lanes .hdr { text-align: left; border-bottom: 0; padding-top: 12px; }
+  .lanes .lane-name, .lanes .cell:empty { display: none; }
+  .cell.arrow::after { content: none; }
+  .cell { min-height: 0; }
 }
 @media print {
-  body { background: var(--white); font-size: 12.5px; }
-  .page { padding: 0; max-width: none; }
-  .sheet { box-shadow: none; border-radius: 0; }
-  body { font-size: 11.5px; line-height: 1.45; }
-  .inner { padding: 14px 24px 12px; gap: 10px; }
-  .head { gap: 6px; }
-  .meta { padding-top: 8px; }
-  .block { gap: 7px; }
-  .scope { gap: 8px; }
-  h1 { font-size: 28px; }
-  h2 { font-size: 16px; }
+  body { background: var(--white); font-size: 12px; line-height: 1.42; }
+  .doc { padding: 0; gap: 0; max-width: none; }
+  .sheet { box-shadow: none; border-radius: 0; break-after: page; }
+  .sheet:last-child { break-after: auto; }
+  .inner { padding: 14px 24px 12px; gap: 13px; }
+  h1 { font-size: 27px; } h2 { font-size: 16px; }
   .lead { font-size: 13.5px; }
-  .card { padding: 10px 12px; }
-  .card h3 { font-size: 13px; margin-bottom: 3px; }
-  li + li { margin-top: 2px; }
-  .steps li { padding: 9px; font-size: 11px; }
-  .steps li b { font-size: 12px; }
-  .total { padding: 12px 16px; }
-  .total .big { font-size: 32px; }
-  .split div { padding: 8px 14px; }
-  .terms, .small, .sign div { font-size: 11px; }
-  .sign div { min-height: 34px; }
-  section { break-inside: avoid; }
-  .edit { background: none; padding: 0; }
+  .lanes { font-size: 10.5px; } .box b { font-size: 11px; } .cell { min-height: 54px; }
+  .block { gap: 8px; }
+  .pkg-body { font-size: 11.2px; padding: 8px 14px 10px; gap: 2px 20px; }
+  .pkg-head { padding: 8px 14px; }
+  .pkg-head h3 { font-size: 14px; } .pkg-head .tag { font-size: 17px; }
+  li + li { margin-top: 1px; }
+  .dep { padding: 7px 12px; font-size: 11.5px; }
+  .phase { padding: 9px 12px; gap: 3px; } .phase .days { font-size: 18px; } .phase ul { font-size: 11.2px; }
+  .meta { padding-top: 8px; }
   @page { size: A4; margin: 8mm; }
 }
 </style>
 
-<div class="page">
+<div class="doc">
+
+  <!-- PAGE 1 · Overview and scope -->
   <article class="sheet">
     <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     <div class="inner">
       <header class="head">
         <span class="eyebrow">Website and staff portal proposal</span>
         <h1>A new website and candidate tracking for HCC-Temps</h1>
-        <p class="lead">A premium, easy-to-use website that puts candidate registration first, plus a secure portal where candidates upload their documents and your team tracks every application from CV to ready to work.</p>
+        <p class="lead">A premium, easy-to-use website that puts candidate registration first, plus a secure portal where candidates upload their documents and your team tracks every application from first interest to ready to work.</p>
         <div class="meta">
           <div><span>Prepared for</span><b>HCC-Temps</b></div>
-          <div><span>Prepared by</span><b class="edit">[Your business name]</b></div>
+          <div><span>Prepared by</span><b>Abdoul Sandwidi</b></div>
           <div><span>Date</span><b>20 October 2026</b></div>
-          <div><span>Valid until</span><b>19 November 2026</b></div>
         </div>
       </header>
 
       <section class="block">
         <h2><span class="n">1</span>Scope of work</h2>
         <div class="pkg">
-          <div class="pkg-head"><h3>Package A · Website refresh</h3><span class="price-tag">£1,500</span></div>
+          <div class="pkg-head"><h3>Package A · Website refresh</h3><span class="tag">£1,500</span></div>
           <div class="pkg-body">
             <ul>
               <li>Premium, simple design based on the approved mockup</li>
@@ -145,7 +192,7 @@ li + li { margin-top: 4px; }
           </div>
         </div>
         <div class="pkg">
-          <div class="pkg-head b"><h3>Package B · Staff portal and candidate tracking</h3><span class="price-tag">£2,200</span></div>
+          <div class="pkg-head b"><h3>Package B · Staff portal and automated candidate tracking</h3><span class="tag">£2,000</span></div>
           <div class="pkg-body">
             <div>
               <h4>For candidates</h4>
@@ -153,70 +200,164 @@ li + li { margin-top: 4px; }
                 <li>Invited after CV review, then set their own password</li>
                 <li>Secure login with a code sent by email</li>
                 <li>Progress bar from applied to ready to work</li>
-                <li>Document checklist: upload by phone camera or file, with photo tips</li>
+                <li>Document checklist for their role, upload by phone camera or file, with photo tips</li>
                 <li>See each document's status and messages from your team</li>
-                <li>Automatic emails when anything changes</li>
+                <li>Automatic emails whenever something changes</li>
               </ul>
             </div>
             <div>
               <h4>For your team</h4>
               <ul>
                 <li>Dashboard: applications, pipeline, ready to work, average onboarding time, outstanding documents by type</li>
-                <li>Filter by last 24 hours, 30, 60 or 90 days, 6 or 12 months</li>
+                <li>Filter by the last 24 hours, 30, 60 or 90 days, 6 or 12 months</li>
                 <li>Every candidate filterable by sector, role, stage and documents</li>
                 <li>Candidate folder: view, download, approve or request changes, internal and shared notes, full activity log</li>
-                <li>Downloadable candidate report, Excel export of all records and activity</li>
+                <li>Candidate report, Excel export of all records and activity</li>
                 <li>Staff accounts with secure logins; files stored privately and renamed automatically</li>
               </ul>
             </div>
           </div>
         </div>
+        <p class="dep"><b>Website first.</b> The staff portal runs inside the website, so Package B starts once Package A is complete.</p>
       </section>
 
       <section class="block">
         <h2><span class="n">2</span>Timeline</h2>
-        <ol class="steps six">
-          <li class="done"><span class="when">Done</span><b>Mockup and demo</b>Website mockup and portal demo created and shared for feedback.</li>
-          <li><span class="when">Days 1–3</span><b>Requirements</b>You complete the requirements list: logo, photos, slogans, accreditations, document checks per role, email wording.</li>
-          <li><span class="when">Days 4–8</span><b>Website pages</b>Copy updated and main pages built, key roles prioritised.</li>
-          <li><span class="when">Days 9–14</span><b>Jobs and launch</b>All job listings transferred, final checks, website live.</li>
-          <li><span class="when">Days 15–22</span><b>Portal set-up</b>Your document lists, emails and staff accounts set up in the portal.</li>
-          <li><span class="when">Days 23–28</span><b>Testing and go-live</b>Your team tests with real scenarios, training session, portal live.</li>
-        </ol>
-        <p class="small">Regular check-ins once the main pages are built. Timings start once the deposit and the completed requirements list are received.</p>
+        <div class="phases">
+          <div class="phase a">
+            <span class="eyebrow">Phase 1 · Website</span>
+            <div class="days">8–10 days</div>
+            <ul><li>New design, copy, images and accreditations</li><li>Key roles prioritised</li><li>All job listings transferred</li><li>Website live</li></ul>
+          </div>
+          <div class="then">then<b>→</b></div>
+          <div class="phase b">
+            <span class="eyebrow">Phase 2 · Staff portal and automation</span>
+            <div class="days">8–10 days</div>
+            <ul><li>Your document checklists and emails set up</li><li>Staff accounts created</li><li>Tested end to end with your team</li><li>Portal live, with a training session</li></ul>
+          </div>
+        </div>
+        <p class="small">Regular check-ins throughout, including a walkthrough once the main pages are built and before each phase goes live.</p>
+      </section>
+
+    </div>
+  </article>
+
+  <!-- PAGE 2 · Workflow -->
+  <article class="sheet">
+    <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="inner">
+      <section class="block">
+        <h2><span class="n">3</span>How a candidate goes from interest to ready to work</h2>
+        <p class="small">Who does what at each step. Everything in the yellow row happens automatically, with no one on your team needing to do it.</p>
+        <div class="lanes" role="img" aria-label="Workflow in six steps. 1 Applies: candidate finds a job and sends details and CV; the system gives a reference, emails the CV to your staffing inbox and confirms to the candidate. 2 CV review: your team reviews the CV and presses Approve and invite. 3 Account: the system emails a create-password link; the candidate sets a password and logs in with an email code. 4 Documents: the candidate uploads each document from their phone; the system renames, stores privately and notifies your team. 5 Review: your team approves each document or asks for a change; the candidate is emailed and re-uploads if needed. 6 Ready to work: your team marks the candidate ready; the system emails the candidate and records the onboarding time.">
+          <div></div>
+          <div class="hdr"><b>1</b>Applies</div>
+          <div class="hdr"><b>2</b>CV review</div>
+          <div class="hdr"><b>3</b>Account</div>
+          <div class="hdr"><b>4</b>Documents</div>
+          <div class="hdr"><b>5</b>Review</div>
+          <div class="hdr"><b>6</b>Ready to work</div>
+
+          <div class="lane-name c">Candidate</div>
+          <div class="cell arrow"><div class="box c"><b>Finds a job</b>Sends details and CV in about a minute</div></div>
+          <div class="cell"></div>
+          <div class="cell arrow"><div class="box c"><b>Sets password</b>Logs in with a code from their email</div></div>
+          <div class="cell arrow"><div class="box c"><b>Uploads documents</b>Photo or file, one checklist for their role</div></div>
+          <div class="cell"><div class="box c loop"><b>Fixes if asked</b>Sees exactly what to change, re-uploads</div></div>
+          <div class="cell"><div class="box c"><b>Sees "Ready"</b>Tracker complete, ready for shifts</div></div>
+
+          <div class="lane-name a">Automatic</div>
+          <div class="cell"><div class="box a"><b>Reference + emails</b>CV to your staffing inbox, confirmation to candidate</div></div>
+          <div class="cell"></div>
+          <div class="cell"><div class="box a"><b>Invite email</b>Secure create-password link</div></div>
+          <div class="cell"><div class="box a"><b>Files renamed</b>Stored privately, your team notified</div></div>
+          <div class="cell"><div class="box a"><b>Status emails</b>Candidate told about approvals and changes</div></div>
+          <div class="cell"><div class="box a"><b>Time recorded</b>Onboarding time added to the dashboard</div></div>
+
+          <div class="lane-name t">HCC team</div>
+          <div class="cell"></div>
+          <div class="cell arrow"><div class="box t"><b>Reviews CV</b>One click: Approve &amp; invite</div></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell arrow"><div class="box t"><b>Checks documents</b>Approve, or ask for a change with a note</div></div>
+          <div class="cell"><div class="box t"><b>Marks ready</b>Full record and report kept</div></div>
+        </div>
+        <div class="legend"><span><i style="border-color:var(--aqua)"></i>Candidate</span><span><i style="border-color:var(--sun);border-style:dashed"></i>Automatic</span><span><i style="border-color:var(--navy)"></i>Your team</span><span><i style="border-color:var(--coral)"></i>Loop until approved</span></div>
       </section>
 
       <section class="block">
-        <h2><span class="n">3</span>Investment</h2>
-        <table class="paytable">
+        <h2><span class="n">4</span>What changes for your team</h2>
+        <table class="compare">
+          <thead><tr><th>Task</th><th>Today</th><th>With the portal</th></tr></thead>
+          <tbody>
+            <tr><td>Collecting documents</td><td>Templates sent from Outlook, documents arrive by email in different formats</td><td>One private link per candidate, a checklist for their role, every file in one place</td></tr>
+            <tr><td>Filing</td><td>Saving and renaming attachments by hand</td><td>Files renamed automatically with the candidate reference, name, document and date</td></tr>
+            <tr><td>Chasing</td><td>Calls and emails to find out what is missing</td><td>Candidates see what is missing themselves and are emailed when something needs fixing</td></tr>
+            <tr><td>Knowing where things are</td><td>Inboxes, spreadsheets and memory</td><td>Dashboard showing every candidate's stage and outstanding documents by type</td></tr>
+            <tr><td>Audits and records</td><td>Piecing together who checked what</td><td>Activity log for every candidate, downloadable report and Excel export</td></tr>
+          </tbody>
+        </table>
+        <div class="wins">
+          <div class="win"><b>Saves time</b>No manual filing, fewer calls and emails, one click to invite or approve.</div>
+          <div class="win"><b>Stays organised</b>Every candidate, document, note and decision in one place, with a full history.</div>
+          <div class="win"><b>Less chasing</b>Candidates can see where they are and what is left, so they act without being asked.</div>
+        </div>
+      </section>
+    </div>
+  </article>
+
+  <!-- PAGE 3 · Pipeline view, cost, next steps -->
+  <article class="sheet">
+    <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="inner">
+      <section class="block">
+        <h2><span class="n">5</span>Your pipeline at a glance</h2>
+        <p class="small">What your team sees in the Staff portal. Example figures for illustration.</p>
+        <div class="kpis">
+          <div class="kpi"><span>In the pipeline</span><b>18</b><small>last 30 days</small></div>
+          <div class="kpi w"><span>Waiting for review</span><b>5</b><small>documents to check</small></div>
+          <div class="kpi g"><span>Ready to work</span><b>9</b><small>last 30 days</small></div>
+          <div class="kpi"><span>Average onboarding</span><b>8.7 days</b><small>applied to ready</small></div>
+        </div>
+        <div class="board" aria-label="Example pipeline board with five stages">
+          <div class="col s1"><h4>New <span>4</span></h4><div class="cand"><b>Tom R.</b>Care Home Chef<span class="pill wait">CV to review</span></div><div class="cand"><b>Liam C.</b>Cleaner<span class="pill wait">CV to review</span></div></div>
+          <div class="col s2"><h4>Invited <span>3</span></h4><div class="cand"><b>Nina K.</b>Nurse (RGN)<span class="pill wait">Password not set</span></div><div class="cand"><b>Daniel A.</b>Hospitality<span class="pill wait">0 of 4 uploaded</span></div></div>
+          <div class="col s3"><h4>Documents <span>6</span></h4><div class="cand"><b>Priya S.</b>Senior Carer<span class="pill fix">1 to fix</span></div><div class="cand"><b>Marta K.</b>Kitchen Asst.<span class="pill wait">3 to review</span></div></div>
+          <div class="col s4"><h4>Checks <span>5</span></h4><div class="cand"><b>Grace O.</b>Healthcare Asst.<span class="pill ok">4 of 4 approved</span></div></div>
+          <div class="col s5"><h4>Ready <span>9</span></h4><div class="cand"><b>Aisha B.</b>Nurse (RGN)<span class="pill ok">Ready in 8 days</span></div><div class="cand"><b>Omar H.</b>Chef<span class="pill ok">Ready in 6 days</span></div></div>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2><span class="n">6</span>Cost</h2>
+        <table class="cost">
           <thead><tr><th>Package</th><th class="n">Deposit (25%)</th><th class="n">On completion (75%)</th><th class="n">Total</th></tr></thead>
           <tbody>
             <tr><td>A · Website refresh</td><td class="n">£375</td><td class="n">£1,125</td><td class="n">£1,500</td></tr>
-            <tr><td>B · Staff portal and candidate tracking</td><td class="n">£550</td><td class="n">£1,650</td><td class="n">£2,200</td></tr>
-            <tr class="tot"><td>Both packages</td><td class="n">£925</td><td class="n">£2,775</td><td class="n">£3,700</td></tr>
+            <tr><td>B · Staff portal and automated tracking</td><td class="n">£500</td><td class="n">£1,500</td><td class="n">£2,000</td></tr>
+            <tr class="tot"><td>Both packages</td><td class="n">£875</td><td class="n">£2,625</td><td class="n">£3,500</td></tr>
           </tbody>
         </table>
-        <p class="small">VAT: <span class="edit">[Not VAT registered / + VAT]</span>. Package A can go ahead on its own; Package B builds on Package A.</p>
-      </section>
-
-      <section class="block">
-        <h2><span class="n">4</span>Terms</h2>
         <ul class="terms">
           <li>Work on each package starts when its deposit is received.</li>
           <li>Final payment for each package is due on completion, before it goes live.</li>
           <li>Hosting and domain stay in your name and are not included.</li>
-          <li>Photos and logos are supplied by you, or licensed stock is used.</li>
-          <li>You remain responsible for candidate data and your privacy policy; we set the portal up to keep documents private.</li>
-          <li>Changes outside this scope are quoted before any work starts. Once paid in full, the website and portal are yours.</li>
+          <li>Changes outside this scope are quoted before any work starts.</li>
+          <li>Candidate data stays yours; we set the portal up to keep documents private.</li>
+          <li>Once paid in full, the website and portal are yours.</li>
         </ul>
       </section>
 
       <section class="block">
-        <h2><span class="n">5</span>Next steps</h2>
-        <p>Reply to confirm which packages you'd like, and we'll send the deposit invoice and the requirements list the same day.</p>
+        <h2><span class="n">7</span>Next steps</h2>
+        <ol class="next">
+          <li><div><b>Accept the proposal</b> and pay the deposit. We get started as soon as it is received.</div></li>
+          <li><div><b>Requirements checklist.</b> We share it straight away. It covers your company assets, logo, images, slogans and accreditations, plus your full onboarding process and the documents needed for each role. The website comes first, because the portal cannot be finished until the website is done.</div></li>
+          <li><div><b>Contract and access.</b> We need the signed contract and your WordPress account login details.</div></li>
+        </ol>
         <div class="sign">
           <div>Accepted for HCC-Temps · Packages A / B · Name · Date</div>
-          <div><span class="edit">[Your business name]</span> · Date</div>
+          <div>Abdoul Sandwidi · Date</div>
         </div>
       </section>
     </div>
