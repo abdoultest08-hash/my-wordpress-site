@@ -1,4 +1,4 @@
-<!-- Winserve theme build 2.3.0 / Harmony restyle -->
+<!-- Winserve theme build 2.4.0 / Bycare layout + TDDI -->
 <footer class="site-footer">
 
   <!-- Footer Main Grid -->

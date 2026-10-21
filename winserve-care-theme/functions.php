@@ -1,5 +1,5 @@
 <?php
-if ( ! defined( 'WINSERVE_VERSION' ) ) { define( 'WINSERVE_VERSION', '2.3.0' ); }
+if ( ! defined( 'WINSERVE_VERSION' ) ) { define( 'WINSERVE_VERSION', '2.4.0' ); }
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /* =========================================================
