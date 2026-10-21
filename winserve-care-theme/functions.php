@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'WINSERVE_VERSION' ) ) { define( 'WINSERVE_VERSION', '2.3.0' ); }
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /* =========================================================
@@ -23,17 +24,49 @@ add_action( 'after_setup_theme', 'winserve_setup' );
 /* =========================================================
    ENQUEUE SCRIPTS & STYLES
    ========================================================= */
+/**
+ * Asset version based on the file's last-modified time.
+ * Every upload changes the timestamp, so browsers always fetch the new
+ * file instead of serving a stale cached copy.
+ */
+function winserve_asset_ver( $relative_path ) {
+    $file = get_template_directory() . $relative_path;
+    return file_exists( $file ) ? (string) filemtime( $file ) : WINSERVE_VERSION;
+}
+
 function winserve_enqueue() {
     wp_enqueue_style(
         'winserve-fonts',
-        'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap',
+        'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap',
         [], null
     );
-    wp_enqueue_style( 'winserve-main', get_template_directory_uri() . '/assets/css/main.css', ['winserve-fonts'], '2.1.0' );
-    wp_enqueue_style( 'winserve-style', get_stylesheet_uri(), ['winserve-main'], '2.1.0' );
-    wp_enqueue_script( 'winserve-js', get_template_directory_uri() . '/assets/js/main.js', [], '2.1.0', true );
+    wp_enqueue_style( 'winserve-main', get_template_directory_uri() . '/assets/css/main.css', ['winserve-fonts'], winserve_asset_ver( '/assets/css/main.css' ) );
+    wp_enqueue_style( 'winserve-style', get_stylesheet_uri(), ['winserve-main'], winserve_asset_ver( '/style.css' ) );
+    wp_enqueue_script( 'winserve-js', get_template_directory_uri() . '/assets/js/main.js', [], winserve_asset_ver( '/assets/js/main.js' ), true );
+
+    // Guided assistant (chat widget)
+    wp_enqueue_style( 'winserve-chatbot', get_template_directory_uri() . '/assets/css/chatbot.css', ['winserve-main'], winserve_asset_ver( '/assets/css/chatbot.css' ) );
+    wp_enqueue_script( 'winserve-chatbot', get_template_directory_uri() . '/assets/js/chatbot.js', [], winserve_asset_ver( '/assets/js/chatbot.js' ), true );
 }
 add_action( 'wp_enqueue_scripts', 'winserve_enqueue' );
+
+/* =========================================================
+   GUIDED ASSISTANT (chat widget)
+   ========================================================= */
+require_once get_template_directory() . '/inc-chatbot.php';
+
+/* =========================================================
+   PERFORMANCE: preconnect fonts, preload hero image
+   ========================================================= */
+function winserve_perf_hints() {
+    echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
+    echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+    if ( is_front_page() ) {
+        printf( '<link rel="preload" as="image" href="%s" fetchpriority="high">' . "\n",
+            esc_url( get_template_directory_uri() . '/assets/images/office-branded.jpg' ) );
+    }
+}
+add_action( 'wp_head', 'winserve_perf_hints', 1 );
 
 /* =========================================================
    SEO: META TAGS, OPEN GRAPH, TWITTER CARDS, JSON-LD
@@ -45,46 +78,46 @@ function winserve_seo_head() {
     $site_name   = 'Winserve Care Services Ltd';
     $site_url    = home_url('/');
     $default_img = get_template_directory_uri() . '/assets/images/hero-bg.jpg';
-    $default_desc = 'CQC-rated Good domiciliary and supported living care across Leeds and Cornwall. Compassionate, professional home care. Call 0113 340 8777.';
+    $default_desc = 'Specialist supported living and home care across Yorkshire. CQC registered for Personal Care and Treatment of Disease, Disorder or Injury. Rated Good. Call 0113 340 8777.';
 
     // Per-page meta
     $meta = [];
 
     if ( is_front_page() ) {
         $meta = [
-            'title' => 'Trusted Home Care in Leeds &amp; Cornwall | Winserve Care Services',
-            'desc'  => 'Winserve Care Services Ltd is a CQC Good-rated domiciliary and supported living care provider serving Leeds and Cornwall. Person-centred, compassionate home care. Free assessment — call 0113 340 8777.',
+            'title' => 'Supported Living &amp; Home Care in Yorkshire | Winserve Care Services',
+            'desc'  => 'Winserve Care Services Ltd is a CQC Good-rated provider serving Yorkshire, dual registered for Personal Care and Treatment of Disease, Disorder or Injury, with a clinical lead on the team. Free assessment, call 0113 340 8777.',
             'img'   => $default_img,
         ];
     } elseif ( is_page('about') ) {
         $meta = [
-            'title' => 'About Us | Winserve Care Services Ltd — CQC Rated Good',
-            'desc'  => 'Learn about Winserve Care Services — our story, our mission, why commissioners choose us, and how we deliver safe, person-centred care across Leeds and Cornwall. CQC Rated Good June 2025.',
+            'title' => 'About Us | Winserve Care Services Ltd, CQC Rated Good',
+            'desc'  => 'Learn about Winserve Care Services, our story, our mission, why commissioners choose us, and how we deliver safe, person-centred care across Yorkshire. CQC Rated Good June 2025.',
             'img'   => get_template_directory_uri() . '/assets/images/about-main.jpg',
         ];
     } elseif ( is_page('services') ) {
         $meta = [
-            'title' => 'Home Care Services in Leeds &amp; Cornwall | Winserve Care Services',
-            'desc'  => 'Winserve provides domiciliary care, supported living, dementia care, live-in care, palliative care and more across Leeds and Cornwall. CQC-registered. Enquire today.',
-            'img'   => get_template_directory_uri() . '/assets/images/service-dementia-care.png',
+            'title' => 'Home Care Services in Yorkshire | Winserve Care Services',
+            'desc'  => 'Winserve provides supported living, domiciliary care, private care packages, learning disabilities support, end of life care and mental health support across Yorkshire. CQC registered.',
+            'img'   => get_template_directory_uri() . '/assets/images/activity-outdoors.jpg',
         ];
     } elseif ( is_page('our-team') ) {
         $meta = [
             'title' => 'Our Team | Winserve Care Services Ltd',
-            'desc'  => 'Meet the dedicated team behind Winserve Care Services — from our founding Managing Director to our 50+ frontline carers across Leeds and Cornwall.',
+            'desc'  => 'Meet the dedicated team behind Winserve Care Services, from our founding Managing Director to our 40+ frontline carers across Yorkshire.',
             'img'   => $default_img,
         ];
     } elseif ( is_page('contact') ) {
         $meta = [
-            'title' => 'Contact Us | Winserve Care Services — Leeds &amp; Cornwall',
+            'title' => 'Contact Us | Winserve Care Services, Yorkshire',
             'desc'  => 'Get in touch with Winserve Care Services. Request a free care assessment, enquire about our services, or apply to join our team. Call 0113 340 8777.',
             'img'   => $default_img,
         ];
     } elseif ( is_page('vacancies') ) {
         $meta = [
-            'title' => 'Care Jobs in Leeds | Winserve Care Services — Now Hiring',
-            'desc'  => 'Join the Winserve Care team. We are hiring Care Assistants and Service Delivery Coordinators in Leeds. Full training provided. Company car. Real Living Wage.',
-            'img'   => get_template_directory_uri() . '/assets/images/recruit-warmth.png',
+            'title' => 'Care Jobs in Leeds | Winserve Care Services, Now Hiring',
+            'desc'  => 'Join the Winserve Care team. We are hiring Care Assistants across Yorkshire. Full training provided. Company car. Real Living Wage.',
+            'img'   => get_template_directory_uri() . '/assets/images/recruit-warmth-new.jpg',
         ];
     } elseif ( is_page('blog') || is_home() ) {
         $meta = [
@@ -153,7 +186,7 @@ function winserve_structured_data() {
         '@context' => 'https://schema.org',
         '@type'    => ['LocalBusiness', 'MedicalOrganization'],
         'name'     => 'Winserve Care Services Ltd',
-        'description' => 'CQC-registered domiciliary and supported living care provider serving Leeds and Cornwall. Rated Good by the Care Quality Commission, June 2025.',
+        'description' => 'CQC-registered domiciliary and supported living care provider serving Yorkshire. Rated Good by the Care Quality Commission, June 2025.',
         'url'         => home_url('/'),
         'logo'        => get_template_directory_uri() . '/assets/images/logo-white.png',
         'image'       => get_template_directory_uri() . '/assets/images/hero-bg.jpg',
@@ -173,7 +206,6 @@ function winserve_structured_data() {
         ],
         'areaServed'    => [
             ['@type' => 'City', 'name' => 'Leeds'],
-            ['@type' => 'County', 'name' => 'Cornwall'],
         ],
         'openingHoursSpecification' => [[
             '@type'     => 'OpeningHoursSpecification',
@@ -192,12 +224,12 @@ function winserve_structured_data() {
             'name'  => 'Care Services',
             'itemListElement' => array_map(function($s) {
                 return ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => $s]];
-            }, ['Domiciliary Care','Supported Living','Dementia Care','Live-In Care','Complex Care','Palliative Care','Learning Disabilities Support','Mental Health Support']),
+            }, ['Supported Living','Domiciliary Care','Private Care Packages','Learning Disabilities','End of Life Care','Mental Health Support']),
         ],
         'aggregateRating' => [
             '@type'       => 'AggregateRating',
-            'ratingValue' => '9.8',
-            'reviewCount' => '74',
+            'ratingValue' => '9.5',
+            'reviewCount' => '75',
             'bestRating'  => '10',
             'worstRating' => '1',
         ],
@@ -228,7 +260,7 @@ function winserve_title_tag( $title ) {
 
     $parts = [];
     if ( is_front_page() ) {
-        $parts[] = 'Winserve Care Services | Home Care Leeds &amp; Cornwall | CQC Rated Good';
+        $parts[] = 'Winserve Care Services | Home Care Yorkshire | CQC Rated Good';
     } elseif ( is_singular() || is_page() ) {
         $parts[] = get_the_title();
         $parts[] = 'Winserve Care Services Ltd';
@@ -300,7 +332,7 @@ function winserve_handle_application() {
     if ( ! isset($_POST['app_nonce']) || ! wp_verify_nonce($_POST['app_nonce'], 'winserve_application') ) {
         wp_die('Security check failed');
     }
-    $to    = 'enquiries@winservecare.co.uk';
+    $to    = 'hr@winservecare.co.uk';
     $role  = sanitize_text_field( $_POST['role'] ?? 'Unknown Role' );
     $fname = sanitize_text_field( $_POST['first_name'] ?? '' );
     $lname = sanitize_text_field( $_POST['last_name']  ?? '' );

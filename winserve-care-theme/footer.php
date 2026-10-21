@@ -1,12 +1,5 @@
+<!-- Winserve theme build 2.3.0 / Harmony restyle -->
 <footer class="site-footer">
-
-  <!-- Footer CTA Strip -->
-  <div class="footer-cta-strip">
-    <div class="container footer-cta-strip-inner">
-      <p><strong>Need Any Consultations?</strong> Our team is ready to help you find the right care solution.</p>
-      <a href="<?php echo esc_url(home_url('/contact')); ?>" class="btn-footer-cta">Contact Us &rarr;</a>
-    </div>
-  </div>
 
   <!-- Footer Main Grid -->
   <div class="footer-main">
@@ -15,8 +8,8 @@
 
         <!-- Col 1: Brand -->
         <div class="footer-col footer-brand">
-          <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-white.png" alt="Winserve Care Services Ltd" class="footer-logo">
-          <p class="footer-desc">Winserve Care Services Ltd is a CQC-registered domiciliary and supported living care provider serving Leeds and Cornwall. Care is at the heart of what we do.</p>
+          <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-white.png" alt="Winserve Care Services Ltd" class="footer-logo" width="2865" height="1047">
+          <p class="footer-desc">Winserve Care Services Ltd is a CQC-registered domiciliary and supported living care provider serving Yorkshire. Care is at the heart of what we do.</p>
 
           <div class="footer-contact-row">
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" color="rgba(255,255,255,0.55)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -30,7 +23,7 @@
 
           <div class="footer-contact-row">
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" color="rgba(255,255,255,0.55)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            <a href="mailto:info@winservecare.co.uk">info@winservecare.co.uk</a>
+            <a href="mailto:enquiries@winservecare.co.uk">enquiries@winservecare.co.uk</a>
           </div>
 
           <div class="footer-contact-row">
@@ -74,11 +67,12 @@
         <div class="footer-col">
           <h4>Our Services</h4>
           <ul>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Domiciliary Care</a></li>
             <li><a href="<?php echo esc_url(home_url('/services')); ?>">Supported Living</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Respite Care</a></li>
+            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Domiciliary Care</a></li>
+            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Private Care Packages</a></li>
             <li><a href="<?php echo esc_url(home_url('/services')); ?>">Learning Disabilities</a></li>
-            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Medication Assistance</a></li>
+            <li><a href="<?php echo esc_url(home_url('/services')); ?>">End of Life Care</a></li>
+            <li><a href="<?php echo esc_url(home_url('/services')); ?>">Mental Health Support</a></li>
             <li><a href="<?php echo esc_url(home_url('/services')); ?>">View All Services &rarr;</a></li>
           </ul>
         </div>
@@ -105,12 +99,14 @@
     <div class="container">
       <p class="footer-logos-label">Our Partners &amp; Accreditations</p>
       <div class="footer-logos-row">
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-armed-forces.webp" alt="Armed Forces Covenant" class="footer-partner-logo">
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-chas.webp" alt="CHAS Standard" class="footer-partner-logo footer-partner-logo--sm">
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-qcs.webp" alt="QCS Quality Compliance Systems" class="footer-partner-logo">
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-click-learning.webp" alt="Click Learning" class="footer-partner-logo footer-partner-logo--sm">
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-bpr-heaton.webp" alt="BPR Heaton Chartered Accountants" class="footer-partner-logo">
-        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-homecare.png" alt="Homecare.co.uk" class="footer-partner-logo">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-nhs.jpg" alt="NHS England" class="footer-partner-logo" loading="lazy" decoding="async" width="440" height="248">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-living-wage.png" alt="Real Living Wage Employer" class="footer-partner-logo" loading="lazy" decoding="async" width="400" height="316">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-armed-forces.webp" alt="Armed Forces Covenant" class="footer-partner-logo" loading="lazy" decoding="async" width="300" height="113">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-chas.webp" alt="CHAS Standard" class="footer-partner-logo" loading="lazy" decoding="async" width="300" height="300">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-qcs.webp" alt="QCS Quality Compliance Systems" class="footer-partner-logo" loading="lazy" decoding="async" width="500" height="149">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-click-learning.webp" alt="Click Learning" class="footer-partner-logo" loading="lazy" decoding="async" width="300" height="369">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-bpr-heaton.webp" alt="BPR Heaton Chartered Accountants" class="footer-partner-logo" loading="lazy" decoding="async" width="500" height="91">
+        <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/logo-homecare.png" alt="Homecare.co.uk" class="footer-partner-logo" loading="lazy" decoding="async" width="435" height="116">
       </div>
     </div>
   </div>

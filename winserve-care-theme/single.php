@@ -29,7 +29,7 @@
           </div>
 
           <?php if (has_post_thumbnail()) : ?>
-            <img src="<?php the_post_thumbnail_url('winserve-hero'); ?>" alt="<?php the_title_attribute(); ?>" style="width:100%;border-radius:8px;margin-bottom:36px;">
+            <img src="<?php the_post_thumbnail_url('winserve-hero'); ?>" alt="<?php the_title_attribute(); ?>" style="width:100%;border-radius:8px;margin-bottom:36px;" loading="lazy" decoding="async">
           <?php endif; ?>
 
           <div class="post-content">

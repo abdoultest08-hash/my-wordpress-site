@@ -25,7 +25,7 @@
     <?php endif; ?>
     <?php if (isset($_GET['sent']) && $_GET['sent'] === 'error') : ?>
       <div class="alert-error">
-        <strong>Sorry, there was a problem sending your message.</strong> Please try again, or contact us directly at <a href="mailto:info@winservecare.co.uk">info@winservecare.co.uk</a> or call <a href="tel:01133408777">0113 340 8777</a>.
+        <strong>Sorry, there was a problem sending your message.</strong> Please try again, or contact us directly at <a href="mailto:enquiries@winservecare.co.uk">enquiries@winservecare.co.uk</a> or call <a href="tel:01133408777">0113 340 8777</a>.
       </div>
     <?php endif; ?>
 
@@ -47,7 +47,8 @@
         <div>
           <h4>Phone &amp; Email</h4>
           <p><a href="tel:01133408777">0113 340 8777</a></p>
-          <p><a href="mailto:info@winservecare.co.uk">info@winservecare.co.uk</a></p>
+          <p><a href="mailto:enquiries@winservecare.co.uk">enquiries@winservecare.co.uk</a></p>
+          <p style="font-size:12.5px;opacity:.85;">Jobs &amp; recruitment: <a href="mailto:hr@winservecare.co.uk">hr@winservecare.co.uk</a></p>
         </div>
       </div>
       <div class="contact-info-box">
@@ -130,15 +131,12 @@
             <label for="care_needs">What are their care needs? <span style="color:var(--blue);">*</span></label>
             <select id="care_needs" name="care_needs" required>
               <option value="">Please select&hellip;</option>
-              <option value="Domiciliary / Home Care">Domiciliary / Home Care</option>
               <option value="Supported Living">Supported Living</option>
-              <option value="Dementia / Alzheimer's Care">Dementia / Alzheimer's Care</option>
-              <option value="Complex Care">Complex Care</option>
-              <option value="Live-In Care">Live-In Care</option>
-              <option value="Palliative / End of Life Care">Palliative / End of Life Care</option>
-              <option value="Respite Care">Respite Care</option>
-              <option value="Physical Disabilities Support">Physical Disabilities Support</option>
-              <option value="Learning Disabilities Support">Learning Disabilities Support</option>
+              <option value="Domiciliary / Home Care">Domiciliary / Home Care</option>
+              <option value="Private Care Package">Private Care Package</option>
+              <option value="Learning Disabilities">Learning Disabilities</option>
+              <option value="End of Life Care">End of Life Care</option>
+              <option value="Mental Health Support">Mental Health Support</option>
               <option value="Other / Not Sure">Other / Not Sure</option>
             </select>
           </div>
@@ -184,7 +182,7 @@
       <!-- TAB: LOOKING FOR A JOB -->
       <div class="contact-form-wrap pathway-panel" id="tab-job" style="display:none;">
         <h2>Job Application</h2>
-        <p class="form-sub">Interested in joining the Winserve family? Fill in the form below and our HR team will be in touch.</p>
+        <p class="form-sub">Interested in joining the Winserve family? Fill in the form below and our HR team will be in touch. You can also email us directly at hr@winservecare.co.uk.</p>
         <form method="POST" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
           <?php wp_nonce_field('winserve_application', 'winserve_nonce'); ?>
           <input type="hidden" name="action" value="winserve_application">
@@ -216,7 +214,6 @@
             <select id="job_location" name="location" required>
               <option value="">Please select&hellip;</option>
               <option value="Leeds">Leeds</option>
-              <option value="Cornwall">Cornwall</option>
               <option value="Both / Either">Both / Either</option>
             </select>
           </div>
@@ -224,7 +221,7 @@
           <div class="form-group">
             <label for="job_experience">Care experience</label>
             <select id="job_experience" name="experience">
-              <option value="No experience — willing to train">No experience &mdash; willing to train</option>
+              <option value="No experience, willing to train">No experience, willing to train</option>
               <option value="Under 1 year">Under 1 year</option>
               <option value="1–2 years">1&ndash;2 years</option>
               <option value="3–5 years">3&ndash;5 years</option>
@@ -277,9 +274,17 @@
 
       <!-- Map & Additional Info (always visible) -->
       <div>
-        <div class="map-wrap" style="margin-bottom:24px;">
-          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2358.2!2d-1.5985!3d53.7477!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48795e5c7a2b9f8d%3A0x1!2sPure+Offices%2C+Turnberry+Park+Rd%2C+Morley%2C+Leeds+LS27+7LE!5e0!3m2!1sen!2suk!4v1" width="100%" height="320" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Winserve Care Services Office Location"></iframe>
+        <div class="map-wrap" style="margin-bottom:12px;">
+          <iframe
+            src="https://www.google.com/maps?q=Pure%20Offices%2C%20Turnberry%20Park%20Road%2C%20Morley%2C%20Leeds%20LS27%207LE&amp;z=17&amp;output=embed"
+            width="100%" height="320" style="border:0;border-radius:8px;"
+            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            title="Winserve Care Services office location, Pure Offices, Morley, Leeds"></iframe>
         </div>
+        <p style="font-family:var(--font-body);font-size:13px;color:#666;margin-bottom:24px;text-align:center;">
+          Unit 52, Pure Offices, Turnberry Park Road, Morley, Leeds LS27 7LE &nbsp;&bull;&nbsp;
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=Pure%20Offices%2C%20Turnberry%20Park%20Road%2C%20Morley%2C%20Leeds%20LS27%207LE" target="_blank" rel="noopener" style="color:var(--blue);font-weight:600;">Get directions &rarr;</a>
+        </p>
         <div style="background:var(--section-bg);border:1px solid var(--border);border-radius:8px;padding:24px;">
           <h3 style="font-family:var(--font-heading);font-size:24px;color:var(--navy);margin-bottom:12px;">Additional Contacts</h3>
           <p style="font-family:var(--font-body);font-size:13px;color:#666;margin-bottom:8px;"><strong style="color:var(--navy);">HR Enquiries:</strong> <a href="mailto:hr@winservecare.co.uk" style="color:var(--blue);">hr@winservecare.co.uk</a></p>

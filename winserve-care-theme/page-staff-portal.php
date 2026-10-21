@@ -25,7 +25,7 @@
     </a>
 
     <p style="margin-top:32px;font-size:13px;color:#888;font-family:var(--font-body);">
-      If you are having trouble accessing the portal, please contact your line manager or email <a href="mailto:info@winservecare.co.uk" style="color:var(--blue);">info@winservecare.co.uk</a>.
+      If you are having trouble accessing the portal, please contact your line manager or email <a href="mailto:enquiries@winservecare.co.uk" style="color:var(--blue);">enquiries@winservecare.co.uk</a>.
     </p>
 
     <div style="margin-top:48px;background:var(--section-bg);border:1px solid var(--border);border-radius:8px;padding:32px;max-width:560px;margin-left:auto;margin-right:auto;text-align:left;">

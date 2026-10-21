@@ -20,7 +20,7 @@
         <p>We are <strong>Winserve Care Services Limited</strong>, a care provider incorporated in England and Wales. Our company registration number is <strong>12398800</strong> and our registered address is:</p>
         <address>Unit 52, Pure Offices, Turnberry Park Road, Morley, Leeds, LS27 7LE</address>
         <p>References in this policy to <strong>"Winserve"</strong>, <strong>"we"</strong>, <strong>"us"</strong> or <strong>"our"</strong> are to Winserve Care Services Limited.</p>
-        <p>We are the <strong>data controller</strong> of personal data you provide to us via this website. Our Data Protection Officer can be contacted at <a href="mailto:info@winservecare.co.uk">info@winservecare.co.uk</a>.</p>
+        <p>We are the <strong>data controller</strong> of personal data you provide to us via this website. Our Data Protection Officer can be contacted at <a href="mailto:enquiries@winservecare.co.uk">enquiries@winservecare.co.uk</a>.</p>
 
         <h2>2. Our Commitment to Your Privacy</h2>
         <p>Winserve Care Services Limited is committed to protecting and respecting your privacy. We comply with the <strong>UK General Data Protection Regulation (UK GDPR)</strong>, the <strong>Data Protection Act 2018</strong>, and all applicable national implementing legislation as amended or updated from time to time (together, <strong>"Data Protection Legislation"</strong>).</p>
@@ -55,9 +55,9 @@
         <p>This website uses cookies to distinguish you from other users, improve your experience, and help us understand how our website is used. Cookies are small text files stored on your device by your browser.</p>
         <p>We use the following types of cookies:</p>
         <ul>
-          <li><strong>Strictly necessary cookies</strong> — essential for the website to function correctly (e.g. security, form submission)</li>
-          <li><strong>Analytics cookies</strong> — to understand how visitors interact with our website so we can improve it (e.g. Google Analytics, if enabled)</li>
-          <li><strong>Functional cookies</strong> — to remember your preferences and improve your experience</li>
+          <li><strong>Strictly necessary cookies</strong>, essential for the website to function correctly (e.g. security, form submission)</li>
+          <li><strong>Analytics cookies</strong>, to understand how visitors interact with our website so we can improve it (e.g. Google Analytics, if enabled)</li>
+          <li><strong>Functional cookies</strong>, to remember your preferences and improve your experience</li>
         </ul>
         <p>You can control and disable cookies through your browser settings. Please note that disabling certain cookies may affect the functionality of this website. By continuing to use this website without changing your cookie settings, you consent to our use of cookies as described above.</p>
 
@@ -83,10 +83,10 @@
         <h2>6. Legal Basis for Processing</h2>
         <p>We process your personal data on the following legal bases under the UK GDPR:</p>
         <ul>
-          <li><strong>Consent</strong> — where you have given clear consent for us to process your data for a specific purpose (e.g. marketing communications, cookies)</li>
-          <li><strong>Contractual necessity</strong> — where processing is necessary to fulfil a contract with you or to take steps at your request before entering into a contract</li>
-          <li><strong>Legitimate interests</strong> — where processing is necessary for our legitimate business interests, provided those interests are not overridden by your rights</li>
-          <li><strong>Legal obligation</strong> — where we are required to process data to comply with a legal requirement</li>
+          <li><strong>Consent</strong>, where you have given clear consent for us to process your data for a specific purpose (e.g. marketing communications, cookies)</li>
+          <li><strong>Contractual necessity</strong>, where processing is necessary to fulfil a contract with you or to take steps at your request before entering into a contract</li>
+          <li><strong>Legitimate interests</strong>, where processing is necessary for our legitimate business interests, provided those interests are not overridden by your rights</li>
+          <li><strong>Legal obligation</strong>, where we are required to process data to comply with a legal requirement</li>
         </ul>
 
         <h2>7. Automated Decision-Making</h2>
@@ -95,10 +95,10 @@
         <h2>8. Disclosure of Your Information</h2>
         <p>We may share your personal information with:</p>
         <ul>
-          <li><strong>Members of our corporate group</strong> — our subsidiaries, ultimate holding company and its subsidiaries (as defined in section 1159 of the Companies Act 2006)</li>
-          <li><strong>Business partners, suppliers and sub-contractors</strong> — for the performance of any contract we enter into with them or with you</li>
-          <li><strong>Third parties with your consent</strong> — who may wish to contact you about services or products that may interest you, provided we have obtained your prior consent</li>
-          <li><strong>Analytics and advertising providers</strong> — who assist us in improving and optimising our website</li>
+          <li><strong>Members of our corporate group</strong>, our subsidiaries, ultimate holding company and its subsidiaries (as defined in section 1159 of the Companies Act 2006)</li>
+          <li><strong>Business partners, suppliers and sub-contractors</strong>, for the performance of any contract we enter into with them or with you</li>
+          <li><strong>Third parties with your consent</strong>, who may wish to contact you about services or products that may interest you, provided we have obtained your prior consent</li>
+          <li><strong>Analytics and advertising providers</strong>, who assist us in improving and optimising our website</li>
         </ul>
         <p>We may also disclose your personal information where required to:</p>
         <ul>
@@ -120,15 +120,15 @@
         <h2>11. Your Rights</h2>
         <p>Under UK data protection law, you have the following rights in respect of your personal data:</p>
         <ul>
-          <li><strong>Right of access</strong> — to request a copy of the personal data we hold about you</li>
-          <li><strong>Right to rectification</strong> — to ask us to correct inaccurate or incomplete data</li>
-          <li><strong>Right to erasure</strong> — to request that we delete your personal data in certain circumstances</li>
-          <li><strong>Right to restriction</strong> — to ask us to restrict the processing of your data in certain circumstances</li>
-          <li><strong>Right to data portability</strong> — to request that your data be transferred directly to another data controller</li>
-          <li><strong>Right to object</strong> — to object to our processing of your data where we rely on legitimate interests</li>
-          <li><strong>Right to withdraw consent</strong> — where we process data based on your consent, you may withdraw that consent at any time</li>
+          <li><strong>Right of access</strong>, to request a copy of the personal data we hold about you</li>
+          <li><strong>Right to rectification</strong>, to ask us to correct inaccurate or incomplete data</li>
+          <li><strong>Right to erasure</strong>, to request that we delete your personal data in certain circumstances</li>
+          <li><strong>Right to restriction</strong>, to ask us to restrict the processing of your data in certain circumstances</li>
+          <li><strong>Right to data portability</strong>, to request that your data be transferred directly to another data controller</li>
+          <li><strong>Right to object</strong>, to object to our processing of your data where we rely on legitimate interests</li>
+          <li><strong>Right to withdraw consent</strong>, where we process data based on your consent, you may withdraw that consent at any time</li>
         </ul>
-        <p>To exercise any of these rights, please contact us via our <a href="<?php echo esc_url(home_url('/contact')); ?>">Contact Us page</a> or by emailing <a href="mailto:info@winservecare.co.uk">info@winservecare.co.uk</a>. We will process requests free of charge and respond within one calendar month of receipt.</p>
+        <p>To exercise any of these rights, please contact us via our <a href="<?php echo esc_url(home_url('/contact')); ?>">Contact Us page</a> or by emailing <a href="mailto:enquiries@winservecare.co.uk">enquiries@winservecare.co.uk</a>. We will process requests free of charge and respond within one calendar month of receipt.</p>
         <p>If you wish to withdraw consent or be removed from our marketing database, please use the "Unsubscribe" link in any email we send, or contact us as above.</p>
 
         <h2>12. Complaints</h2>
@@ -146,7 +146,7 @@
         <p>If you have any questions or comments about this Privacy Policy, or if you wish to exercise any of your rights, please contact us:</p>
         <ul>
           <li><strong>By post:</strong> Winserve Care Services Limited, Unit 52, Pure Offices, Turnberry Park Road, Morley, Leeds, LS27 7LE</li>
-          <li><strong>By email:</strong> <a href="mailto:info@winservecare.co.uk">info@winservecare.co.uk</a></li>
+          <li><strong>By email:</strong> <a href="mailto:enquiries@winservecare.co.uk">enquiries@winservecare.co.uk</a></li>
           <li><strong>Online:</strong> <a href="<?php echo esc_url(home_url('/contact')); ?>">winservecare.co.uk/contact</a></li>
         </ul>
 

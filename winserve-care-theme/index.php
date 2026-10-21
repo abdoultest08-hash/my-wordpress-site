@@ -17,7 +17,7 @@
         <?php while (have_posts()) : the_post(); ?>
           <article class="blog-card">
             <?php if (has_post_thumbnail()) : ?>
-              <img src="<?php the_post_thumbnail_url('winserve-card'); ?>" alt="<?php the_title_attribute(); ?>" class="blog-card-img">
+              <img src="<?php the_post_thumbnail_url('winserve-card'); ?>" alt="<?php the_title_attribute(); ?>" class="blog-card-img" loading="lazy" decoding="async">
             <?php else : ?>
               <div class="blog-card-img-ph"></div>
             <?php endif; ?>
