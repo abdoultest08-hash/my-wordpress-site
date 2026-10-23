@@ -1,0 +1,158 @@
+<!--title:For Candidates · HCC-Temps|key:register-->
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="crumbs"><a href="index.html">Home</a> / For candidates</div>
+      <h1>Register with HCC-Temps</h1>
+      <p class="lead">Create your account, choose your role and upload your documents. Most candidates are ready to work within 3 days.</p>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">How registration works</span>
+        <h2>From sign-up to your first shift</h2>
+        <p>No CV needed to get started. Everything happens in your own candidate portal.</p>
+      </div>
+      <ol class="reg-steps">
+        <li><b>Check what you need</b><span>Choose your role below and see the documents to have ready.</span></li>
+        <li><b>Create your account</b><span>Name, email and a password. Accept the terms and privacy policy.</span></li>
+        <li><b>Confirm your email</b><span>Tap the link we send you. It brings you back to your portal.</span></li>
+        <li><b>Upload your documents</b><span>Clear photos or PDFs from your phone. We check each one.</span></li>
+        <li><b>Ready in 3 days</b><span>Once your checks are complete, you can start picking shifts.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section alt" id="roles">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Step 1</span>
+        <h2>Choose your role</h2>
+        <p>Tap a role to see what you need before you start.</p>
+      </div>
+      <div class="role-group">Healthcare</div>
+      <div class="roles" id="rolesHealth"></div>
+      <div class="role-group">Hospitality</div>
+      <div class="roles" id="rolesHosp"></div>
+      <div class="role-group">Admin</div>
+      <div class="roles" id="rolesAdmin"></div>
+      <div class="role-detail" id="roleDetail" hidden aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="section" id="register">
+    <div class="wrap">
+      <div style="max-width:760px;margin:0 auto">
+        <form class="form-card" id="regForm" novalidate>
+          <h2>Create your account</h2>
+          <p class="sub">Registering as: <b id="chosen" style="color:var(--navy)">choose a role above</b></p>
+          <div class="form-grid">
+            <div class="f"><label for="first">First name</label><input type="text" id="first" name="first" autocomplete="given-name"></div>
+            <div class="f"><label for="last">Last name</label><input type="text" id="last" name="last" autocomplete="family-name"></div>
+            <div class="f full"><label for="email">Email</label><input type="email" id="email" name="email" autocomplete="email"></div>
+            <div class="f"><label for="pw">Password</label><input type="password" id="pw" name="pw" autocomplete="new-password"></div>
+            <div class="f"><label for="pw2">Repeat password</label><input type="password" id="pw2" name="pw2" autocomplete="new-password"></div>
+            <label class="consent full"><input type="checkbox" name="terms">I accept the <a href="contact.html">terms and conditions</a>.</label>
+            <label class="consent full"><input type="checkbox" name="privacy">I agree to the <a href="contact.html">privacy policy</a>.</label>
+            <div class="robot full"><label><input type="checkbox" name="robot">I'm not a robot</label><small>Robot check<br>(Cloudflare Turnstile)</small></div>
+          </div>
+          <div class="form-actions"><button class="btn btn-navy" type="submit">Create my account</button><span class="error-msg" role="alert"></span></div>
+          <p class="form-note" style="margin-top:12px">Your username is your email address. You'll get a 6-digit code by email each time you log in.</p>
+        </form>
+        <div id="regDone" class="form-card" hidden></div>
+        <p class="login-strip" id="login">Already registered? <a href="register.html#login">Log in to your candidate portal</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  var esc = HCC.esc;
+  /* Roles and what to have ready. Nurse and Chef are from HCC's checklist; others are drafts until HCC sends the full list. */
+  var ID = ['Photo ID', 'Passport or UK driving licence'];
+  var RTW = ['Right to work in the UK', 'Passport, share code or BRP'];
+  var DBS = ['Enhanced DBS', 'Your certificate, or your Update Service certificate number. No DBS? We apply for one.'];
+  var ROLES = {
+    rolesHealth: [
+      { id: 'nurse', name: 'Registered Nurse', sub: 'RGN / RMN · from £25/hr+', img: 'img/hero-nurse.jpg', pos: '28% 30%', draft: false,
+        need: [ID, RTW, ['NMC PIN', 'Your PIN number and expiry date. We check it on the NMC register.'], DBS, ['Mandatory training certificates', 'Draft, HCC to confirm the list']] },
+      { id: 'care-assistant', name: 'Care Assistant', sub: 'Care homes and hospitals', img: 'img/carer.jpg', draft: true,
+        need: [ID, RTW, DBS, ['Care Certificate or NVQ', 'Or other care training certificates'], ['Mandatory training', 'Manual handling, safeguarding, first aid']] },
+      { id: 'senior-carer', name: 'Senior Care Assistant', sub: 'Senior carer roles', img: 'img/hero.jpg', draft: true,
+        need: [ID, RTW, DBS, ['Care Certificate or NVQ Level 3', 'Or other care qualifications'], ['Medication training', 'Certificate in date']] }
+    ],
+    rolesHosp: [
+      { id: 'chef', name: 'Chef', sub: 'Care homes, schools, hotels', img: 'img/hero-chef.jpg', pos: '50% 20%', draft: false,
+        need: [ID, RTW, ['Food Hygiene Level 2 or Level 3', 'Certificate must be in date'], ['Level 3 Allergen certificate', 'The full certificate'], ['First Aid certificate', 'The full certificate'], DBS],
+        note: 'All certificates must be the actual certificate showing your full name, matching your ID.' },
+      { id: 'kitchen', name: 'Kitchen Assistant', sub: 'Prep and porters', img: 'img/kitchen.jpg', draft: true,
+        need: [ID, RTW, ['Food Hygiene Level 2', 'Certificate in date'], DBS] },
+      { id: 'catering', name: 'Catering / Hospitality', sub: 'Events, cafes, front of house', img: 'img/barista.jpg', draft: true, need: [ID, RTW, DBS] },
+      { id: 'housekeeping', name: 'Housekeeping', sub: 'Hotels and care homes', img: 'img/housekeeping.jpg', draft: true, need: [ID, RTW, DBS] },
+      { id: 'cleaner', name: 'Cleaner', sub: 'Offices, schools, homes', img: 'img/cleaner.jpg', draft: true, need: [ID, RTW, DBS] }
+    ],
+    rolesAdmin: [
+      { id: 'reception', name: 'Receptionist / Admin', sub: 'Front desk and office', img: 'img/reception.jpg', draft: true, need: [ID, RTW, DBS] }
+    ]
+  };
+  var byId = {};
+  Object.keys(ROLES).forEach(function (g) {
+    document.getElementById(g).innerHTML = ROLES[g].map(function (r) {
+      byId[r.id] = r;
+      return '<button type="button" class="role-pick" aria-pressed="false" aria-controls="roleDetail" data-id="' + r.id + '"><img src="' + r.img + '" alt="" width="96" height="96" loading="lazy"' + (r.pos ? ' style="object-position:' + r.pos + '"' : '') + '><span><b>' + esc(r.name) + '</b><small>' + esc(r.sub) + '</small></span></button>';
+    }).join('');
+  });
+
+  var detail = document.getElementById('roleDetail'), chosen = '';
+  function show(id, scroll) {
+    var r = byId[id]; if (!r) return;
+    chosen = r.name;
+    document.querySelectorAll('.role-pick').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.id === id)); });
+    document.getElementById('chosen').textContent = r.name;
+    detail.innerHTML =
+      '<div><h3>Before you start: ' + esc(r.name) + (r.draft ? '<span class="draft-pill">Draft</span>' : '') + '</h3>' +
+      '<p class="rd-sub">Have these ready. You upload them in your portal after creating your account.</p>' +
+      '<ul class="need">' + r.need.map(function (n) { return '<li><span><b>' + esc(n[0]) + '</b><small>' + esc(n[1]) + '</small></span></li>'; }).join('') + '</ul>' +
+      (r.note ? '<p class="form-note" style="margin-top:14px"><b>' + esc(r.note) + '</b></p>' : '') +
+      '<div class="form-actions" style="margin-top:20px"><a class="btn btn-sun" href="#register" id="startReg">Start registration as ' + esc(r.name) + '</a></div></div>' +
+      '<aside class="rd-side"><h4>About your DBS</h4><p>Every role needs an enhanced DBS. When you register we ask:</p>' +
+      '<div class="dbs-opt"><div><b>Yes, on the Update Service:</b> give us your certificate number and we check it online.</div>' +
+      '<div><b>Yes, but not on the Update Service:</b> upload your certificate and we tell you if it can be used.</div>' +
+      '<div><b>No DBS yet:</b> no problem, we apply for one for you.</div></div>' +
+      '<h4 style="margin-top:6px">Photo tips</h4><p>Lay documents flat in daylight, show all four corners, no flash or glare. PDFs are best for certificates.</p></aside>';
+    detail.hidden = false;
+    if (scroll) detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  document.querySelectorAll('.role-pick').forEach(function (b) { b.addEventListener('click', function () { show(b.dataset.id, true); }); });
+  var m = location.hash.match(/^#role-(.+)$/);
+  if (m) setTimeout(function () { show(m[1], true); }, 80);
+
+  var form = document.getElementById('regForm');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = function (n) { var el = form.querySelector('[name=' + n + ']'); return el.type === 'checkbox' ? el.checked : el.value.trim(); };
+    var miss = [];
+    if (!chosen) miss.push('role (choose one above)');
+    if (!v('first')) miss.push('first name'); if (!v('last')) miss.push('last name'); if (!v('email')) miss.push('email');
+    if (v('pw').length < 8) miss.push('password of 8+ characters');
+    var err = form.querySelector('.error-msg');
+    if (miss.length) { err.textContent = 'Please add your ' + miss.join(', ') + '.'; return; }
+    if (v('pw') !== v('pw2')) { err.textContent = 'The two passwords don\'t match.'; return; }
+    if (!v('terms') || !v('privacy') || !v('robot')) { err.textContent = 'Please tick the terms, privacy policy and robot check.'; return; }
+    err.textContent = '';
+    var first = v('first'), email = v('email');
+    var out = document.getElementById('regDone');
+    out.innerHTML =
+      '<div class="success"><div><div class="tick"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></div>' +
+      '<h2>Check your email, ' + esc(first) + '</h2><p>We\'ve sent a link to <b>' + esc(email) + '</b> to confirm your account.</p>' +
+      '<ol><li>Open the email from HCC-Temps and tap Confirm</li><li>Log in and upload your ' + esc(chosen) + ' documents</li><li>We check everything. Most people are ready in 3 days</li></ol></div>' +
+      '<div><span class="email-tag">Automatic email preview</span><div class="email" style="margin-top:10px"><div class="email-meta"><span>From: <b>HCC-Temps</b> &lt;jobs@hcctemps.co.uk&gt;</span><span>To: ' + esc(email) + '</span><span>Subject: <b>Confirm your HCC-Temps account</b></span></div>' +
+      '<div class="email-body"><img class="logo-sm" src="img/logo.png" alt="HCC-Temps" width="74" height="40"><p>Hi ' + esc(first) + ',</p><p>Thanks for registering as a <b>' + esc(chosen) + '</b>. Please confirm your email to open your candidate portal.</p>' +
+      '<a class="btn btn-aqua" href="upload.html">Confirm my email</a><p style="font-size:13px;color:var(--muted)">Questions? Call 0330 321 3124, 24 hours a day.</p></div></div></div></div>';
+    form.hidden = true; out.hidden = false;
+    out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+})();
+</script>

@@ -1,0 +1,98 @@
+<!--title:Job Board · HCC-Temps|key:jobs-->
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="crumbs"><a href="index.html">Home</a> / Job Board</div>
+      <h1>Find your next shift</h1>
+      <p class="lead">Nursing, care, kitchen and hospitality work across the UK. Every job shows the pay and shift pattern up front.</p>
+      <form class="board-search" id="boardSearch" role="search">
+        <div class="field"><label for="bq">Job title or keyword</label><input id="bq" placeholder="Chef, carer, nurse…" autocomplete="off"></div>
+        <div class="field"><label for="bw">Town or postcode</label><input id="bw" placeholder="e.g. Southampton" autocomplete="off"></div>
+        <button class="btn btn-sun" type="submit">Search</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap board">
+      <aside class="filters" id="filters" aria-label="Filter jobs">
+        <fieldset><legend>Sector</legend><div id="fSector"></div></fieldset>
+        <fieldset><legend>Region</legend><div id="fRegion"></div></fieldset>
+        <fieldset><legend>Contract</legend><div id="fContract"></div></fieldset>
+        <div class="f"><label for="fRole">Role</label><select class="select" id="fRole"><option value="">All roles</option></select></div>
+        <button class="clear" type="button" id="clearFilters">Clear all filters</button>
+      </aside>
+      <div>
+        <div class="results-bar">
+          <span class="n" id="count" role="status" aria-live="polite"></span>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm filter-toggle" type="button" id="filterToggle" aria-controls="filters" aria-expanded="false">Filters</button>
+            <label class="sort" for="sort">Sort by <select class="select" id="sort"><option value="new">Newest</option><option value="pay">Highest pay</option><option value="az">A to Z</option></select></label>
+          </div>
+        </div>
+        <div class="jobs" id="results"></div>
+        <div class="pager" id="pager" aria-label="Pages"></div>
+        <p class="form-note" style="margin-top:20px;text-align:center">Mockup: 14 sample jobs based on HCC's live listings. The real board will show all live vacancies, 12 per page.</p>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  var J = HCC.JOBS, PER = 8, page = 1;
+  function uniq(k) { var m = {}; J.forEach(function (j) { m[j[k]] = (m[j[k]] || 0) + 1; }); return m; }
+  function checks(el, k, name) {
+    var m = uniq(k);
+    el.innerHTML = Object.keys(m).sort().map(function (v, i) {
+      return '<label class="check"><input type="checkbox" name="' + name + '" value="' + HCC.esc(v) + '">' + HCC.esc(v) + '<span class="count">' + m[v] + '</span></label>';
+    }).join('');
+  }
+  checks(document.getElementById('fSector'), 'sector', 'sector');
+  checks(document.getElementById('fRegion'), 'region', 'region');
+  checks(document.getElementById('fContract'), 'contract', 'contract');
+  var roleSel = document.getElementById('fRole');
+  Object.keys(uniq('role')).sort().forEach(function (r) { var o = document.createElement('option'); o.value = r; o.textContent = r; roleSel.appendChild(o); });
+
+  /* Arriving from the homepage: jobs.html#healthcare or jobs.html#chef */
+  var hash = decodeURIComponent(location.hash.slice(1));
+  var sectorMap = { healthcare: 'Healthcare', hospitality: 'Hospitality', chefs: 'Chefs', housekeeping: 'Housekeeping & cleaning', admin: 'Admin & reception' };
+  if (sectorMap[hash]) { document.querySelector('input[name=sector][value="' + sectorMap[hash] + '"]').checked = true; }
+  else if (hash && hash !== 'all') { document.getElementById('bq').value = hash.replace(/-/g, ' '); }
+
+  function vals(name) { return [].map.call(document.querySelectorAll('input[name=' + name + ']:checked'), function (c) { return c.value; }); }
+  function render() {
+    var q = document.getElementById('bq').value.trim().toLowerCase(), w = document.getElementById('bw').value.trim().toLowerCase();
+    var s = vals('sector'), r = vals('region'), c = vals('contract'), role = roleSel.value;
+    var list = J.filter(function (j) {
+      return (!q || (j.title + ' ' + j.role + ' ' + j.sector).toLowerCase().indexOf(q) > -1) &&
+        (!w || (j.place + ' ' + j.region).toLowerCase().indexOf(w) > -1) &&
+        (!s.length || s.indexOf(j.sector) > -1) && (!r.length || r.indexOf(j.region) > -1) &&
+        (!c.length || c.indexOf(j.contract) > -1) && (!role || j.role === role);
+    });
+    var sort = document.getElementById('sort').value;
+    list.sort(function (a, b) { return sort === 'pay' ? b.payMin - a.payMin : sort === 'az' ? a.title.localeCompare(b.title) : a.posted - b.posted; });
+    var pages = Math.max(1, Math.ceil(list.length / PER)); if (page > pages) page = 1;
+    document.getElementById('count').textContent = list.length + (list.length === 1 ? ' job' : ' jobs') + ' found';
+    document.getElementById('results').innerHTML = list.length ? list.slice((page - 1) * PER, page * PER).map(function (j) { return HCC.card(j); }).join('') :
+      '<div class="empty" style="grid-column:1/-1"><b>No jobs match these filters.</b><br>Try removing a filter, or <a href="register.html">register</a> and we\'ll tell you when one comes up.</div>';
+    var pg = document.getElementById('pager'); pg.innerHTML = '';
+    if (pages > 1) for (var i = 1; i <= pages; i++) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = i; if (i === page) b.setAttribute('aria-current', 'page');
+      b.addEventListener('click', (function (n) { return function () { page = n; render(); document.getElementById('count').scrollIntoView({ block: 'start', behavior: 'smooth' }); }; })(i));
+      pg.appendChild(b);
+    }
+  }
+  document.getElementById('filters').addEventListener('change', function () { page = 1; render(); });
+  document.getElementById('sort').addEventListener('change', render);
+  document.getElementById('boardSearch').addEventListener('submit', function (e) { e.preventDefault(); page = 1; render(); });
+  document.getElementById('bq').addEventListener('input', function () { page = 1; render(); });
+  document.getElementById('bw').addEventListener('input', function () { page = 1; render(); });
+  document.getElementById('clearFilters').addEventListener('click', function () {
+    document.querySelectorAll('#filters input').forEach(function (i) { i.checked = false; }); roleSel.value = '';
+    document.getElementById('bq').value = ''; document.getElementById('bw').value = ''; page = 1; render();
+  });
+  var ft = document.getElementById('filterToggle'), fl = document.getElementById('filters');
+  ft.addEventListener('click', function () { var o = !fl.classList.contains('open'); fl.classList.toggle('open', o); ft.setAttribute('aria-expanded', String(o)); });
+  render();
+})();
+</script>

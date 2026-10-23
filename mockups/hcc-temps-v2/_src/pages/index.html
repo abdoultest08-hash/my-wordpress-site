@@ -1,0 +1,422 @@
+<!--title:HCC-Temps Website v3|key:home-->
+<main id="top">
+  <section class="hero-track" id="heroTrack" aria-label="Introduction">
+    <div class="hero-stage" id="heroStage">
+      <div class="hero-frame" id="heroFrame" aria-hidden="true"></div>
+      <div class="hero-photo" id="heroPhoto">
+        <img src="img/hero-nurse.jpg" alt="Registered nurse in a navy uniform smiling in a care home corridor" width="1600" height="900" fetchpriority="high">
+        <div class="hero-shade" id="heroShade"></div>
+        <span class="hero-tag" id="nurseTag">Registered Nurses <b>from £25/hr</b></span>
+      </div>
+      <div class="hero-chef" id="heroChef">
+        <img src="img/hero-chef.jpg" alt="Chef in whites plating meals in a professional kitchen" width="600" height="800">
+        <span class="hero-tag">Chefs <b>Level 2/3 certified</b></span>
+      </div>
+      <div class="hero-copy">
+        <h1>Temp made easy for care and hospitality</h1>
+        <p>Registered nurses, care assistants and chefs, nationwide and 24 hours a day. Find your next shift, or get cover for yours.</p>
+        <div class="hero-actions">
+          <a class="btn btn-sun pulse" href="jobs.html">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            Search jobs
+          </a>
+          <a class="btn join" href="clients.html">Join as a company</a>
+        </div>
+      </div>
+      <div class="scroll-hint" aria-hidden="true">Scroll</div>
+    </div>
+  </section>
+
+  <section class="usp-sec" aria-label="Why work with HCC-Temps">
+    <div class="wrap">
+      <div class="usp-grid">
+        <a class="usp usp-client" href="clients.html#request">
+          <span class="usp-for">For care homes and businesses</span>
+          <span class="usp-big"><b>2 hours</b></span>
+          <strong>Emergency cover within 2 hours, nationwide.</strong>
+          <span class="usp-text">One call to our 24-hour line and we find vetted staff for your shift, wherever you are in the UK.</span>
+          <span class="usp-link">Request cover <span aria-hidden="true">→</span></span>
+        </a>
+        <a class="usp usp-cand" href="register.html">
+          <span class="usp-for">For candidates</span>
+          <span class="usp-big"><b>3 days</b></span>
+          <strong>From registering to ready to work in 3 days.</strong>
+          <span class="usp-text">Create your account, upload your documents and our compliance team completes your checks fast.</span>
+          <span class="usp-link">Start registration <span aria-hidden="true">→</span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section priority" aria-labelledby="priorityTitle">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Who we're looking for</span>
+        <h2 id="priorityTitle">Roles we need most</h2>
+        <p>We are always looking for registered nurses, care assistants and chefs to join our team.</p>
+      </div>
+      <div class="pri-grid">
+        <a class="pri pri-main" href="register.html#role-nurse">
+          <img src="img/hero-nurse.jpg" alt="" width="1600" height="900" loading="lazy" style="object-position:28% 30%">
+          <span class="pri-body">
+            <span class="pri-badge">Most in demand</span>
+            <b>Registered Nurses (RGN / RMN)</b>
+            <span class="pri-pay">From £25 per hour +</span>
+            <span class="pri-text">Days and nights in nursing homes, care homes and hospitals across the UK. Bring your NMC PIN and we'll do the rest.</span>
+            <span class="usp-link">Register as a nurse <span aria-hidden="true">→</span></span>
+          </span>
+        </a>
+        <a class="pri" href="register.html#role-care-assistant">
+          <img src="img/carer.jpg" alt="" width="720" height="540" loading="lazy">
+          <span class="pri-body"><b>Care Assistants</b><span class="pri-pay">From £13.30 per hour</span><span class="usp-link">Register <span aria-hidden="true">→</span></span></span>
+        </a>
+        <a class="pri" href="register.html#role-chef">
+          <img src="img/hero-chef.jpg" alt="" width="600" height="800" loading="lazy" style="object-position:50% 25%">
+          <span class="pri-body"><b>Chefs</b><span class="pri-pay">From £14 per hour</span><span class="usp-link">Register <span aria-hidden="true">→</span></span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="next-move" id="jobs">
+    <div class="wrap">
+      <h2>Your next move starts here</h2>
+      <form class="search" id="searchForm" role="search">
+        <div class="field"><label for="q">Job title</label><input id="q" placeholder="Chef, carer, nurse…" autocomplete="off"></div>
+        <div class="field"><label for="where">Where</label><input id="where" placeholder="Town or postcode" autocomplete="off"></div>
+        <button class="btn btn-sun" type="submit">Search</button>
+      </form>
+      <div class="browse" aria-label="Browse by sector">
+        <span>Browse by sector</span>
+        <button class="chip" type="button" aria-pressed="false" data-sector="healthcare">Healthcare</button>
+        <button class="chip" type="button" aria-pressed="false" data-sector="hospitality">Hospitality</button>
+        <button class="chip" type="button" aria-pressed="false" data-sector="chefs">Chefs</button>
+        <button class="chip" type="button" aria-pressed="false" data-sector="housekeeping">Housekeeping &amp; cleaning</button>
+        <button class="chip" type="button" aria-pressed="false" data-sector="admin">Admin &amp; reception</button>
+      </div>
+      <p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+      <div class="featured-head">
+        <div>
+          <h2>Latest vacancies</h2>
+          <p>New shifts are added every day. These are a few of the latest.</p>
+        </div>
+        <a class="btn btn-ghost-light btn-sm" href="jobs.html">View all 85 vacancies</a>
+      </div>
+
+      <div class="jobs" id="jobGrid"></div>
+      <div class="jobs-more">
+        <button class="btn btn-sun" id="moreJobs" type="button" aria-controls="jobGrid" aria-expanded="false">Show more jobs</button>
+      </div>
+      <p class="placeholder-note">Job titles, towns and pay rates are from HCC's live Job Board. All vacancies will be imported.</p>
+    </div>
+  </section>
+
+  <section class="steps-sec" id="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">For candidates</span>
+        <h2>It's simple to get started</h2>
+        <p>Register online in a few minutes. Most candidates are ready to work within 3 days.</p>
+      </div>
+      <div class="steps">
+        <div class="steps-visual">
+          <div class="block" aria-hidden="true"></div>
+          <div class="block2" aria-hidden="true"></div>
+          <div class="photo"><img src="img/phone.jpg" alt="Woman on a sofa applying for a job on her phone" width="720" height="960" loading="lazy"></div>
+          <div class="ui-card" id="uiCard" aria-live="polite"></div>
+        </div>
+        <ol class="step-list" id="stepList">
+          <li><button class="step-btn" type="button" data-step="0"><span class="num">1</span><span class="t">Create your account</span><span class="d">Your name, email and a password. No CV needed to get started.</span></button></li>
+          <li><button class="step-btn" type="button" data-step="1"><span class="num">2</span><span class="t">Confirm your email and choose your role</span><span class="d">Tap the link we email you, then pick the role you want, such as nurse or chef.</span></button></li>
+          <li><button class="step-btn" type="button" data-step="2"><span class="num">3</span><span class="t">Upload your documents</span><span class="d">Your portal shows the checklist for your role. Clear photos or PDFs, uploaded from your phone.</span></button></li>
+          <li><button class="step-btn" type="button" data-step="3"><span class="num">4</span><span class="t">We check everything</span><span class="d">Our compliance team checks your DBS, right to work and certificates. You follow progress in your portal.</span></button></li>
+          <li><button class="step-btn" type="button" data-step="4"><span class="num">5</span><span class="t">Ready to work in 3 days</span><span class="d">Pick shifts that suit you. We confirm each one by text and email.</span></button></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-band" aria-label="HCC-Temps in numbers">
+    <div class="wrap">
+      <div class="stats">
+        <div>
+          <h2>Nationwide cover, day and night</h2>
+          <a class="btn btn-sun" href="clients.html#request">Request cover</a>
+        </div>
+        <div class="nums">
+          <div><div class="num-big slot" id="slot" data-value="10,000" aria-label="10,000+">10,000+</div><div class="num-label">Shifts covered</div></div>
+          <div><div class="num-big">2 hrs</div><div class="num-label">Emergency cover, nationwide</div></div>
+          <div><div class="num-big">3 days</div><div class="num-label">Registration to ready to work</div></div>
+          <div><div class="num-big">24/7</div><div class="num-label">Phone line, always open</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="why" id="why">
+    <div class="wrap">
+      <h2>Why we make the difference at HCC-Temps</h2>
+      <div class="collage" id="collage">
+        <div class="stripes" aria-hidden="true"></div>
+        <div class="c-stat"><div class="big" data-slot="big">2 hrs</div><div class="lbl" data-slot="lbl">to cover an emergency call, nationwide</div></div>
+        <div class="c-dark" data-slot="dark">Reliable, fully vetted staff for people who depend on care, any hour of the day.</div>
+        <blockquote class="c-quote q1"><span data-slot="q1">"They found us a chef for the same afternoon when ours called in sick. The food was great and the residents never noticed the change."</span><cite data-slot="c1">Care home manager, Cumbria</cite></blockquote>
+        <blockquote class="c-quote q2"><span data-slot="q2">"Every nurse they send has their paperwork checked before they arrive. That saves our team hours every week."</span><cite data-slot="c2">Deputy manager, nursing home, Solihull</cite></blockquote>
+        <div class="c-pill" aria-hidden="true">Sample quotes</div>
+      </div>
+      <div class="collage-nav">
+        <button class="round" type="button" id="whyPrev" aria-label="Previous"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+        <button class="round" type="button" id="whyNext" aria-label="Next"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="blog" id="blog">
+    <div class="wrap">
+      <div class="row-head">
+        <h2>From the HCC blog</h2>
+        <a class="link-arrow" href="index.html#blog">View all posts <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="posts">
+        <article class="post">
+          <img src="img/kitchen.jpg" alt="" width="720" height="540" loading="lazy">
+          <div class="cat">Hospitality</div>
+          <h3>Do you need Food Hygiene Level 2 for kitchen work?</h3>
+          <p>What the certificate covers, how long it takes and where to get it.</p>
+        </article>
+        <article class="post">
+          <img src="img/nurse.jpg" alt="" width="720" height="540" loading="lazy">
+          <div class="cat">Healthcare</div>
+          <h3>Your first agency shift in a care home: what to bring</h3>
+          <p>ID, uniform, your PIN and the questions to ask when you arrive.</p>
+        </article>
+        <article class="post">
+          <img src="img/housekeeping.jpg" alt="" width="720" height="540" loading="lazy">
+          <div class="cat">For clients</div>
+          <h3>Planning winter cover before the rush</h3>
+          <p>How care homes and hotels book temps for December without the stress.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="review" aria-label="What our temps say">
+    <div class="wrap review-grid">
+      <div>
+        <div class="quote-mark" aria-hidden="true">“</div>
+        <div class="stars" aria-label="5 out of 5 stars">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8 5.7 21.4l1.5-7.1L1.8 9.4 9 8.6z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8 5.7 21.4l1.5-7.1L1.8 9.4 9 8.6z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8 5.7 21.4l1.5-7.1L1.8 9.4 9 8.6z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8 5.7 21.4l1.5-7.1L1.8 9.4 9 8.6z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8 5.7 21.4l1.5-7.1L1.8 9.4 9 8.6z"/></svg>
+        </div>
+        <blockquote id="revText">I applied on my phone on the bus home. My documents were checked by Thursday and I worked my first shift on Monday.</blockquote>
+        <div class="who" id="revWho">Daniel A.</div>
+        <div class="role" id="revRole">Hospitality assistant · Trustpilot review to add</div>
+        <div class="controls">
+          <button class="round" type="button" id="revPrev" aria-label="Previous review"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+          <button class="round" type="button" id="revNext" aria-label="Next review"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="review-photo">
+        <div class="dotgrid" aria-hidden="true"></div>
+        <img id="revImg" src="img/hospman.jpg" alt="Portrait of the reviewer" width="500" height="500">
+      </div>
+    </div>
+  </section>
+
+
+  <section class="section alt" id="faq" aria-labelledby="faqTitle">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Questions</span>
+        <h2 id="faqTitle">Frequently asked questions</h2>
+        <p>Draft answers for HCC to confirm.</p>
+      </div>
+      <div class="faq-tabs" role="tablist" aria-label="Who is asking">
+        <button role="tab" id="tabCand" aria-selected="true" aria-controls="faqCand" type="button">I'm looking for work</button>
+        <button role="tab" id="tabEmp" aria-selected="false" aria-controls="faqEmp" type="button" tabindex="-1">I need staff</button>
+      </div>
+      <div class="faq" id="faqCand" role="tabpanel" aria-labelledby="tabCand">
+        <details open><summary>How do I register?</summary><p>Press Register and create your account with your name, email and a password. Confirm your email, choose your role and upload your documents in your portal. You don't need a CV to start.</p></details>
+        <details><summary>What documents will I need?</summary><p>It depends on the role. Most people need photo ID, proof of right to work and proof of address. Care roles also need a DBS and training certificates, and nurses need their NMC PIN. Each role on the candidates page shows exactly what you need before you start.</p></details>
+        <details><summary>I don't have a DBS. Can I still apply?</summary><p>Yes. Register as normal and choose “No” when we ask about your DBS. We will apply for an enhanced DBS for you.</p></details>
+        <details><summary>How quickly can I start work?</summary><p>Most candidates are ready to work within 3 days of registering, once all documents are uploaded and checked.</p></details>
+        <details><summary>Can I choose my own shifts?</summary><p>Yes. Tell us when you're available and we offer you shifts that fit. You can say no to any shift.</p></details>
+        <details><summary>How and when do I get paid?</summary><p>Draft: you are paid weekly for the hours on your approved timesheets. HCC to confirm pay day and method.</p></details>
+      </div>
+      <div class="faq" id="faqEmp" role="tabpanel" aria-labelledby="tabEmp" hidden>
+        <details open><summary>How quickly can you send staff?</summary><p>For emergencies we cover shifts within 2 hours, anywhere in the UK. Our line is open 24 hours: call 0330 321 3124.</p></details>
+        <details><summary>Which roles can you cover?</summary><p>Registered nurses, healthcare assistants, senior carers, chefs, kitchen assistants, catering and hospitality staff, housekeepers, cleaners and reception staff.</p></details>
+        <details><summary>Are your staff vetted?</summary><p>Yes. We check right to work, ID, DBS, references and role-specific training before anyone is placed with you.</p></details>
+        <details><summary>Where do you supply staff?</summary><p>Everywhere in the UK. Our offices are in Leeds and London and we cover nationwide.</p></details>
+        <details><summary>Can I book the same temp each week?</summary><p>Yes. Many clients ask for the same people so residents and guests see familiar faces. We do our best to keep them with you.</p></details>
+        <details><summary>How much does it cost?</summary><p>Draft: rates depend on the role, location and shift times. Request cover and we send you a quote. HCC to confirm wording.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" aria-label="Get started">
+    <div class="blob" style="width:18px;height:18px;background:var(--coral);left:24%;top:30%" aria-hidden="true"></div>
+    <div class="blob" style="width:12px;height:12px;background:var(--sun);right:28%;top:18%" aria-hidden="true"></div>
+    <div class="blob" style="width:22px;height:22px;background:var(--aqua);right:24%;bottom:26%" aria-hidden="true"></div>
+    <div class="blob" style="width:14px;height:14px;background:var(--cocoa);left:30%;bottom:20%" aria-hidden="true"></div>
+    <div class="float f1" aria-hidden="true"><img src="img/hero-nurse.jpg" alt="" style="object-position:28% 25%" loading="lazy"></div>
+    <div class="float f2" aria-hidden="true"><img src="img/chef.jpg" alt="" style="object-position:55% 15%" loading="lazy"></div>
+    <div class="float f3" aria-hidden="true"><img src="img/nurse.jpg" alt="" style="object-position:58% 20%" loading="lazy"></div>
+    <div class="float f4" aria-hidden="true"><img src="img/kitchen.jpg" alt="" style="object-position:58% 12%" loading="lazy"></div>
+    <div class="wrap">
+      <h2>Get started today</h2>
+      <p>Register in a few minutes and be ready to work in 3 days. Need staff? Tell us what you need and we'll call you back.</p>
+      <div class="hero-actions">
+        <a class="btn btn-sun pulse" href="register.html">Start registration</a>
+        <a class="btn btn-ghost-light" href="clients.html#request">Request cover</a>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Hero: framed photo grows to full bleed as the page scrolls */
+  var track = document.getElementById('heroTrack'), stage = document.getElementById('heroStage');
+  var photo = document.getElementById('heroPhoto'), frame = document.getElementById('heroFrame');
+  var shade = document.getElementById('heroShade'), chef = document.getElementById('heroChef'), nurseTag = document.getElementById('nurseTag');
+  function ease(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+  function clamp(v) { return Math.max(0, Math.min(1, v)); }
+  function heroFrame() {
+    var W = stage.clientWidth, H = stage.clientHeight;
+    var range = track.offsetHeight - H;
+    var p = reduce || range <= 0 ? 0 : clamp(-track.getBoundingClientRect().top / range);
+    var g = ease(clamp(p / 0.8));
+    var narrow = W < 640;
+    var w0 = Math.min(narrow ? W * 0.84 : 600, W - 32), h0 = H * (narrow ? 0.34 : 0.42);
+    var x0 = (W - w0) / 2, y0 = H - h0 + (narrow ? 0 : H * 0.04);
+    var x = x0 * (1 - g), y = y0 * (1 - g), w = w0 + (W - w0) * g, h = h0 + (H - h0) * g;
+    photo.style.cssText = 'left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px;border-radius:' + (6 * (1 - g)) + 'px';
+    var pad = 14 * (1 - g);
+    frame.style.cssText = 'left:' + (x - pad) + 'px;top:' + (y - pad) + 'px;width:' + (w + pad * 2) + 'px;height:' + (h + pad * 2) + 'px;transform:rotate(' + (-2.5 * (1 - g)) + 'deg);opacity:' + (1 - g);
+    /* Chef card sits under the nurse photo's left edge and slides away as the photo grows */
+    var cw = narrow ? w0 * 0.34 : Math.min(200, w0 * 0.36), ch = cw * 4 / 3;
+    var cx = x0 - cw * (narrow ? 0.12 : 0.55), cy = narrow ? H - ch - 14 : Math.min(y0 + h0 * 0.12, H - ch - 64);
+    chef.style.cssText = 'left:' + cx + 'px;top:' + (cy + g * 80) + 'px;width:' + cw + 'px;height:' + ch + 'px;opacity:' + (1 - clamp(g * 1.8));
+    nurseTag.style.opacity = String(1 - clamp(g * 2.2));
+    var dark = clamp((p - 0.1) / 0.3);
+    shade.style.opacity = String(dark);
+    stage.classList.toggle('is-dark', dark > 0.35);
+  }
+  var ticking = false;
+  function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(function () { heroFrame(); ticking = false; }); } }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  heroFrame();
+
+  var slot = document.getElementById('slot');
+  if (slot && !reduce && 'IntersectionObserver' in window) {
+    var val = slot.dataset.value;
+    slot.innerHTML = val.split('').map(function (c) {
+      if (!/[0-9]/.test(c)) return '<span class="reel-sep" aria-hidden="true">' + c + '</span>';
+      var digits = ''; for (var k = 0; k < 3; k++) for (var n = 0; n < 10; n++) digits += '<span>' + n + '</span>';
+      return '<span class="reel" aria-hidden="true" data-d="' + c + '"><span class="reel-strip">' + digits + '<span>' + c + '</span></span></span>';
+    }).join('') + '<span class="reel-sep" aria-hidden="true">+</span>';
+    var io = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      io.disconnect();
+      slot.querySelectorAll('.reel').forEach(function (r, i) {
+        var strip = r.firstChild;
+        strip.style.transition = 'transform ' + (1.4 + i * 0.35) + 's cubic-bezier(.15,.85,.25,1)';
+        strip.style.transform = 'translateY(-' + (30 * 1) + 'em)';
+      });
+    }, { threshold: 0.6 });
+    io.observe(slot);
+  }
+
+  /* Search: in the live site this opens the Job Board with filters applied */
+  var toast = document.getElementById('toast');
+  document.getElementById('searchForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var q = document.getElementById('q').value.trim() || 'all roles';
+    var w = document.getElementById('where').value.trim() || 'anywhere';
+    window.location.href = 'jobs.html#' + encodeURIComponent((document.getElementById('q').value.trim() || 'all').toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+  });
+  document.querySelectorAll('.chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      var on = c.getAttribute('aria-pressed') !== 'true';
+      document.querySelectorAll('.chip').forEach(function (o) { o.setAttribute('aria-pressed', 'false'); });
+      c.setAttribute('aria-pressed', String(on));
+      if (on) window.location.href = 'jobs.html#' + c.dataset.sector;
+    });
+  });
+
+  /* Featured jobs from the shared list: 6 shown, 3 more on expand */
+  document.getElementById('jobGrid').innerHTML = HCC.JOBS.slice(0, 9).map(function (j, i) { return HCC.card(j, i >= 6); }).join('');
+  var more = document.getElementById('moreJobs'), grid = document.getElementById('jobGrid');
+  more.addEventListener('click', function () {
+    if (!grid.classList.contains('expanded')) {
+      grid.classList.add('expanded');
+      more.setAttribute('aria-expanded', 'true');
+      more.textContent = 'See all 85 vacancies →';
+    } else {
+      window.location.href = 'jobs.html';
+    }
+  });
+
+  /* Five steps with a live preview card */
+  var cards = [
+    { s: 'Step 1 · Create account', t: 'Register', rows: [['Name', 'Priya Shah'], ['Email', 'priya@example.com'], ['Password', '••••••••••']], foot: '<span class="ok">✓ Account created</span>' },
+    { s: 'Step 2 · Choose role', t: 'What do you do?', rows: [['Email', '<span class="ok">✓ Confirmed</span>'], ['Role', 'Registered Nurse'], ['Area', 'Leeds, LS12']], foot: '<span class="ok">Checklist ready →</span>' },
+    { s: 'Step 3 · Documents', t: 'Your checklist', rows: [['Passport', '<span class="ok">✓ Uploaded</span>'], ['NMC PIN', '<span class="ok">✓ Added</span>'], ['Enhanced DBS', '<span class="wait">To upload</span>']], foot: '2 of 3 done · <b>in your portal</b>' },
+    { s: 'Step 4 · Checks', t: 'Compliance check', rows: [['Documents', '<span class="ok">✓ Verified</span>'], ['References', '<span class="ok">✓ Received</span>'], ['Status', '<span class="ok">Ready to work</span>']], foot: 'Day 3 · We call you to confirm' },
+    { s: 'Step 5 · Start', t: 'Shift confirmed', rows: [['Where', 'Willow Court, Basingstoke'], ['When', 'Mon 07:00 – 19:00'], ['Pay', '£14.20/hr']], foot: '<span class="ok">✓ Sent by text and email</span>' }
+  ];
+  var ui = document.getElementById('uiCard'), btns = document.querySelectorAll('.step-btn'), cur = 0, timer = null;
+  function showStep(n) {
+    cur = n;
+    btns.forEach(function (b, i) { if (i === n) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+    var c = cards[n];
+    ui.innerHTML = '<div class="ui-step">' + c.s + '</div><div class="ui-title">' + c.t + '</div><div class="ui-rows">' +
+      c.rows.map(function (r) { return '<div class="ui-row"><span>' + r[0] + '</span><b>' + r[1] + '</b></div>'; }).join('') +
+      '</div><div class="ui-rows" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)"><div class="ui-row">' + c.foot + '</div></div>';
+    ui.classList.remove('swap'); void ui.offsetWidth; ui.classList.add('swap');
+  }
+  btns.forEach(function (b) { b.addEventListener('click', function () { clearInterval(timer); showStep(+b.dataset.step); }); });
+  showStep(0);
+  if (!reduce) timer = setInterval(function () { showStep((cur + 1) % cards.length); }, 3800);
+
+  /* Why HCC collage slides */
+  var slides = [
+    { big: '2 hrs', lbl: 'to cover an emergency call, nationwide', dark: 'Reliable, fully vetted staff for people who depend on care, any hour of the day.', q1: '"They found us a chef for the same afternoon when ours called in sick. The food was great and the residents never noticed the change."', c1: 'Care home manager, Cumbria', q2: '"Every nurse they send has their paperwork checked before they arrive. That saves our team hours every week."', c2: 'Deputy manager, nursing home, Solihull' },
+    { big: '3 days', lbl: 'from registration to ready to work', dark: 'A steady supply of checked candidates, so the same faces can come back each week.', q1: '"We rang at 6am with two housekeepers off sick. Both shifts were covered before breakfast service."', c1: 'Hotel operations manager, Southampton', q2: '"The same faces come back each week, so our residents get to know them."', c2: 'Registered manager, care home, Hampshire' }
+  ];
+  var si = 0, collage = document.getElementById('collage');
+  function showSlide(n) {
+    si = (n + slides.length) % slides.length;
+    Object.keys(slides[si]).forEach(function (k) { var el = collage.querySelector('[data-slot="' + k + '"]'); if (el) el.textContent = slides[si][k]; });
+  }
+  document.getElementById('whyPrev').addEventListener('click', function () { showSlide(si - 1); });
+  document.getElementById('whyNext').addEventListener('click', function () { showSlide(si + 1); });
+
+  /* Reviews */
+  var reviews = [
+    { t: 'I applied on my phone on the bus home. My documents were checked by Thursday and I worked my first shift on Monday.', w: 'Daniel A.', r: 'Hospitality assistant · Trustpilot review to add', img: 'img/hospman.jpg', pos: 'center 20%' },
+    { t: 'I choose my own shifts around the school run. The team always calls back, even on a Sunday.', w: 'Grace O.', r: 'Healthcare assistant · Trustpilot review to add', img: 'img/hero.jpg', pos: '30% 25%' },
+    { t: 'Uploading my certificates took ten minutes and I never had to send the same document twice.', w: 'Marta K.', r: 'Kitchen assistant · Trustpilot review to add', img: 'img/kitchen.jpg', pos: '58% 15%' }
+  ];
+  var ri = 0;
+  function showReview(n) {
+    ri = (n + reviews.length) % reviews.length;
+    var r = reviews[ri];
+    document.getElementById('revText').textContent = r.t;
+    document.getElementById('revWho').textContent = r.w;
+    document.getElementById('revRole').textContent = r.r;
+    var img = document.getElementById('revImg'); img.src = r.img; img.style.objectPosition = r.pos;
+  }
+  document.getElementById('revPrev').addEventListener('click', function () { showReview(ri - 1); });
+  document.getElementById('revNext').addEventListener('click', function () { showReview(ri + 1); });
+})();
+
+  HCC.initFaqTabs();
+</script>
