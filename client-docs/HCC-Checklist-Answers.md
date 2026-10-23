@@ -72,3 +72,58 @@ That's 7 people, not 4, so the team section needs 7 cards. Photos and bios still
 - The documents to sign, the questionnaire and the declaration could become portal steps, for example "read and tick to sign" or a form.
 - Their flow has self-registration first; ours currently has apply with CV, then invite. Decide which to keep.
 - Still waiting on the role-by-role document list (for example nurse NMC PIN).
+
+---
+
+# Part 2 (received 23 Oct)
+
+## Order of work agreed
+1. Finish the website preview (artifact) until the client is happy with the look, then the theme.
+2. Candidate onboarding (self-registration flow).
+3. Mass job import.
+
+## Team photos (illustrated portraits in Archive.zip), matched by description
+| Person | Role | Description | File |
+|---|---|---|---|
+| David | Founder / Senior Business Development Manager | blue shirt | Confident Professional Portrait Illustration.PNG |
+| Geraldine | Compliance Manager | white suit | Polished Editorial Portrait of a Black Woman.PNG |
+| Arjun | Consultant | brown quarter-zip | Polished Corporate Portrait Illustration.PNG |
+| Debbie | Compliance Admin | long hair, half in front | Polished Portrait with Soft Arc Background.PNG |
+| Temi | Compliance Admin | glasses | Polished Corporate Portrait Illustration-2.PNG |
+| Ashanti | Onboarding Manager | black blazer | Confident Black Woman in Blazer.PNG |
+| Eddie | Client Manager | blue suit, bald | Polished Vector Portrait of a Bearded Professional.PNG |
+
+First names only on the site. Sizes differ (one portrait, one landscape), so crop all to the same square.
+
+## Onboarding requirements
+- **DBS (all roles): enhanced DBS**
+  - Ask: "Do you have a DBS?" Options: Yes, on the Update Service / Yes, not on the Update Service / No
+  - Update Service: collect the DBS certificate number so staff can check online
+- **Chef**
+  - Food Hygiene Level 2 or Level 3 certificate, must be in date
+  - Level 3 Allergen certificate
+  - First Aid certificate
+  - All must be actual certificates showing full name
+- Nurse: NMC PIN (from earlier). Full role list still to come.
+
+## Website changes
+- Hero:
+  - remove the coloured bubbles
+  - change the care assistant image to a **registered nurse** (top priority)
+  - secondary **chef** image layered alongside or from underneath
+- Homepage: nurse is the main USP and the role they look for most
+- Chefs: promote with **embedded videos of their chefs cooking** (videos to come)
+- Key selling points:
+  - **Clients:** emergency cover within **2 hours**, nationwide
+  - **Candidates:** registration to ready to work in **3 days**
+- Stat: cover provided figure with a slot-machine style roll when scrolled into view (1,000+ or 10,000+? confirm)
+- Homepage order: **Why choose HCC above the Blog**
+- Top navigation: remove Blog, or move it to just before Contact
+- About us:
+  - short story: committed to helping, which is why the company was created
+  - supports healthcare and hospitality companies; continuity of care
+  - keep it short
+  - add the team with first names and roles
+- Candidates page (rebuild later with onboarding):
+  - explain how registration works (no CV-first approval any more; candidates create an account directly)
+  - per-role sections (for example Nurse) that open to show what's needed, with a "Start registration" button
