@@ -1,0 +1,376 @@
+<!--title:Registration · HCC-Temps|key:register-->
+<main class="wiz-page">
+  <section class="wiz-head">
+    <div class="wrap">
+      <div class="crumbs"><a href="index.html">Home</a> / <a href="register.html">For candidates</a> / Registration</div>
+      <h1 id="wizTitle">Create your account</h1>
+      <ol class="stepper" id="stepper" aria-label="Registration steps">
+        <li data-s="1"><span>1</span>Account</li>
+        <li data-s="2"><span>2</span>Verify email</li>
+        <li data-s="3"><span>3</span>Your role</li>
+        <li data-s="4"><span>4</span>About you</li>
+        <li data-s="5"><span>5</span>Documents</li>
+        <li data-s="6"><span>6</span>Training</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section wiz-body">
+    <div class="wrap wiz-wrap">
+      <div class="wiz-main">
+        <p class="demo-bar"><b>Mockup</b> · <button type="button" id="demoFill">Fill this step with example answers</button> · <button type="button" id="demoReset">Start again</button></p>
+
+        <!-- Step 1: account -->
+        <form class="form-card wiz-step" data-step="1" novalidate>
+          <h2>Your details</h2>
+          <p class="sub">Registering as <b class="roleName"></b>. <a href="register.html#roles">Change role</a></p>
+          <div class="form-grid">
+            <div class="f"><label for="first">First name</label><input type="text" id="first" name="first" autocomplete="given-name"></div>
+            <div class="f"><label for="last">Surname</label><input type="text" id="last" name="last" autocomplete="family-name"></div>
+            <div class="f"><label for="email">Email</label><input type="email" id="email" name="email" autocomplete="email"><p class="hint">This is your username.</p></div>
+            <div class="f"><label for="phone">Mobile number</label><input type="tel" id="phone" name="phone" autocomplete="tel"></div>
+            <div class="f full"><label for="addr1">Address</label><input type="text" id="addr1" name="addr1" autocomplete="address-line1" placeholder="House number and street"></div>
+            <div class="f"><label for="town">Town or city</label><input type="text" id="town" name="town" autocomplete="address-level2"></div>
+            <div class="f"><label for="postcode">Postcode</label><input type="text" id="postcode" name="postcode" autocomplete="postal-code"></div>
+            <div class="f"><label for="pw">Password</label><input type="password" id="pw" name="pw" autocomplete="new-password"><p class="hint">At least 8 characters.</p></div>
+            <div class="f"><label for="pw2">Repeat password</label><input type="password" id="pw2" name="pw2" autocomplete="new-password"></div>
+            <label class="consent full"><input type="checkbox" name="terms">I accept the <a href="terms.html" target="_blank">terms and conditions</a>.</label>
+            <label class="consent full"><input type="checkbox" name="privacy">I have read the <a href="privacy.html" target="_blank">privacy policy</a>.</label>
+            <div class="robot full"><label><input type="checkbox" name="robot">I'm not a robot</label><small>Robot check<br>(Cloudflare Turnstile)</small></div>
+          </div>
+          <div class="form-actions"><button class="btn btn-navy" type="submit">Create my account</button><span class="error-msg" role="alert"></span></div>
+        </form>
+
+        <!-- Step 2: email code -->
+        <form class="form-card wiz-step" data-step="2" hidden novalidate>
+          <h2>Check your email</h2>
+          <p class="sub">We've sent a 6-digit code to <b class="emailTo"></b>. Enter it below to confirm your email address. The code works for 10 minutes.</p>
+          <div class="code-boxes" id="codeBoxes" aria-label="6-digit code">
+            <input inputmode="numeric" maxlength="1" aria-label="Digit 1"><input inputmode="numeric" maxlength="1" aria-label="Digit 2"><input inputmode="numeric" maxlength="1" aria-label="Digit 3"><input inputmode="numeric" maxlength="1" aria-label="Digit 4"><input inputmode="numeric" maxlength="1" aria-label="Digit 5"><input inputmode="numeric" maxlength="1" aria-label="Digit 6">
+          </div>
+          <div class="form-actions"><button class="btn btn-navy" type="submit">Verify email</button><span class="error-msg" role="alert"></span></div>
+          <p class="form-note" style="margin-top:14px">Not arrived? Check your spam folder or <a href="#" id="resend">send a new code</a>. Wrong email? <a href="#" data-goto="1">Go back</a>.</p>
+          <div class="email-mini"><span class="email-tag">Email they receive</span><div class="email" style="margin-top:10px"><div class="email-meta"><span>From: <b>HCC-Temps</b> &lt;no-reply@hcctemps.co.uk&gt;</span><span>Subject: <b>Your HCC-Temps code: 482913</b></span></div><div class="email-body"><img class="logo-sm" src="img/logo.png" alt="HCC-Temps" width="74" height="40"><p>Your code to confirm your email is:</p><p class="big-code">482 913</p><p style="font-size:13px;color:var(--muted)">It works for 10 minutes. If you didn't ask for this, ignore this email.</p></div></div></div>
+        </form>
+
+        <!-- Step 3: confirm role -->
+        <form class="form-card wiz-step" data-step="3" hidden novalidate>
+          <h2>Confirm your role</h2>
+          <p class="sub">You started registration as:</p>
+          <div class="role-confirm"><img id="roleImg" src="img/hero-nurse.jpg" alt="" width="96" height="96"><div><b class="roleName"></b><span>Your checklist of documents and training is based on this role.</span></div></div>
+          <fieldset class="f" style="margin-top:20px"><legend>Is this right?</legend>
+            <div class="radios"><label class="radio"><input type="radio" name="rolecheck" value="yes" checked><span>Yes, continue as&nbsp;<b class="roleName"></b></span></label><label class="radio"><input type="radio" name="rolecheck" value="no"><span>No, change role</span></label></div>
+          </fieldset>
+          <div class="f" id="roleSwitch" hidden style="margin-top:14px;max-width:420px"><label for="roleSel">Choose your role</label><select id="roleSel"></select></div>
+          <div class="form-actions"><button class="btn btn-navy" type="submit">Confirm and continue</button></div>
+        </form>
+
+        <!-- Step 4: pre-screening (no uploads) -->
+        <form class="wiz-step" data-step="4" hidden novalidate>
+          <div class="form-card">
+            <h2>About you</h2>
+            <p class="sub">A few questions so we can match you to the right shifts. No uploads yet: that's the next step. Your answers save when you press Submit.</p>
+          </div>
+
+          <fieldset class="q-group"><legend>Personal details</legend>
+            <div class="form-grid">
+              <div class="f"><label for="title">Title</label><select id="title" name="title"><option value="">Choose</option><option>Mr</option><option>Mrs</option><option>Miss</option><option>Ms</option><option>Mx</option><option>Dr</option></select></div>
+              <div class="f"><label for="dob">Date of birth</label><input type="date" id="dob" name="dob"></div>
+              <div class="f"><label for="ni">National Insurance number</label><input type="text" id="ni" name="ni" placeholder="QQ 12 34 56 C"></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="q-group"><legend>Right to work</legend>
+            <div class="form-grid">
+              <fieldset class="f full"><legend>Are you a British or Irish citizen?</legend><div class="radios"><label class="radio"><input type="radio" name="british" value="Yes"><span>Yes</span></label><label class="radio"><input type="radio" name="british" value="No"><span>No</span></label></div></fieldset>
+              <div class="f" data-show="british=No"><label for="visa">Your immigration status or visa</label><select id="visa" name="visa"><option value="">Choose</option><option>EU Settlement Scheme: settled status</option><option>EU Settlement Scheme: pre-settled status</option><option>Indefinite leave to remain</option><option>Health and Care Worker visa</option><option>Skilled Worker visa</option><option>Student visa</option><option>Graduate visa</option><option>Dependant visa</option><option>Family visa</option><option>Refugee or humanitarian protection</option><option>Other</option></select></div>
+              <div class="f" data-show="british=No"><label for="share">Right to work share code</label><input type="text" id="share" name="share" placeholder="W12 345 678"><p class="hint">Get it at gov.uk/prove-right-to-work</p></div>
+              <p class="note-info full" data-show="visa=Student visa">Student visas limit your hours in term time. In the next step we'll ask for your university term dates letter.</p>
+              <p class="note-info full" data-show="visa=Health and Care Worker visa|Skilled Worker visa">Sponsored visas: in the next step we'll ask for your certificate of sponsorship.</p>
+              <fieldset class="f"><legend>Do you hold a UK driving licence?</legend><div class="radios"><label class="radio"><input type="radio" name="licence" value="Full"><span>Full</span></label><label class="radio"><input type="radio" name="licence" value="Provisional"><span>Provisional</span></label><label class="radio"><input type="radio" name="licence" value="No"><span>No</span></label></div></fieldset>
+              <fieldset class="f"><legend>Do you have your own vehicle?</legend><div class="radios"><label class="radio"><input type="radio" name="vehicle" value="Yes"><span>Yes</span></label><label class="radio"><input type="radio" name="vehicle" value="No"><span>No</span></label></div></fieldset>
+            </div>
+          </fieldset>
+
+          <fieldset class="q-group"><legend>DBS</legend>
+            <fieldset class="f"><legend>Do you have a valid enhanced DBS certificate?</legend>
+              <div class="radio-cards">
+                <label><input type="radio" name="dbs" value="update"><span><b>Yes, and it's on the Update Service</b><small>Best: we can check it online straight away</small></span></label>
+                <label><input type="radio" name="dbs" value="cert"><span><b>Yes, but it's not on the Update Service</b><small>We'll check whether it can be used</small></span></label>
+                <label><input type="radio" name="dbs" value="none"><span><b>No, I don't have one</b><small>No problem, we'll apply for one for you</small></span></label>
+              </div>
+            </fieldset>
+            <p class="note-info" data-show="dbs=update">Heads up: in the next step we'll ask you to upload your DBS certificate. Have your certificate number ready too.</p>
+            <div class="f" data-show="dbs=update" style="max-width:360px;margin-top:12px"><label for="dbsno">DBS certificate number (12 digits)</label><input type="text" id="dbsno" name="dbsno" inputmode="numeric" maxlength="12"></div>
+            <p class="note-info" data-show="dbs=cert">In the next step, upload your certificate. Our compliance team will tell you if a new one is needed.</p>
+            <p class="note-info" data-show="dbs=none">We'll contact you to start a new enhanced DBS application. You can still carry on with your registration.</p>
+          </fieldset>
+
+          <fieldset class="q-group"><legend>Education and experience</legend>
+            <div class="form-grid">
+              <div class="f"><label for="edu">Highest level of education</label><select id="edu" name="edu"><option value="">Choose</option><option>GCSEs or equivalent</option><option>A levels or equivalent</option><option>NVQ / Diploma Level 2</option><option>NVQ / Diploma Level 3</option><option>Higher education diploma</option><option>Degree</option><option>Postgraduate</option></select></div>
+              <div class="f"><label for="emp">Current employment status</label><select id="emp" name="emp"><option value="">Choose</option><option>Employed full time</option><option>Employed part time</option><option>Agency work</option><option>Self-employed</option><option>Student</option><option>Not working</option></select></div>
+              <div class="f"><label for="exp">Experience in this role</label><select id="exp" name="exp"><option value="">Choose</option><option>Less than 6 months</option><option>6 to 12 months</option><option>1 to 2 years</option><option>3 to 5 years</option><option>More than 5 years</option></select></div>
+              <fieldset class="f"><legend>Do you have valid training certificates, dated within the last year?</legend><div class="radios"><label class="radio"><input type="radio" name="trainok" value="All"><span>Yes, all</span></label><label class="radio"><input type="radio" name="trainok" value="Some"><span>Some</span></label><label class="radio"><input type="radio" name="trainok" value="None"><span>No</span></label></div></fieldset>
+              <fieldset class="f"><legend id="uniformQ">Do you have a blue tunic?</legend><div class="radios"><label class="radio"><input type="radio" name="uniform" value="Yes"><span>Yes</span></label><label class="radio"><input type="radio" name="uniform" value="No"><span>No</span></label></div></fieldset>
+              <div class="f"><label for="size">Uniform size</label><select id="size" name="size"><option value="">Choose a comfortable fit</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option><option>3XL</option></select></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="q-group"><legend>Professional referees</legend>
+            <p class="hint" style="margin-bottom:12px">Two people who have managed you at work, ideally your most recent employers.</p>
+            <div class="ref-grid">
+              <div><h4>1st referee</h4><div class="form-grid one"><div class="f"><label for="r1n">Full name</label><input type="text" id="r1n" name="r1n"></div><div class="f"><label for="r1p">Position and organisation</label><input type="text" id="r1p" name="r1p"></div><div class="f"><label for="r1e">Email</label><input type="email" id="r1e" name="r1e"></div><div class="f"><label for="r1t">Phone</label><input type="tel" id="r1t" name="r1t"></div></div></div>
+              <div><h4>2nd referee</h4><div class="form-grid one"><div class="f"><label for="r2n">Full name</label><input type="text" id="r2n" name="r2n"></div><div class="f"><label for="r2p">Position and organisation</label><input type="text" id="r2p" name="r2p"></div><div class="f"><label for="r2e">Email</label><input type="email" id="r2e" name="r2e"></div><div class="f"><label for="r2t">Phone</label><input type="tel" id="r2t" name="r2t"></div></div></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="q-group"><legend>Emergency contact</legend>
+            <div class="form-grid">
+              <div class="f"><label for="kn">Name of next of kin</label><input type="text" id="kn" name="kn"></div>
+              <div class="f"><label for="kr">Relationship</label><input type="text" id="kr" name="kr"></div>
+              <div class="f"><label for="kt">Phone</label><input type="tel" id="kt" name="kt"></div>
+              <div class="f"><label for="ka">Address and postcode</label><input type="text" id="ka" name="ka"></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="q-group"><legend>Bank details <span class="opt-pill">Can add later</span></legend>
+            <p class="hint" style="margin-bottom:12px">For paying you. Only HCC managers can see these details.</p>
+            <div class="form-grid">
+              <div class="f"><label for="ban">Account name</label><input type="text" id="ban" name="ban"></div>
+              <fieldset class="f"><legend>Personal or limited company?</legend><div class="radios"><label class="radio"><input type="radio" name="btype" value="Personal"><span>Personal</span></label><label class="radio"><input type="radio" name="btype" value="LTD"><span>LTD</span></label></div></fieldset>
+              <div class="f"><label for="bsc">Sort code</label><input type="text" id="bsc" name="bsc" inputmode="numeric" placeholder="00-00-00"></div>
+              <div class="f"><label for="bno">Account number</label><input type="text" id="bno" name="bno" inputmode="numeric" maxlength="8"></div>
+            </div>
+          </fieldset>
+
+          <div class="form-card"><div class="form-actions" style="margin-top:0"><button class="btn btn-navy" type="submit">Submit and continue to documents</button><span class="error-msg" role="alert"></span></div></div>
+        </form>
+
+        <!-- Step 5: documents -->
+        <div class="form-card wiz-step" data-step="5" hidden>
+          <h2>Upload your documents</h2>
+          <p class="sub">Upload what you have now. If you don't have something yet, tick "I don't have this yet" and carry on. You can add it later from your portal.</p>
+          <div class="tips"><b>Photo tips:</b> lay the document flat in daylight, show all four corners, no flash or glare. PDF, JPG or PNG up to 10MB.</div>
+          <div class="progress" id="docBar"><i style="width:0"></i></div>
+          <div class="doc-list" id="docList"></div>
+          <div class="form-actions"><button class="btn btn-navy" type="button" data-next="6">Save and continue to training</button><span class="form-note" id="docCount"></span></div>
+        </div>
+
+        <!-- Step 6: training -->
+        <div class="form-card wiz-step" data-step="6" hidden>
+          <h2>Training certificates</h2>
+          <p class="sub">Certificates for <b class="roleName"></b>. They should be in date and show your full name. Missing some? Tick "I don't have this yet". We can help you book training.</p>
+          <p class="note-info" id="trainNote" hidden></p>
+          <div class="progress" id="trainBar"><i style="width:0"></i></div>
+          <div class="doc-list" id="trainList"></div>
+          <div class="form-actions"><button class="btn btn-navy" type="button" id="finish">Submit my registration</button><span class="form-note" id="trainCount"></span></div>
+        </div>
+
+        <!-- Done -->
+        <div class="form-card wiz-step" data-step="7" hidden>
+          <div class="success" style="grid-template-columns:1fr">
+            <div>
+              <div class="tick"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></div>
+              <h2>Thank you, <span class="firstName"></span></h2>
+              <p>Your registration is with our compliance team. Your reference is <b class="refNo"></b>.</p>
+              <ol>
+                <li>We review your answers and files, usually within 1 working day.</li>
+                <li>If anything is missing or needs replacing, we email you and show it in your portal.</li>
+                <li>Most candidates are ready to work within 3 days.</li>
+              </ol>
+              <p id="doneSummary" style="margin-top:14px"></p>
+              <div class="form-actions"><a class="btn btn-sun" href="portal.html">Go to my candidate portal</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="wiz-side">
+        <div class="side-card">
+          <h3>Registering as</h3>
+          <div class="side-role"><img id="sideImg" src="img/hero-nurse.jpg" alt="" width="56" height="56"><b class="roleName"></b></div>
+          <p style="font-size:14px;color:var(--muted)" id="sideRef">Your reference is created when you make your account.</p>
+        </div>
+        <div class="side-card" style="background:var(--white);border:1px solid var(--line)">
+          <div class="lock"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Your documents are stored privately. Only our compliance team can see them.</span></div>
+          <div class="lock"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Stop any time. Log in later and carry on where you left off.</span></div>
+        </div>
+        <div class="help" style="margin-top:0"><h3>Need help?</h3><p>Call us, 24 hours a day.</p><div class="line">0330 321 3124</div></div>
+      </aside>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  var esc = HCC.esc, R = HCC.REQS;
+  var IMG = { nurse: 'img/hero-nurse.jpg', hca: 'img/carer.jpg', 'senior-carer': 'img/hero.jpg', chef: 'img/hero-chef.jpg', 'head-chef': 'img/chef.jpg', kitchen: 'img/kitchen.jpg', catering: 'img/hospman.jpg', barista: 'img/barista.jpg', domestic: 'img/housekeeping.jpg', admin: 'img/reception.jpg' };
+  var TITLES = { 1: 'Create your account', 2: 'Verify your email', 3: 'Confirm your role', 4: 'Pre-screening questions', 5: 'Upload your documents', 6: 'Training certificates', 7: 'Registration submitted' };
+  function load() { try { return JSON.parse(sessionStorage.getItem('hcc-reg') || 'null'); } catch (x) { return null; } }
+  function save() { try { sessionStorage.setItem('hcc-reg', JSON.stringify(S)); } catch (x) {} }
+  var qp = new URLSearchParams(location.search);
+  var S = load() || { role: 'nurse', step: 1, acct: {}, answers: {}, docs: {}, train: {} };
+  if (qp.get('role') && R[qp.get('role')] && (!S.ref || qp.get('restart'))) { S = { role: qp.get('role'), step: 1, acct: {}, answers: {}, docs: {}, train: {} }; }
+
+  function setRole(id) {
+    S.role = id; save();
+    document.querySelectorAll('.roleName').forEach(function (el) { el.textContent = R[id].name; });
+    document.getElementById('roleImg').src = IMG[id]; document.getElementById('sideImg').src = IMG[id];
+    var care = /nurse|hca|senior/.test(id), chef = /chef|kitchen|catering|barista/.test(id);
+    document.getElementById('uniformQ').textContent = care ? 'Do you have a blue tunic?' : chef ? 'Do you have chef whites or kitchen uniform?' : 'Do you have a suitable work uniform?';
+  }
+  var roleSel = document.getElementById('roleSel');
+  roleSel.innerHTML = Object.keys(R).map(function (k) { return '<option value="' + k + '">' + esc(R[k].name) + '</option>'; }).join('');
+
+  function go(n) {
+    S.step = n; save();
+    document.querySelectorAll('.wiz-step').forEach(function (el) { el.hidden = +el.dataset.step !== n; });
+    document.querySelectorAll('#stepper li').forEach(function (li) { var s = +li.dataset.s; li.className = s < n ? 'done' : s === n ? 'on' : ''; if (s === n) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current'); });
+    document.getElementById('wizTitle').textContent = TITLES[n];
+    document.querySelector('.demo-bar').hidden = n === 7 || n === 3;
+    if (n === 5) renderDocs(); if (n === 6) renderTrain(); if (n === 7) renderDone();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  document.querySelectorAll('[data-goto]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); go(+a.dataset.goto); }); });
+  document.querySelectorAll('[data-next]').forEach(function (b) { b.addEventListener('click', function () { go(+b.dataset.next); }); });
+  function refLine() { if (S.ref) document.getElementById('sideRef').innerHTML = 'Your reference: <b>' + S.ref + '</b>. Every file you upload is renamed with it.'; }
+
+  /* Step 1 */
+  var f1 = document.querySelector('[data-step="1"]');
+  f1.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = function (n) { var el = f1.querySelector('[name=' + n + ']'); return el.type === 'checkbox' ? el.checked : el.value.trim(); };
+    var miss = ['first', 'last', 'email', 'phone', 'addr1', 'postcode'].filter(function (n) { return !v(n); });
+    var err = f1.querySelector('.error-msg');
+    if (miss.length) { err.textContent = 'Please fill in all your details.'; return; }
+    if (v('pw').length < 8) { err.textContent = 'Choose a password of at least 8 characters.'; return; }
+    if (v('pw') !== v('pw2')) { err.textContent = 'The two passwords don\'t match.'; return; }
+    if (!v('terms') || !v('privacy') || !v('robot')) { err.textContent = 'Please tick the terms, privacy policy and robot check.'; return; }
+    err.textContent = '';
+    S.acct = { first: v('first'), last: v('last'), email: v('email'), phone: v('phone'), address: v('addr1') + ', ' + v('town') + ' ' + v('postcode') };
+    S.ref = S.ref || 'HCC-00' + (1100 + Math.floor(Math.random() * 800));
+    S.registered = new Date().toISOString();
+    refLine();
+    document.querySelector('.emailTo').textContent = S.acct.email;
+    go(2);
+  });
+
+  /* Step 2 */
+  var boxes = document.querySelectorAll('#codeBoxes input');
+  boxes.forEach(function (b, i) {
+    b.addEventListener('input', function () { b.value = b.value.replace(/\D/g, '').slice(0, 1); if (b.value && boxes[i + 1]) boxes[i + 1].focus(); });
+    b.addEventListener('keydown', function (e) { if (e.key === 'Backspace' && !b.value && boxes[i - 1]) boxes[i - 1].focus(); });
+    b.addEventListener('paste', function (e) { var t = (e.clipboardData.getData('text') || '').replace(/\D/g, ''); if (t.length === 6) { e.preventDefault(); boxes.forEach(function (x, k) { x.value = t[k]; }); } });
+  });
+  document.getElementById('resend').addEventListener('click', function (e) { e.preventDefault(); this.textContent = 'code sent again'; });
+  document.querySelector('[data-step="2"]').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var code = Array.prototype.map.call(boxes, function (b) { return b.value; }).join('');
+    if (code.length !== 6) { this.querySelector('.error-msg').textContent = 'Enter all 6 digits from the email.'; return; }
+    go(3);
+  });
+
+  /* Step 3 */
+  document.querySelectorAll('[name=rolecheck]').forEach(function (r) { r.addEventListener('change', function () { var no = r.value === 'no' && r.checked; document.getElementById('roleSwitch').hidden = !no; if (no) roleSel.value = S.role; }); });
+  roleSel.addEventListener('change', function () { setRole(roleSel.value); });
+  document.querySelector('[data-step="3"]').addEventListener('submit', function (e) { e.preventDefault(); go(4); });
+
+  /* Step 4: show/hide follow-up questions */
+  var f4 = document.querySelector('[data-step="4"]');
+  function val(name) { var el = f4.querySelector('[name=' + name + ']:checked') || f4.querySelector('[name=' + name + ']'); return el && (el.type === 'radio' ? (el.checked ? el.value : '') : el.value); }
+  function conditions() {
+    f4.querySelectorAll('[data-show]').forEach(function (el) {
+      var p = el.dataset.show.split('='), opts = p[1].split('|');
+      el.hidden = opts.indexOf(val(p[0])) < 0;
+    });
+  }
+  f4.addEventListener('change', conditions); conditions();
+  f4.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var a = {};
+    f4.querySelectorAll('input[name], select[name]').forEach(function (el) { if (el.type === 'radio') { if (el.checked) a[el.name] = el.value; } else a[el.name] = el.value.trim(); });
+    if (!a.british || !a.dbs) { f4.querySelector('.error-msg').textContent = 'Please answer the right to work and DBS questions.'; return; }
+    S.answers = a; S.prescreenDone = new Date().toISOString(); go(5);
+  });
+
+  /* Documents and training: each item can be uploaded or marked "I don't have this yet" */
+  function docItems() {
+    var a = S.answers || {}, out = [];
+    R[S.role].docs.forEach(function (d) {
+      var it = { key: d, label: d, kind: 'file', note: '' };
+      if (/^Right to work/.test(d)) { it.label = 'Right to work: share code and supporting documents'; if (a.british === 'Yes') { it.kind = 'na'; it.note = 'Not needed: as a British or Irish citizen your passport covers this.'; } else it.note = (a.visa ? a.visa + '. ' : '') + (a.visa === 'Student visa' ? 'Include your university term dates letter.' : /Worker/.test(a.visa || '') ? 'Include your certificate of sponsorship.' : 'Include your share code result and any supporting letter.'); }
+      if (/^Two references/.test(d)) { it.kind = 'na'; it.note = 'Nothing to upload: we contact the referees you gave in step 4.'; }
+      if (/^Enhanced DBS/.test(d)) { if (a.dbs === 'none') { it.kind = 'na'; it.note = 'You told us you don\'t have one. We will apply for an enhanced DBS for you.'; } else it.note = a.dbs === 'update' ? 'On the Update Service' + (a.dbsno ? ', certificate ' + a.dbsno : '') + '. Upload both pages.' : 'Upload both pages. We will check whether it can be used.'; }
+      if (/^NMC PIN/.test(d)) { it.kind = 'pin'; it.note = 'We check this on the NMC register.'; }
+      if (/proof of address/i.test(d)) it.note = 'Two different documents, such as a bank statement and a utility bill.';
+      if (/photograph/i.test(d)) it.note = 'Head and shoulders, plain background, no filters.';
+      if (/^CV/.test(d)) it.note = 'PDF or Word.';
+      if (/where applicable/.test(d)) it.optional = true;
+      out.push(it);
+    });
+    return out;
+  }
+  var ICON_DOC = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>';
+  var ICON_OK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>';
+  function renderList(listId, items, store, barId, countId, withExpiry) {
+    var wrap = document.getElementById(listId);
+    wrap.innerHTML = items.map(function (it, i) {
+      var st = store[it.key] || {}, id = listId + i;
+      var right = it.kind === 'na' ? '<span class="stat stat-na">Not needed</span>'
+        : it.kind === 'pin' ? '<div class="pin-in"><input type="text" placeholder="e.g. 12A3456E" value="' + esc(st.pin || '') + '" data-pin="' + i + '" aria-label="NMC PIN"><input type="date" value="' + esc(st.exp || '') + '" data-exp="' + i + '" aria-label="PIN expiry date"></div>'
+        : '<div class="act"><label class="btn btn-ghost btn-sm" for="' + id + '">' + (st.file ? 'Replace' : 'Upload') + '</label><input type="file" id="' + id + '" data-i="' + i + '" accept=".pdf,.jpg,.jpeg,.png,.heic,.doc,.docx"' + (/address/i.test(it.key) ? ' multiple' : '') + '>' +
+          '<label class="nohave"><input type="checkbox" data-no="' + i + '"' + (st.missing ? ' checked' : '') + '>I don\'t have this yet</label></div>';
+      var done = st.file || st.pin || it.kind === 'na';
+      return '<div class="doc' + (done ? ' done' : '') + (st.missing ? ' later' : '') + '"><div class="ico">' + (done ? ICON_OK : ICON_DOC) + '</div><div><h3>' + esc(it.label) + (it.optional ? '<span class="req opt">If applicable</span>' : '') + '</h3>' +
+        (it.note ? '<p>' + esc(it.note) + '</p>' : '') + (st.file ? '<div class="renamed">✓ Saved as ' + esc(st.file) + '</div>' : '') + (st.missing ? '<div class="later-note">Marked to follow. You can upload it later from your portal.</div>' : '') +
+        (withExpiry && st.file ? '<label class="exp-in">Expiry date <input type="date" data-texp="' + i + '" value="' + esc(st.exp || '') + '"></label>' : '') + '</div>' + right + '</div>';
+    }).join('');
+    wrap.querySelectorAll('input[type=file]').forEach(function (inp) {
+      inp.addEventListener('change', function () {
+        var it = items[+inp.dataset.i]; if (!inp.files[0]) return;
+        store[it.key] = { file: HCC.renamed(S.ref, S.acct.first, S.acct.last, it.label.split(':')[0].replace(/\(.*\)/, ''), inp.files[0].name), at: new Date().toISOString() };
+        save(); renderList(listId, items, store, barId, countId, withExpiry);
+      });
+    });
+    wrap.querySelectorAll('[data-no]').forEach(function (c) { c.addEventListener('change', function () { var it = items[+c.dataset.no]; store[it.key] = c.checked ? { missing: true } : {}; save(); renderList(listId, items, store, barId, countId, withExpiry); }); });
+    wrap.querySelectorAll('[data-pin],[data-exp]').forEach(function (inp) { inp.addEventListener('change', function () { var it = items[+(inp.dataset.pin || inp.dataset.exp)]; store[it.key] = store[it.key] || {}; if (inp.dataset.pin) store[it.key].pin = inp.value.trim(); else store[it.key].exp = inp.value; save(); renderList(listId, items, store, barId, countId, withExpiry); }); });
+    wrap.querySelectorAll('[data-texp]').forEach(function (inp) { inp.addEventListener('change', function () { store[items[+inp.dataset.texp].key].exp = inp.value; save(); }); });
+    var need = items.filter(function (it) { return it.kind !== 'na'; }), have = need.filter(function (it) { var s = store[it.key] || {}; return s.file || s.pin; }).length, later = need.filter(function (it) { return (store[it.key] || {}).missing; }).length;
+    document.querySelector('#' + barId + ' i').style.width = (need.length ? have / need.length * 100 : 100) + '%';
+    document.getElementById(countId).textContent = have + ' of ' + need.length + ' added' + (later ? ' · ' + later + ' to follow' : '');
+  }
+  function renderDocs() { renderList('docList', docItems(), S.docs, 'docBar', 'docCount', false); }
+  function trainItems() { return R[S.role].train.map(function (t) { return { key: t, label: t, kind: 'file', optional: /preferred|not mandatory/i.test(t) || !!R[S.role].trainNote }; }); }
+  function renderTrain() {
+    var n = document.getElementById('trainNote'); n.hidden = !R[S.role].trainNote; n.textContent = 'For this role training is ' + (R[S.role].trainNote || '').toLowerCase() + '.';
+    renderList('trainList', trainItems(), S.train, 'trainBar', 'trainCount', true);
+  }
+  document.getElementById('finish').addEventListener('click', function () { S.submitted = new Date().toISOString(); go(7); });
+  function renderDone() {
+    document.querySelector('.firstName').textContent = S.acct.first || '';
+    document.querySelector('.refNo').textContent = S.ref || '';
+    var c = function (store, items) { var need = items.filter(function (i) { return i.kind !== 'na'; }); return [need.filter(function (i) { var s = store[i.key] || {}; return s.file || s.pin; }).length, need.length]; };
+    var d = c(S.docs, docItems()), t = c(S.train, trainItems());
+    document.getElementById('doneSummary').innerHTML = 'You added <b>' + d[0] + ' of ' + d[1] + '</b> documents and <b>' + t[0] + ' of ' + t[1] + '</b> training certificates.' + (d[0] < d[1] || t[0] < t[1] ? ' You can add the rest from your portal at any time.' : '');
+  }
+
+  /* Mockup helper: fill the current step with example answers */
+  document.getElementById('demoFill').addEventListener('click', function () {
+    var set = function (sel, v) { var el = document.querySelector(sel); if (el) { el.value = v; } };
+    var tick = function (name, v) { var el = document.querySelector('[name="' + name + '"][value="' + v + '"]'); if (el) el.checked = true; };
+    if (S.step === 1) { set('#first', 'Alex'); set('#last', 'Morgan'); set('#email', 'alex.morgan@example.com'); set('#phone', '07700 900456'); set('#addr1', '12 Park Lane'); set('#town', 'Leeds'); set('#postcode', 'LS12 2EJ'); set('#pw', 'Example-2026'); set('#pw2', 'Example-2026'); ['terms', 'privacy', 'robot'].forEach(function (n) { document.querySelector('[name=' + n + ']').checked = true; }); }
+    if (S.step === 2) boxes.forEach(function (b, i) { b.value = '482913'[i]; });
+    if (S.step === 4) { set('#title', 'Mx'); set('#dob', '1992-04-18'); set('#ni', 'QQ 12 34 56 C'); tick('british', 'No'); set('#visa', 'Health and Care Worker visa'); set('#share', 'W12 345 678'); tick('licence', 'Full'); tick('vehicle', 'Yes'); tick('dbs', 'update'); set('#dbsno', '001234567890'); set('#edu', 'Degree'); set('#emp', 'Agency work'); set('#exp', '3 to 5 years'); tick('trainok', 'Some'); tick('uniform', 'Yes'); set('#size', 'M'); set('#r1n', 'Jane Smith'); set('#r1p', 'Ward Manager, St Mary\'s Hospital'); set('#r1e', 'jane.smith@example.com'); set('#r1t', '0113 496 0000'); set('#r2n', 'Tom Patel'); set('#r2p', 'Deputy Manager, Oak House'); set('#r2e', 'tom.patel@example.com'); set('#r2t', '0113 496 0001'); set('#kn', 'Sam Morgan'); set('#kr', 'Sibling'); set('#kt', '07700 900789'); set('#ka', '4 Hill Road, Leeds LS6 1AA'); conditions(); }
+    if (S.step === 5 || S.step === 6) {
+      var items = S.step === 5 ? docItems() : trainItems(), store = S.step === 5 ? S.docs : S.train;
+      items.forEach(function (it, i) { if (it.kind === 'na') return; if (it.kind === 'pin') { store[it.key] = { pin: '12A3456E', exp: '2027-08-31' }; return; } store[it.key] = i % 4 === 3 ? { missing: true } : { file: HCC.renamed(S.ref, S.acct.first, S.acct.last, it.label.split(':')[0].replace(/\(.*\)/, ''), 'photo.jpg'), at: new Date().toISOString(), exp: S.step === 6 ? '2027-03-01' : '' }; });
+      save(); S.step === 5 ? renderDocs() : renderTrain();
+    }
+  });
+
+  document.getElementById('demoReset').addEventListener('click', function () { try { sessionStorage.removeItem('hcc-reg'); } catch (x) {} location.href = 'apply.html?role=' + S.role; });
+  setRole(S.role); refLine();
+  if (S.acct && S.acct.email) document.querySelector('.emailTo').textContent = S.acct.email;
+  go(S.step || 1);
+})();
+</script>

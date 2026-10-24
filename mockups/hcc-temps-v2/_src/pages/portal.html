@@ -1,0 +1,137 @@
+<!--title:My Portal · HCC-Temps|key:login-->
+<main>
+  <section class="portal-head">
+    <div class="wrap">
+      <div class="ph-top">
+        <div>
+          <span class="eyebrow" style="color:var(--aqua)">Candidate portal</span>
+          <h1 id="pHello">Hi Alex</h1>
+          <p id="pMeta">Registered Nurse · HCC-001234</p>
+        </div>
+        <a class="btn btn-ghost-light btn-sm" href="login.html">Log out</a>
+      </div>
+      <ol class="tracker" id="tracker"></ol>
+    </div>
+  </section>
+
+  <section class="section portal-body">
+    <div class="wrap">
+      <p class="demo-bar"><b>Mockup</b> · Show the portal: <button type="button" data-view="new">just after submitting</button> · <button type="button" data-view="review">after the team has reviewed</button> · <a href="staff.html">open this candidate in the Staff portal</a></p>
+
+      <div class="msg-card" id="msgs" hidden></div>
+
+      <div class="portal-grid">
+        <div class="p-col">
+          <div class="p-card">
+            <div class="p-card-head"><h2>Your documents</h2><span class="p-count" id="docSum"></span></div>
+            <div class="p-docs" id="pDocs"></div>
+          </div>
+          <details class="p-card p-folder" id="trainFolder">
+            <summary><span class="folder-ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span><span><b>Training certificates</b><small id="trainSum"></small></span><span class="folder-arrow" aria-hidden="true">▾</span></summary>
+            <div class="p-docs" id="pTrain"></div>
+          </details>
+        </div>
+        <div class="p-col">
+          <div class="p-card">
+            <div class="p-card-head"><h2>Your details</h2><a class="link-arrow" href="apply.html" id="editLink">Edit answers <span aria-hidden="true">→</span></a></div>
+            <div id="pDetails"></div>
+          </div>
+          <div class="help" style="margin-top:0"><h3>Questions about your registration?</h3><p>Call the compliance team, 24 hours a day.</p><div class="line">0330 321 3124</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  var esc = HCC.esc, R = HCC.REQS;
+  function load() { try { return JSON.parse(sessionStorage.getItem('hcc-reg') || 'null'); } catch (x) { return null; } }
+  function save() { try { sessionStorage.setItem('hcc-reg', JSON.stringify(S)); } catch (x) {} }
+  var S = load();
+  if (!S || !S.ref) S = HCC.demoCandidate();
+  var view = new URLSearchParams(location.search).get('view') || (S.review && Object.keys(S.review).length ? 'review' : 'new');
+
+  document.getElementById('pHello').textContent = 'Hi ' + S.acct.first;
+  document.getElementById('pMeta').textContent = R[S.role].name + ' · Reference ' + S.ref;
+
+  function status(store, key, isTrain) {
+    var s = store[key] || {}, r = (S.review || {})[key];
+    if (view === 'review' && r) return r;
+    if (view === 'review' && !r && (s.file || s.pin)) return { status: 'approved' };
+    if (s.missing) return { status: 'todo' };
+    if (s.file || s.pin) return { status: 'review' };
+    return { status: 'todo' };
+  }
+  var CHIP = { approved: ['Approved', 'stat-ok'], review: ['Uploaded · awaiting review', 'stat-wait'], amend: ['Needs replacing', 'stat-amend'], todo: ['To follow', 'stat-todo'], requested: ['Requested by our team', 'stat-amend'], na: ['Not needed', 'stat-na'] };
+  function rows(items, store, isTrain) {
+    return items.map(function (it, i) {
+      var st = it.na ? { status: 'na' } : status(store, it.key, isTrain), s = store[it.key] || {}, c = CHIP[st.status];
+      var btn = it.na ? '' : st.status === 'approved' ? '' : '<label class="btn btn-ghost btn-sm">' + (s.file ? 'Replace' : 'Upload') + '<input type="file" data-k="' + esc(it.key) + '" data-t="' + (isTrain ? 1 : 0) + '" hidden></label>';
+      return '<div class="p-doc s-' + st.status + '"><div><b>' + esc(it.label) + '</b>' +
+        (s.file ? '<span class="p-file">' + esc(s.file) + '</span>' : s.pin ? '<span class="p-file">PIN ' + esc(s.pin) + (s.exp ? ' · expires ' + esc(s.exp) : '') + '</span>' : '') +
+        (s.exp && s.file ? '<span class="p-file">Expires ' + esc(s.exp) + '</span>' : '') +
+        (st.reason ? '<span class="p-reason">' + esc(st.reason) + '</span>' : '') + '</div>' +
+        '<span class="stat ' + c[1] + '">' + c[0] + '</span>' + btn + '</div>';
+    }).join('');
+  }
+  function docItems() {
+    var a = S.answers || {};
+    return R[S.role].docs.map(function (d) {
+      var na = (/^Right to work/.test(d) && a.british === 'Yes') || /^Two references/.test(d) || (/^Enhanced DBS/.test(d) && a.dbs === 'none');
+      return { key: d, label: /^Right to work/.test(d) ? 'Right to work documents' : d, na: na };
+    });
+  }
+  function render() {
+    var di = docItems(), ti = R[S.role].train.map(function (t) { return { key: t, label: t }; });
+    document.getElementById('pDocs').innerHTML = rows(di, S.docs, false);
+    document.getElementById('pTrain').innerHTML = rows(ti, S.train, true);
+    var count = function (items, store) { var need = items.filter(function (i) { return !i.na; }); var ok = 0, todo = 0, amend = 0; need.forEach(function (i) { var st = status(store, i.key).status; if (st === 'approved') ok++; if (st === 'todo' || st === 'requested') todo++; if (st === 'amend') amend++; }); return { n: need.length, ok: ok, todo: todo, amend: amend, have: need.filter(function (i) { var s = store[i.key] || {}; return s.file || s.pin; }).length }; };
+    var d = count(di, S.docs), t = count(ti, S.train);
+    document.getElementById('docSum').textContent = d.have + ' of ' + d.n + ' added';
+    document.getElementById('trainSum').textContent = t.have + ' of ' + t.n + ' added' + (t.todo ? ' · ' + t.todo + ' to follow' : '') + (t.amend ? ' · ' + t.amend + ' to replace' : '') + ' · tap to open';
+
+    var stages = [['Account created', true], ['Pre-screening', !!S.prescreenDone], ['Documents', d.have === d.n && t.todo === 0 ? true : (d.have ? 'part' : false)], ['Compliance review', view === 'review' ? (d.amend || d.todo || t.amend || t.todo ? 'part' : true) : 'part'], ['Ready to work', view === 'review' && !d.amend && !d.todo && !t.amend && !t.todo]];
+    document.getElementById('tracker').innerHTML = stages.map(function (s) { return '<li class="' + (s[1] === true ? 'done' : s[1] === 'part' ? 'part' : '') + '"><span></span>' + s[0] + '</li>'; }).join('');
+
+    var msgs = document.getElementById('msgs'), list = [];
+    if (view === 'review') {
+      var req = [], am = [];
+      di.concat(ti).forEach(function (i) { var r = (S.review || {})[i.key]; if (r && r.status === 'requested') req.push(i.label); if (r && r.status === 'amend') am.push(i.label + (r.reason ? ': ' + r.reason : '')); });
+      if (!S.review || !Object.keys(S.review).length) { req = di.concat(ti).filter(function (i) { return !i.na && (S.docs[i.key] || S.train[i.key] || {}).missing; }).map(function (i) { return i.label; }); }
+      if (req.length) list.push('<div class="msg"><b>HCC compliance team · today</b><p>Thanks for registering. We are still missing the following from you:</p><ul>' + req.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul><p>Upload them below when you can. Call us if you need help getting any of them.</p></div>');
+      if (am.length) list.push('<div class="msg msg-amend"><b>Please replace</b><ul>' + am.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>');
+      if (!req.length && !am.length) list.push('<div class="msg msg-ok"><b>All checks complete</b><p>You are ready to work. We will be in touch about shifts.</p></div>');
+    } else list.push('<div class="msg msg-ok"><b>Registration received</b><p>Thank you. Our compliance team is reviewing your answers and files, usually within 1 working day. You can still add or replace files below.</p></div>');
+    msgs.innerHTML = list.join(''); msgs.hidden = false;
+
+    var a = S.answers || {}, ac = S.acct || {};
+    var bank = a.bno ? 'Account ending ' + a.bno.slice(-4) + (a.btype ? ' · ' + a.btype : '') : 'Not added yet';
+    var groups = [
+      ['Contact', [['Name', [a.title, ac.first, ac.last].filter(Boolean).join(' ')], ['Email', ac.email], ['Mobile', ac.phone], ['Address', ac.address], ['Date of birth', a.dob], ['NI number', a.ni]]],
+      ['Right to work', [['British or Irish citizen', a.british], ['Visa / status', a.british === 'No' ? a.visa : 'Not needed'], ['Share code', a.share], ['Driving licence', a.licence], ['Own vehicle', a.vehicle]]],
+      ['DBS', [['Enhanced DBS', { update: 'Yes, on the Update Service', cert: 'Yes, not on the Update Service', none: 'No, HCC to apply' }[a.dbs]], ['Certificate number', a.dbsno]]],
+      ['Experience', [['Education', a.edu], ['Employment status', a.emp], ['Experience in role', a.exp], ['Training in date', a.trainok], ['Uniform', a.uniform], ['Uniform size', a.size]]],
+      ['Referees', [['1st referee', [a.r1n, a.r1p].filter(Boolean).join(', ')], ['', [a.r1e, a.r1t].filter(Boolean).join(' · ')], ['2nd referee', [a.r2n, a.r2p].filter(Boolean).join(', ')], ['', [a.r2e, a.r2t].filter(Boolean).join(' · ')]]],
+      ['Emergency contact', [['Name', a.kn], ['Relationship', a.kr], ['Phone', a.kt], ['Address', a.ka]]],
+      ['Bank details', [['Account', bank]]]
+    ];
+    document.getElementById('pDetails').innerHTML = groups.map(function (g, i) {
+      return '<details class="det"' + (i < 2 ? ' open' : '') + '><summary>' + g[0] + '</summary><dl>' + g[1].map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1] || '—') + '</dd></div>'; }).join('') + '</dl></details>';
+    }).join('');
+
+    document.querySelectorAll('.p-doc input[type=file]').forEach(function (inp) {
+      inp.addEventListener('change', function () {
+        if (!inp.files[0]) return;
+        var store = inp.dataset.t === '1' ? S.train : S.docs, k = inp.dataset.k;
+        store[k] = { file: HCC.renamed(S.ref, S.acct.first, S.acct.last, k.split(':')[0].replace(/\(.*\)/, ''), inp.files[0].name), at: new Date().toISOString() };
+        if (S.review) delete S.review[k];
+        if (view === 'review') { S.review = S.review || {}; S.review[k] = { status: 'review' }; }
+        save(); render();
+      });
+    });
+  }
+  document.querySelectorAll('[data-view]').forEach(function (b) { b.addEventListener('click', function () { view = b.dataset.view; render(); }); });
+  document.getElementById('editLink').addEventListener('click', function () { S.step = 4; save(); });
+  render();
+})();
+</script>

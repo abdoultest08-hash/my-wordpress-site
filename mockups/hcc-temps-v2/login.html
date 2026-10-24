@@ -147,7 +147,7 @@
       </div>
       <div>
         <h4>Candidates</h4>
-        <ul><li><a href="jobs.html">Find jobs</a></li><li><a href="register.html">Register</a></li><li><a href="register.html#how">How registration works</a></li><li><a href="login.html">Candidate login</a></li></ul>
+        <ul><li><a href="jobs.html">Find jobs</a></li><li><a href="register.html">Register</a></li><li><a href="register.html#how">How registration works</a></li><li><a href="login.html">Candidate login</a></li><li><a href="workflow.html">Registration workflow</a></li></ul>
       </div>
       <div>
         <h4>Clients</h4>
@@ -202,7 +202,7 @@
     if (!/^\d{6}$/.test(document.getElementById('code').value)) { cf.querySelector('.error-msg').textContent = 'Enter the 6 digits from the email.'; return; }
     var staff = mode();
     document.getElementById('doneText').textContent = staff ? 'In the live site this opens the Staff portal dashboard. (Mockup: designed in the next phase.)' : 'In the live site this opens your candidate portal. (Mockup: designed in the next phase.)';
-    cf.hidden = true; document.getElementById('loginDone').hidden = false;
+    location.href = staff ? 'staff.html' : 'portal.html';
   });
 })();
 </script>

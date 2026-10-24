@@ -1,0 +1,157 @@
+<!--title:Staff Portal · HCC-Temps|key:login-->
+<main class="staff-page">
+  <div class="staff-bar">
+    <div class="wrap">
+      <b>Staff portal</b>
+      <nav aria-label="Staff portal"><a href="workflow.html#dashboard">Dashboard</a><a href="staff.html" aria-current="page">Candidates</a><a href="workflow.html#emails">Emails</a></nav>
+      <span class="who-in">Geraldine · Compliance Manager</span>
+    </div>
+  </div>
+
+  <section class="section staff-body">
+    <div class="wrap">
+      <p class="demo-bar"><b>Mockup</b> · This is the candidate you just registered (or a sample). Tick items, then approve them or email the candidate about missing items. <a href="portal.html?view=review">See the candidate's portal</a></p>
+      <div class="crumbs" style="color:var(--muted)"><a href="staff.html">Candidates</a> / <span id="sName"></span></div>
+
+      <div class="s-head">
+        <div>
+          <h1 id="sTitle">Alex Morgan</h1>
+          <p id="sMeta"></p>
+        </div>
+        <div class="s-actions">
+          <label class="s-stage">Stage <select id="stage"><option>New registration</option><option selected>Documents</option><option>Checks in progress</option><option>Ready to work</option><option>Closed</option></select></label>
+          <button class="btn btn-ghost btn-sm" type="button">Download all (zip)</button>
+          <button class="btn btn-ghost btn-sm" type="button">Candidate report</button>
+        </div>
+      </div>
+
+      <div class="staff-grid">
+        <div>
+          <div class="p-card">
+            <div class="p-card-head"><h2>Documents</h2><span class="p-count" id="sDocSum"></span></div>
+            <div class="bulk" id="bulk" hidden><span id="bulkN"></span><button class="btn btn-sm btn-aqua" type="button" data-bulk="approve">Approve selected</button><button class="btn btn-sm btn-sun" type="button" data-bulk="missing">Email missing items</button><button class="link-btn" type="button" data-bulk="clear">Clear</button></div>
+            <div class="s-table" id="sDocs"></div>
+          </div>
+          <details class="p-card p-folder" open>
+            <summary><span class="folder-ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span><span><b>Training certificates</b><small id="sTrainSum"></small></span><span class="folder-arrow" aria-hidden="true">▾</span></summary>
+            <div class="s-table" id="sTrain"></div>
+          </details>
+
+          <div class="p-card" id="mailPanel" hidden>
+            <div class="p-card-head"><h2>Email missing items</h2><button class="link-btn" type="button" id="mailClose">Cancel</button></div>
+            <div class="f"><label for="mailNote">Add a note (optional)</label><textarea id="mailNote" placeholder="e.g. Your DBS photo was cut off at the bottom, please upload both pages."></textarea></div>
+            <div class="email" style="margin-top:14px"><div class="email-meta"><span>From: <b>HCC-Temps Compliance</b> &lt;compliance@hcctemps.co.uk&gt;</span><span>To: <span id="mailTo"></span></span><span>Subject: <b id="mailSubj"></b></span></div>
+              <div class="email-body"><img class="logo-sm" src="img/logo.png" alt="HCC-Temps" width="74" height="40"><p>Hi <span class="mFirst"></span>,</p><p>Thank you for registering with HCC-Temps. To finish your checks we still need the following from you:</p><ul id="mailList"></ul><p id="mailNoteOut" hidden></p><a class="btn btn-aqua" href="portal.html?view=review">Upload in my portal</a><p style="font-size:13px;color:var(--muted)">Questions? Call 0330 321 3124, 24 hours a day. Your reference is <span class="mRef"></span>.</p></div></div>
+            <div class="form-actions"><button class="btn btn-navy" type="button" id="mailSend">Send email</button></div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="p-card">
+            <div class="p-card-head"><h2>Pre-screening answers</h2></div>
+            <div id="sAnswers"></div>
+          </div>
+          <div class="p-card">
+            <div class="p-card-head"><h2>Notes</h2></div>
+            <div class="f"><label for="note">Add a note</label><textarea id="note" placeholder="Visible to the candidate, or tick to keep internal"></textarea></div>
+            <label class="consent" style="margin-top:8px"><input type="checkbox" id="internal" checked>Internal note (candidate can't see it)</label>
+            <div class="form-actions" style="margin-top:10px"><button class="btn btn-ghost btn-sm" type="button" id="addNote">Add note</button></div>
+          </div>
+          <div class="p-card">
+            <div class="p-card-head"><h2>Timeline</h2></div>
+            <ol class="timeline" id="timeline"></ol>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+  <div class="toast-pop" id="toastPop" role="status" aria-live="polite" hidden></div>
+</main>
+<script>
+(function () {
+  var esc = HCC.esc, R = HCC.REQS;
+  function load() { try { return JSON.parse(sessionStorage.getItem('hcc-reg') || 'null'); } catch (x) { return null; } }
+  function save() { try { sessionStorage.setItem('hcc-reg', JSON.stringify(S)); } catch (x) {} }
+  var S = load(); if (!S || !S.ref) { S = HCC.demoCandidate(); save(); }
+  S.review = S.review || {}; S.log = S.log || [];
+  var name = S.acct.first + ' ' + S.acct.last, a = S.answers || {};
+  function fmt(d) { var x = new Date(d || Date.now()); return x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ', ' + x.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); }
+  if (!S.log.length) S.log = [[S.registered, 'Account created and email verified', 'Candidate'], [S.prescreenDone || S.registered, 'Pre-screening submitted', 'Candidate'], [S.submitted || S.registered, 'Documents and training uploaded', 'Candidate']];
+  document.getElementById('sTitle').textContent = name; document.getElementById('sName').textContent = name;
+  document.getElementById('sMeta').innerHTML = esc(R[S.role].name) + ' · <b>' + esc(S.ref) + '</b> · Registered ' + fmt(S.registered) + ' · ' + esc(S.acct.email) + ' · ' + esc(S.acct.phone);
+  document.querySelectorAll('.mFirst').forEach(function (e) { e.textContent = S.acct.first; }); document.querySelectorAll('.mRef').forEach(function (e) { e.textContent = S.ref; });
+  document.getElementById('mailTo').textContent = S.acct.email;
+
+  var CHIP = { approved: ['Approved', 'stat-ok'], review: ['To review', 'stat-wait'], amend: ['Amend requested', 'stat-amend'], todo: ['Missing', 'stat-todo'], requested: ['Requested', 'stat-amend'], na: ['Not needed', 'stat-na'] };
+  function items(train) {
+    if (train) return R[S.role].train.map(function (t) { return { key: t, label: t, t: 1 }; });
+    return R[S.role].docs.map(function (d) {
+      var na = (/^Right to work/.test(d) && a.british === 'Yes') || /^Two references/.test(d) || (/^Enhanced DBS/.test(d) && a.dbs === 'none');
+      return { key: d, label: /^Right to work/.test(d) ? 'Right to work documents' : d, na: na };
+    });
+  }
+  function st(it) { if (it.na) return 'na'; var r = S.review[it.key]; if (r) return r.status; var s = (it.t ? S.train : S.docs)[it.key] || {}; return (s.file || s.pin) ? 'review' : 'todo'; }
+  var AMEND = ['Photo is blurry', 'Corners are cut off', 'Document has expired', 'Name doesn\'t match your ID', 'Wrong document', 'Please upload both sides'];
+  function table(list) {
+    return list.map(function (it) {
+      var s = st(it), file = (it.t ? S.train : S.docs)[it.key] || {}, c = CHIP[s], r = S.review[it.key] || {};
+      return '<div class="s-row s-' + s + '">' + (it.na ? '<span class="s-cb"></span>' : '<label class="s-cb"><input type="checkbox" data-k="' + esc(it.key) + '" aria-label="Select ' + esc(it.label) + '"></label>') +
+        '<div class="s-item"><b>' + esc(it.label) + '</b>' + (file.file ? '<a class="p-file" href="#" onclick="return false">' + esc(file.file) + '</a>' : file.pin ? '<span class="p-file">PIN ' + esc(file.pin) + ' · <a href="https://www.nmc.org.uk/registration/search-the-register/" target="_blank" rel="noopener">check NMC register</a></span>' : file.missing ? '<span class="p-file">Candidate ticked "I don\'t have this yet"</span>' : '') + (file.exp ? '<span class="p-file">Expires ' + esc(file.exp) + '</span>' : '') + (r.reason ? '<span class="p-reason">' + esc(r.reason) + '</span>' : '') + '</div>' +
+        '<span class="stat ' + c[1] + '">' + c[0] + '</span>' +
+        (it.na || s === 'todo' || s === 'requested' ? '<span></span>' : '<span class="s-btns"><button type="button" class="mini ok" data-ok="' + esc(it.key) + '" title="Approve">✓</button><button type="button" class="mini am" data-am="' + esc(it.key) + '" title="Ask to replace">↺</button></span>') +
+        '<div class="amend-box" data-box="' + esc(it.key) + '" hidden><select>' + AMEND.map(function (x) { return '<option>' + x + '</option>'; }).join('') + '</select><button type="button" class="btn btn-sm btn-sun" data-amsend="' + esc(it.key) + '">Send to candidate</button></div></div>';
+    }).join('');
+  }
+  function sum(list) { var n = list.filter(function (i) { return !i.na; }); var c = {}; n.forEach(function (i) { var s = st(i); c[s] = (c[s] || 0) + 1; }); return n.length + ' items · ' + (c.approved || 0) + ' approved · ' + (c.review || 0) + ' to review · ' + ((c.todo || 0) + (c.requested || 0)) + ' missing' + (c.amend ? ' · ' + c.amend + ' to replace' : ''); }
+  function labelOf(k) { var all = items(false).concat(items(true)); for (var i = 0; i < all.length; i++) if (all[i].key === k) return all[i].label; return k; }
+  function log(text) { S.log.push([new Date().toISOString(), text, 'Geraldine']); save(); }
+  function toast(t) { var el = document.getElementById('toastPop'); el.textContent = t; el.hidden = false; clearTimeout(el._t); el._t = setTimeout(function () { el.hidden = true; }, 3200); }
+
+  function render() {
+    var d = items(false), t = items(true);
+    document.getElementById('sDocs').innerHTML = table(d); document.getElementById('sTrain').innerHTML = table(t);
+    document.getElementById('sDocSum').textContent = sum(d); document.getElementById('sTrainSum').textContent = sum(t);
+    var ans = [
+      ['Right to work', [['British or Irish citizen', a.british], ['Visa / status', a.british === 'No' ? a.visa : 'Not needed'], ['Share code', a.share ? a.share + ' · check on GOV.UK' : '']]],
+      ['DBS', [['Enhanced DBS', { update: 'On the Update Service', cert: 'Certificate, not on Update Service', none: 'None: HCC to apply' }[a.dbs]], ['Certificate no.', a.dbsno ? a.dbsno + ' · check Update Service' : '']]],
+      ['About', [['Date of birth', a.dob], ['NI number', a.ni], ['Address', S.acct.address], ['Licence / vehicle', [a.licence, a.vehicle && 'vehicle: ' + a.vehicle].filter(Boolean).join(' · ')]]],
+      ['Experience', [['Education', a.edu], ['Status', a.emp], ['In role', a.exp], ['Training in date', a.trainok], ['Uniform', [a.uniform, a.size].filter(Boolean).join(' · ')]]],
+      ['Referees', [['1', [a.r1n, a.r1p, a.r1e, a.r1t].filter(Boolean).join(' · ')], ['2', [a.r2n, a.r2p, a.r2e, a.r2t].filter(Boolean).join(' · ')]]],
+      ['Emergency contact', [['', [a.kn, a.kr, a.kt].filter(Boolean).join(' · ')]]],
+      ['Bank (managers only)', [['Account', a.bno ? (a.ban || '') + ' · ' + (a.btype || '') + ' · ' + (a.bsc || '') + ' · ****' + a.bno.slice(-4) : 'Not added yet']]]
+    ];
+    document.getElementById('sAnswers').innerHTML = ans.map(function (g, i) { return '<details class="det"' + (i < 2 ? ' open' : '') + '><summary>' + g[0] + '</summary><dl>' + g[1].map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1] || '—') + '</dd></div>'; }).join('') + '</dl></details>'; }).join('');
+    document.getElementById('timeline').innerHTML = S.log.slice().reverse().map(function (l) { return '<li><b>' + esc(l[1]) + '</b><span>' + fmt(l[0]) + ' · ' + esc(l[2]) + '</span></li>'; }).join('');
+    bind(); bulk();
+  }
+  function ticked() { return Array.prototype.map.call(document.querySelectorAll('.s-cb input:checked'), function (c) { return c.dataset.k; }); }
+  function bulk() { var n = ticked().length; document.getElementById('bulk').hidden = !n; document.getElementById('bulkN').textContent = n + ' selected'; }
+  function bind() {
+    document.querySelectorAll('.s-cb input').forEach(function (c) { c.addEventListener('change', bulk); });
+    document.querySelectorAll('[data-ok]').forEach(function (b) { b.addEventListener('click', function () { S.review[b.dataset.ok] = { status: 'approved' }; log('Approved ' + labelOf(b.dataset.ok)); render(); toast('Approved'); }); });
+    document.querySelectorAll('[data-am]').forEach(function (b) { b.addEventListener('click', function () { var box = document.querySelector('[data-box="' + CSS.escape(b.dataset.am) + '"]'); box.hidden = !box.hidden; }); });
+    document.querySelectorAll('[data-amsend]').forEach(function (b) { b.addEventListener('click', function () { var k = b.dataset.amsend, reason = b.previousElementSibling.value; S.review[k] = { status: 'amend', reason: reason }; log('Asked to replace ' + labelOf(k) + ': ' + reason + ' (email sent)'); render(); toast('Email sent: please replace ' + labelOf(k)); }); });
+  }
+  document.querySelectorAll('[data-bulk]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var ks = ticked();
+      if (b.dataset.bulk === 'clear') { document.querySelectorAll('.s-cb input').forEach(function (c) { c.checked = false; }); bulk(); return; }
+      if (b.dataset.bulk === 'approve') { ks.forEach(function (k) { S.review[k] = { status: 'approved' }; }); log('Approved ' + ks.length + ' items'); render(); toast(ks.length + ' items approved'); return; }
+      document.getElementById('mailList').innerHTML = ks.map(function (k) { return '<li>' + esc(labelOf(k)) + '</li>'; }).join('');
+      document.getElementById('mailSubj').textContent = 'Action needed: ' + ks.length + ' item' + (ks.length > 1 ? 's' : '') + ' missing from your registration (' + S.ref + ')';
+      var p = document.getElementById('mailPanel'); p.hidden = false; p.dataset.keys = JSON.stringify(ks); p.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  document.getElementById('mailNote').addEventListener('input', function () { var o = document.getElementById('mailNoteOut'); o.textContent = this.value; o.hidden = !this.value.trim(); });
+  document.getElementById('mailClose').addEventListener('click', function () { document.getElementById('mailPanel').hidden = true; });
+  document.getElementById('mailSend').addEventListener('click', function () {
+    var p = document.getElementById('mailPanel'), ks = JSON.parse(p.dataset.keys || '[]');
+    ks.forEach(function (k) { S.review[k] = { status: 'requested' }; });
+    log('Emailed candidate about ' + ks.length + ' missing items: ' + ks.map(labelOf).join(', '));
+    p.hidden = true; render(); toast('Email sent to ' + S.acct.first + ' with ' + ks.length + ' missing items');
+  });
+  document.getElementById('addNote').addEventListener('click', function () { var n = document.getElementById('note'); if (!n.value.trim()) return; log((document.getElementById('internal').checked ? 'Internal note: ' : 'Message to candidate (emailed): ') + n.value.trim()); n.value = ''; render(); });
+  document.getElementById('stage').addEventListener('change', function () { log('Stage changed to ' + this.value + (this.value === 'Ready to work' ? ' (candidate emailed)' : '')); render(); });
+  render();
+})();
+</script>

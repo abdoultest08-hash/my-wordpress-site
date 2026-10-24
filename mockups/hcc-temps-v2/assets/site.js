@@ -111,6 +111,22 @@ var HCC = (function () {
     return ref + '_' + slug(last || 'Surname') + '-' + slug(first || 'First') + '_' + docKey + '_' + today() + ext;
   }
 
+
+  /* Sample candidate for the portal and staff views when nobody has registered in this browser session */
+  function demoCandidate() {
+    var role = 'nurse', S = { role: role, ref: 'HCC-001234', step: 7, registered: new Date(Date.now() - 864e5).toISOString(), prescreenDone: new Date(Date.now() - 82e6).toISOString(), submitted: new Date(Date.now() - 8e7).toISOString(),
+      acct: { first: 'Alex', last: 'Morgan', email: 'alex.morgan@example.com', phone: '07700 900456', address: '12 Park Lane, Leeds LS12 2EJ' },
+      answers: { title: 'Mx', dob: '1992-04-18', ni: 'QQ 12 34 56 C', british: 'No', visa: 'Health and Care Worker visa', share: 'W12 345 678', licence: 'Full', vehicle: 'Yes', dbs: 'update', dbsno: '001234567890', edu: 'Degree', emp: 'Agency work', exp: '3 to 5 years', trainok: 'Some', uniform: 'Yes', size: 'M', r1n: 'Jane Smith', r1p: 'Ward Manager, St Mary\'s Hospital', r1e: 'jane.smith@example.com', r1t: '0113 496 0000', r2n: 'Tom Patel', r2p: 'Deputy Manager, Oak House', r2e: 'tom.patel@example.com', r2t: '0113 496 0001', kn: 'Sam Morgan', kr: 'Sibling', kt: '07700 900789', ka: '4 Hill Road, Leeds LS6 1AA', ban: 'A Morgan', btype: 'Personal', bsc: '00-00-00', bno: '12345678' },
+      docs: {}, train: {} };
+    REQS[role].docs.forEach(function (d) {
+      if (/^NMC PIN/.test(d)) S.docs[d] = { pin: '12A3456E', exp: '2027-08-31' };
+      else if (/National Insurance/.test(d)) S.docs[d] = { missing: true };
+      else if (!/^Two references/.test(d)) S.docs[d] = { file: renamed(S.ref, 'Alex', 'Morgan', d.split(':')[0].replace(/\(.*\)/, ''), 'scan.pdf') };
+    });
+    REQS[role].train.forEach(function (t, i) { S.train[t] = i % 5 === 4 ? { missing: true } : { file: renamed(S.ref, 'Alex', 'Morgan', t, 'cert.pdf'), exp: '2027-03-01' }; });
+    return S;
+  }
+
   function initMenu() {
     var toggle = document.getElementById('menuToggle'), mnav = document.getElementById('mobileNav');
     if (!toggle || !mnav) return;
@@ -176,5 +192,5 @@ var HCC = (function () {
     document.querySelectorAll('.nav-login[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
   });
   initMenu();
-  return { initFaqTabs: initFaqTabs, JOBS: JOBS, card: card, byId: byId, checklistFor: checklistFor, REQS: REQS, reqKey: reqKey, renamed: renamed, initApply: initApply, esc: esc };
+  return { initFaqTabs: initFaqTabs, JOBS: JOBS, card: card, byId: byId, checklistFor: checklistFor, REQS: REQS, reqKey: reqKey, demoCandidate: demoCandidate, renamed: renamed, initApply: initApply, esc: esc };
 })();

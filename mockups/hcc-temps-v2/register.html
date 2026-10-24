@@ -101,27 +101,10 @@
   </section>
 
   <section class="section" id="register">
-    <div class="wrap">
-      <div style="max-width:760px;margin:0 auto">
-        <form class="form-card" id="regForm" novalidate>
-          <h2>Create your account</h2>
-          <p class="sub">Registering as: <b id="chosen" style="color:var(--navy)">choose a role above</b></p>
-          <div class="form-grid">
-            <div class="f"><label for="first">First name</label><input type="text" id="first" name="first" autocomplete="given-name"></div>
-            <div class="f"><label for="last">Last name</label><input type="text" id="last" name="last" autocomplete="family-name"></div>
-            <div class="f full"><label for="email">Email</label><input type="email" id="email" name="email" autocomplete="email"></div>
-            <div class="f"><label for="pw">Password</label><input type="password" id="pw" name="pw" autocomplete="new-password"></div>
-            <div class="f"><label for="pw2">Repeat password</label><input type="password" id="pw2" name="pw2" autocomplete="new-password"></div>
-            <label class="consent full"><input type="checkbox" name="terms">I accept the <a href="terms.html" target="_blank">terms and conditions</a>.</label>
-            <label class="consent full"><input type="checkbox" name="privacy">I agree to the <a href="privacy.html" target="_blank">privacy policy</a>.</label>
-            <div class="robot full"><label><input type="checkbox" name="robot">I'm not a robot</label><small>Robot check<br>(Cloudflare Turnstile)</small></div>
-          </div>
-          <div class="form-actions"><button class="btn btn-navy" type="submit">Create my account</button><span class="error-msg" role="alert"></span></div>
-          <p class="form-note" style="margin-top:12px">Your username is your email address. You'll get a 6-digit code by email each time you log in.</p>
-        </form>
-        <div id="regDone" class="form-card" hidden></div>
-        <p class="login-strip" id="login">Already registered? <a href="login.html">Log in to your candidate portal</a></p>
-      </div>
+    <div class="wrap" style="max-width:760px;text-align:center">
+      <h2 style="font-size:clamp(26px,3vw,36px);color:var(--ink)">Ready to start?</h2>
+      <p style="margin-top:10px;color:var(--muted)">Choose your role above, then press Start registration. It takes about 15 minutes and you can stop and come back.</p>
+      <p class="login-strip" id="login">Already registered? <a href="login.html">Log in to your candidate portal</a></p>
     </div>
   </section>
 </main>
@@ -165,7 +148,7 @@
       </div>
       <div>
         <h4>Candidates</h4>
-        <ul><li><a href="jobs.html">Find jobs</a></li><li><a href="register.html">Register</a></li><li><a href="register.html#how">How registration works</a></li><li><a href="login.html">Candidate login</a></li></ul>
+        <ul><li><a href="jobs.html">Find jobs</a></li><li><a href="register.html">Register</a></li><li><a href="register.html#how">How registration works</a></li><li><a href="login.html">Candidate login</a></li><li><a href="workflow.html">Registration workflow</a></li></ul>
       </div>
       <div>
         <h4>Clients</h4>
@@ -216,7 +199,6 @@
     var r = byId[id]; if (!r) return;
     chosen = r.name;
     document.querySelectorAll('.role-pick').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.id === id)); });
-    document.getElementById('chosen').textContent = r.name;
     detail.innerHTML =
       '<div><h3>Before you start: ' + esc(r.name) + '</h3>' +
       '<p class="rd-sub">Have these ready. You upload them in your portal after creating your account.</p>' +
@@ -224,7 +206,7 @@
       '<ul class="need">' + r.docs.map(function (n) { return '<li><span><b>' + esc(n) + '</b></span></li>'; }).join('') + '</ul>' +
       '<details class="train-box"><summary>Training certificates (' + r.train.length + ')' + (r.trainNote ? ' · ' + esc(r.trainNote) : '') + '</summary><ul class="need">' + r.train.map(function (n) { return '<li><span><b>' + esc(n) + '</b></span></li>'; }).join('') + '</ul></details>' +
       '<p class="req-note">Missing something? You can still register and upload what you have. We will tell you what is still needed.</p>' +
-      '<div class="form-actions" style="margin-top:20px"><a class="btn btn-sun" href="#register" id="startReg">Start registration as ' + esc(r.name) + '</a></div></div>' +
+      '<div class="form-actions" style="margin-top:20px"><a class="btn btn-sun" href="apply.html?role=' + r.id + '&amp;restart=1" id="startReg">Start registration as ' + esc(r.name) + '</a></div></div>' +
       '<aside class="rd-side"><h4>About your DBS</h4><p>Every role needs an enhanced DBS on the Update Service. When you register we ask:</p>' +
       '<div class="dbs-opt"><div><b>Yes, on the Update Service:</b> we will ask for your certificate in the next step.</div>' +
       '<div><b>Yes, but not on the Update Service:</b> upload your certificate and we tell you if it can be used.</div>' +
@@ -237,31 +219,6 @@
   var m = location.hash.match(/^#role-(.+)$/);
   if (m) setTimeout(function () { show(m[1], true); }, 80);
 
-  var form = document.getElementById('regForm');
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var v = function (n) { var el = form.querySelector('[name=' + n + ']'); return el.type === 'checkbox' ? el.checked : el.value.trim(); };
-    var miss = [];
-    if (!chosen) miss.push('role (choose one above)');
-    if (!v('first')) miss.push('first name'); if (!v('last')) miss.push('last name'); if (!v('email')) miss.push('email');
-    if (v('pw').length < 8) miss.push('password of 8+ characters');
-    var err = form.querySelector('.error-msg');
-    if (miss.length) { err.textContent = 'Please add your ' + miss.join(', ') + '.'; return; }
-    if (v('pw') !== v('pw2')) { err.textContent = 'The two passwords don\'t match.'; return; }
-    if (!v('terms') || !v('privacy') || !v('robot')) { err.textContent = 'Please tick the terms, privacy policy and robot check.'; return; }
-    err.textContent = '';
-    var first = v('first'), email = v('email');
-    var out = document.getElementById('regDone');
-    out.innerHTML =
-      '<div class="success"><div><div class="tick"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></div>' +
-      '<h2>Check your email, ' + esc(first) + '</h2><p>We\'ve sent a link to <b>' + esc(email) + '</b> to confirm your account.</p>' +
-      '<ol><li>Open the email from HCC-Temps and tap Confirm</li><li>Log in and upload your ' + esc(chosen) + ' documents</li><li>We check everything. Most people are ready in 3 days</li></ol></div>' +
-      '<div><span class="email-tag">Automatic email preview</span><div class="email" style="margin-top:10px"><div class="email-meta"><span>From: <b>HCC-Temps</b> &lt;jobs@hcctemps.co.uk&gt;</span><span>To: ' + esc(email) + '</span><span>Subject: <b>Confirm your HCC-Temps account</b></span></div>' +
-      '<div class="email-body"><img class="logo-sm" src="img/logo.png" alt="HCC-Temps" width="74" height="40"><p>Hi ' + esc(first) + ',</p><p>Thanks for registering as a <b>' + esc(chosen) + '</b>. Please confirm your email to open your candidate portal.</p>' +
-      '<a class="btn btn-aqua" href="upload.html">Confirm my email</a><p style="font-size:13px;color:var(--muted)">Questions? Call 0330 321 3124, 24 hours a day.</p></div></div></div></div>';
-    form.hidden = true; out.hidden = false;
-    out.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
 })();
 </script>
 </body>
