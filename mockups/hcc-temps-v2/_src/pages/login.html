@@ -1,0 +1,81 @@
+<!--title:Log in · HCC-Temps|key:login-->
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="crumbs"><a href="index.html">Home</a> / Log in</div>
+      <h1 id="loginTitle">Candidate login</h1>
+      <p class="lead" id="loginLead">Upload your documents and follow your registration.</p>
+      <nav class="login-switch" aria-label="Who is logging in">
+        <a href="login.html" id="tabCandidate" aria-current="page">I'm a candidate</a>
+        <a href="login.html#staff" id="tabStaff">I'm HCC staff</a>
+      </nav>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap login-grid">
+      <div class="form-card">
+        <form id="loginForm" novalidate>
+          <h2>Log in</h2>
+          <div class="form-grid" style="grid-template-columns:1fr">
+            <div class="f"><label for="lEmail">Email</label><input type="email" id="lEmail" autocomplete="username"></div>
+            <div class="f"><label for="lPw">Password</label><input type="password" id="lPw" autocomplete="current-password"></div>
+            <label class="consent"><input type="checkbox" checked>Keep me logged in on this device</label>
+          </div>
+          <div class="form-actions"><button class="btn btn-navy" type="submit">Log in</button><span class="error-msg" role="alert"></span></div>
+          <p class="form-note" style="margin-top:14px"><a href="login.html">Forgotten your password?</a></p>
+        </form>
+        <form id="codeForm" hidden novalidate>
+          <h2>Check your email</h2>
+          <p class="sub">We've sent a 6-digit code to <b id="codeTo"></b>. It works for 10 minutes.</p>
+          <div class="f" style="max-width:240px"><label for="code">Login code</label><input id="code" inputmode="numeric" maxlength="6" placeholder="123456" autocomplete="one-time-code"></div>
+          <div class="form-actions"><button class="btn btn-navy" type="submit">Verify and continue</button><span class="error-msg" role="alert"></span></div>
+          <p class="form-note" style="margin-top:14px">Didn't get it? Check your spam folder or <a href="login.html">send a new code</a>.</p>
+        </form>
+        <div id="loginDone" hidden class="success" style="grid-template-columns:1fr"><div><div class="tick"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></div><h2 id="doneTitle">You're logged in</h2><p id="doneText"></p></div></div>
+        <div class="lock" style="margin-top:18px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>For your security we email you a 6-digit code each time you log in.</span></div>
+      </div>
+      <aside class="side-card" id="sideCandidate">
+        <h3>New to HCC-Temps?</h3>
+        <p>Create your account, choose your role and upload your documents. Most candidates are ready to work in 3 days.</p>
+        <div class="form-actions" style="margin-top:6px"><a class="btn btn-sun btn-sm" href="register.html">Start registration</a><a class="btn btn-ghost btn-sm" href="jobs.html">Find a job</a></div>
+      </aside>
+      <aside class="side-card" id="sideStaff" hidden>
+        <h3>Staff and admin accounts</h3>
+        <p>Your manager creates your account. You'll get an email to set your password, then log in here with a code sent to your email.</p>
+        <h3 style="margin-top:18px">Locked out?</h3>
+        <p>Use "Forgotten your password?" or ask your manager to resend your invite.</p>
+      </aside>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  function mode() {
+    var staff = location.hash === '#staff';
+    document.getElementById('loginTitle').textContent = staff ? 'Staff login' : 'Candidate login';
+    document.getElementById('loginLead').textContent = staff ? 'Log in to the Staff portal to review candidates and documents.' : 'Upload your documents and follow your registration.';
+    document.getElementById('tabStaff').toggleAttribute('aria-current', staff);
+    document.getElementById('tabCandidate').toggleAttribute('aria-current', !staff);
+    if (staff) document.getElementById('tabStaff').setAttribute('aria-current', 'page'); else document.getElementById('tabCandidate').setAttribute('aria-current', 'page');
+    document.getElementById('sideStaff').hidden = !staff;
+    document.getElementById('sideCandidate').hidden = staff;
+    return staff;
+  }
+  window.addEventListener('hashchange', mode); mode();
+  var lf = document.getElementById('loginForm'), cf = document.getElementById('codeForm');
+  lf.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var em = document.getElementById('lEmail').value.trim();
+    if (!em || !document.getElementById('lPw').value) { lf.querySelector('.error-msg').textContent = 'Please enter your email and password.'; return; }
+    document.getElementById('codeTo').textContent = em; lf.hidden = true; cf.hidden = false; document.getElementById('code').focus();
+  });
+  cf.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!/^\d{6}$/.test(document.getElementById('code').value)) { cf.querySelector('.error-msg').textContent = 'Enter the 6 digits from the email.'; return; }
+    var staff = mode();
+    document.getElementById('doneText').textContent = staff ? 'In the live site this opens the Staff portal dashboard. (Mockup: designed in the next phase.)' : 'In the live site this opens your candidate portal. (Mockup: designed in the next phase.)';
+    cf.hidden = true; document.getElementById('loginDone').hidden = false;
+  });
+})();
+</script>

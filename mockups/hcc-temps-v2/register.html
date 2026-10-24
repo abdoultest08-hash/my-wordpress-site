@@ -15,7 +15,7 @@
   <div class="wrap">
     <span class="slogan"><span class="figs" aria-hidden="true"><i style="background:var(--cocoa)"></i><i style="background:var(--navy)"></i><i style="background:var(--white)"></i><i style="background:var(--coral)"></i><i style="background:var(--sun)"></i></span>Temp made easy <em>· Open 24 hours · Nationwide cover</em></span>
     <span class="quick">
-      <a href="register.html#login" class="hide-sm">Candidate login</a>
+      <a href="login.html" class="hide-sm">Candidate login</a>
       <a href="contact.html" aria-label="Call us 24 hours on 0330 321 3124"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>0330 321 3124</a>
     </span>
   </div>
@@ -29,6 +29,13 @@
       <a href="register.html" data-key="register" aria-current="page">For candidates</a>
       <a href="clients.html" data-key="clients">For clients</a>
       <a href="about.html" data-key="about">About us</a>
+      <details class="nav-login">
+        <summary data-key="login">Log in</summary>
+        <div class="nav-login-menu">
+          <a href="login.html"><b>Candidate login</b><small>Your documents and progress</small></a>
+          <a href="login.html#staff"><b>Staff login</b><small>Staff and admin portal</small></a>
+        </div>
+      </details>
       <a href="contact.html" data-key="contact">Contact</a>
     </nav>
     <div class="header-cta">
@@ -42,6 +49,8 @@
     <a href="register.html">For candidates</a>
     <a href="clients.html">For clients</a>
     <a href="about.html">About us</a>
+    <a href="login.html">Candidate login</a>
+    <a href="login.html#staff">Staff login</a>
     <a href="contact.html">Contact</a>
     <a class="btn btn-aqua" href="register.html">Register as a candidate</a>
     <a class="btn btn-ghost" href="clients.html#request">Request cover</a>
@@ -62,7 +71,7 @@
       <div class="sec-head">
         <span class="eyebrow">How registration works</span>
         <h2>From sign-up to your first shift</h2>
-        <p>No CV needed to get started. Everything happens in your own candidate portal.</p>
+        <p>Everything happens in your own candidate portal, step by step.</p>
       </div>
       <ol class="reg-steps">
         <li><b>Check what you need</b><span>Choose your role below and see the documents to have ready.</span></li>
@@ -111,7 +120,7 @@
           <p class="form-note" style="margin-top:12px">Your username is your email address. You'll get a 6-digit code by email each time you log in.</p>
         </form>
         <div id="regDone" class="form-card" hidden></div>
-        <p class="login-strip" id="login">Already registered? <a href="register.html#login">Log in to your candidate portal</a></p>
+        <p class="login-strip" id="login">Already registered? <a href="login.html">Log in to your candidate portal</a></p>
       </div>
     </div>
   </section>
@@ -156,7 +165,7 @@
       </div>
       <div>
         <h4>Candidates</h4>
-        <ul><li><a href="jobs.html">Find jobs</a></li><li><a href="register.html">Register</a></li><li><a href="register.html#how">How registration works</a></li><li><a href="register.html#login">Candidate login</a></li></ul>
+        <ul><li><a href="jobs.html">Find jobs</a></li><li><a href="register.html">Register</a></li><li><a href="register.html#how">How registration works</a></li><li><a href="login.html">Candidate login</a></li></ul>
       </div>
       <div>
         <h4>Clients</h4>
@@ -186,32 +195,13 @@
 <script>
 (function () {
   var esc = HCC.esc;
-  /* Roles and what to have ready. Nurse and Chef are from HCC's checklist; others are drafts until HCC sends the full list. */
-  var ID = ['Photo ID', 'Passport or UK driving licence'];
-  var RTW = ['Right to work in the UK', 'Passport, share code or BRP'];
-  var DBS = ['Enhanced DBS', 'Your certificate, or your Update Service certificate number. No DBS? We apply for one.'];
+  /* Roles and what to have ready, from HCC's Mandatory Documents list. */
+  var R = HCC.REQS;
+  function role(id, sub, img, pos) { return { id: id, name: R[id].name, sub: sub, img: img, pos: pos, docs: R[id].docs, train: R[id].train, trainNote: R[id].trainNote }; }
   var ROLES = {
-    rolesHealth: [
-      { id: 'nurse', name: 'Registered Nurse', sub: 'RGN / RMN · from £25/hr+', img: 'img/hero-nurse.jpg', pos: '28% 30%', draft: false,
-        need: [ID, RTW, ['NMC PIN', 'Your PIN number and expiry date. We check it on the NMC register.'], DBS, ['Mandatory training certificates', 'Draft, HCC to confirm the list']] },
-      { id: 'care-assistant', name: 'Care Assistant', sub: 'Care homes and hospitals', img: 'img/carer.jpg', draft: true,
-        need: [ID, RTW, DBS, ['Care Certificate or NVQ', 'Or other care training certificates'], ['Mandatory training', 'Manual handling, safeguarding, first aid']] },
-      { id: 'senior-carer', name: 'Senior Care Assistant', sub: 'Senior carer roles', img: 'img/hero.jpg', draft: true,
-        need: [ID, RTW, DBS, ['Care Certificate or NVQ Level 3', 'Or other care qualifications'], ['Medication training', 'Certificate in date']] }
-    ],
-    rolesHosp: [
-      { id: 'chef', name: 'Chef', sub: 'Care homes, schools, hotels', img: 'img/hero-chef.jpg', pos: '50% 20%', draft: false,
-        need: [ID, RTW, ['Food Hygiene Level 2 or Level 3', 'Certificate must be in date'], ['Level 3 Allergen certificate', 'The full certificate'], ['First Aid certificate', 'The full certificate'], DBS],
-        note: 'All certificates must be the actual certificate showing your full name, matching your ID.' },
-      { id: 'kitchen', name: 'Kitchen Assistant', sub: 'Prep and porters', img: 'img/kitchen.jpg', draft: true,
-        need: [ID, RTW, ['Food Hygiene Level 2', 'Certificate in date'], DBS] },
-      { id: 'catering', name: 'Catering / Hospitality', sub: 'Events, cafes, front of house', img: 'img/barista.jpg', draft: true, need: [ID, RTW, DBS] },
-      { id: 'housekeeping', name: 'Housekeeping', sub: 'Hotels and care homes', img: 'img/housekeeping.jpg', draft: true, need: [ID, RTW, DBS] },
-      { id: 'cleaner', name: 'Cleaner', sub: 'Offices, schools, homes', img: 'img/cleaner.jpg', draft: true, need: [ID, RTW, DBS] }
-    ],
-    rolesAdmin: [
-      { id: 'reception', name: 'Receptionist / Admin', sub: 'Front desk and office', img: 'img/reception.jpg', draft: true, need: [ID, RTW, DBS] }
-    ]
+    rolesHealth: [role('nurse', 'RGN / RMN · NMC PIN', 'img/hero-nurse.jpg', '28% 30%'), role('hca', 'Care homes and hospitals', 'img/carer.jpg'), role('senior-carer', 'Senior care roles', 'img/hero.jpg')],
+    rolesHosp: [role('chef', 'Care homes, schools, hotels', 'img/hero-chef.jpg', '50% 20%'), role('head-chef', 'Run the kitchen', 'img/chef.jpg'), role('kitchen', 'Prep and porters', 'img/kitchen.jpg'), role('catering', 'Events, cafes, front of house', 'img/hospman.jpg'), role('barista', 'Coffee shops and cafes', 'img/barista.jpg'), role('domestic', 'Cleaning and housekeeping', 'img/housekeeping.jpg')],
+    rolesAdmin: [role('admin', 'Reception and office', 'img/reception.jpg')]
   };
   var byId = {};
   Object.keys(ROLES).forEach(function (g) {
@@ -228,16 +218,18 @@
     document.querySelectorAll('.role-pick').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.id === id)); });
     document.getElementById('chosen').textContent = r.name;
     detail.innerHTML =
-      '<div><h3>Before you start: ' + esc(r.name) + (r.draft ? '<span class="draft-pill">Draft</span>' : '') + '</h3>' +
+      '<div><h3>Before you start: ' + esc(r.name) + '</h3>' +
       '<p class="rd-sub">Have these ready. You upload them in your portal after creating your account.</p>' +
-      '<ul class="need">' + r.need.map(function (n) { return '<li><span><b>' + esc(n[0]) + '</b><small>' + esc(n[1]) + '</small></span></li>'; }).join('') + '</ul>' +
-      (r.note ? '<p class="form-note" style="margin-top:14px"><b>' + esc(r.note) + '</b></p>' : '') +
+      '<h4 class="need-h">Documents (' + r.docs.length + ')</h4>' +
+      '<ul class="need">' + r.docs.map(function (n) { return '<li><span><b>' + esc(n) + '</b></span></li>'; }).join('') + '</ul>' +
+      '<details class="train-box"><summary>Training certificates (' + r.train.length + ')' + (r.trainNote ? ' · ' + esc(r.trainNote) : '') + '</summary><ul class="need">' + r.train.map(function (n) { return '<li><span><b>' + esc(n) + '</b></span></li>'; }).join('') + '</ul></details>' +
+      '<p class="req-note">Missing something? You can still register and upload what you have. We will tell you what is still needed.</p>' +
       '<div class="form-actions" style="margin-top:20px"><a class="btn btn-sun" href="#register" id="startReg">Start registration as ' + esc(r.name) + '</a></div></div>' +
-      '<aside class="rd-side"><h4>About your DBS</h4><p>Every role needs an enhanced DBS. When you register we ask:</p>' +
-      '<div class="dbs-opt"><div><b>Yes, on the Update Service:</b> give us your certificate number and we check it online.</div>' +
+      '<aside class="rd-side"><h4>About your DBS</h4><p>Every role needs an enhanced DBS on the Update Service. When you register we ask:</p>' +
+      '<div class="dbs-opt"><div><b>Yes, on the Update Service:</b> we will ask for your certificate in the next step.</div>' +
       '<div><b>Yes, but not on the Update Service:</b> upload your certificate and we tell you if it can be used.</div>' +
       '<div><b>No DBS yet:</b> no problem, we apply for one for you.</div></div>' +
-      '<h4 style="margin-top:6px">Photo tips</h4><p>Lay documents flat in daylight, show all four corners, no flash or glare. PDFs are best for certificates.</p></aside>';
+      '<h4 style="margin-top:6px">Photo tips</h4><p>Lay documents flat in daylight, show all four corners, no flash or glare. PDFs are best for certificates. Certificates must show your full name.</p></aside>';
     detail.hidden = false;
     if (scroll) detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }

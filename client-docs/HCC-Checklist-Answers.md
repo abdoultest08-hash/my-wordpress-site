@@ -127,3 +127,52 @@ First names only on the site. Sizes differ (one portrait, one landscape), so cro
 - Candidates page (rebuild later with onboarding):
   - explain how registration works (no CV-first approval any more; candidates create an account directly)
   - per-role sections (for example Nurse) that open to show what's needed, with a "Start registration" button
+
+---
+
+# Part 3 (received 24 Oct): requirements file and onboarding flow
+
+- Role requirements: `client-docs/HCC-Mandatory-Documents.pdf`, covering 10 roles: Registered Nurse, HCA, Senior Carer, Chef, Head Chef, Kitchen Assistant, Domestic Assistant, Catering Assistant, Administrative Assistant, Barista.
+- The same list is in the mockup (`assets/site.js`, `REQS`). It feeds the job pages and the Candidates page.
+- Every role needs: CV, passport or driving licence, right-to-work share code and supporting documents, 2 x proof of address (last 3 months), proof of NI, professional photo, enhanced DBS on the Update Service, two references.
+- Nurse extra: immunisation record, NMC PIN, NMC Statement of Entry, nursing diploma or degree.
+- Training differs by role (see the PDF).
+
+## Their current pre-screening form (screenshots, current website)
+- **Account:** username, email, password and repeat, first and last name, T&Cs, privacy policy, reCAPTCHA
+- **Personal details:** title, first name, surname, email, ... postcode
+- **Professional referees:** two referees, each with full name, position, email, phone, address and postcode
+- **Education and employment:** education level, current employment status, years' experience in the role, "Do you have a blue tunic?"
+- **Questions:**
+  - comfortable fit (uniform size)
+  - own vehicle
+  - valid DBS
+  - valid training certificates (dated within the last year)
+  - British citizen / UK national
+  - visa type
+  - right-to-work share code
+- **Bank details:** account name, personal or LTD, account number ...
+- **Emergency contact:** next of kin name, relationship, phone, address, postcode
+- Submit Now
+
+## Agreed onboarding flow (to design next)
+1. **Register:** basic questions (first name, surname, email, phone, address), T&Cs, privacy policy, robot check. Then create the account and confirm with an email code (2FA).
+2. **Confirm role:** remember the role picked on the Candidates page, ask them to confirm it, and allow switching.
+3. **Phase 1, pre-screening (no uploads):** everything from their form.
+   - **DBS:** No / Yes, but not on the Update Service / Yes, on the Update Service. If on the Update Service, show a heads-up: "next step we ask for your certificate".
+   - **Right to work:** British citizen? Driving licence? If not British, which visa type (list the main ones).
+   - Submit, which saves everything.
+4. **Phase 2, documents:** upload what's requested (passport and so on).
+5. **Phase 3, training certificates:** the list for their role.
+6. **Never block:** candidates can tick "I don't have this yet" and still continue.
+7. **Thank-you page:** "the team will review", then go to the candidate portal.
+   - **One side:** all the data they submitted.
+   - **Other side:** the files they uploaded, with replace buttons.
+   - **Training:** an expandable folder so it doesn't clutter the dashboard.
+8. **Staff:**
+   - see progress
+   - approve documents or add notes (as built before)
+   - **multi-tick missing items** and send one automatic email: "we are missing these items from you"
+9. Also to define:
+   - the emails the staffing inbox receives
+   - the emails candidates receive at each step

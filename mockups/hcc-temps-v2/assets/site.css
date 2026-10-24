@@ -390,7 +390,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .form-grid { margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .form-grid .full { grid-column: 1 / -1; }
 .f label, .f legend { display: block; font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 6px; padding: 0; }
-.f input[type=text], .f input[type=email], .f input[type=tel], .f input[type=date], .f input[type=number], .f select, .f textarea { width: 100%; min-height: 50px; border: 1px solid #CFD8D6; border-radius: 12px; padding: 12px 14px; font: 500 16px var(--body); color: var(--text); background: var(--white); }
+.f input[type=text], .f input[type=password], .f input:not([type]), .f input[type=email], .f input[type=tel], .f input[type=date], .f input[type=number], .f select, .f textarea { width: 100%; min-height: 50px; border: 1px solid #CFD8D6; border-radius: 12px; padding: 12px 14px; font: 500 16px var(--body); color: var(--text); background: var(--white); }
 .f textarea { min-height: 120px; resize: vertical; }
 .f input:focus, .f select:focus, .f textarea:focus { outline: 3px solid var(--aqua); outline-offset: 0; border-color: var(--aqua-deep); }
 .f .hint { font-size: 13px; color: var(--muted); margin-top: 5px; }
@@ -667,3 +667,36 @@ fieldset.f { border: 0; margin: 0; padding: 0; }
 .member { width: calc(25% - 15px); }
 @media (max-width: 900px) { .member { width: calc(33.333% - 14px); } }
 @media (max-width: 600px) { .member { width: calc(50% - 7px); } }
+.train-list { columns: 2; column-gap: 28px; }
+.train-list li { break-inside: avoid; }
+@media (max-width: 600px) { .train-list { columns: 1; } }
+.req-note { margin-top: 16px; background: var(--aqua-tint); border-radius: 12px; padding: 12px 14px; font-size: 15px; color: var(--ink); }
+.need-h { margin: 18px 0 0; font: 800 17px var(--display); color: var(--ink); }
+.train-box { margin-top: 18px; border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; background: var(--paper); }
+.train-box summary { cursor: pointer; font: 800 17px var(--display); color: var(--ink); }
+.train-box .need { margin-top: 12px; }
+.need b { font-weight: 600; }
+.c-quote .cite { display: block; margin-top: 18px; font: 700 15px var(--body); color: var(--aqua-deep); text-transform: uppercase; letter-spacing: .08em; }
+.c-quote span[data-slot="q1"], .c-quote span[data-slot="q2"] { font: 800 clamp(18px, 1.8vw, 22px)/1.3 var(--display); color: var(--ink); }
+.tp-stars { color: #00B67A; }
+/* Log in dropdown in the main menu */
+.nav-login { position: relative; }
+.nav-login summary { list-style: none; cursor: pointer; font-weight: 600; font-size: 15px; color: var(--ink); padding: 6px 0; display: flex; align-items: center; gap: 4px; }
+.nav-login summary::-webkit-details-marker { display: none; }
+.nav-login summary::after { content: "▾"; font-size: 12px; }
+.nav-login[open] summary { color: var(--aqua-deep); }
+.nav-login-menu { position: absolute; top: calc(100% + 12px); left: 50%; transform: translateX(-50%); z-index: 60; background: var(--white); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 18px 40px rgba(23,26,69,.16); padding: 8px; min-width: 240px; display: grid; }
+.nav-login-menu a { display: block; padding: 10px 12px; border-radius: 10px; text-decoration: none; }
+.nav-login-menu a:hover { background: var(--aqua-tint); }
+.nav-login-menu b { display: block; color: var(--ink); font-size: 15px; }
+.nav-login-menu small { color: var(--muted); font-size: 13px; }
+/* Login page */
+.login-switch { margin-top: 22px; display: inline-flex; gap: 6px; background: var(--white); border-radius: 999px; padding: 5px; border: 1px solid var(--line); }
+.login-switch a { padding: 9px 18px; border-radius: 999px; text-decoration: none; font-weight: 700; font-size: 15px; color: var(--muted); }
+.login-switch a[aria-current] { background: var(--navy); color: var(--white); }
+.login-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items: start; }
+@media (max-width: 820px) { .login-grid { grid-template-columns: 1fr; } }
+.nav { align-items: center; }
+.nav .nav-login-menu a, .nav .nav-login-menu a:hover { border-bottom: 0; padding: 10px 12px; }
+.nav-login summary[aria-current] { color: var(--aqua-deep); }
+.job-desc ul.train-list { display: block; columns: 2; } .job-desc ul.train-list li { margin-bottom: 6px; } @media (max-width: 600px) { .job-desc ul.train-list { columns: 1; } }

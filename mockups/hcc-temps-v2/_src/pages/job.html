@@ -23,6 +23,12 @@
         <ul id="jDuties"></ul>
         <h2>What you need</h2>
         <ul id="jNeeds"></ul>
+        <h2>Documents you'll need</h2>
+        <ul id="jDocs"></ul>
+        <h2>Training certificates</h2>
+        <p class="form-note" id="jTrainNote" style="margin-bottom:8px"></p>
+        <ul id="jTrain" class="train-list"></ul>
+        <p class="req-note">Don't have everything yet? You can still register and upload what you have. Our team will tell you what's missing.</p>
         <h2>What you get</h2>
         <ul>
           <li>Weekly pay for every hour you work</li>
@@ -61,9 +67,9 @@
       <div class="form-card" style="text-align:center">
         <span class="eyebrow">Ready to work in 3 days</span>
         <h2 style="margin-top:8px">Apply for <span id="applyTitle"></span></h2>
-        <p class="sub" style="max-width:52ch;margin-inline:auto">Create your free account to apply. You'll see exactly which documents this role needs, and you can upload them from your phone. No CV needed to start.</p>
+        <p class="sub" style="max-width:52ch;margin-inline:auto">Create your free account to apply. You'll see exactly which documents this role needs, and you can upload them from your phone.</p>
         <div class="form-actions" style="justify-content:center;margin-top:18px"><a class="btn btn-sun pulse" id="applyBtn" href="register.html#roles">Create my account and apply</a></div>
-        <p class="login-strip">Already registered? <a href="register.html#login">Log in to apply</a></p>
+        <p class="login-strip">Already registered? <a href="login.html">Log in to apply</a></p>
       </div>
     </div>
   </section>
@@ -79,9 +85,9 @@
 (function () {
   var j = HCC.byId(decodeURIComponent(location.hash.slice(1))) || HCC.JOBS[0];
   var copy = {
-    Healthcare: { intro: 'We are looking for a caring, reliable ' + j.title + ' to join the team at a well-run home in ' + j.place + '. You will support residents with daily living and help them feel safe and respected.', duties: ['Support residents with personal care, meals and mobility', 'Follow care plans and record care accurately', 'Spot changes in health and report them to the nurse in charge', 'Work with the permanent team on handover'], needs: ['Experience in care, or a Care Certificate', 'Enhanced DBS on the update service, or willing to apply', 'Right to work in the UK', 'Two references from recent work'] },
-    Chefs: { intro: 'A kitchen in ' + j.place + ' needs an experienced chef to cook fresh, home-style meals, including texture-modified and special diets.', duties: ['Cook breakfast, lunch and tea from set menus', 'Prepare soft, minced and puréed diets safely', 'Keep allergen and temperature records', 'Keep the kitchen clean and stock rotated'], needs: ['Previous chef experience', 'Food Hygiene Level 2 or above', 'Right to work in the UK', 'DBS for care home kitchens'] },
-    def: { intro: 'We need a reliable ' + j.title + ' for shifts in ' + j.place + '. Friendly team, clear instructions on day one, and regular hours if you want them.', duties: ['Arrive on time and sign in with the supervisor', 'Follow the site\'s standards and safety rules', 'Work as part of a busy team', 'Leave your area clean and ready for the next shift'], needs: ['Some experience in a similar role is helpful', 'Right to work in the UK', 'Good spoken English', 'Smart, clean appearance'] }
+    Healthcare: { intro: 'We are looking for a caring, reliable ' + j.title + ' to join the team at a well-run home in ' + j.place + '. You will support residents with daily living and help them feel safe and respected.', duties: ['Support residents with personal care, meals and mobility', 'Follow care plans and record care accurately', 'Spot changes in health and report them to the nurse in charge', 'Work with the permanent team on handover'], needs: ['Experience in care, or a Care Certificate', 'A caring, reliable approach', 'Good spoken and written English'] },
+    Chefs: { intro: 'A kitchen in ' + j.place + ' needs an experienced chef to cook fresh, home-style meals, including texture-modified and special diets.', duties: ['Cook breakfast, lunch and tea from set menus', 'Prepare soft, minced and puréed diets safely', 'Keep allergen and temperature records', 'Keep the kitchen clean and stock rotated'], needs: ['Previous chef experience', 'Confident cooking for special diets', 'Good spoken English'] },
+    def: { intro: 'We need a reliable ' + j.title + ' for shifts in ' + j.place + '. Friendly team, clear instructions on day one, and regular hours if you want them.', duties: ['Arrive on time and sign in with the supervisor', 'Follow the site\'s standards and safety rules', 'Work as part of a busy team', 'Leave your area clean and ready for the next shift'], needs: ['Some experience in a similar role is helpful', 'Good spoken English', 'Smart, clean appearance'] }
   };
   var c = copy[j.sector] || copy.def;
   document.title = j.title + ', ' + j.place + ' · HCC-Temps';
@@ -94,6 +100,10 @@
   document.getElementById('jIntro').textContent = c.intro;
   document.getElementById('jDuties').innerHTML = c.duties.map(function (d) { return '<li>' + HCC.esc(d) + '</li>'; }).join('');
   document.getElementById('jNeeds').innerHTML = c.needs.map(function (d) { return '<li>' + HCC.esc(d) + '</li>'; }).join('');
+  var rq = HCC.REQS[HCC.reqKey(j.title + ' ' + j.role)];
+  document.getElementById('jDocs').innerHTML = rq.docs.map(function (d) { return '<li>' + HCC.esc(d) + '</li>'; }).join('');
+  document.getElementById('jTrain').innerHTML = rq.train.map(function (d) { return '<li>' + HCC.esc(d) + '</li>'; }).join('');
+  document.getElementById('jTrainNote').textContent = rq.trainNote || 'Certificates should be in date and show your full name.';
   document.getElementById('fPay').textContent = j.pay;
   document.getElementById('fPlace').textContent = j.place;
   document.getElementById('fContract').textContent = j.contract;
@@ -101,7 +111,7 @@
   document.getElementById('fRef').textContent = 'HCC-J' + (1000 + HCC.JOBS.indexOf(j) * 37);
   var rel = HCC.JOBS.filter(function (o) { return o !== j && o.sector === j.sector; }).concat(HCC.JOBS.filter(function (o) { return o !== j && o.sector !== j.sector; })).slice(0, 3);
   document.getElementById('related').innerHTML = rel.map(function (o) { return HCC.card(o); }).join('');
-  var rid = /nurse/i.test(j.role) ? 'nurse' : /senior/i.test(j.role) ? 'senior-carer' : /care|health/i.test(j.role) ? 'care-assistant' : /chef/i.test(j.role) ? 'chef' : /kitchen/i.test(j.role) ? 'kitchen' : /clean/i.test(j.role) ? 'cleaner' : /house/i.test(j.role) ? 'housekeeping' : /recep/i.test(j.role) ? 'reception' : 'catering';
+  var rid = HCC.reqKey(j.title + ' ' + j.role);
   document.getElementById('applyBtn').href = 'register.html#role-' + rid;
   window.addEventListener('hashchange', function () { if (location.hash !== '#apply') location.reload(); });
 })();

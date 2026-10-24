@@ -49,6 +49,36 @@ var HCC = (function () {
       ['DBS certificate', 'Needed for schools and care homes', false]
     ]
   };
+
+  /* Required documents and training per role, from HCC's "Mandatory Documents" list (Oct 2026). */
+  var DOCS = ['CV', 'Valid passport or driving licence', 'Right to work: share code and supporting documents (non-British nationals, e.g. university term-time letter or certificate of sponsorship)', '2 x proof of address, dated within the last 3 months', 'Proof of National Insurance number', 'Professional photograph', 'Enhanced DBS certificate on the Update Service', 'Two references'];
+  var CARE_TRAIN = ['Basic Life Support', 'Manual Handling', 'Safeguarding Adults', 'Safeguarding Children', 'Infection Prevention & Control', 'Health & Safety', 'Food Safety', 'Fire Safety', 'First Aid', 'Equality & Diversity', 'Information Governance / GDPR', 'Mental Capacity Act & DoLS'];
+  var FOOD = function (lvl) { return ['Food Safety & Hygiene (' + lvl + ')', 'Health & Safety', 'First Aid', 'Allergen Awareness']; };
+  var REQS = {
+    'nurse': { name: 'Registered Nurse', docs: DOCS.concat(['Immunisation record (where applicable)', 'NMC PIN number', 'NMC Statement of Entry', 'Nursing diploma or degree']), train: CARE_TRAIN.concat(['Medication Administration', 'Autism Awareness & Learning Disabilities Awareness']) },
+    'hca': { name: 'Healthcare Assistant', docs: DOCS, train: CARE_TRAIN.map(function (x) { return x === 'Manual Handling' ? 'Manual Handling (theory and practical)' : x; }).concat(['Autism Awareness & Learning Disabilities Awareness']) },
+    'senior-carer': { name: 'Senior Carer', docs: DOCS, train: CARE_TRAIN.map(function (x) { return x === 'Manual Handling' ? 'Manual Handling (theory and practical)' : x; }).concat(['Medication Administration (theory and practical)', 'Autism Awareness & Learning Disabilities Awareness']) },
+    'chef': { name: 'Chef', docs: DOCS, train: FOOD('Level 2 minimum') },
+    'head-chef': { name: 'Head Chef', docs: DOCS, train: FOOD('Level 2 minimum, Level 3 preferred') },
+    'kitchen': { name: 'Kitchen Assistant', docs: DOCS, train: FOOD('Level 1 minimum, Level 2 preferred') },
+    'catering': { name: 'Catering Assistant', docs: DOCS, train: FOOD('Level 1 minimum, Level 2 preferred') },
+    'barista': { name: 'Barista', docs: DOCS, train: FOOD('Level 1 minimum, Level 2 preferred') },
+    'domestic': { name: 'Domestic Assistant', docs: DOCS, train: ['Health & Safety', 'Infection Control (preferred, not mandatory)', 'COSHH (preferred, not mandatory)'] },
+    'admin': { name: 'Administrative Assistant', docs: DOCS, train: ['GDPR / Data Protection', 'Information Governance', 'Equality & Diversity', 'Health & Safety', 'Fire Safety'], trainNote: 'Preferred, not mandatory' }
+  };
+  function reqKey(role) {
+    if (/nurse|rgn/i.test(role)) return 'nurse';
+    if (/senior/i.test(role)) return 'senior-carer';
+    if (/care|health/i.test(role)) return 'hca';
+    if (/head chef/i.test(role)) return 'head-chef';
+    if (/chef/i.test(role)) return 'chef';
+    if (/kitchen/i.test(role)) return 'kitchen';
+    if (/barista/i.test(role)) return 'barista';
+    if (/clean|house|domestic/i.test(role)) return 'domestic';
+    if (/recep|admin/i.test(role)) return 'admin';
+    return 'catering';
+  }
+
   function checklistFor(role) {
     if (/nurse/i.test(role)) return CHECKLISTS.nurse;
     if (/care|health/i.test(role)) return CHECKLISTS.healthcare;
@@ -141,6 +171,10 @@ var HCC = (function () {
     });
   }
 
+  /* Close the Log in dropdown when clicking elsewhere */
+  document.addEventListener('click', function (e) {
+    document.querySelectorAll('.nav-login[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
+  });
   initMenu();
-  return { initFaqTabs: initFaqTabs, JOBS: JOBS, card: card, byId: byId, checklistFor: checklistFor, renamed: renamed, initApply: initApply, esc: esc };
+  return { initFaqTabs: initFaqTabs, JOBS: JOBS, card: card, byId: byId, checklistFor: checklistFor, REQS: REQS, reqKey: reqKey, renamed: renamed, initApply: initApply, esc: esc };
 })();
