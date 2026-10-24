@@ -190,3 +190,16 @@ First names only on the site. Sizes differ (one portrait, one landscape), so cro
    - "Approve all uploaded"
    - "Mark complete (override)" with a required reason, logged with the staff member's name
    - "Complete profile (100%)": approves all uploaded files, then overrides the rest with a reason
+
+## Decisions (24 Oct, round 2)
+- **Staff email 1, registration submitted:**
+  - every detail line by line: name, surname, contact, right to work, DBS, experience, **referees in full**, emergency contact, **bank details**
+  - every document and certificate as Submitted / Not submitted
+  - **"Missing, to be submitted" summary at the end**
+  - **the CV is attached**; everything else is checked in the portal
+- **Staff email 2:** sent every time a candidate uploads or replaces files after submitting. One email per upload, listing everything in it.
+- **Candidate emails from staff are batched:** approvals, replace requests, missing items and notes go into an **"Update for candidate" tray**, and staff press Send for one combined email. Suggestion: unsent updates go automatically at 6pm.
+- **Notes:** staff can add a note on any document, internal or for the candidate. Candidate notes join the tray.
+- **Overrides:** a reason and a **required note for each item**, done one at a time when several items are ticked.
+- **Activity log** records everything, with staff name and time.
+- **Logins:** staff and candidates enter an email code every time, plus a robot check (Cloudflare Turnstile).

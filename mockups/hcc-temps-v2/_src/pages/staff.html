@@ -10,7 +10,7 @@
 
   <section class="section staff-body">
     <div class="wrap">
-      <p class="demo-bar"><b>Mockup</b> · This is the candidate you just registered (or a sample). Tick items, then approve them or email the candidate about missing items. <a href="portal.html?view=review">See the candidate's portal</a></p>
+      <p class="demo-bar"><b>Mockup</b> · Approve, ask to replace, request missing items or add notes. Each change goes into the <b>Update for candidate</b> tray and is sent as one email when you press Send. <a href="portal.html?view=review">See the candidate's portal</a></p>
       <div class="crumbs" style="color:var(--muted)"><a href="staff.html">Candidates</a> / <span id="sName"></span></div>
 
       <div class="s-head">
@@ -32,7 +32,7 @@
         <div>
           <div class="p-card">
             <div class="p-card-head"><h2>Documents</h2><span class="p-count" id="sDocSum"></span></div>
-            <div class="bulk" id="bulk" hidden><span id="bulkN"></span><button class="btn btn-sm btn-aqua" type="button" data-bulk="approve">Approve selected</button><button class="btn btn-sm btn-sun" type="button" data-bulk="missing">Email missing items</button><button class="btn btn-sm btn-ghost-light" type="button" data-bulk="override">Mark complete (override)</button><button class="link-btn" type="button" data-bulk="clear">Clear</button></div>
+            <div class="bulk" id="bulk" hidden><span id="bulkN"></span><button class="btn btn-sm btn-aqua" type="button" data-bulk="approve">Approve</button><button class="btn btn-sm btn-sun" type="button" data-bulk="missing">Request as missing</button><button class="btn btn-sm btn-ghost-light" type="button" data-bulk="override">Mark complete (override)</button><button class="link-btn" type="button" data-bulk="clear">Clear</button></div>
             <div class="s-table" id="sDocs"></div>
           </div>
           <details class="p-card p-folder" open>
@@ -41,25 +41,31 @@
           </details>
 
           <div class="p-card" id="ovPanel" hidden>
-            <div class="p-card-head"><h2 id="ovTitle">Mark complete (override)</h2><button class="link-btn" type="button" id="ovClose">Cancel</button></div>
-            <p class="hint">These items will show as complete for the candidate. Your name and reason are saved on the timeline.</p>
-            <ul class="ov-list" id="ovList"></ul>
+            <div class="p-card-head"><h2>Mark complete (override)</h2><span class="p-count" id="ovStep"></span></div>
+            <p class="hint">Each item needs a reason and a note. Your name, the reason and the note are saved in the activity log.</p>
+            <div class="ov-item" id="ovItem"></div>
             <div class="form-grid" style="margin-top:12px">
-              <div class="f"><label for="ovReason">Reason</label><select id="ovReason"><option>Seen the original in the office</option><option>Not required for this candidate or client</option><option>Checked by phone or online</option><option>Held on file from a previous registration</option><option>Other (add a note)</option></select></div>
-              <div class="f"><label for="ovNote">Note</label><input type="text" id="ovNote" placeholder="Optional"></div>
+              <div class="f"><label for="ovReason">Reason</label><select id="ovReason"><option>Seen the original in the office</option><option>Not required for this candidate or client</option><option>Checked by phone or online</option><option>Held on file from a previous registration</option><option>Other</option></select></div>
+              <div class="f full"><label for="ovNote">Note (required)</label><textarea id="ovNote" placeholder="e.g. Original passport checked in the Leeds office on 24 Oct, copy on file."></textarea></div>
             </div>
-            <div class="form-actions"><button class="btn btn-navy" type="button" id="ovSave">Confirm</button></div>
-          </div>
-          <div class="p-card" id="mailPanel" hidden>
-            <div class="p-card-head"><h2>Email missing items</h2><button class="link-btn" type="button" id="mailClose">Cancel</button></div>
-            <div class="f"><label for="mailNote">Add a note (optional)</label><textarea id="mailNote" placeholder="e.g. Your DBS photo was cut off at the bottom, please upload both pages."></textarea></div>
-            <div class="email" style="margin-top:14px"><div class="email-meta"><span>From: <b>HCC-Temps Compliance</b> &lt;compliance@hcctemps.co.uk&gt;</span><span>To: <span id="mailTo"></span></span><span>Subject: <b id="mailSubj"></b></span></div>
-              <div class="email-body"><img class="logo-sm" src="img/logo.png" alt="HCC-Temps" width="74" height="40"><p>Hi <span class="mFirst"></span>,</p><p>Thank you for registering with HCC-Temps. To finish your checks we still need the following from you:</p><ul id="mailList"></ul><p id="mailNoteOut" hidden></p><a class="btn btn-aqua" href="portal.html?view=review">Upload in my portal</a><p style="font-size:13px;color:var(--muted)">Questions? Call 0330 321 3124, 24 hours a day. Your reference is <span class="mRef"></span>.</p></div></div>
-            <div class="form-actions"><button class="btn btn-navy" type="button" id="mailSend">Send email</button></div>
+            <div class="form-actions"><button class="btn btn-navy" type="button" id="ovSave">Confirm and next</button><button class="link-btn" type="button" id="ovSkip">Skip this item</button><button class="link-btn" type="button" id="ovClose">Cancel</button><span class="error-msg" role="alert" id="ovErr"></span></div>
           </div>
         </div>
 
         <aside>
+          <div class="p-card tray" id="tray">
+            <div class="p-card-head"><h2>Update for <span class="mFirst"></span></h2><span class="tray-n" id="trayN">0</span></div>
+            <p class="hint" id="trayEmpty">No changes waiting. Approvals, replace requests, missing items and notes for the candidate collect here and go in one email.</p>
+            <div id="trayList"></div>
+            <div class="form-actions" id="trayActions" hidden style="margin-top:12px"><button class="btn btn-navy btn-sm" type="button" id="trayPreview">Preview and send email</button></div>
+            <p class="hint" id="trayAuto" hidden style="margin-top:10px">Not sent yet. If nobody presses Send, unsent updates go automatically at 6pm.</p>
+          </div>
+          <div class="p-card" id="mailPanel" hidden>
+            <div class="p-card-head"><h2>Email to candidate</h2><button class="link-btn" type="button" id="mailClose">Back</button></div>
+            <div class="email"><div class="email-meta"><span>From: <b>HCC-Temps Compliance</b> &lt;compliance@hcctemps.co.uk&gt;</span><span>To: <span id="mailTo"></span></span><span>Subject: <b id="mailSubj"></b></span></div>
+              <div class="email-body" id="mailBody"></div></div>
+            <div class="form-actions"><button class="btn btn-navy" type="button" id="mailSend">Send email</button></div>
+          </div>
           <div class="p-card">
             <div class="p-card-head"><h2>Pre-screening answers</h2></div>
             <div id="sAnswers"></div>
@@ -75,13 +81,13 @@
             <dl class="bank-dl" id="bankDl"></dl>
           </div>
           <div class="p-card">
-            <div class="p-card-head"><h2>Notes</h2></div>
-            <div class="f"><label for="note">Add a note</label><textarea id="note" placeholder="Visible to the candidate, or tick to keep internal"></textarea></div>
-            <label class="consent" style="margin-top:8px"><input type="checkbox" id="internal" checked>Internal note (candidate can't see it)</label>
+            <div class="p-card-head"><h2>General note</h2></div>
+            <div class="f"><label for="note">Note about this candidate</label><textarea id="note" placeholder="e.g. Called Alex, available nights from 1 Nov."></textarea></div>
+            <label class="consent" style="margin-top:8px"><input type="checkbox" id="internal" checked>Internal (candidate can't see it)</label>
             <div class="form-actions" style="margin-top:10px"><button class="btn btn-ghost btn-sm" type="button" id="addNote">Add note</button></div>
           </div>
           <div class="p-card">
-            <div class="p-card-head"><h2>Timeline</h2></div>
+            <div class="p-card-head"><h2>Activity log</h2></div>
             <ol class="timeline" id="timeline"></ol>
           </div>
         </aside>
@@ -92,20 +98,20 @@
 </main>
 <script>
 (function () {
-  var esc = HCC.esc, R = HCC.REQS;
+  var esc = HCC.esc, R = HCC.REQS, ME = 'Geraldine';
   function load() { try { return JSON.parse(sessionStorage.getItem('hcc-reg') || 'null'); } catch (x) { return null; } }
   function save() { try { sessionStorage.setItem('hcc-reg', JSON.stringify(S)); } catch (x) {} }
   var S = load(); if (!S || !S.ref) { S = HCC.demoCandidate(); save(); }
-  S.review = S.review || {}; S.log = S.log || [];
+  S.review = S.review || {}; S.log = S.log || []; S.queue = S.queue || []; S.notes = S.notes || {};
   var name = S.acct.first + ' ' + S.acct.last, a = S.answers || {};
   function fmt(d) { var x = new Date(d || Date.now()); return x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ', ' + x.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); }
-  if (!S.log.length) S.log = [[S.registered, 'Account created and email verified', 'Candidate'], [S.prescreenDone || S.registered, 'Pre-screening submitted', 'Candidate'], [S.submitted || S.registered, 'Documents and training uploaded', 'Candidate']];
+  if (!S.log.length) S.log = [[S.registered, 'Account created and email verified', 'Candidate'], [S.prescreenDone || S.registered, 'Pre-screening submitted', 'Candidate'], [S.submitted || S.registered, 'Registration submitted. Staffing inbox emailed with full summary and CV attached', 'Candidate']];
   document.getElementById('sTitle').textContent = name; document.getElementById('sName').textContent = name;
   document.getElementById('sMeta').innerHTML = esc(R[S.role].name) + ' · <b>' + esc(S.ref) + '</b> · Registered ' + fmt(S.registered) + ' · ' + esc(S.acct.email) + ' · ' + esc(S.acct.phone);
-  document.querySelectorAll('.mFirst').forEach(function (e) { e.textContent = S.acct.first; }); document.querySelectorAll('.mRef').forEach(function (e) { e.textContent = S.ref; });
+  document.querySelectorAll('.mFirst').forEach(function (e) { e.textContent = S.acct.first; });
   document.getElementById('mailTo').textContent = S.acct.email;
 
-  var CHIP = { approved: ['Approved', 'stat-ok'], override: ['Completed by staff', 'stat-ok'], review: ['To review', 'stat-wait'], amend: ['Amend requested', 'stat-amend'], todo: ['Missing', 'stat-todo'], requested: ['Requested', 'stat-amend'], na: ['Not needed', 'stat-na'] };
+  var CHIP = { approved: ['Approved', 'stat-ok'], override: ['Completed by staff', 'stat-ok'], review: ['To review', 'stat-wait'], amend: ['Replace requested', 'stat-amend'], todo: ['Missing', 'stat-todo'], requested: ['Requested', 'stat-amend'], na: ['Not needed', 'stat-na'] };
   function items(train) {
     if (train) return R[S.role].train.map(function (t) { return { key: t, label: t, t: 1 }; });
     return R[S.role].docs.map(function (d) {
@@ -113,23 +119,42 @@
       return { key: d, label: /^Right to work/.test(d) ? 'Right to work documents' : d, na: na };
     });
   }
+  function allItems() { return items(false).concat(items(true)); }
   function st(it) { if (it.na) return 'na'; var r = S.review[it.key]; if (r) return r.status; var s = (it.t ? S.train : S.docs)[it.key] || {}; return (s.file || s.pin) ? 'review' : 'todo'; }
+  function labelOf(k) { var all = allItems(); for (var i = 0; i < all.length; i++) if (all[i].key === k) return all[i].label; return k; }
+  function log(text) { S.log.push([new Date().toISOString(), text, ME]); save(); }
+  function queue(type, key, text) { if (type !== 'note') S.queue = S.queue.filter(function (q) { return !(key && q.key === key && q.type !== 'note'); }); S.queue.push({ type: type, key: key || '', label: key ? labelOf(key) : '', text: text || '' }); save(); }
+  function toast(t) { var el = document.getElementById('toastPop'); el.textContent = t; el.hidden = false; clearTimeout(el._t); el._t = setTimeout(function () { el.hidden = true; }, 3200); }
   var AMEND = ['Photo is blurry', 'Corners are cut off', 'Document has expired', 'Name doesn\'t match your ID', 'Wrong document', 'Please upload both sides'];
+
   function table(list) {
     return list.map(function (it) {
-      var s = st(it), file = (it.t ? S.train : S.docs)[it.key] || {}, c = CHIP[s], r = S.review[it.key] || {};
-      return '<div class="s-row s-' + s + '">' + (it.na ? '<span class="s-cb"></span>' : '<label class="s-cb"><input type="checkbox" data-k="' + esc(it.key) + '" aria-label="Select ' + esc(it.label) + '"></label>') +
-        '<div class="s-item"><b>' + esc(it.label) + '</b>' + (file.file ? '<a class="p-file" href="#" onclick="return false">' + esc(file.file) + '</a>' : file.pin ? '<span class="p-file">PIN ' + esc(file.pin) + ' · <a href="https://www.nmc.org.uk/registration/search-the-register/" target="_blank" rel="noopener">check NMC register</a></span>' : file.missing ? '<span class="p-file">Candidate ticked "I don\'t have this yet"</span>' : '') + (file.exp ? '<span class="p-file">Expires ' + esc(file.exp) + '</span>' : '') + (r.reason ? '<span class="' + (s === 'override' ? 'p-ov' : 'p-reason') + '">' + (s === 'override' ? 'Override: ' : '') + esc(r.reason) + (r.by ? ' · ' + esc(r.by) : '') + '</span>' : '') + '</div>' +
+      var s = st(it), file = (it.t ? S.train : S.docs)[it.key] || {}, c = CHIP[s], r = S.review[it.key] || {}, k = esc(it.key);
+      var notes = (S.notes[it.key] || []).map(function (n) { return '<span class="d-note' + (n.internal ? ' internal' : '') + '">' + (n.internal ? 'Internal' : 'To candidate') + ' · ' + esc(n.by) + ': ' + esc(n.text) + '</span>'; }).join('');
+      return '<div class="s-row s-' + s + '">' + (it.na ? '<span class="s-cb"></span>' : '<label class="s-cb"><input type="checkbox" data-k="' + k + '" aria-label="Select ' + esc(it.label) + '"></label>') +
+        '<div class="s-item"><b>' + esc(it.label) + '</b>' + (file.file ? '<a class="p-file" href="#" onclick="return false">' + esc(file.file) + '</a>' : file.pin ? '<span class="p-file">PIN ' + esc(file.pin) + ' · <a href="https://www.nmc.org.uk/registration/search-the-register/" target="_blank" rel="noopener">check NMC register</a></span>' : file.missing ? '<span class="p-file">Candidate ticked "I don\'t have this yet"</span>' : '') + (file.exp ? '<span class="p-file">Expires ' + esc(file.exp) + '</span>' : '') +
+        (r.reason ? '<span class="' + (s === 'override' ? 'p-ov' : 'p-reason') + '">' + (s === 'override' ? 'Override: ' : '') + esc(r.reason) + (r.by ? ' · ' + esc(r.by) : '') + '</span>' : '') + notes + '</div>' +
         '<span class="stat ' + c[1] + '">' + c[0] + '</span>' +
-        (it.na || s === 'todo' || s === 'requested' || s === 'override' ? '<span></span>' : '<span class="s-btns"><button type="button" class="mini ok" data-ok="' + esc(it.key) + '" title="Approve">✓</button><button type="button" class="mini am" data-am="' + esc(it.key) + '" title="Ask to replace">↺</button></span>') +
-        '<div class="amend-box" data-box="' + esc(it.key) + '" hidden><select>' + AMEND.map(function (x) { return '<option>' + x + '</option>'; }).join('') + '</select><button type="button" class="btn btn-sm btn-sun" data-amsend="' + esc(it.key) + '">Send to candidate</button></div></div>';
+        (it.na ? '<span></span>' : '<span class="s-btns">' + (s === 'review' || s === 'amend' ? '<button type="button" class="mini ok" data-ok="' + k + '" title="Approve">✓</button><button type="button" class="mini am" data-open="am:' + k + '" title="Ask to replace">↺</button>' : '') + '<button type="button" class="mini nt" data-open="nt:' + k + '" title="Add a note">✎</button></span>') +
+        '<div class="amend-box" data-box="am:' + k + '" hidden><select>' + AMEND.map(function (x) { return '<option>' + x + '</option>'; }).join('') + '</select><button type="button" class="btn btn-sm btn-sun" data-amsend="' + k + '">Add to update</button></div>' +
+        '<div class="amend-box" data-box="nt:' + k + '" hidden><input type="text" placeholder="Note about this document"><label class="nohave"><input type="checkbox" checked> Internal</label><button type="button" class="btn btn-sm btn-ghost" data-ntadd="' + k + '">Add note</button></div></div>';
     }).join('');
   }
   function sum(list) { var n = list.filter(function (i) { return !i.na; }); var c = {}; n.forEach(function (i) { var s = st(i); c[s] = (c[s] || 0) + 1; }); return n.length + ' items · ' + ((c.approved || 0) + (c.override || 0)) + ' approved · ' + (c.review || 0) + ' to review · ' + ((c.todo || 0) + (c.requested || 0)) + ' missing' + (c.amend ? ' · ' + c.amend + ' to replace' : ''); }
-  function labelOf(k) { var all = items(false).concat(items(true)); for (var i = 0; i < all.length; i++) if (all[i].key === k) return all[i].label; return k; }
-  function log(text) { S.log.push([new Date().toISOString(), text, 'Geraldine']); save(); }
-  function toast(t) { var el = document.getElementById('toastPop'); el.textContent = t; el.hidden = false; clearTimeout(el._t); el._t = setTimeout(function () { el.hidden = true; }, 3200); }
 
+  var GROUPS = [['approved', 'Approved'], ['amend', 'Please replace'], ['missing', 'Still needed from you'], ['note', 'Messages from our team']];
+  function renderTray() {
+    var q = S.queue;
+    document.getElementById('trayN').textContent = q.length;
+    document.getElementById('tray').classList.toggle('has', q.length > 0);
+    document.getElementById('trayEmpty').hidden = !!q.length; document.getElementById('trayActions').hidden = !q.length; document.getElementById('trayAuto').hidden = !q.length;
+    document.getElementById('trayList').innerHTML = GROUPS.map(function (g) {
+      var rows = q.map(function (x, i) { return [x, i]; }).filter(function (p) { return p[0].type === g[0]; });
+      if (!rows.length) return '';
+      return '<div class="tray-g"><b>' + g[1] + '</b><ul>' + rows.map(function (p) { return '<li>' + esc(p[0].label || '') + (p[0].label && p[0].text ? ': ' : '') + esc(p[0].text || '') + ' <button class="link-btn" type="button" data-unq="' + p[1] + '" aria-label="Remove">remove</button></li>'; }).join('') + '</ul></div>';
+    }).join('');
+    document.querySelectorAll('[data-unq]').forEach(function (b) { b.addEventListener('click', function () { S.queue.splice(+b.dataset.unq, 1); save(); renderTray(); }); });
+  }
   function render() {
     var d = items(false), t = items(true);
     document.getElementById('sDocs').innerHTML = table(d); document.getElementById('sTrain').innerHTML = table(t);
@@ -148,65 +173,91 @@
     var all = d.concat(t).filter(function (i) { return !i.na; }), ok = all.filter(function (i) { var s = st(i); return s === 'approved' || s === 'override'; }).length, pct = Math.round(ok / all.length * 100);
     document.getElementById('pctBar').style.width = pct + '%'; document.getElementById('pctTxt').textContent = 'Profile ' + pct + '% complete';
     document.getElementById('decSent').checked = !!S.decSent; document.getElementById('decSigned').checked = !!S.decSigned;
-    bind(); bulk();
+    renderTray(); bind(); bulk();
   }
   function ticked() { return Array.prototype.map.call(document.querySelectorAll('.s-cb input:checked'), function (c) { return c.dataset.k; }); }
   function bulk() { var n = ticked().length; document.getElementById('bulk').hidden = !n; document.getElementById('bulkN').textContent = n + ' selected'; }
+  function approve(ks, how) { ks.forEach(function (k) { S.review[k] = { status: 'approved' }; queue('approved', k); }); if (ks.length) log((how || 'Approved') + ': ' + ks.map(labelOf).join(', ')); }
   function bind() {
     document.querySelectorAll('.s-cb input').forEach(function (c) { c.addEventListener('change', bulk); });
-    document.querySelectorAll('[data-ok]').forEach(function (b) { b.addEventListener('click', function () { S.review[b.dataset.ok] = { status: 'approved' }; log('Approved ' + labelOf(b.dataset.ok)); render(); toast('Approved'); }); });
-    document.querySelectorAll('[data-am]').forEach(function (b) { b.addEventListener('click', function () { var box = document.querySelector('[data-box="' + CSS.escape(b.dataset.am) + '"]'); box.hidden = !box.hidden; }); });
-    document.querySelectorAll('[data-amsend]').forEach(function (b) { b.addEventListener('click', function () { var k = b.dataset.amsend, reason = b.previousElementSibling.value; S.review[k] = { status: 'amend', reason: reason }; log('Asked to replace ' + labelOf(k) + ': ' + reason + ' (email sent)'); render(); toast('Email sent: please replace ' + labelOf(k)); }); });
+    document.querySelectorAll('[data-ok]').forEach(function (b) { b.addEventListener('click', function () { approve([b.dataset.ok]); render(); toast('Approved. Added to the candidate update'); }); });
+    document.querySelectorAll('[data-open]').forEach(function (b) { b.addEventListener('click', function () { var box = document.querySelector('[data-box="' + CSS.escape(b.dataset.open) + '"]'); box.hidden = !box.hidden; if (!box.hidden) { var f = box.querySelector('input[type=text],select'); if (f) f.focus(); } }); });
+    document.querySelectorAll('[data-amsend]').forEach(function (b) { b.addEventListener('click', function () { var k = b.dataset.amsend, reason = b.previousElementSibling.value; S.review[k] = { status: 'amend', reason: reason }; queue('amend', k, reason); log('Asked to replace ' + labelOf(k) + ': ' + reason); render(); toast('Added to the candidate update'); }); });
+    document.querySelectorAll('[data-ntadd]').forEach(function (b) { b.addEventListener('click', function () {
+      var k = b.dataset.ntadd, box = b.parentNode, text = box.querySelector('input[type=text]').value.trim(), internal = box.querySelector('input[type=checkbox]').checked;
+      if (!text) return;
+      (S.notes[k] = S.notes[k] || []).push({ text: text, internal: internal, by: ME });
+      if (!internal) queue('note', k, text);
+      log((internal ? 'Internal note on ' : 'Note to candidate on ') + labelOf(k) + ': ' + text); render(); toast(internal ? 'Internal note saved' : 'Note added to the candidate update');
+    }); });
   }
   document.querySelectorAll('[data-bulk]').forEach(function (b) {
     b.addEventListener('click', function () {
       var ks = ticked();
       if (b.dataset.bulk === 'clear') { document.querySelectorAll('.s-cb input').forEach(function (c) { c.checked = false; }); bulk(); return; }
-      if (b.dataset.bulk === 'override') { openOverride(ks, 'Mark complete (override)'); return; }
-      if (b.dataset.bulk === 'approve') { ks.forEach(function (k) { S.review[k] = { status: 'approved' }; }); log('Approved ' + ks.length + ' items'); render(); toast(ks.length + ' items approved'); return; }
-      document.getElementById('mailList').innerHTML = ks.map(function (k) { return '<li>' + esc(labelOf(k)) + '</li>'; }).join('');
-      document.getElementById('mailSubj').textContent = 'Action needed: ' + ks.length + ' item' + (ks.length > 1 ? 's' : '') + ' missing from your registration (' + S.ref + ')';
-      var p = document.getElementById('mailPanel'); p.hidden = false; p.dataset.keys = JSON.stringify(ks); p.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (b.dataset.bulk === 'override') { startOverride(ks); return; }
+      if (b.dataset.bulk === 'approve') { approve(ks); render(); toast(ks.length + ' approved. Added to the candidate update'); return; }
+      ks.forEach(function (k) { S.review[k] = { status: 'requested' }; queue('missing', k); });
+      log('Requested as missing: ' + ks.map(labelOf).join(', ')); render(); toast(ks.length + ' items added to the candidate update');
     });
   });
-  function openOverride(ks, title) {
-    if (!ks.length) { toast('Nothing left to complete'); return; }
-    document.getElementById('ovTitle').textContent = title;
-    document.getElementById('ovList').innerHTML = ks.map(function (k) { return '<li>' + esc(labelOf(k)) + '</li>'; }).join('');
-    var p = document.getElementById('ovPanel'); p.hidden = false; p.dataset.keys = JSON.stringify(ks); p.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  /* Override: one item at a time, each with a reason and a required note */
+  var ov = { keys: [], i: 0 };
+  function startOverride(ks) { if (!ks.length) { toast('Nothing left to complete'); return; } ov = { keys: ks, i: 0 }; document.getElementById('ovPanel').hidden = false; showOv(); document.getElementById('ovPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  function showOv() {
+    if (ov.i >= ov.keys.length) { document.getElementById('ovPanel').hidden = true; render(); return; }
+    document.getElementById('ovStep').textContent = 'Item ' + (ov.i + 1) + ' of ' + ov.keys.length;
+    document.getElementById('ovItem').textContent = labelOf(ov.keys[ov.i]);
+    document.getElementById('ovNote').value = ''; document.getElementById('ovErr').textContent = ''; document.getElementById('ovNote').focus();
+    document.getElementById('ovSave').textContent = ov.i === ov.keys.length - 1 ? 'Confirm' : 'Confirm and next';
   }
-  document.getElementById('ovClose').addEventListener('click', function () { document.getElementById('ovPanel').hidden = true; });
   document.getElementById('ovSave').addEventListener('click', function () {
-    var p = document.getElementById('ovPanel'), ks = JSON.parse(p.dataset.keys || '[]'), note = document.getElementById('ovNote').value.trim();
-    var reason = document.getElementById('ovReason').value + (note ? ': ' + note : '');
-    ks.forEach(function (k) { S.review[k] = { status: 'override', reason: reason, by: 'Geraldine' }; });
-    log('Marked ' + ks.length + ' item' + (ks.length > 1 ? 's' : '') + ' complete (override): ' + reason);
-    p.hidden = true; document.getElementById('ovNote').value = ''; render(); toast(ks.length + ' items marked complete');
+    var note = document.getElementById('ovNote').value.trim();
+    if (!note) { document.getElementById('ovErr').textContent = 'Please add a note before marking this complete.'; return; }
+    var k = ov.keys[ov.i], reason = document.getElementById('ovReason').value + ': ' + note;
+    S.review[k] = { status: 'override', reason: reason, by: ME }; queue('approved', k);
+    log('Marked complete (override) ' + labelOf(k) + '. ' + reason); toast(labelOf(k) + ' marked complete');
+    ov.i++; render(); document.getElementById('ovPanel').hidden = ov.i >= ov.keys.length; showOv();
   });
+  document.getElementById('ovSkip').addEventListener('click', function () { ov.i++; showOv(); });
+  document.getElementById('ovClose').addEventListener('click', function () { document.getElementById('ovPanel').hidden = true; });
+
   document.getElementById('approveAll').addEventListener('click', function () {
-    var ks = items(false).concat(items(true)).filter(function (i) { return st(i) === 'review'; }).map(function (i) { return i.key; });
-    ks.forEach(function (k) { S.review[k] = { status: 'approved' }; });
-    if (ks.length) log('Approved all ' + ks.length + ' uploaded items');
-    render(); toast(ks.length ? ks.length + ' items approved' : 'No uploaded items waiting for review');
+    var ks = allItems().filter(function (i) { return st(i) === 'review'; }).map(function (i) { return i.key; });
+    approve(ks, 'Approved all uploaded');
+    render(); toast(ks.length ? ks.length + ' items approved. Added to the candidate update' : 'No uploaded items waiting for review');
   });
   document.getElementById('completeAll').addEventListener('click', function () {
-    var left = items(false).concat(items(true)).filter(function (i) { var s = st(i); return !i.na && s !== 'approved' && s !== 'override'; });
-    var uploaded = left.filter(function (i) { return st(i) === 'review'; });
-    uploaded.forEach(function (i) { S.review[i.key] = { status: 'approved' }; });
-    if (uploaded.length) log('Approved all ' + uploaded.length + ' uploaded items');
+    var ks = allItems().filter(function (i) { return st(i) === 'review'; }).map(function (i) { return i.key; });
+    approve(ks, 'Approved all uploaded');
     render();
-    openOverride(left.filter(function (i) { return uploaded.indexOf(i) < 0; }).map(function (i) { return i.key; }), 'Complete profile: confirm the remaining items');
+    startOverride(allItems().filter(function (i) { var s = st(i); return !i.na && s !== 'approved' && s !== 'override'; }).map(function (i) { return i.key; }));
   });
-  ['decSent', 'decSigned'].forEach(function (id) { document.getElementById(id).addEventListener('change', function () { S[id] = this.checked; log(this.checked ? (id === 'decSent' ? 'Declaration sent to candidate' : 'Signed declaration received') : (id === 'decSent' ? 'Declaration marked as not sent' : 'Signed declaration unticked')); render(); }); });
-  document.getElementById('mailNote').addEventListener('input', function () { var o = document.getElementById('mailNoteOut'); o.textContent = this.value; o.hidden = !this.value.trim(); });
+
+  /* One email for everything in the tray */
+  document.getElementById('trayPreview').addEventListener('click', function () {
+    var q = S.queue, body = '<img class="logo-sm" src="img/logo.png" alt="HCC-Temps" width="74" height="40"><p>Hi ' + esc(S.acct.first) + ',</p><p>Here is an update on your registration (' + esc(S.ref) + '):</p>';
+    GROUPS.forEach(function (g) { var rows = q.filter(function (x) { return x.type === g[0]; }); if (!rows.length) return; body += '<p><b>' + g[1] + '</b></p><ul>' + rows.map(function (x) { return '<li>' + esc(x.label || '') + (x.label && x.text ? ': ' : '') + esc(x.text || '') + '</li>'; }).join('') + '</ul>'; });
+    body += '<a class="btn btn-aqua" href="portal.html?view=review">Open my portal</a><p style="font-size:13px;color:var(--muted)">Questions? Call 0330 321 3124, 24 hours a day.</p>';
+    document.getElementById('mailBody').innerHTML = body;
+    var need = q.filter(function (x) { return x.type === 'amend' || x.type === 'missing'; }).length;
+    document.getElementById('mailSubj').textContent = need ? 'Action needed: update on your HCC-Temps registration' : 'Update on your HCC-Temps registration';
+    var p = document.getElementById('mailPanel'); p.hidden = false; p.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
   document.getElementById('mailClose').addEventListener('click', function () { document.getElementById('mailPanel').hidden = true; });
   document.getElementById('mailSend').addEventListener('click', function () {
-    var p = document.getElementById('mailPanel'), ks = JSON.parse(p.dataset.keys || '[]');
-    ks.forEach(function (k) { S.review[k] = { status: 'requested' }; });
-    log('Emailed candidate about ' + ks.length + ' missing items: ' + ks.map(labelOf).join(', '));
-    p.hidden = true; render(); toast('Email sent to ' + S.acct.first + ' with ' + ks.length + ' missing items');
+    var n = S.queue.length;
+    log('Update email sent to candidate (' + n + ' change' + (n > 1 ? 's' : '') + ': ' + S.queue.map(function (x) { return (x.label || 'note') + (x.type === 'note' ? ' (note)' : ''); }).join(', ') + ')');
+    S.queue = []; save(); document.getElementById('mailPanel').hidden = true; render(); toast('One email sent to ' + S.acct.first + ' with ' + n + ' changes');
   });
-  document.getElementById('addNote').addEventListener('click', function () { var n = document.getElementById('note'); if (!n.value.trim()) return; log((document.getElementById('internal').checked ? 'Internal note: ' : 'Message to candidate (emailed): ') + n.value.trim()); n.value = ''; render(); });
+
+  document.getElementById('addNote').addEventListener('click', function () {
+    var n = document.getElementById('note'), internal = document.getElementById('internal').checked, text = n.value.trim(); if (!text) return;
+    if (!internal) queue('note', '', text);
+    log((internal ? 'Internal note: ' : 'Note to candidate (added to update): ') + text); n.value = ''; render();
+  });
+  ['decSent', 'decSigned'].forEach(function (id) { document.getElementById(id).addEventListener('change', function () { S[id] = this.checked; log(this.checked ? (id === 'decSent' ? 'Declaration sent to candidate' : 'Signed declaration received') : (id === 'decSent' ? 'Declaration marked as not sent' : 'Signed declaration unticked')); render(); }); });
   document.getElementById('stage').addEventListener('change', function () { log('Stage changed to ' + this.value + (this.value === 'Ready to work' ? ' (candidate emailed)' : '')); render(); });
   render();
 })();

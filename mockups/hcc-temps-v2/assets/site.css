@@ -927,3 +927,26 @@ fieldset.f { border: 0; margin: 0; padding: 0; }
 .bank-dl dt { color: var(--muted); }
 .bank-dl dd { margin: 0; color: var(--ink); font-weight: 600; }
 .bulk .btn-ghost-light { min-height: 38px; }
+/* Update tray and per-document notes */
+.tray.has { border: 2px solid var(--sun); box-shadow: 0 12px 30px rgba(243,212,94,.25); }
+.tray-n { display: grid; place-items: center; min-width: 30px; height: 30px; padding: 0 8px; border-radius: 999px; background: var(--paper); font-weight: 800; color: var(--ink); }
+.tray.has .tray-n { background: var(--sun); }
+.tray-g { margin-top: 10px; }
+.tray-g b { font-size: 14px; color: var(--ink); }
+.tray-g ul { margin: 4px 0 0; padding-left: 18px; font-size: 14px; display: grid; gap: 3px; }
+.tray-g .link-btn { font-size: 12px; color: var(--muted); }
+.mini.nt { color: var(--navy); } .mini.nt:hover { background: #E6EAFB; }
+.d-note { display: block; font-size: 13px; margin-top: 4px; color: var(--navy); background: #EEF0FB; border-radius: 8px; padding: 4px 8px; }
+.d-note.internal { color: var(--muted); background: var(--paper); }
+.amend-box input[type=text] { flex: 1; min-width: 180px; border: 1px solid #CFD8D6; border-radius: 10px; padding: 8px 10px; font: 500 14px var(--body); }
+.ov-item { font: 800 20px var(--display); color: var(--ink); background: var(--paper); border-radius: 12px; padding: 12px 14px; margin-top: 8px; }
+/* Staff summary email */
+.m-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.m-tbl th, .m-tbl td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.m-tbl th { color: var(--muted); font-weight: 600; width: 44%; }
+.m-tbl td { color: var(--ink); }
+.m-tbl .m-sec { background: var(--ink); color: var(--white); font-weight: 700; padding: 6px 8px; }
+.m-ok { color: #17694A; font-weight: 700; } .m-no { color: #A1271F; font-weight: 700; } .m-na { color: var(--muted); }
+.m-attach { background: var(--paper); border-radius: 10px; padding: 8px 10px; font-size: 13px; font-weight: 600; }
+.m-missing { background: #FFF2F1; border: 1px solid #F2B8B3; border-radius: 12px; padding: 10px 14px; }
+.m-missing ul { margin-top: 6px; }
