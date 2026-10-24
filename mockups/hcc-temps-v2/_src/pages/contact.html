@@ -34,7 +34,7 @@
           <div class="f full"><label for="cmsg">How can we help?</label><textarea id="cmsg"></textarea></div>
           <label class="consent full"><input type="checkbox" id="cconsent">I agree HCC-Temps can use these details to reply to me.</label>
         </div>
-        <div class="form-actions"><button class="btn btn-navy" type="submit">Send message</button><span class="form-note" id="route">Goes to: candidates team</span></div>
+        <div class="form-actions"><button class="btn btn-navy" type="submit">Send message</button></div>
         <p class="error-msg" role="status" aria-live="polite" id="cDone" style="color:var(--aqua-deep);margin-top:12px"></p>
       </form>
     </div>
@@ -55,15 +55,14 @@
 </main>
 <script>
 (function () {
-  var route = document.getElementById('route'), org = document.getElementById('orgField');
-  var teams = { candidate: 'candidates team', employer: 'client services team', other: 'general enquiries' };
+  var org = document.getElementById('orgField');
   document.querySelectorAll('input[name=who]').forEach(function (r) {
-    r.addEventListener('change', function () { route.textContent = 'Goes to: ' + teams[r.value]; org.hidden = r.value !== 'employer'; });
+    r.addEventListener('change', function () { org.hidden = r.value !== 'employer'; });
   });
   document.getElementById('contactForm').addEventListener('submit', function (e) {
     e.preventDefault();
     var who = document.querySelector('input[name=who]:checked').value;
-    document.getElementById('cDone').textContent = 'Mockup: on the live site this message is emailed to the ' + teams[who] + ' and you get an automatic reply.';
+    document.getElementById('cDone').textContent = 'Thank you. We have your message and will reply within one working day.';
   });
 })();
 </script>

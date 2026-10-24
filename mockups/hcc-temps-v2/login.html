@@ -81,7 +81,7 @@
             <label class="consent"><input type="checkbox" checked>Keep me logged in on this device</label>
           </div>
           <div class="form-actions"><button class="btn btn-navy" type="submit">Log in</button><span class="error-msg" role="alert"></span></div>
-          <p class="form-note" style="margin-top:14px"><a href="login.html">Forgotten your password?</a></p>
+          <p class="form-note" style="margin-top:14px"><a href="login.html">Forgotten your password?</a> · <a href="privacy.html">Privacy policy</a></p>
         </form>
         <form id="codeForm" hidden novalidate>
           <h2>Check your email</h2>
@@ -168,7 +168,7 @@
     </div>
     <div class="foot-bottom">
       <span>© 2026 HCC-Temp Staffing Ltd · Registered in England and Wales, company no. 11486985 · Website mockup v3</span>
-      <nav aria-label="Legal"><a href="contact.html">Privacy policy</a><a href="contact.html">Terms &amp; conditions</a></nav>
+      <nav aria-label="Legal"><a href="privacy.html" data-key="privacy">Privacy policy</a><a href="terms.html" data-key="terms">Terms &amp; conditions</a><a href="privacy.html#cookies">Cookies</a></nav>
     </div>
   </div>
 </footer>
@@ -183,6 +183,8 @@
     document.getElementById('tabStaff').toggleAttribute('aria-current', staff);
     document.getElementById('tabCandidate').toggleAttribute('aria-current', !staff);
     if (staff) document.getElementById('tabStaff').setAttribute('aria-current', 'page'); else document.getElementById('tabCandidate').setAttribute('aria-current', 'page');
+    /* Candidates see only their login; the staff link shows both options */
+    document.querySelector('.login-switch').hidden = !staff;
     document.getElementById('sideStaff').hidden = !staff;
     document.getElementById('sideCandidate').hidden = staff;
     return staff;

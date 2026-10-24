@@ -23,7 +23,7 @@
             <label class="consent"><input type="checkbox" checked>Keep me logged in on this device</label>
           </div>
           <div class="form-actions"><button class="btn btn-navy" type="submit">Log in</button><span class="error-msg" role="alert"></span></div>
-          <p class="form-note" style="margin-top:14px"><a href="login.html">Forgotten your password?</a></p>
+          <p class="form-note" style="margin-top:14px"><a href="login.html">Forgotten your password?</a> · <a href="privacy.html">Privacy policy</a></p>
         </form>
         <form id="codeForm" hidden novalidate>
           <h2>Check your email</h2>
@@ -58,6 +58,8 @@
     document.getElementById('tabStaff').toggleAttribute('aria-current', staff);
     document.getElementById('tabCandidate').toggleAttribute('aria-current', !staff);
     if (staff) document.getElementById('tabStaff').setAttribute('aria-current', 'page'); else document.getElementById('tabCandidate').setAttribute('aria-current', 'page');
+    /* Candidates see only their login; the staff link shows both options */
+    document.querySelector('.login-switch').hidden = !staff;
     document.getElementById('sideStaff').hidden = !staff;
     document.getElementById('sideCandidate').hidden = staff;
     return staff;

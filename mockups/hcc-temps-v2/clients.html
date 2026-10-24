@@ -110,7 +110,7 @@
           <div class="f"><label for="pc">Site postcode</label><input type="text" id="pc" autocomplete="postal-code"></div>
           <div class="f full"><label for="notes">Shift times and anything else we should know</label><textarea id="notes" placeholder="e.g. 3 long days, 08:00 to 20:00, manual handling training needed"></textarea></div>
         </div>
-        <div class="form-actions"><button class="btn btn-navy" type="submit">Send request</button><span class="form-note">Goes to the client services team, subject tagged [COVER REQUEST].</span></div>
+        <div class="form-actions"><button class="btn btn-navy" type="submit">Send request</button><span class="form-note">By sending this form you agree to our <a href="privacy.html">privacy policy</a>.</span></div>
         <p role="status" aria-live="polite" id="coverDone" style="margin-top:12px;font-weight:600;color:var(--aqua-deep)"></p>
       </form>
     </div>
@@ -190,7 +190,7 @@
     </div>
     <div class="foot-bottom">
       <span>© 2026 HCC-Temp Staffing Ltd · Registered in England and Wales, company no. 11486985 · Website mockup v3</span>
-      <nav aria-label="Legal"><a href="contact.html">Privacy policy</a><a href="contact.html">Terms &amp; conditions</a></nav>
+      <nav aria-label="Legal"><a href="privacy.html" data-key="privacy">Privacy policy</a><a href="terms.html" data-key="terms">Terms &amp; conditions</a><a href="privacy.html#cookies">Cookies</a></nav>
     </div>
   </div>
 </footer>
@@ -200,7 +200,7 @@
 document.getElementById('coverForm').addEventListener('submit', function (e) {
   e.preventDefault();
   var org = document.getElementById('org').value.trim() || 'your site';
-  document.getElementById('coverDone').textContent = 'Mockup: on the live site this request is emailed to HCC and ' + org + ' gets an automatic confirmation.';
+  document.getElementById('coverDone').textContent = 'Thank you. We have your request for ' + org + ' and will call you back shortly. For emergency cover call 0330 321 3124.';
 });
 </script>
 </body>
