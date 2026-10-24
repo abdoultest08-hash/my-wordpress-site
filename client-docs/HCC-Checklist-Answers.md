@@ -176,3 +176,17 @@ First names only on the site. Sizes differ (one portrait, one landscape), so cro
 9. Also to define:
    - the emails the staffing inbox receives
    - the emails candidates receive at each step
+
+## Decisions (24 Oct)
+1. **No approval gate:** anyone can register and go straight through. Unsuitable candidates are contacted manually.
+2. **Staffing inbox gets 2 emails only:**
+   - registration submitted (summary of answers and a list of files)
+   - later uploads (grouped: "X has uploaded 3 documents, log in and check")
+
+   **No attachments**, because of the GDPR risk and email size limits. Files stay in the Staff portal. Optional: attach the CV only.
+3. **Bank details are required** in pre-screening and saved on the candidate's staff profile. Managers see them in full; others see the last 4 digits.
+4. **Declaration** is sent manually by admin after all documents are approved, then recorded with "Declaration sent" and "Signed received" ticks.
+5. **Admin tools:**
+   - "Approve all uploaded"
+   - "Mark complete (override)" with a required reason, logged with the staff member's name
+   - "Complete profile (100%)": approves all uploaded files, then overrides the rest with a reason

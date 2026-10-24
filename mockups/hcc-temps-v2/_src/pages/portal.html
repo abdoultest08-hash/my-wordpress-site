@@ -62,7 +62,7 @@
     if (s.file || s.pin) return { status: 'review' };
     return { status: 'todo' };
   }
-  var CHIP = { approved: ['Approved', 'stat-ok'], review: ['Uploaded · awaiting review', 'stat-wait'], amend: ['Needs replacing', 'stat-amend'], todo: ['To follow', 'stat-todo'], requested: ['Requested by our team', 'stat-amend'], na: ['Not needed', 'stat-na'] };
+  var CHIP = { approved: ['Approved', 'stat-ok'], override: ['Approved', 'stat-ok'], review: ['Uploaded · awaiting review', 'stat-wait'], amend: ['Needs replacing', 'stat-amend'], todo: ['To follow', 'stat-todo'], requested: ['Requested by our team', 'stat-amend'], na: ['Not needed', 'stat-na'] };
   function rows(items, store, isTrain) {
     return items.map(function (it, i) {
       var st = it.na ? { status: 'na' } : status(store, it.key, isTrain), s = store[it.key] || {}, c = CHIP[st.status];
@@ -85,7 +85,7 @@
     var di = docItems(), ti = R[S.role].train.map(function (t) { return { key: t, label: t }; });
     document.getElementById('pDocs').innerHTML = rows(di, S.docs, false);
     document.getElementById('pTrain').innerHTML = rows(ti, S.train, true);
-    var count = function (items, store) { var need = items.filter(function (i) { return !i.na; }); var ok = 0, todo = 0, amend = 0; need.forEach(function (i) { var st = status(store, i.key).status; if (st === 'approved') ok++; if (st === 'todo' || st === 'requested') todo++; if (st === 'amend') amend++; }); return { n: need.length, ok: ok, todo: todo, amend: amend, have: need.filter(function (i) { var s = store[i.key] || {}; return s.file || s.pin; }).length }; };
+    var count = function (items, store) { var need = items.filter(function (i) { return !i.na; }); var ok = 0, todo = 0, amend = 0; need.forEach(function (i) { var st = status(store, i.key).status; if (st === 'approved' || st === 'override') ok++; if (st === 'todo' || st === 'requested') todo++; if (st === 'amend') amend++; }); return { n: need.length, ok: ok, todo: todo, amend: amend, have: need.filter(function (i) { var s = store[i.key] || {}; return s.file || s.pin; }).length }; };
     var d = count(di, S.docs), t = count(ti, S.train);
     document.getElementById('docSum').textContent = d.have + ' of ' + d.n + ' added';
     document.getElementById('trainSum').textContent = t.have + ' of ' + t.n + ' added' + (t.todo ? ' · ' + t.todo + ' to follow' : '') + (t.amend ? ' · ' + t.amend + ' to replace' : '') + ' · tap to open';

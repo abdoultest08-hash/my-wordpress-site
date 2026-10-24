@@ -917,3 +917,13 @@ fieldset.f { border: 0; margin: 0; padding: 0; }
 .m-small { font-size: 13px; color: var(--muted); }
 .m-reason { background: #FFF6D6; padding: 10px 12px; border-radius: 10px; }
 .m-note { background: var(--aqua-tint); padding: 10px 12px; border-radius: 10px; }
+.pct { display: flex; align-items: center; gap: 10px; margin-top: 10px; max-width: 360px; }
+.pct .progress { flex: 1; margin-top: 0; height: 10px; }
+.pct b { font-size: 14px; color: var(--navy); white-space: nowrap; }
+.p-ov { display: block; font-size: 13px; font-weight: 600; color: #17694A; margin-top: 4px; }
+.ov-list { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 4px; font-size: 15px; }
+.bank-dl { margin: 0; display: grid; gap: 6px; }
+.bank-dl div { display: grid; grid-template-columns: 130px 1fr; font-size: 14px; }
+.bank-dl dt { color: var(--muted); }
+.bank-dl dd { margin: 0; color: var(--ink); font-weight: 600; }
+.bulk .btn-ghost-light { min-height: 38px; }

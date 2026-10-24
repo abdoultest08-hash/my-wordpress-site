@@ -16,10 +16,13 @@
       <div class="s-head">
         <div>
           <h1 id="sTitle">Alex Morgan</h1>
+          <div class="pct"><div class="progress"><i id="pctBar" style="width:0"></i></div><b id="pctTxt"></b></div>
           <p id="sMeta"></p>
         </div>
         <div class="s-actions">
           <label class="s-stage">Stage <select id="stage"><option>New registration</option><option selected>Documents</option><option>Checks in progress</option><option>Ready to work</option><option>Closed</option></select></label>
+          <button class="btn btn-aqua btn-sm" type="button" id="approveAll">Approve all uploaded</button>
+          <button class="btn btn-sun btn-sm" type="button" id="completeAll">Complete profile (100%)</button>
           <button class="btn btn-ghost btn-sm" type="button">Download all (zip)</button>
           <button class="btn btn-ghost btn-sm" type="button">Candidate report</button>
         </div>
@@ -29,7 +32,7 @@
         <div>
           <div class="p-card">
             <div class="p-card-head"><h2>Documents</h2><span class="p-count" id="sDocSum"></span></div>
-            <div class="bulk" id="bulk" hidden><span id="bulkN"></span><button class="btn btn-sm btn-aqua" type="button" data-bulk="approve">Approve selected</button><button class="btn btn-sm btn-sun" type="button" data-bulk="missing">Email missing items</button><button class="link-btn" type="button" data-bulk="clear">Clear</button></div>
+            <div class="bulk" id="bulk" hidden><span id="bulkN"></span><button class="btn btn-sm btn-aqua" type="button" data-bulk="approve">Approve selected</button><button class="btn btn-sm btn-sun" type="button" data-bulk="missing">Email missing items</button><button class="btn btn-sm btn-ghost-light" type="button" data-bulk="override">Mark complete (override)</button><button class="link-btn" type="button" data-bulk="clear">Clear</button></div>
             <div class="s-table" id="sDocs"></div>
           </div>
           <details class="p-card p-folder" open>
@@ -37,6 +40,16 @@
             <div class="s-table" id="sTrain"></div>
           </details>
 
+          <div class="p-card" id="ovPanel" hidden>
+            <div class="p-card-head"><h2 id="ovTitle">Mark complete (override)</h2><button class="link-btn" type="button" id="ovClose">Cancel</button></div>
+            <p class="hint">These items will show as complete for the candidate. Your name and reason are saved on the timeline.</p>
+            <ul class="ov-list" id="ovList"></ul>
+            <div class="form-grid" style="margin-top:12px">
+              <div class="f"><label for="ovReason">Reason</label><select id="ovReason"><option>Seen the original in the office</option><option>Not required for this candidate or client</option><option>Checked by phone or online</option><option>Held on file from a previous registration</option><option>Other (add a note)</option></select></div>
+              <div class="f"><label for="ovNote">Note</label><input type="text" id="ovNote" placeholder="Optional"></div>
+            </div>
+            <div class="form-actions"><button class="btn btn-navy" type="button" id="ovSave">Confirm</button></div>
+          </div>
           <div class="p-card" id="mailPanel" hidden>
             <div class="p-card-head"><h2>Email missing items</h2><button class="link-btn" type="button" id="mailClose">Cancel</button></div>
             <div class="f"><label for="mailNote">Add a note (optional)</label><textarea id="mailNote" placeholder="e.g. Your DBS photo was cut off at the bottom, please upload both pages."></textarea></div>
@@ -50,6 +63,16 @@
           <div class="p-card">
             <div class="p-card-head"><h2>Pre-screening answers</h2></div>
             <div id="sAnswers"></div>
+          </div>
+          <div class="p-card">
+            <div class="p-card-head"><h2>Declaration</h2><span class="p-count">Sent manually</span></div>
+            <p class="hint" style="margin-bottom:10px">Send the declaration once all documents are approved, then record it here.</p>
+            <label class="consent"><input type="checkbox" id="decSent">Declaration sent to candidate</label>
+            <label class="consent" style="margin-top:8px"><input type="checkbox" id="decSigned">Signed declaration received</label>
+          </div>
+          <div class="p-card bank-card">
+            <div class="p-card-head"><h2>Bank details</h2><span class="p-count">Managers only</span></div>
+            <dl class="bank-dl" id="bankDl"></dl>
           </div>
           <div class="p-card">
             <div class="p-card-head"><h2>Notes</h2></div>
@@ -82,7 +105,7 @@
   document.querySelectorAll('.mFirst').forEach(function (e) { e.textContent = S.acct.first; }); document.querySelectorAll('.mRef').forEach(function (e) { e.textContent = S.ref; });
   document.getElementById('mailTo').textContent = S.acct.email;
 
-  var CHIP = { approved: ['Approved', 'stat-ok'], review: ['To review', 'stat-wait'], amend: ['Amend requested', 'stat-amend'], todo: ['Missing', 'stat-todo'], requested: ['Requested', 'stat-amend'], na: ['Not needed', 'stat-na'] };
+  var CHIP = { approved: ['Approved', 'stat-ok'], override: ['Completed by staff', 'stat-ok'], review: ['To review', 'stat-wait'], amend: ['Amend requested', 'stat-amend'], todo: ['Missing', 'stat-todo'], requested: ['Requested', 'stat-amend'], na: ['Not needed', 'stat-na'] };
   function items(train) {
     if (train) return R[S.role].train.map(function (t) { return { key: t, label: t, t: 1 }; });
     return R[S.role].docs.map(function (d) {
@@ -96,13 +119,13 @@
     return list.map(function (it) {
       var s = st(it), file = (it.t ? S.train : S.docs)[it.key] || {}, c = CHIP[s], r = S.review[it.key] || {};
       return '<div class="s-row s-' + s + '">' + (it.na ? '<span class="s-cb"></span>' : '<label class="s-cb"><input type="checkbox" data-k="' + esc(it.key) + '" aria-label="Select ' + esc(it.label) + '"></label>') +
-        '<div class="s-item"><b>' + esc(it.label) + '</b>' + (file.file ? '<a class="p-file" href="#" onclick="return false">' + esc(file.file) + '</a>' : file.pin ? '<span class="p-file">PIN ' + esc(file.pin) + ' · <a href="https://www.nmc.org.uk/registration/search-the-register/" target="_blank" rel="noopener">check NMC register</a></span>' : file.missing ? '<span class="p-file">Candidate ticked "I don\'t have this yet"</span>' : '') + (file.exp ? '<span class="p-file">Expires ' + esc(file.exp) + '</span>' : '') + (r.reason ? '<span class="p-reason">' + esc(r.reason) + '</span>' : '') + '</div>' +
+        '<div class="s-item"><b>' + esc(it.label) + '</b>' + (file.file ? '<a class="p-file" href="#" onclick="return false">' + esc(file.file) + '</a>' : file.pin ? '<span class="p-file">PIN ' + esc(file.pin) + ' · <a href="https://www.nmc.org.uk/registration/search-the-register/" target="_blank" rel="noopener">check NMC register</a></span>' : file.missing ? '<span class="p-file">Candidate ticked "I don\'t have this yet"</span>' : '') + (file.exp ? '<span class="p-file">Expires ' + esc(file.exp) + '</span>' : '') + (r.reason ? '<span class="' + (s === 'override' ? 'p-ov' : 'p-reason') + '">' + (s === 'override' ? 'Override: ' : '') + esc(r.reason) + (r.by ? ' · ' + esc(r.by) : '') + '</span>' : '') + '</div>' +
         '<span class="stat ' + c[1] + '">' + c[0] + '</span>' +
-        (it.na || s === 'todo' || s === 'requested' ? '<span></span>' : '<span class="s-btns"><button type="button" class="mini ok" data-ok="' + esc(it.key) + '" title="Approve">✓</button><button type="button" class="mini am" data-am="' + esc(it.key) + '" title="Ask to replace">↺</button></span>') +
+        (it.na || s === 'todo' || s === 'requested' || s === 'override' ? '<span></span>' : '<span class="s-btns"><button type="button" class="mini ok" data-ok="' + esc(it.key) + '" title="Approve">✓</button><button type="button" class="mini am" data-am="' + esc(it.key) + '" title="Ask to replace">↺</button></span>') +
         '<div class="amend-box" data-box="' + esc(it.key) + '" hidden><select>' + AMEND.map(function (x) { return '<option>' + x + '</option>'; }).join('') + '</select><button type="button" class="btn btn-sm btn-sun" data-amsend="' + esc(it.key) + '">Send to candidate</button></div></div>';
     }).join('');
   }
-  function sum(list) { var n = list.filter(function (i) { return !i.na; }); var c = {}; n.forEach(function (i) { var s = st(i); c[s] = (c[s] || 0) + 1; }); return n.length + ' items · ' + (c.approved || 0) + ' approved · ' + (c.review || 0) + ' to review · ' + ((c.todo || 0) + (c.requested || 0)) + ' missing' + (c.amend ? ' · ' + c.amend + ' to replace' : ''); }
+  function sum(list) { var n = list.filter(function (i) { return !i.na; }); var c = {}; n.forEach(function (i) { var s = st(i); c[s] = (c[s] || 0) + 1; }); return n.length + ' items · ' + ((c.approved || 0) + (c.override || 0)) + ' approved · ' + (c.review || 0) + ' to review · ' + ((c.todo || 0) + (c.requested || 0)) + ' missing' + (c.amend ? ' · ' + c.amend + ' to replace' : ''); }
   function labelOf(k) { var all = items(false).concat(items(true)); for (var i = 0; i < all.length; i++) if (all[i].key === k) return all[i].label; return k; }
   function log(text) { S.log.push([new Date().toISOString(), text, 'Geraldine']); save(); }
   function toast(t) { var el = document.getElementById('toastPop'); el.textContent = t; el.hidden = false; clearTimeout(el._t); el._t = setTimeout(function () { el.hidden = true; }, 3200); }
@@ -117,11 +140,14 @@
       ['About', [['Date of birth', a.dob], ['NI number', a.ni], ['Address', S.acct.address], ['Licence / vehicle', [a.licence, a.vehicle && 'vehicle: ' + a.vehicle].filter(Boolean).join(' · ')]]],
       ['Experience', [['Education', a.edu], ['Status', a.emp], ['In role', a.exp], ['Training in date', a.trainok], ['Uniform', [a.uniform, a.size].filter(Boolean).join(' · ')]]],
       ['Referees', [['1', [a.r1n, a.r1p, a.r1e, a.r1t].filter(Boolean).join(' · ')], ['2', [a.r2n, a.r2p, a.r2e, a.r2t].filter(Boolean).join(' · ')]]],
-      ['Emergency contact', [['', [a.kn, a.kr, a.kt].filter(Boolean).join(' · ')]]],
-      ['Bank (managers only)', [['Account', a.bno ? (a.ban || '') + ' · ' + (a.btype || '') + ' · ' + (a.bsc || '') + ' · ****' + a.bno.slice(-4) : 'Not added yet']]]
+      ['Emergency contact', [['', [a.kn, a.kr, a.kt].filter(Boolean).join(' · ')]]]
     ];
     document.getElementById('sAnswers').innerHTML = ans.map(function (g, i) { return '<details class="det"' + (i < 2 ? ' open' : '') + '><summary>' + g[0] + '</summary><dl>' + g[1].map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1] || '—') + '</dd></div>'; }).join('') + '</dl></details>'; }).join('');
     document.getElementById('timeline').innerHTML = S.log.slice().reverse().map(function (l) { return '<li><b>' + esc(l[1]) + '</b><span>' + fmt(l[0]) + ' · ' + esc(l[2]) + '</span></li>'; }).join('');
+    document.getElementById('bankDl').innerHTML = [['Account name', a.ban], ['Type', a.btype], ['Sort code', a.bsc], ['Account number', a.bno]].map(function (r) { return '<div><dt>' + r[0] + '</dt><dd>' + esc(r[1] || '—') + '</dd></div>'; }).join('');
+    var all = d.concat(t).filter(function (i) { return !i.na; }), ok = all.filter(function (i) { var s = st(i); return s === 'approved' || s === 'override'; }).length, pct = Math.round(ok / all.length * 100);
+    document.getElementById('pctBar').style.width = pct + '%'; document.getElementById('pctTxt').textContent = 'Profile ' + pct + '% complete';
+    document.getElementById('decSent').checked = !!S.decSent; document.getElementById('decSigned').checked = !!S.decSigned;
     bind(); bulk();
   }
   function ticked() { return Array.prototype.map.call(document.querySelectorAll('.s-cb input:checked'), function (c) { return c.dataset.k; }); }
@@ -136,12 +162,42 @@
     b.addEventListener('click', function () {
       var ks = ticked();
       if (b.dataset.bulk === 'clear') { document.querySelectorAll('.s-cb input').forEach(function (c) { c.checked = false; }); bulk(); return; }
+      if (b.dataset.bulk === 'override') { openOverride(ks, 'Mark complete (override)'); return; }
       if (b.dataset.bulk === 'approve') { ks.forEach(function (k) { S.review[k] = { status: 'approved' }; }); log('Approved ' + ks.length + ' items'); render(); toast(ks.length + ' items approved'); return; }
       document.getElementById('mailList').innerHTML = ks.map(function (k) { return '<li>' + esc(labelOf(k)) + '</li>'; }).join('');
       document.getElementById('mailSubj').textContent = 'Action needed: ' + ks.length + ' item' + (ks.length > 1 ? 's' : '') + ' missing from your registration (' + S.ref + ')';
       var p = document.getElementById('mailPanel'); p.hidden = false; p.dataset.keys = JSON.stringify(ks); p.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
+  function openOverride(ks, title) {
+    if (!ks.length) { toast('Nothing left to complete'); return; }
+    document.getElementById('ovTitle').textContent = title;
+    document.getElementById('ovList').innerHTML = ks.map(function (k) { return '<li>' + esc(labelOf(k)) + '</li>'; }).join('');
+    var p = document.getElementById('ovPanel'); p.hidden = false; p.dataset.keys = JSON.stringify(ks); p.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  document.getElementById('ovClose').addEventListener('click', function () { document.getElementById('ovPanel').hidden = true; });
+  document.getElementById('ovSave').addEventListener('click', function () {
+    var p = document.getElementById('ovPanel'), ks = JSON.parse(p.dataset.keys || '[]'), note = document.getElementById('ovNote').value.trim();
+    var reason = document.getElementById('ovReason').value + (note ? ': ' + note : '');
+    ks.forEach(function (k) { S.review[k] = { status: 'override', reason: reason, by: 'Geraldine' }; });
+    log('Marked ' + ks.length + ' item' + (ks.length > 1 ? 's' : '') + ' complete (override): ' + reason);
+    p.hidden = true; document.getElementById('ovNote').value = ''; render(); toast(ks.length + ' items marked complete');
+  });
+  document.getElementById('approveAll').addEventListener('click', function () {
+    var ks = items(false).concat(items(true)).filter(function (i) { return st(i) === 'review'; }).map(function (i) { return i.key; });
+    ks.forEach(function (k) { S.review[k] = { status: 'approved' }; });
+    if (ks.length) log('Approved all ' + ks.length + ' uploaded items');
+    render(); toast(ks.length ? ks.length + ' items approved' : 'No uploaded items waiting for review');
+  });
+  document.getElementById('completeAll').addEventListener('click', function () {
+    var left = items(false).concat(items(true)).filter(function (i) { var s = st(i); return !i.na && s !== 'approved' && s !== 'override'; });
+    var uploaded = left.filter(function (i) { return st(i) === 'review'; });
+    uploaded.forEach(function (i) { S.review[i.key] = { status: 'approved' }; });
+    if (uploaded.length) log('Approved all ' + uploaded.length + ' uploaded items');
+    render();
+    openOverride(left.filter(function (i) { return uploaded.indexOf(i) < 0; }).map(function (i) { return i.key; }), 'Complete profile: confirm the remaining items');
+  });
+  ['decSent', 'decSigned'].forEach(function (id) { document.getElementById(id).addEventListener('change', function () { S[id] = this.checked; log(this.checked ? (id === 'decSent' ? 'Declaration sent to candidate' : 'Signed declaration received') : (id === 'decSent' ? 'Declaration marked as not sent' : 'Signed declaration unticked')); render(); }); });
   document.getElementById('mailNote').addEventListener('input', function () { var o = document.getElementById('mailNoteOut'); o.textContent = this.value; o.hidden = !this.value.trim(); });
   document.getElementById('mailClose').addEventListener('click', function () { document.getElementById('mailPanel').hidden = true; });
   document.getElementById('mailSend').addEventListener('click', function () {

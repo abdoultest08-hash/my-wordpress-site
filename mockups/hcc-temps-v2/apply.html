@@ -192,8 +192,8 @@
             </div>
           </fieldset>
 
-          <fieldset class="q-group"><legend>Bank details <span class="opt-pill">Can add later</span></legend>
-            <p class="hint" style="margin-bottom:12px">For paying you. Only HCC managers can see these details.</p>
+          <fieldset class="q-group"><legend>Bank details</legend>
+            <p class="hint" style="margin-bottom:12px">Needed to pay you for your shifts. Only HCC managers can see these details.</p>
             <div class="form-grid">
               <div class="f"><label for="ban">Account name</label><input type="text" id="ban" name="ban"></div>
               <fieldset class="f"><legend>Personal or limited company?</legend><div class="radios"><label class="radio"><input type="radio" name="btype" value="Personal"><span>Personal</span></label><label class="radio"><input type="radio" name="btype" value="LTD"><span>LTD</span></label></div></fieldset>
@@ -414,7 +414,10 @@
     e.preventDefault();
     var a = {};
     f4.querySelectorAll('input[name], select[name]').forEach(function (el) { if (el.type === 'radio') { if (el.checked) a[el.name] = el.value; } else a[el.name] = el.value.trim(); });
-    if (!a.british || !a.dbs) { f4.querySelector('.error-msg').textContent = 'Please answer the right to work and DBS questions.'; return; }
+    var err4 = f4.querySelector('.error-msg');
+    if (!a.british || !a.dbs) { err4.textContent = 'Please answer the right to work and DBS questions.'; return; }
+    if (!a.ban || !a.btype || a.bsc.replace(/\D/g, '').length !== 6 || a.bno.replace(/\D/g, '').length !== 8) { err4.textContent = 'Please add your bank details: account name, account type, 6-digit sort code and 8-digit account number.'; f4.querySelector('#ban').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    err4.textContent = '';
     S.answers = a; S.prescreenDone = new Date().toISOString(); go(5);
   });
 
@@ -485,7 +488,7 @@
     var tick = function (name, v) { var el = document.querySelector('[name="' + name + '"][value="' + v + '"]'); if (el) el.checked = true; };
     if (S.step === 1) { set('#first', 'Alex'); set('#last', 'Morgan'); set('#email', 'alex.morgan@example.com'); set('#phone', '07700 900456'); set('#addr1', '12 Park Lane'); set('#town', 'Leeds'); set('#postcode', 'LS12 2EJ'); set('#pw', 'Example-2026'); set('#pw2', 'Example-2026'); ['terms', 'privacy', 'robot'].forEach(function (n) { document.querySelector('[name=' + n + ']').checked = true; }); }
     if (S.step === 2) boxes.forEach(function (b, i) { b.value = '482913'[i]; });
-    if (S.step === 4) { set('#title', 'Mx'); set('#dob', '1992-04-18'); set('#ni', 'QQ 12 34 56 C'); tick('british', 'No'); set('#visa', 'Health and Care Worker visa'); set('#share', 'W12 345 678'); tick('licence', 'Full'); tick('vehicle', 'Yes'); tick('dbs', 'update'); set('#dbsno', '001234567890'); set('#edu', 'Degree'); set('#emp', 'Agency work'); set('#exp', '3 to 5 years'); tick('trainok', 'Some'); tick('uniform', 'Yes'); set('#size', 'M'); set('#r1n', 'Jane Smith'); set('#r1p', 'Ward Manager, St Mary\'s Hospital'); set('#r1e', 'jane.smith@example.com'); set('#r1t', '0113 496 0000'); set('#r2n', 'Tom Patel'); set('#r2p', 'Deputy Manager, Oak House'); set('#r2e', 'tom.patel@example.com'); set('#r2t', '0113 496 0001'); set('#kn', 'Sam Morgan'); set('#kr', 'Sibling'); set('#kt', '07700 900789'); set('#ka', '4 Hill Road, Leeds LS6 1AA'); conditions(); }
+    if (S.step === 4) { set('#title', 'Mx'); set('#dob', '1992-04-18'); set('#ni', 'QQ 12 34 56 C'); tick('british', 'No'); set('#visa', 'Health and Care Worker visa'); set('#share', 'W12 345 678'); tick('licence', 'Full'); tick('vehicle', 'Yes'); tick('dbs', 'update'); set('#dbsno', '001234567890'); set('#edu', 'Degree'); set('#emp', 'Agency work'); set('#exp', '3 to 5 years'); tick('trainok', 'Some'); tick('uniform', 'Yes'); set('#size', 'M'); set('#r1n', 'Jane Smith'); set('#r1p', 'Ward Manager, St Mary\'s Hospital'); set('#r1e', 'jane.smith@example.com'); set('#r1t', '0113 496 0000'); set('#r2n', 'Tom Patel'); set('#r2p', 'Deputy Manager, Oak House'); set('#r2e', 'tom.patel@example.com'); set('#r2t', '0113 496 0001'); set('#kn', 'Sam Morgan'); set('#kr', 'Sibling'); set('#kt', '07700 900789'); set('#ka', '4 Hill Road, Leeds LS6 1AA'); set('#ban', 'A Morgan'); tick('btype', 'Personal'); set('#bsc', '00-00-00'); set('#bno', '12345678'); conditions(); }
     if (S.step === 5 || S.step === 6) {
       var items = S.step === 5 ? docItems() : trainItems(), store = S.step === 5 ? S.docs : S.train;
       items.forEach(function (it, i) { if (it.kind === 'na') return; if (it.kind === 'pin') { store[it.key] = { pin: '12A3456E', exp: '2027-08-31' }; return; } store[it.key] = i % 4 === 3 ? { missing: true } : { file: HCC.renamed(S.ref, S.acct.first, S.acct.last, it.label.split(':')[0].replace(/\(.*\)/, ''), 'photo.jpg'), at: new Date().toISOString(), exp: S.step === 6 ? '2027-03-01' : '' }; });
