@@ -13,6 +13,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / "_src"
 HEADER = (SRC / "partials/header.html").read_text()
 FOOTER = (SRC / "partials/footer.html").read_text()
+ACCRED = (SRC / "partials/accred.html").read_text()
+ACCRED_PAGES = {"home", "about", "contact"}  # accreditation banner only on these
 
 HEAD = """<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,7 +29,7 @@ for page in sorted((SRC / "pages").glob("*.html")):
     header = HEADER.replace(f'data-key="{meta["key"]}"', f'data-key="{meta["key"]}" aria-current="page"')
     content = (
         f"<title>{meta['title']}</title>\n{HEAD}\n\n{header}\n{body.split('<script>', 1)[0]}"
-        f"\n{FOOTER}\n<script src=\"assets/site.js\"></script>\n"
+        f"\n{ACCRED if meta['key'] in ACCRED_PAGES else ''}{FOOTER}\n<script src=\"assets/site.js\"></script>\n"
     )
     if "<script>" in body:
         content += "<script>" + body.split("<script>", 1)[1]
