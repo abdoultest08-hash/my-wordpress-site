@@ -135,6 +135,28 @@ var HCC = (function () {
     return out;
   }
 
+  /* Mockup only: keep uploaded files (up to 3MB) in this browser tab so the View buttons can show the real file.
+     The live site stores files privately on the server instead. */
+  function keepFile(key, file, done) {
+    if (!file || file.size > 3 * 1024 * 1024) { if (done) done(false); return; }
+    var r = new FileReader();
+    r.onload = function () { try { sessionStorage.setItem('hcc-file:' + key, JSON.stringify({ type: file.type, data: r.result })); if (done) done(true); } catch (x) { if (done) done(false); } };
+    r.readAsDataURL(file);
+  }
+  function viewerHTML(key, name, label) {
+    var f = null; try { f = JSON.parse(sessionStorage.getItem('hcc-file:' + key) || 'null'); } catch (x) {}
+    if (f && f.data) {
+      var bin = atob(f.data.split(',')[1]), arr = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      var url = URL.createObjectURL(new Blob([arr], { type: f.type }));
+      if (/^image\//.test(f.type)) return '<img class="v-real" src="' + url + '" alt="' + esc(label) + '">';
+      if (f.type === 'application/pdf') return '<iframe class="v-real v-frame" src="' + url + '" title="' + esc(label) + '"></iframe>';
+      return '<div class="v-pdf"><span>This file type can\'t be shown in the browser. Use Download.</span></div>';
+    }
+    return /\.(jpe?g|png|heic)$/i.test(name) ? '<div class="v-img"><span>Sample image</span><b>' + esc(label) + '</b><small>Upload a real file in registration or the portal to see it here</small></div>'
+      : '<div class="v-pdf"><div class="v-page"><i></i><i></i><i></i><i class="s"></i><i></i><i class="s"></i></div><span>Sample PDF. Upload a real file to see it here</span></div>';
+  }
+
   /* Sample candidate for the portal and staff views when nobody has registered in this browser session */
   function demoCandidate() {
     var role = 'nurse', S = { role: role, ref: 'HCC-001234', step: 7, registered: new Date(Date.now() - 864e5).toISOString(), prescreenDone: new Date(Date.now() - 82e6).toISOString(), submitted: new Date(Date.now() - 8e7).toISOString(),
@@ -215,5 +237,5 @@ var HCC = (function () {
     document.querySelectorAll('.nav-login[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
   });
   initMenu();
-  return { initFaqTabs: initFaqTabs, JOBS: JOBS, card: card, byId: byId, checklistFor: checklistFor, REQS: REQS, reqKey: reqKey, demoCandidate: demoCandidate, dupes: dupes, fileFor: fileFor, shortLabel: shortLabel, renamed: renamed, initApply: initApply, esc: esc };
+  return { initFaqTabs: initFaqTabs, JOBS: JOBS, card: card, byId: byId, checklistFor: checklistFor, REQS: REQS, reqKey: reqKey, demoCandidate: demoCandidate, keepFile: keepFile, viewerHTML: viewerHTML, dupes: dupes, fileFor: fileFor, shortLabel: shortLabel, renamed: renamed, initApply: initApply, esc: esc };
 })();

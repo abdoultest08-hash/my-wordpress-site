@@ -46,13 +46,14 @@
         <div class="finish-act"><label class="f" style="margin:0"><span class="sr">Signed off by</span><input type="text" id="finishBy" value="Geraldine" aria-label="Signed off by"></label><button class="btn btn-navy btn-sm" type="button" id="finishBtn">Finish onboarding and move to Staff completed</button></div>
       </div>
 
+      <div class="sec-toggle"><button class="link-btn" type="button" id="expandAll">Expand all</button> · <button class="link-btn" type="button" id="collapseAll">Collapse all</button></div>
       <div class="staff-grid">
         <div>
-          <div class="p-card">
-            <div class="p-card-head"><h2>Documents</h2><span class="p-count" id="sDocSum"></span></div>
+          <details open class="p-sec p-card">
+            <summary class="p-card-head"><h2>Documents</h2><span class="p-count" id="sDocSum"></span></summary>
             <div class="bulk" id="bulk" hidden><span id="bulkN"></span><button class="btn btn-sm btn-aqua" type="button" data-bulk="approve">Approve</button><button class="btn btn-sm btn-sun" type="button" data-bulk="missing">Request as missing</button><button class="btn btn-sm btn-ghost-light" type="button" data-bulk="override">Mark complete (override)</button><button class="link-btn" type="button" data-bulk="clear">Clear</button></div>
             <div class="s-table" id="sDocs"></div>
-          </div>
+          </details>
           <details class="p-card p-folder" open>
             <summary><span class="folder-ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span><span><b>Training certificates</b><small id="sTrainSum"></small></span><span class="folder-arrow" aria-hidden="true">▾</span></summary>
             <div class="s-table" id="sTrain"></div>
@@ -84,31 +85,31 @@
               <div class="email-body" id="mailBody"></div></div>
             <div class="form-actions"><button class="btn btn-navy" type="button" id="mailSend">Send email</button></div>
           </div>
-          <div class="p-card">
-            <div class="p-card-head"><h2>Checks</h2><span class="p-count">Who checked, when, result</span></div>
+          <details open class="p-sec p-card">
+            <summary class="p-card-head"><h2>Checks</h2><span class="p-count">Who checked, when, result</span></summary>
             <div id="checks"></div>
-          </div>
-          <div class="p-card">
-            <div class="p-card-head"><h2>References</h2><span class="p-count">Sent and checked manually</span></div>
+          </details>
+          <details open class="p-sec p-card">
+            <summary class="p-card-head"><h2>References</h2><span class="p-count">Sent and checked manually</span></summary>
             <div id="refs"></div>
             <button class="link-btn" type="button" id="addRef" style="margin-top:10px">+ Add another referee</button>
-          </div>
-          <div class="p-card">
-            <div class="p-card-head"><h2>Pre-screening answers</h2></div>
+          </details>
+          <details open class="p-sec p-card">
+            <summary class="p-card-head"><h2>Pre-screening answers</h2></summary>
             <div id="sAnswers"></div>
-          </div>
-          <div class="p-card">
-            <div class="p-card-head"><h2>Declaration</h2><span class="p-count">Sent manually</span></div>
+          </details>
+          <details open class="p-sec p-card">
+            <summary class="p-card-head"><h2>Declaration</h2><span class="p-count">Sent manually</span></summary>
             <p class="hint" style="margin-bottom:10px">Send the declaration once all documents are approved, then record it here.</p>
             <label class="consent"><input type="checkbox" id="decSent">Declaration sent to candidate</label>
             <label class="consent" style="margin-top:8px"><input type="checkbox" id="decSigned">Signed declaration received</label>
-          </div>
-          <div class="p-card bank-card">
-            <div class="p-card-head"><h2>Bank details</h2><span class="p-count">Managers only</span></div>
+          </details>
+          <details open class="p-sec p-card bank-card">
+            <summary class="p-card-head"><h2>Bank details</h2><span class="p-count">Managers only</span></summary>
             <dl class="bank-dl" id="bankDl"></dl>
-          </div>
-          <div class="p-card">
-            <div class="p-card-head"><h2>Notes</h2></div>
+          </details>
+          <details open class="p-sec p-card">
+            <summary class="p-card-head"><h2>Notes</h2></summary>
             <div class="note-tabs" role="tablist" aria-label="Note type"><button role="tab" type="button" aria-selected="true" data-nt="internal">Internal compliance note</button><button role="tab" type="button" aria-selected="false" data-nt="cand">Message to candidate</button></div>
             <div class="f"><label for="note" id="noteLbl">Note (staff only)</label><textarea id="note" placeholder="e.g. Called Alex about the NI letter, posting a copy this week."></textarea></div>
             <div class="form-grid" id="noteMeta" style="margin-top:10px">
@@ -118,11 +119,11 @@
             </div>
             <div class="form-actions" style="margin-top:10px"><button class="btn btn-ghost btn-sm" type="button" id="addNote">Save to profile</button></div>
             <div class="cnotes" id="cnotes"></div>
-          </div>
-          <div class="p-card">
-            <div class="p-card-head"><h2>Activity log</h2></div>
+          </details>
+          <details open class="p-sec p-card">
+            <summary class="p-card-head"><h2>Activity log</h2></summary>
             <ol class="timeline" id="timeline"></ol>
-          </div>
+          </details>
         </aside>
       </div>
     </div>
@@ -240,9 +241,9 @@
   function fileOf(k) { return S.docs[k] || S.train[k] || {}; }
   function bind() {
     document.querySelectorAll('[data-view]').forEach(function (b) { b.addEventListener('click', function () {
-      var f = fileOf(b.dataset.view), img = /\.(jpe?g|png|heic)$/i.test(f.file);
+      var f = fileOf(b.dataset.view);
       document.getElementById('vTitle').textContent = f.file;
-      document.getElementById('vBody').innerHTML = img ? '<div class="v-img"><span>Image preview</span><b>' + esc(labelOf(b.dataset.view)) + '</b><small>Zoom and rotate controls in the live site</small></div>' : '<div class="v-pdf"><div class="v-page"><i></i><i></i><i></i><i class="s"></i><i></i><i class="s"></i></div><span>PDF opens in the browser\'s own viewer</span></div>';
+      document.getElementById('vBody').innerHTML = HCC.viewerHTML(b.dataset.view, f.file, labelOf(b.dataset.view));
       document.getElementById('vDownload').dataset.k = b.dataset.view;
       document.getElementById('viewer').hidden = false;
       log('Viewed ' + f.file);
@@ -435,6 +436,8 @@
     document.getElementById('closePanel').hidden = true; render(); toast('Moved to Withdrawn / not qualified');
   });
 
+  document.getElementById('expandAll').addEventListener('click', function () { document.querySelectorAll('.p-sec, .p-folder').forEach(function (d) { d.open = true; }); });
+  document.getElementById('collapseAll').addEventListener('click', function () { document.querySelectorAll('.p-sec, .p-folder').forEach(function (d) { d.open = false; }); });
   document.getElementById('finishBtn').addEventListener('click', function () {
     var by = document.getElementById('finishBy').value.trim() || ME;
     S.completed = { at: new Date().toISOString(), by: by }; document.getElementById('stage').value = 'Ready to work';

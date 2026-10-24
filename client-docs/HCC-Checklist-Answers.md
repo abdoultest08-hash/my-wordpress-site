@@ -232,3 +232,12 @@ First names only on the site. Sizes differ (one portrait, one landscape), so cro
   - The candidate moves to the **Dashboard → Withdrawn / not qualified** tab, with start date, closed date, outcome and who signed it off.
   - Staff can reopen it.
 - Not now: expiry tracking after onboarding.
+
+## Decisions (24 Oct, round 5)
+- **Staff folder:** every section collapses (documents, training, checks, references, answers, declaration, bank, notes, activity log), with "Expand all / Collapse all". The update tray always stays open.
+- **View shows the real file:** images inline, PDFs in the browser viewer. In the mockup this works for files up to 3MB uploaded in the same browser tab.
+- **Request cover form:**
+  - staffing inbox gets "[COVER REQUEST] {Company} is looking for {n} {role}" with a summary table (role, number, first shift, shift details, postcode, contact)
+  - the client gets an automatic confirmation
+- **Contact form:** goes to the staffing inbox. The sender gets a copy if they tick "Email me a copy" (ticked by default).
+- **Accreditation banner:** Crown Commercial Service removed. It keeps scrolling on hover. It's still on Home, About and Contact only.

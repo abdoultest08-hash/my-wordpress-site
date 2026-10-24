@@ -41,6 +41,12 @@
       </div>
     </div>
   </section>
+  <div class="modal" id="pViewer" hidden role="dialog" aria-modal="true" aria-labelledby="pvTitle">
+    <div class="modal-box">
+      <div class="modal-head"><b id="pvTitle"></b><button class="link-btn" type="button" data-close>Close</button></div>
+      <div class="viewer-body" id="pvBody"></div>
+    </div>
+  </div>
 </main>
 <script>
 (function () {
@@ -68,7 +74,7 @@
       var st = it.na ? { status: 'na' } : status(store, it.key, isTrain), s = store[it.key] || {}, c = CHIP[st.status];
       var btn = it.na ? '' : st.status === 'approved' ? '' : '<label class="btn btn-ghost btn-sm">' + (s.file ? 'Replace' : 'Upload') + '<input type="file" data-k="' + esc(it.key) + '" data-t="' + (isTrain ? 1 : 0) + '" hidden></label>';
       return '<div class="p-doc s-' + st.status + '"><div><b>' + esc(it.label) + '</b>' +
-        (s.file ? '<span class="p-file">' + esc(s.file) + '</span>' : s.pin ? '<span class="p-file">PIN ' + esc(s.pin) + (s.exp ? ' · expires ' + esc(s.exp) : '') + '</span>' : '') +
+        (s.file ? '<span class="f-line"><span class="p-file">' + esc(s.file) + '</span><button type="button" class="f-act" data-pview="' + esc(it.key) + '">View</button></span>' : s.pin ? '<span class="p-file">PIN ' + esc(s.pin) + (s.exp ? ' · expires ' + esc(s.exp) : '') + '</span>' : '') +
         (s.exp && s.file ? '<span class="p-file">Expires ' + esc(s.exp) + '</span>' : '') +
         (st.reason ? '<span class="p-reason">' + esc(st.reason) + '</span>' : '') + '</div>' +
         '<span class="stat ' + c[1] + '">' + c[0] + '</span>' + btn + '</div>';
@@ -123,6 +129,7 @@
       inp.addEventListener('change', function () {
         if (!inp.files[0]) return;
         var store = inp.dataset.t === '1' ? S.train : S.docs, k = inp.dataset.k;
+        HCC.keepFile(k, inp.files[0]);
         store[k] = HCC.fileFor(S, k, inp.dataset.t === '1', inp.files[0].name, store[k]);
         (S.uploadsAfter = S.uploadsAfter || []).push({ key: k, at: new Date().toISOString(), replaced: store[k].v > 1 });
         if (S.review) delete S.review[k];
@@ -132,6 +139,14 @@
     });
   }
   document.querySelectorAll('[data-view]').forEach(function (b) { b.addEventListener('click', function () { view = b.dataset.view; render(); }); });
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-pview]'); if (!b) return;
+    var k = b.dataset.pview, f = S.docs[k] || S.train[k] || {};
+    document.getElementById('pvTitle').textContent = f.file; document.getElementById('pvBody').innerHTML = HCC.viewerHTML(k, f.file, k);
+    document.getElementById('pViewer').hidden = false;
+  });
+  document.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', function () { b.closest('.modal').hidden = true; }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') document.getElementById('pViewer').hidden = true; });
   document.getElementById('editLink').addEventListener('click', function () { S.step = 4; save(); });
   render();
 })();

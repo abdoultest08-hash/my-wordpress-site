@@ -104,9 +104,11 @@
       <div class="mail-tabs" role="tablist" aria-label="Email recipient">
         <button role="tab" aria-selected="true" aria-controls="mCand" id="tCand" type="button">Candidate emails (7)</button>
         <button role="tab" aria-selected="false" aria-controls="mStaff" id="tStaff" type="button" tabindex="-1">Staffing inbox emails (2)</button>
+        <button role="tab" aria-selected="false" aria-controls="mForms" id="tForms" type="button" tabindex="-1">Client and contact forms (4)</button>
       </div>
       <div class="mail-grid" id="mCand" role="tabpanel" aria-labelledby="tCand"></div>
       <div id="mStaff" role="tabpanel" aria-labelledby="tStaff" hidden><p class="note-info" style="max-width:880px;margin:26px auto 0"><b>Only the CV is attached.</b> <b>Why not the other files:</b> passport, DBS and bank documents would otherwise sit in inboxes indefinitely and be forwarded or downloaded to phones, which is a GDPR risk. A full registration can also be 25+ files, larger than most email systems accept. The email lists every file, and staff open them securely in the Staff portal, where the latest version always is.</p><div class="mail-grid" id="mStaffGrid"></div></div>
+      <div id="mForms" role="tabpanel" aria-labelledby="tForms" hidden><div class="mail-grid" id="mFormsGrid"></div></div>
     </div>
   </section>
 </main>
@@ -185,10 +187,17 @@
     ['Every time a candidate uploads or replaces files after submitting (one email per upload, listing everything in it)', '[DOCUMENTS] HCC-001234 Alex Morgan uploaded 3 documents', '<p>Alex Morgan uploaded the following in the candidate portal:</p><ul><li>Proof of National Insurance number (new)</li><li>Proof of address (replacement, after "Corners are cut off")</li><li>Fire Safety certificate (new, expires 12/09/2027)</li></ul><p>Still missing: Safeguarding Children, Mental Capacity Act & DoLS.</p><a class="btn btn-navy" href="staff.html">Log in and check</a>']
   ];
   function card(m, staff) {
-    return '<article class="mail-card"><span class="mail-when">' + esc(m[0]) + '</span><div class="email"><div class="email-meta"><span>From: <b>HCC-Temps</b> &lt;' + (staff ? 'no-reply' : 'compliance') + '@hcctemps.co.uk&gt;</span><span>To: <b>' + (staff ? 'Staffing inbox (compliance@)' : 'Candidate') + '</b></span><span>Subject: <b>' + esc(m[1]) + '</b></span></div><div class="email-body"><img class="logo-sm" src="img/logo.png" alt="HCC-Temps" width="74" height="40">' + m[2] + '</div></div></article>';
+    return '<article class="mail-card"><span class="mail-when">' + esc(m[0]) + '</span><div class="email"><div class="email-meta"><span>From: <b>HCC-Temps</b> &lt;' + (staff ? 'no-reply' : 'compliance') + '@hcctemps.co.uk&gt;</span><span>To: <b>' + (m[3] || (staff ? 'Staffing inbox (compliance@)' : 'Candidate')) + '</b></span><span>Subject: <b>' + esc(m[1]) + '</b></span></div><div class="email-body"><img class="logo-sm" src="img/logo.png" alt="HCC-Temps" width="74" height="40">' + m[2] + '</div></div></article>';
   }
   document.getElementById('mCand').innerHTML = CAND.map(function (m) { return card(m, false); }).join('');
   document.getElementById('mStaffGrid').innerHTML = STAFF.map(function (m) { return card(m, true); }).join('');
+  var FORMS = [
+    ['Request cover form (For clients page): to the staffing inbox', '[COVER REQUEST] Willow Court Care Home is looking for 2 Registered Nurses', '<p><b>Willow Court Care Home</b> is looking for the following:</p>' + line([['Request'], ['Role needed', 'Registered Nurse'], ['Number of staff', '2'], ['First shift', 'Mon 3 Nov 2026'], ['Shift details', '3 long days, 08:00 to 20:00. Manual handling training needed.'], ['Site postcode', 'LS12 2EJ'], ['Contact'], ['Organisation', 'Willow Court Care Home'], ['Name', 'Sarah Lewis'], ['Email', 'manager@willowcourt.example'], ['Phone', '0113 496 0123'], ['Sent', '24 Oct 2026, 14:05']]) + '<p class="m-small">Reply to this email to answer the client directly.</p>'],
+    ['Request cover form: automatic confirmation to the client', 'We have your cover request: Registered Nurse x2', '<p>Hi Sarah,</p><p>Thank you. We have your request for <b>2 Registered Nurses</b> at Willow Court Care Home from <b>Mon 3 Nov</b>. A consultant will call you back shortly to confirm.</p><p>For emergency cover, call <b>0330 321 3124</b>. We answer 24 hours a day and can cover within 2 hours.</p><p class="m-small">Your request: 3 long days, 08:00 to 20:00. Manual handling training needed.</p>', 'Client (Sarah Lewis)'],
+    ['Contact form (Contact page): to the staffing inbox', '[CONTACT] Employer enquiry from James Reid, Oak House Hotel', '<p>New message from the website contact form:</p>' + line([['I am', 'An employer'], ['Name', 'James Reid'], ['Organisation', 'Oak House Hotel'], ['Email', 'james@oakhouse.example'], ['Phone', '0113 496 0456'], ['Message', 'Do you supply chefs for weekend banqueting in York?']]) + '<p class="m-small">Reply to this email to answer them directly.</p>'],
+    ['Contact form: copy to the sender (if they tick "Email me a copy")', 'We have your message: HCC-Temps', '<p>Hi James,</p><p>Thank you for contacting HCC-Temps. We reply within one working day.</p><p class="m-note">Your message: "Do you supply chefs for weekend banqueting in York?"</p><p>For emergency cover, call <b>0330 321 3124</b>, 24 hours a day.</p>', 'Sender (James Reid)']
+  ];
+  document.getElementById('mFormsGrid').innerHTML = FORMS.map(function (m, i) { return card(m, i % 2 === 0); }).join('');
   var tabs = document.querySelectorAll('.mail-tabs [role=tab]');
   tabs.forEach(function (t) { t.addEventListener('click', function () { tabs.forEach(function (o) { var on = o === t; o.setAttribute('aria-selected', String(on)); o.tabIndex = on ? 0 : -1; document.getElementById(o.getAttribute('aria-controls')).hidden = !on; }); }); });
 })();

@@ -331,7 +331,7 @@
     wrap.querySelectorAll('input[type=file]').forEach(function (inp) {
       inp.addEventListener('change', function () {
         var it = items[+inp.dataset.i]; if (!inp.files[0]) return;
-        var f = HCC.fileFor(S, it.key, listId === 'trainList', inp.files[0].name, store[it.key]); if (store[it.key] && store[it.key].exp) f.exp = store[it.key].exp; store[it.key] = f;
+        HCC.keepFile(it.key, inp.files[0]); var f = HCC.fileFor(S, it.key, listId === 'trainList', inp.files[0].name, store[it.key]); if (store[it.key] && store[it.key].exp) f.exp = store[it.key].exp; store[it.key] = f;
         save(); renderList(listId, items, store, barId, countId, withExpiry);
       });
     });

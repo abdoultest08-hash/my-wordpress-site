@@ -33,6 +33,7 @@
           <div class="f" id="orgField" hidden><label for="corg">Organisation</label><input type="text" id="corg" autocomplete="organization"></div>
           <div class="f full"><label for="cmsg">How can we help?</label><textarea id="cmsg"></textarea></div>
           <label class="consent full"><input type="checkbox" id="cconsent">I agree HCC-Temps can use these details to reply to me.</label>
+          <label class="consent full"><input type="checkbox" id="ccopy" checked>Email me a copy of my message.</label>
         </div>
         <div class="form-actions"><button class="btn btn-navy" type="submit">Send message</button></div>
         <p class="error-msg" role="status" aria-live="polite" id="cDone" style="color:var(--aqua-deep);margin-top:12px"></p>
@@ -62,7 +63,7 @@
   document.getElementById('contactForm').addEventListener('submit', function (e) {
     e.preventDefault();
     var who = document.querySelector('input[name=who]:checked').value;
-    document.getElementById('cDone').textContent = 'Thank you. We have your message and will reply within one working day.';
+    document.getElementById('cDone').textContent = 'Thank you. We have your message and will reply within one working day.' + (document.getElementById('ccopy').checked ? ' We have emailed you a copy.' : '');
   });
 })();
 </script>
