@@ -84,10 +84,12 @@
       <div class="d-tabs" role="tablist" aria-label="Candidate lists">
         <button role="tab" type="button" aria-selected="true" aria-controls="tabProg" id="tProg">In progress <span id="nProg"></span></button>
         <button role="tab" type="button" aria-selected="false" aria-controls="tabDone" id="tDone" tabindex="-1">Staff completed <span id="nDone"></span></button>
+        <button role="tab" type="button" aria-selected="false" aria-controls="tabClosed" id="tClosed" tabindex="-1">Withdrawn / not qualified <span id="nClosed"></span></button>
         <input type="search" id="q" placeholder="Search name, reference or role" aria-label="Search candidates">
       </div>
       <div class="p-card" id="tabProg" role="tabpanel" aria-labelledby="tProg"><div class="d-table" id="progRows"></div></div>
       <div class="p-card" id="tabDone" role="tabpanel" aria-labelledby="tDone" hidden><div class="d-table" id="doneRows"></div></div>
+      <div class="p-card" id="tabClosed" role="tabpanel" aria-labelledby="tClosed" hidden><div class="d-table" id="closedRows"></div></div>
     </div>
   </section>
 </main>
@@ -154,10 +156,16 @@
     { n: 'Rita Okafor', ref: 'HCC-001172', role: 'nurse', start: d(now - 30 * DAY), end: d(now - 26 * DAY), by: 'Debbie' },
     { n: 'Ben Hart', ref: 'HCC-001150', role: 'domestic', start: d(now - 40 * DAY), end: d(now - 38 * DAY), by: 'Temi' }
   ];
+  var CLOSED = [
+    { n: 'Jordan Pike', ref: 'HCC-001221', role: 'nurse', start: d(now - 9 * DAY), end: d(now - 7 * DAY), out: 'Not qualified', why: 'No NMC registration', by: 'Geraldine' },
+    { n: 'Lena Fischer', ref: 'HCC-001207', role: 'barista', start: d(now - 15 * DAY), end: d(now - 12 * DAY), out: 'Withdrawn by candidate', why: 'Took a permanent job', by: 'Ashanti' }
+  ];
   if (S && S.ref) {
     var all = R[S.role].docs.length + R[S.role].train.length, ok = Object.keys(S.review || {}).filter(function (k) { var s = S.review[k].status; return s === 'approved' || s === 'override'; }).length;
     var me = { n: S.acct.first + ' ' + S.acct.last, ref: S.ref, role: S.role, start: S.registered || d(now), you: true };
-    if (S.completed) { me.end = S.completed.at; me.by = S.completed.by; DONE.unshift(me); }
+    me.dup = HCC.dupes(S).length && !S.dupOk;
+    if (S.closed) { me.end = S.closed.at; me.by = S.closed.by; me.out = S.closed.outcome; me.why = S.closed.why; CLOSED.unshift(me); }
+    else if (S.completed) { me.end = S.completed.at; me.by = S.completed.by; DONE.unshift(me); }
     else {
       me.stage = 'Documents'; me.pct = Math.min(100, Math.round(ok / all * 100)); me.miss = Math.max(0, all - ok); me.last = (S.log && S.log.length) ? S.log[S.log.length - 1][0] : me.start;
       if (S.queue && S.queue.length) me.q = { c: S.queue.length, by: S.queue[0].by || 'Geraldine', at: S.queue[0].at || d(now) };
@@ -175,9 +183,11 @@
       return '<div class="d-row"><span><b>' + esc(r.n) + '</b>' + (r.you ? ' <em class="you">you registered</em>' : '') + '<small>' + r.ref + ' · ' + esc(R[r.role].name) + '</small></span><span data-l="Changes">' + r.q.c + ' change' + (r.q.c > 1 ? 's' : '') + '</span><span data-l="Made by">' + esc(r.q.by) + '</span><span data-l="Waiting" class="' + ((now - new Date(r.q.at)) > DAY ? 'late' : '') + '">' + ago(r.q.at) + '</span><span><a class="btn btn-sun btn-sm" href="staff.html#tray">Open and send</a></span></div>';
     }).join('') : '<p class="hint">All updates have been sent.</p>';
     var p = PROG.filter(match), dn = DONE.filter(match);
-    document.getElementById('nProg').textContent = '(' + PROG.length + ')'; document.getElementById('nDone').textContent = '(' + DONE.length + ')';
+    document.getElementById('nProg').textContent = '(' + PROG.length + ')'; document.getElementById('nDone').textContent = '(' + DONE.length + ')'; document.getElementById('nClosed').textContent = '(' + CLOSED.length + ')';
+    var cl = CLOSED.filter(match);
+    document.getElementById('closedRows').innerHTML = '<div class="d-row d-hd d-done"><span>Candidate</span><span>Application started</span><span>Closed</span><span>Outcome</span><span>Signed off by</span><span></span></div>' + cl.map(function (r) { return '<div class="d-row d-done"><span><b>' + esc(r.n) + '</b>' + (r.you ? ' <em class="you">you registered</em>' : '') + '<small>' + r.ref + ' · ' + esc(R[r.role].name) + ' · ' + esc(r.why) + '</small></span><span data-l="Started">' + fmtD(r.start) + '</span><span data-l="Closed">' + fmtD(r.end) + '</span><span data-l="Outcome">' + esc(r.out) + '</span><span data-l="By">' + esc(r.by) + '</span><span><a class="link-btn" href="staff.html">Open file</a></span></div>'; }).join('');
     document.getElementById('progRows').innerHTML = '<div class="d-row d-hd d-prog"><span>Candidate</span><span>Started</span><span>Stage</span><span>Profile</span><span>Missing</span><span>Last activity</span></div>' + p.map(function (r) {
-      return '<a class="d-row d-prog" href="staff.html"><span><b>' + esc(r.n) + '</b>' + (r.you ? ' <em class="you">you registered</em>' : '') + (r.q ? ' <em class="unsent-tag">update not sent</em>' : '') + '<small>' + r.ref + ' · ' + esc(R[r.role].name) + '</small></span><span data-l="Started">' + fmtD(r.start) + '</span><span data-l="Stage">' + esc(r.stage) + '</span><span data-l="Profile"><span class="mini-bar"><i style="width:' + r.pct + '%"></i></span>' + r.pct + '%</span><span data-l="Missing">' + r.miss + '</span><span data-l="Last activity">' + ago(r.last) + '</span></a>';
+      return '<a class="d-row d-prog" href="staff.html"><span><b>' + esc(r.n) + '</b>' + (r.you ? ' <em class="you">you registered</em>' : '') + (r.dup ? ' <em class="dup-tag">possible duplicate</em>' : '') + (r.q ? ' <em class="unsent-tag">update not sent</em>' : '') + '<small>' + r.ref + ' · ' + esc(R[r.role].name) + '</small></span><span data-l="Started">' + fmtD(r.start) + '</span><span data-l="Stage">' + esc(r.stage) + '</span><span data-l="Profile"><span class="mini-bar"><i style="width:' + r.pct + '%"></i></span>' + r.pct + '%</span><span data-l="Missing">' + r.miss + '</span><span data-l="Last activity">' + ago(r.last) + '</span></a>';
     }).join('');
     document.getElementById('doneRows').innerHTML = '<div class="d-row d-hd d-done"><span>Staff member</span><span>Application started</span><span>Signed off</span><span>Days</span><span>Signed off by</span><span></span></div>' + dn.map(function (r) {
       var days = Math.max(0, Math.round((new Date(r.end) - new Date(r.start)) / DAY));

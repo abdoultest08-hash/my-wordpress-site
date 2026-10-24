@@ -23,11 +23,24 @@
           <label class="s-stage">Stage <select id="stage"><option>New registration</option><option selected>Documents</option><option>Checks in progress</option><option>Ready to work</option><option>Closed</option></select></label>
           <button class="btn btn-aqua btn-sm" type="button" id="approveAll">Approve all uploaded</button>
           <button class="btn btn-sun btn-sm" type="button" id="completeAll">Complete profile (100%)</button>
+          <button class="btn btn-ghost btn-sm btn-red" type="button" id="closeBtn">Withdrawn / not qualified</button>
           <button class="btn btn-ghost btn-sm" type="button" id="zipBtn">Download all (zip)</button>
           <button class="btn btn-ghost btn-sm" type="button">Candidate report</button>
         </div>
       </div>
 
+      <div class="dup-card" id="dupCard" hidden></div>
+      <div class="p-card close-panel" id="closePanel" hidden>
+        <div class="p-card-head"><h2>Close this application</h2><button class="link-btn" type="button" id="closeCancel">Cancel</button></div>
+        <p class="hint">Moves the candidate to <b>Withdrawn / not qualified</b> on the dashboard. The profile and files are kept until the retention period ends.</p>
+        <div class="form-grid">
+          <fieldset class="f full"><legend>Outcome</legend><div class="radios"><label class="radio"><input type="radio" name="closeOut" value="Withdrawn by candidate" checked><span>Withdrawn by candidate</span></label><label class="radio"><input type="radio" name="closeOut" value="Not qualified"><span>Not qualified</span></label><label class="radio"><input type="radio" name="closeOut" value="Not suitable"><span>Not suitable</span></label></div></fieldset>
+          <div class="f full"><label for="closeWhy">Reason</label><textarea id="closeWhy" placeholder="e.g. No NMC registration; CV shows no care experience; candidate took a permanent job."></textarea></div>
+          <div class="f"><label for="closeBy">Signed off by</label><input type="text" id="closeBy" value="Geraldine"></div>
+          <div class="f"><label for="closeDate">Date</label><input type="date" id="closeDate"></div>
+        </div>
+        <div class="form-actions"><button class="btn btn-navy" type="button" id="closeSave">Close application</button><span class="error-msg" role="alert" id="closeErr"></span></div>
+      </div>
       <div class="finish-card" id="finishCard">
         <div><b id="finishTitle">Finish onboarding</b><span id="finishText"></span></div>
         <div class="finish-act"><label class="f" style="margin:0"><span class="sr">Signed off by</span><input type="text" id="finishBy" value="Geraldine" aria-label="Signed off by"></label><button class="btn btn-navy btn-sm" type="button" id="finishBtn">Finish onboarding and move to Staff completed</button></div>
@@ -70,6 +83,15 @@
             <div class="email"><div class="email-meta"><span>From: <b>HCC-Temps Compliance</b> &lt;compliance@hcctemps.co.uk&gt;</span><span>To: <span id="mailTo"></span></span><span>Subject: <b id="mailSubj"></b></span></div>
               <div class="email-body" id="mailBody"></div></div>
             <div class="form-actions"><button class="btn btn-navy" type="button" id="mailSend">Send email</button></div>
+          </div>
+          <div class="p-card">
+            <div class="p-card-head"><h2>Checks</h2><span class="p-count">Who checked, when, result</span></div>
+            <div id="checks"></div>
+          </div>
+          <div class="p-card">
+            <div class="p-card-head"><h2>References</h2><span class="p-count">Sent and checked manually</span></div>
+            <div id="refs"></div>
+            <button class="link-btn" type="button" id="addRef" style="margin-top:10px">+ Add another referee</button>
           </div>
           <div class="p-card">
             <div class="p-card-head"><h2>Pre-screening answers</h2></div>
@@ -127,7 +149,9 @@
   function load() { try { return JSON.parse(sessionStorage.getItem('hcc-reg') || 'null'); } catch (x) { return null; } }
   function save() { try { sessionStorage.setItem('hcc-reg', JSON.stringify(S)); } catch (x) {} }
   var S = load(); if (!S || !S.ref) { S = HCC.demoCandidate(); save(); }
-  S.review = S.review || {}; S.log = S.log || []; S.queue = S.queue || []; S.notes = S.notes || {}; S.cnotes = S.cnotes || [];
+  S.review = S.review || {}; S.log = S.log || []; S.queue = S.queue || []; S.notes = S.notes || {}; S.cnotes = S.cnotes || []; S.checks = S.checks || {};
+  var a0 = S.answers || {};
+  if (!S.refs) S.refs = [1, 2].map(function (i) { return { name: a0['r' + i + 'n'] || '', pos: a0['r' + i + 'p'] || '', email: a0['r' + i + 'e'] || '', phone: a0['r' + i + 't'] || '', sent: '', recv: '', outcome: '', history: [] }; });
   var name = S.acct.first + ' ' + S.acct.last, a = S.answers || {};
   function fmt(d) { var x = new Date(d || Date.now()); return x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ', ' + x.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); }
   if (!S.log.length) S.log = [[S.registered, 'Account created and email verified', 'Candidate'], [S.prescreenDone || S.registered, 'Pre-screening submitted', 'Candidate'], [S.submitted || S.registered, 'Registration submitted. Staffing inbox emailed with full summary and CV attached', 'Candidate']];
@@ -200,13 +224,15 @@
     document.getElementById('decSent').checked = !!S.decSent; document.getElementById('decSigned').checked = !!S.decSigned;
     var done = pct === 100, dec = S.decSent && S.decSigned, fc = document.getElementById('finishCard');
     fc.classList.toggle('ready', done && dec && !S.completed); fc.classList.toggle('complete', !!S.completed);
-    document.getElementById('finishBtn').disabled = !(done && dec) || !!S.completed || S.queue.length > 0;
+    document.getElementById('finishBtn').disabled = !(done && dec) || !!S.completed || !!S.closed || S.queue.length > 0;
     document.getElementById('finishTitle').textContent = S.completed ? 'Onboarding complete' : 'Finish onboarding';
     document.getElementById('finishText').textContent = S.completed ? 'Signed off by ' + S.completed.by + ' on ' + fmt(S.completed.at) + '. Moved to Staff completed.' :
       [done ? '✓ Profile 100%' : '✗ Profile ' + pct + '%', S.decSent ? '✓ Declaration sent' : '✗ Declaration not sent', S.decSigned ? '✓ Signed declaration received' : '✗ Signed declaration not received', S.queue.length ? '✗ ' + S.queue.length + ' update(s) not sent' : '✓ No unsent updates'].join('   ');
     document.querySelector('.finish-act').hidden = !!S.completed;
     document.getElementById('cnotes').innerHTML = S.cnotes.slice().reverse().map(function (n) { return '<div class="cnote' + (n.type === 'cand' ? ' cand' : '') + '"><div class="cn-h"><b>' + (n.type === 'cand' ? 'Message to candidate' : 'Internal note') + '</b><span>' + fmt(n.at) + (n.by ? ' · signed off by ' + esc(n.by) : '') + '</span></div><p>' + esc(n.text) + '</p>' + (n.next ? '<span class="cn-next">Next action: ' + esc(n.next) + (n.due ? ' · due ' + esc(n.due) : '') + '</span>' : '') + '</div>'; }).join('');
+    renderChecks(); renderRefs(); renderClosed(); renderDupes();
     renderTray(); bind(); bulk();
+    save();
   }
   function ticked() { return Array.prototype.map.call(document.querySelectorAll('.s-cb input:checked'), function (c) { return c.dataset.k; }); }
   function bulk() { var n = ticked().length; document.getElementById('bulk').hidden = !n; document.getElementById('bulkN').textContent = n + ' selected'; }
@@ -322,6 +348,93 @@
   document.querySelectorAll('.modal').forEach(function (m) { m.addEventListener('click', function (e) { if (e.target === m) m.hidden = true; }); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') document.querySelectorAll('.modal').forEach(function (m) { m.hidden = true; }); });
   document.getElementById('vDownload').addEventListener('click', function () { log('Downloaded ' + fileOf(this.dataset.k).file); document.getElementById('viewer').hidden = true; render(); toast('Downloading'); });
+  /* Checks: right to work, DBS Update Service, NMC register. Each records date, who, result, outcome; visa expiry entered by hand */
+  function checkList() {
+    var c = [{ k: 'rtw', t: 'Right to work', sub: a.british === 'Yes' ? 'British or Irish: passport check' : 'Share code ' + (a.share || '—') + ' · ' + (a.visa || ''), link: 'https://www.gov.uk/view-right-to-work', visa: a.british === 'No' }];
+    if (a.dbs !== 'none') c.push({ k: 'dbs', t: 'DBS', sub: a.dbs === 'update' ? 'Update Service · certificate ' + (a.dbsno || '—') : 'Certificate not on the Update Service', link: 'https://secure.crbonline.gov.uk/crsc/check' });
+    else c.push({ k: 'dbs', t: 'DBS', sub: 'New enhanced DBS application by HCC' });
+    if (S.role === 'nurse') c.push({ k: 'nmc', t: 'NMC register', sub: 'PIN ' + ((S.docs[R[S.role].docs.filter(function (d) { return /^NMC PIN/.test(d); })[0]] || {}).pin || '—'), link: 'https://www.nmc.org.uk/registration/search-the-register/' });
+    c.push({ k: 'id', t: 'Identity', sub: 'Photo ID matches the candidate' });
+    return c;
+  }
+  function renderChecks() {
+    document.getElementById('checks').innerHTML = checkList().map(function (c) {
+      var v = S.checks[c.k] || {}, res = v.result ? '<span class="stat ' + (v.result === 'Pass' ? 'stat-ok' : v.result === 'Fail' ? 'stat-amend' : 'stat-todo') + '">' + esc(v.result) + '</span>' : '<span class="stat stat-wait">Not checked</span>';
+      return '<details class="chk"><summary><span><b>' + c.t + '</b><small>' + esc(c.sub) + '</small></span>' + res + '</summary>' +
+        (v.result ? '<p class="chk-done">Checked ' + esc(v.date || '') + ' by ' + esc(v.by || '') + (v.outcome ? ' · ' + esc(v.outcome) : '') + (v.visaExp ? ' · Visa expires ' + esc(v.visaExp) : '') + '</p>' : '') +
+        '<div class="form-grid chk-form" data-chk="' + c.k + '">' +
+        '<div class="f"><label>Date checked</label><input type="date" data-f="date" value="' + esc(v.date || new Date().toISOString().slice(0, 10)) + '"></div>' +
+        '<div class="f"><label>Checked by</label><input type="text" data-f="by" value="' + esc(v.by || ME) + '"></div>' +
+        '<div class="f"><label>Result</label><select data-f="result"><option value="">Choose</option>' + ['Pass', 'Fail', 'Follow-up needed'].map(function (o) { return '<option' + (v.result === o ? ' selected' : '') + '>' + o + '</option>'; }).join('') + '</select></div>' +
+        (c.visa ? '<div class="f"><label>Visa expiry date</label><input type="date" data-f="visaExp" value="' + esc(v.visaExp || '') + '"></div>' : '') +
+        '<div class="f full"><label>Outcome / notes</label><input type="text" data-f="outcome" value="' + esc(v.outcome || '') + '" placeholder="e.g. Right to work confirmed until visa expiry, no restrictions on hours"></div>' +
+        '<div class="form-actions full" style="margin-top:0">' + (c.link ? '<a class="link-btn" href="' + c.link + '" target="_blank" rel="noopener">Open official check ↗</a>' : '') + '<button class="btn btn-ghost btn-sm" type="button" data-chksave="' + c.k + '">Save check</button></div></div></details>';
+    }).join('');
+    document.querySelectorAll('[data-chksave]').forEach(function (b) { b.addEventListener('click', function () {
+      var k = b.dataset.chksave, box = document.querySelector('[data-chk="' + k + '"]'), v = {};
+      box.querySelectorAll('[data-f]').forEach(function (el) { v[el.dataset.f] = el.value.trim(); });
+      if (!v.result) { box.querySelector('[data-f="result"]').focus(); toast('Choose a result'); return; }
+      S.checks[k] = v; var c = checkList().filter(function (x) { return x.k === k; })[0];
+      log(c.t + ' check: ' + v.result + ' (checked ' + v.date + ' by ' + v.by + ')' + (v.outcome ? '. ' + v.outcome : '') + (v.visaExp ? '. Visa expires ' + v.visaExp : '')); render(); toast(c.t + ' check saved');
+    }); });
+  }
+  /* References: staff send them manually and record dates and outcome; a referee can be replaced by hand */
+  function renderRefs() {
+    document.getElementById('refs').innerHTML = S.refs.map(function (r, i) {
+      var st = r.recv ? '<span class="stat ' + (r.outcome === 'Concerns' ? 'stat-amend' : 'stat-ok') + '">Received ' + esc(r.recv) + '</span>' : r.sent ? '<span class="stat stat-wait">Sent ' + esc(r.sent) + '</span>' : '<span class="stat stat-todo">Not sent</span>';
+      return '<details class="chk"><summary><span><b>Referee ' + (i + 1) + ': ' + esc(r.name || 'not given') + '</b><small>' + esc([r.pos, r.email, r.phone].filter(Boolean).join(' · ')) + '</small>' + (r.history.length ? '<small class="ref-hist">Replaced ' + r.history.length + '×. Previous: ' + esc(r.history.map(function (h) { return h.name; }).join(', ')) + '</small>' : '') + '</span>' + st + '</summary>' +
+        '<div class="form-grid chk-form" data-ref="' + i + '">' +
+        '<div class="f"><label>Reference sent on</label><input type="date" data-f="sent" value="' + esc(r.sent) + '"></div>' +
+        '<div class="f"><label>Reference received on</label><input type="date" data-f="recv" value="' + esc(r.recv) + '"></div>' +
+        '<div class="f"><label>Outcome</label><select data-f="outcome"><option value="">Choose</option>' + ['Satisfactory', 'Concerns', 'Not received'].map(function (o) { return '<option' + (r.outcome === o ? ' selected' : '') + '>' + o + '</option>'; }).join('') + '</select></div>' +
+        '<div class="form-actions full" style="margin-top:0"><button class="btn btn-ghost btn-sm" type="button" data-refsave="' + i + '">Save</button><button class="link-btn" type="button" data-refnew="' + i + '">Replace referee (new details)</button></div>' +
+        '<div class="full ref-new" data-refbox="' + i + '" hidden><div class="form-grid"><div class="f"><label>Full name</label><input type="text" data-n="name"></div><div class="f"><label>Position and organisation</label><input type="text" data-n="pos"></div><div class="f"><label>Email</label><input type="email" data-n="email"></div><div class="f"><label>Phone</label><input type="tel" data-n="phone"></div></div><div class="form-actions" style="margin-top:8px"><button class="btn btn-navy btn-sm" type="button" data-refrep="' + i + '">Save new referee</button></div></div></div></details>';
+    }).join('');
+    document.querySelectorAll('[data-refsave]').forEach(function (b) { b.addEventListener('click', function () {
+      var i = +b.dataset.refsave, box = document.querySelector('[data-ref="' + i + '"]'), r = S.refs[i];
+      ['sent', 'recv', 'outcome'].forEach(function (f) { r[f] = box.querySelector('[data-f="' + f + '"]').value; });
+      log('Referee ' + (i + 1) + ' (' + r.name + '): ' + [r.sent && 'sent ' + r.sent, r.recv && 'received ' + r.recv, r.outcome].filter(Boolean).join(', ')); render(); toast('Reference saved');
+    }); });
+    document.querySelectorAll('[data-refnew]').forEach(function (b) { b.addEventListener('click', function () { var x = document.querySelector('[data-refbox="' + b.dataset.refnew + '"]'); x.hidden = !x.hidden; }); });
+    document.querySelectorAll('[data-refrep]').forEach(function (b) { b.addEventListener('click', function () {
+      var i = +b.dataset.refrep, box = document.querySelector('[data-refbox="' + i + '"]'), r = S.refs[i], n = {};
+      box.querySelectorAll('[data-n]').forEach(function (el) { n[el.dataset.n] = el.value.trim(); });
+      if (!n.name) { toast('Add the new referee\'s name'); return; }
+      r.history.push({ name: r.name, pos: r.pos, email: r.email, phone: r.phone, outcome: r.outcome || 'Not received' });
+      log('Referee ' + (i + 1) + ' replaced: ' + r.name + ' → ' + n.name + ' (' + [n.pos, n.email, n.phone].filter(Boolean).join(', ') + ')');
+      S.refs[i] = { name: n.name, pos: n.pos, email: n.email, phone: n.phone, sent: '', recv: '', outcome: '', history: r.history }; render(); toast('New referee saved');
+    }); });
+  }
+  document.getElementById('addRef').addEventListener('click', function () { S.refs.push({ name: '', pos: '', email: '', phone: '', sent: '', recv: '', outcome: '', history: [] }); log('Added referee ' + S.refs.length); render(); var x = document.querySelector('[data-refbox="' + (S.refs.length - 1) + '"]'); x.closest('details').open = true; x.hidden = false; });
+  /* Duplicate check on NI number and phone */
+  function renderDupes() {
+    var list = HCC.dupes(S), box = document.getElementById('dupCard');
+    box.hidden = !list.length || !!S.dupOk;
+    box.innerHTML = '<b>Possible duplicate</b>' + list.map(function (d) { return '<span>Same ' + d.on.join(' and ') + ' as <a href="staff-dash.html">' + esc(d.o.n) + ' (' + d.o.ref + ')</a> · ' + esc(d.o.status) + '</span>'; }).join('') + '<button class="link-btn" type="button" id="dupOk">Checked: not a duplicate</button>';
+    var b = document.getElementById('dupOk'); if (b) b.addEventListener('click', function () { S.dupOk = true; log('Duplicate warning checked: not a duplicate (' + list.map(function (d) { return d.o.ref; }).join(', ') + ')'); render(); });
+  }
+  /* Withdrawn / not qualified */
+  function renderClosed() {
+    var fc = document.getElementById('finishCard');
+    if (S.closed) { fc.classList.add('closed'); document.getElementById('finishTitle').textContent = S.closed.outcome; document.getElementById('finishText').textContent = 'Closed ' + S.closed.date + ' by ' + S.closed.by + '. ' + S.closed.why + ' · Moved to Withdrawn / not qualified.'; document.querySelector('.finish-act').hidden = true; }
+    else fc.classList.remove('closed');
+    document.getElementById('closeBtn').textContent = S.closed ? 'Reopen application' : 'Withdrawn / not qualified';
+  }
+  document.getElementById('closeBtn').addEventListener('click', function () {
+    if (S.closed) { log('Application reopened (was: ' + S.closed.outcome + ')'); S.closed = null; render(); return; }
+    document.getElementById('closeDate').value = new Date().toISOString().slice(0, 10);
+    var p = document.getElementById('closePanel'); p.hidden = false; p.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  document.getElementById('closeCancel').addEventListener('click', function () { document.getElementById('closePanel').hidden = true; });
+  document.getElementById('closeSave').addEventListener('click', function () {
+    var why = document.getElementById('closeWhy').value.trim(), by = document.getElementById('closeBy').value.trim();
+    if (!why || !by) { document.getElementById('closeErr').textContent = 'Add a reason and your name to sign it off.'; return; }
+    S.closed = { outcome: document.querySelector('[name=closeOut]:checked').value, why: why, by: by, date: document.getElementById('closeDate').value, at: new Date().toISOString() };
+    document.getElementById('stage').value = 'Closed';
+    log('Application closed: ' + S.closed.outcome + '. ' + why + ' (signed off by ' + by + ', ' + S.closed.date + ')');
+    document.getElementById('closePanel').hidden = true; render(); toast('Moved to Withdrawn / not qualified');
+  });
+
   document.getElementById('finishBtn').addEventListener('click', function () {
     var by = document.getElementById('finishBy').value.trim() || ME;
     S.completed = { at: new Date().toISOString(), by: by }; document.getElementById('stage').value = 'Ready to work';

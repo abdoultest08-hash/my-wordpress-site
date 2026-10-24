@@ -123,6 +123,18 @@ var HCC = (function () {
     return { file: num + ' - ' + S.acct.first + ' ' + S.acct.last + ' - ' + (isTrain ? key.replace(/\s*\(.*\)$/, '') : shortLabel(key)) + (v > 1 ? ' (v' + v + ')' : '') + ext, v: v, at: new Date().toISOString() };
   }
 
+  /* Other candidates already on file (sample) and the duplicate check: NI number or phone, never name alone */
+  var OTHERS = [
+    { n: 'Rita Okafor', ref: 'HCC-001172', phone: '07700 900456', ni: 'QQ 98 76 54 A', status: 'Staff completed' },
+    { n: 'Amara Bello', ref: 'HCC-001230', phone: '07700 900111', ni: 'QQ 12 34 56 C', status: 'In progress' }
+  ];
+  function dupes(S) {
+    var norm = function (x) { return String(x || '').replace(/[^0-9A-Z]/gi, '').toUpperCase(); }, out = [];
+    var ph = norm(S.acct && S.acct.phone), ni = norm(S.answers && S.answers.ni);
+    OTHERS.forEach(function (o) { var on = []; if (ni && norm(o.ni) === ni) on.push('NI number'); if (ph && norm(o.phone) === ph) on.push('phone number'); if (on.length) out.push({ o: o, on: on }); });
+    return out;
+  }
+
   /* Sample candidate for the portal and staff views when nobody has registered in this browser session */
   function demoCandidate() {
     var role = 'nurse', S = { role: role, ref: 'HCC-001234', step: 7, registered: new Date(Date.now() - 864e5).toISOString(), prescreenDone: new Date(Date.now() - 82e6).toISOString(), submitted: new Date(Date.now() - 8e7).toISOString(),
@@ -203,5 +215,5 @@ var HCC = (function () {
     document.querySelectorAll('.nav-login[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
   });
   initMenu();
-  return { initFaqTabs: initFaqTabs, JOBS: JOBS, card: card, byId: byId, checklistFor: checklistFor, REQS: REQS, reqKey: reqKey, demoCandidate: demoCandidate, fileFor: fileFor, shortLabel: shortLabel, renamed: renamed, initApply: initApply, esc: esc };
+  return { initFaqTabs: initFaqTabs, JOBS: JOBS, card: card, byId: byId, checklistFor: checklistFor, REQS: REQS, reqKey: reqKey, demoCandidate: demoCandidate, dupes: dupes, fileFor: fileFor, shortLabel: shortLabel, renamed: renamed, initApply: initApply, esc: esc };
 })();

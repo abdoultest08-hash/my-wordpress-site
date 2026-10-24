@@ -1022,3 +1022,22 @@ a.d-row:hover { background: var(--paper); }
   .d-tabs input { margin-left: 0; min-width: 0; width: 100%; }
 }
 @media (max-width: 760px) { .d-row > span[data-l]::before { content: attr(data-l) ": "; color: var(--muted); font-size: 12px; } }
+/* Checks, references, duplicates, closing */
+.chk { border: 1px solid var(--line); border-radius: 12px; margin-top: 8px; }
+.chk > summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 10px 12px; }
+.chk > summary::-webkit-details-marker { display: none; }
+.chk > summary b { display: block; font-size: 14px; color: var(--ink); }
+.chk > summary small { display: block; font-size: 12px; color: var(--muted); }
+.chk-form { margin: 0; padding: 0 12px 12px; gap: 10px; }
+.chk-form .f input, .chk-form .f select { min-height: 40px; padding: 8px 10px; font-size: 14px; }
+.chk-done { font-size: 13px; color: #17694A; padding: 0 12px 8px; font-weight: 600; }
+.ref-hist { color: #7A5B00 !important; }
+.ref-new { background: var(--paper); border-radius: 10px; padding: 10px; }
+.dup-card { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; background: #FFF2F1; border: 2px solid #F2B8B3; border-radius: 14px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; }
+.dup-card[hidden] { display: none; }
+.dup-card b { color: #A1271F; }
+.dup-card a { color: var(--navy); font-weight: 700; }
+.dup-tag { font-style: normal; font-size: 11px; font-weight: 700; border-radius: 6px; padding: 1px 6px; margin-left: 4px; background: #FCE4E2; color: #A1271F; }
+.btn-red { color: #A1271F; border-color: #E5A39D; }
+.close-panel { border: 2px solid #E5A39D; margin-bottom: 16px; }
+.finish-card.closed { border: 2px solid #E5A39D; background: #FFF2F1; }

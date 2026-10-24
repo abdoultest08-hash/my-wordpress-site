@@ -216,3 +216,19 @@ First names only on the site. Sizes differ (one portrait, one landscape), so cro
 
   Zip structure: `HCC-001234 Alex Morgan - Registered Nurse/`, with a `Training/` subfolder and a summary PDF.
 - **Finish onboarding:** enabled only when the profile is 100%, the declaration is sent and signed, and no updates are unsent. It asks for a sign-off name, then moves the candidate to **Dashboard → Staff completed** with application start date, sign-off date, days taken and who signed off.
+
+## Decisions (24 Oct, round 4)
+- **Checks record** on the staff profile: right to work, DBS (Update Service), NMC register (nurses), identity.
+  - Each records date checked, checked by, result (Pass / Fail / Follow-up needed) and outcome notes, with a link to the official check.
+  - **Visa expiry date is entered by hand** for non-British candidates.
+  - Saved in the activity log.
+- **References stay manual.** For each referee record: date sent, date received, outcome (Satisfactory / Concerns / Not received).
+  - **Replace referee** lets staff enter new details by hand after speaking to the candidate. The old referee is kept in the history.
+  - "Add another referee" is available too.
+- **Duplicate warning** matches on NI number or phone number only, not name.
+  - It shows on the profile, with links to the matching records, and as a "possible duplicate" tag on the dashboard.
+  - Staff can mark it "Checked: not a duplicate", which is logged.
+- **Withdrawn / not qualified:** close the application with an outcome (Withdrawn by candidate / Not qualified / Not suitable), a reason, a sign-off name and a date.
+  - The candidate moves to the **Dashboard → Withdrawn / not qualified** tab, with start date, closed date, outcome and who signed it off.
+  - Staff can reopen it.
+- Not now: expiry tracking after onboarding.
