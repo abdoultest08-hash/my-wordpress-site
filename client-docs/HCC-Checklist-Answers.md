@@ -203,3 +203,16 @@ First names only on the site. Sizes differ (one portrait, one landscape), so cro
 - **Overrides:** a reason and a **required note for each item**, done one at a time when several items are ticked.
 - **Activity log** records everything, with staff name and time.
 - **Logins:** staff and candidates enter an email code every time, plus a robot check (Cloudflare Turnstile).
+
+## Decisions (24 Oct, round 3)
+- **No automatic sending.** Unsent candidate updates show on the staff **Dashboard → "Updates not sent"**: candidate, number of changes, who made them, how long they've waited (red after 1 day), and an "Open and send" button.
+- **Notes on the staff profile:**
+  - **Internal compliance note:** note, signed off by (name), next action, due date. Name and next action are optional.
+  - **Message to candidate:** goes into the next update email.
+
+  Both are saved on the profile and in the activity log.
+- **View vs download:** View opens in the browser (PDF viewer or image preview) without saving a copy. Download forces a copy. Both are logged for audit. Word files can't preview in the browser, so ask for PDFs where possible.
+- **File names:** `01 - Alex Morgan - CV.pdf`, `02 - Alex Morgan - Passport or driving licence.pdf` ... training `T01 - Alex Morgan - Basic Life Support.pdf`. Replacements are `(v2)`.
+
+  Zip structure: `HCC-001234 Alex Morgan - Registered Nurse/`, with a `Training/` subfolder and a summary PDF.
+- **Finish onboarding:** enabled only when the profile is 100%, the declaration is sent and signed, and no updates are unsent. It asks for a sign-off name, then moves the candidate to **Dashboard → Staff completed** with application start date, sign-off date, days taken and who signed off.

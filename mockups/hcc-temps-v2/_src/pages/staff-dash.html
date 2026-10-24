@@ -1,0 +1,90 @@
+<!--title:Staff Dashboard · HCC-Temps|key:login-->
+<main class="staff-page">
+  <div class="staff-bar">
+    <div class="wrap">
+      <b>Staff portal</b>
+      <nav aria-label="Staff portal"><a href="staff-dash.html" aria-current="page">Dashboard</a><a href="staff.html">Candidate folder</a></nav>
+      <span class="who-in">Geraldine · Compliance Manager</span>
+    </div>
+  </div>
+
+  <section class="section staff-body">
+    <div class="wrap">
+      <p class="demo-bar"><b>Mockup</b> · Sample candidates plus the one you registered in this browser. Every row opens the sample candidate folder.</p>
+      <div class="s-head" style="margin-top:0">
+        <div><h1>Dashboard</h1><p>Candidates in onboarding, updates waiting to be sent, and completed staff.</p></div>
+        <div class="s-actions"><button class="btn btn-ghost btn-sm" type="button">Export to Excel</button></div>
+      </div>
+
+      <div class="kpis kpis-5" id="kpis"></div>
+
+      <div class="p-card unsent" id="unsent">
+        <div class="p-card-head"><h2>Updates not sent <span class="tray-n" id="unsentN">0</span></h2><span class="p-count">Changes made in a candidate folder but not emailed yet</span></div>
+        <div class="d-table" id="unsentRows"></div>
+      </div>
+
+      <div class="d-tabs" role="tablist" aria-label="Candidate lists">
+        <button role="tab" type="button" aria-selected="true" aria-controls="tabProg" id="tProg">In progress <span id="nProg"></span></button>
+        <button role="tab" type="button" aria-selected="false" aria-controls="tabDone" id="tDone" tabindex="-1">Staff completed <span id="nDone"></span></button>
+        <input type="search" id="q" placeholder="Search name, reference or role" aria-label="Search candidates">
+      </div>
+      <div class="p-card" id="tabProg" role="tabpanel" aria-labelledby="tProg"><div class="d-table" id="progRows"></div></div>
+      <div class="p-card" id="tabDone" role="tabpanel" aria-labelledby="tDone" hidden><div class="d-table" id="doneRows"></div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  var esc = HCC.esc, R = HCC.REQS, DAY = 864e5, now = Date.now();
+  var S = null; try { S = JSON.parse(sessionStorage.getItem('hcc-reg') || 'null'); } catch (x) {}
+  function d(ms) { return new Date(ms).toISOString(); }
+  function fmtD(x) { return new Date(x).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
+  function ago(x) { var h = Math.round((now - new Date(x)) / 36e5); return h < 1 ? 'just now' : h < 24 ? h + ' hour' + (h > 1 ? 's' : '') + ' ago' : Math.round(h / 24) + ' day' + (h >= 48 ? 's' : '') + ' ago'; }
+  var PROG = [
+    { n: 'Priya Shah', ref: 'HCC-001241', role: 'hca', start: d(now - 2 * DAY), stage: 'Documents', pct: 64, miss: 5, last: d(now - 5 * 36e5) },
+    { n: 'Daniel Okoro', ref: 'HCC-001238', role: 'chef', start: d(now - 3 * DAY), stage: 'Checks in progress', pct: 88, miss: 1, last: d(now - 26 * 36e5), q: { c: 3, by: 'Debbie', at: d(now - 27 * 36e5) } },
+    { n: 'Grace Mensah', ref: 'HCC-001236', role: 'senior-carer', start: d(now - 4 * DAY), stage: 'Documents', pct: 41, miss: 9, last: d(now - 2 * DAY) },
+    { n: 'Tomasz Nowak', ref: 'HCC-001233', role: 'kitchen', start: d(now - 5 * DAY), stage: 'Checks in progress', pct: 95, miss: 0, last: d(now - 3 * 36e5), q: { c: 1, by: 'Temi', at: d(now - 4 * 36e5) } },
+    { n: 'Amara Bello', ref: 'HCC-001230', role: 'nurse', start: d(now - 6 * DAY), stage: 'New registration', pct: 12, miss: 18, last: d(now - 6 * DAY) }
+  ];
+  var DONE = [
+    { n: 'Sam Lee', ref: 'HCC-001198', role: 'chef', start: d(now - 21 * DAY), end: d(now - 18 * DAY), by: 'Geraldine' },
+    { n: 'Rita Okafor', ref: 'HCC-001172', role: 'nurse', start: d(now - 30 * DAY), end: d(now - 26 * DAY), by: 'Debbie' },
+    { n: 'Ben Hart', ref: 'HCC-001150', role: 'domestic', start: d(now - 40 * DAY), end: d(now - 38 * DAY), by: 'Temi' }
+  ];
+  if (S && S.ref) {
+    var all = R[S.role].docs.length + R[S.role].train.length, ok = Object.keys(S.review || {}).filter(function (k) { var s = S.review[k].status; return s === 'approved' || s === 'override'; }).length;
+    var me = { n: S.acct.first + ' ' + S.acct.last, ref: S.ref, role: S.role, start: S.registered || d(now), you: true };
+    if (S.completed) { me.end = S.completed.at; me.by = S.completed.by; DONE.unshift(me); }
+    else {
+      me.stage = 'Documents'; me.pct = Math.min(100, Math.round(ok / all * 100)); me.miss = Math.max(0, all - ok); me.last = (S.log && S.log.length) ? S.log[S.log.length - 1][0] : me.start;
+      if (S.queue && S.queue.length) me.q = { c: S.queue.length, by: S.queue[0].by || 'Geraldine', at: S.queue[0].at || d(now) };
+      PROG.unshift(me);
+    }
+  }
+  var q = '';
+  function match(r) { return !q || (r.n + ' ' + r.ref + ' ' + R[r.role].name).toLowerCase().indexOf(q) >= 0; }
+  function render() {
+    var pend = PROG.filter(function (r) { return r.q; });
+    document.getElementById('kpis').innerHTML = [[PROG.length, 'In progress'], [PROG.filter(function (r) { return r.stage !== 'New registration'; }).length, 'Waiting for review'], [pend.length, 'Candidates with updates not sent'], [DONE.length, 'Completed (30 days)'], ['3.2 days', 'Average start to sign-off']].map(function (k, i) { return '<div' + (i === 2 && pend.length ? ' class="warn"' : '') + '><b>' + k[0] + '</b><span>' + k[1] + '</span></div>'; }).join('');
+    document.getElementById('unsentN').textContent = pend.length;
+    document.getElementById('unsent').classList.toggle('has', pend.length > 0);
+    document.getElementById('unsentRows').innerHTML = pend.length ? '<div class="d-row d-hd"><span>Candidate</span><span>Changes</span><span>Made by</span><span>Waiting</span><span></span></div>' + pend.map(function (r) {
+      return '<div class="d-row"><span><b>' + esc(r.n) + '</b>' + (r.you ? ' <em class="you">you registered</em>' : '') + '<small>' + r.ref + ' · ' + esc(R[r.role].name) + '</small></span><span data-l="Changes">' + r.q.c + ' change' + (r.q.c > 1 ? 's' : '') + '</span><span data-l="Made by">' + esc(r.q.by) + '</span><span data-l="Waiting" class="' + ((now - new Date(r.q.at)) > DAY ? 'late' : '') + '">' + ago(r.q.at) + '</span><span><a class="btn btn-sun btn-sm" href="staff.html#tray">Open and send</a></span></div>';
+    }).join('') : '<p class="hint">All updates have been sent.</p>';
+    var p = PROG.filter(match), dn = DONE.filter(match);
+    document.getElementById('nProg').textContent = '(' + PROG.length + ')'; document.getElementById('nDone').textContent = '(' + DONE.length + ')';
+    document.getElementById('progRows').innerHTML = '<div class="d-row d-hd d-prog"><span>Candidate</span><span>Started</span><span>Stage</span><span>Profile</span><span>Missing</span><span>Last activity</span></div>' + p.map(function (r) {
+      return '<a class="d-row d-prog" href="staff.html"><span><b>' + esc(r.n) + '</b>' + (r.you ? ' <em class="you">you registered</em>' : '') + (r.q ? ' <em class="unsent-tag">update not sent</em>' : '') + '<small>' + r.ref + ' · ' + esc(R[r.role].name) + '</small></span><span data-l="Started">' + fmtD(r.start) + '</span><span data-l="Stage">' + esc(r.stage) + '</span><span data-l="Profile"><span class="mini-bar"><i style="width:' + r.pct + '%"></i></span>' + r.pct + '%</span><span data-l="Missing">' + r.miss + '</span><span data-l="Last activity">' + ago(r.last) + '</span></a>';
+    }).join('');
+    document.getElementById('doneRows').innerHTML = '<div class="d-row d-hd d-done"><span>Staff member</span><span>Application started</span><span>Signed off</span><span>Days</span><span>Signed off by</span><span></span></div>' + dn.map(function (r) {
+      var days = Math.max(0, Math.round((new Date(r.end) - new Date(r.start)) / DAY));
+      return '<div class="d-row d-done"><span><b>' + esc(r.n) + '</b>' + (r.you ? ' <em class="you">you registered</em>' : '') + '<small>' + r.ref + ' · ' + esc(R[r.role].name) + '</small></span><span data-l="Started">' + fmtD(r.start) + '</span><span data-l="Signed off">' + fmtD(r.end) + '</span><span data-l="Days">' + days + '</span><span data-l="By">' + esc(r.by) + '</span><span><a class="link-btn" href="staff.html">Open file</a></span></div>';
+    }).join('');
+  }
+  var tabs = document.querySelectorAll('.d-tabs [role=tab]');
+  tabs.forEach(function (t) { t.addEventListener('click', function () { tabs.forEach(function (o) { var on = o === t; o.setAttribute('aria-selected', String(on)); o.tabIndex = on ? 0 : -1; document.getElementById(o.getAttribute('aria-controls')).hidden = !on; }); }); });
+  document.getElementById('q').addEventListener('input', function () { q = this.value.trim().toLowerCase(); render(); });
+  render();
+})();
+</script>

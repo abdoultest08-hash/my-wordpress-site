@@ -248,7 +248,8 @@
       inp.addEventListener('change', function () {
         if (!inp.files[0]) return;
         var store = inp.dataset.t === '1' ? S.train : S.docs, k = inp.dataset.k;
-        store[k] = { file: HCC.renamed(S.ref, S.acct.first, S.acct.last, k.split(':')[0].replace(/\(.*\)/, ''), inp.files[0].name), at: new Date().toISOString() };
+        store[k] = HCC.fileFor(S, k, inp.dataset.t === '1', inp.files[0].name, store[k]);
+        (S.uploadsAfter = S.uploadsAfter || []).push({ key: k, at: new Date().toISOString(), replaced: store[k].v > 1 });
         if (S.review) delete S.review[k];
         if (view === 'review') { S.review = S.review || {}; S.review[k] = { status: 'review' }; }
         save(); render();

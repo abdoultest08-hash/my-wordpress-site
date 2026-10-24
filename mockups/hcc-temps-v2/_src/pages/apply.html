@@ -331,7 +331,7 @@
     wrap.querySelectorAll('input[type=file]').forEach(function (inp) {
       inp.addEventListener('change', function () {
         var it = items[+inp.dataset.i]; if (!inp.files[0]) return;
-        store[it.key] = { file: HCC.renamed(S.ref, S.acct.first, S.acct.last, it.label.split(':')[0].replace(/\(.*\)/, ''), inp.files[0].name), at: new Date().toISOString() };
+        var f = HCC.fileFor(S, it.key, listId === 'trainList', inp.files[0].name, store[it.key]); if (store[it.key] && store[it.key].exp) f.exp = store[it.key].exp; store[it.key] = f;
         save(); renderList(listId, items, store, barId, countId, withExpiry);
       });
     });
@@ -366,7 +366,7 @@
     if (S.step === 4) { set('#title', 'Mx'); set('#dob', '1992-04-18'); set('#ni', 'QQ 12 34 56 C'); tick('british', 'No'); set('#visa', 'Health and Care Worker visa'); set('#share', 'W12 345 678'); tick('licence', 'Full'); tick('vehicle', 'Yes'); tick('dbs', 'update'); set('#dbsno', '001234567890'); set('#edu', 'Degree'); set('#emp', 'Agency work'); set('#exp', '3 to 5 years'); tick('trainok', 'Some'); tick('uniform', 'Yes'); set('#size', 'M'); set('#r1n', 'Jane Smith'); set('#r1p', 'Ward Manager, St Mary\'s Hospital'); set('#r1e', 'jane.smith@example.com'); set('#r1t', '0113 496 0000'); set('#r2n', 'Tom Patel'); set('#r2p', 'Deputy Manager, Oak House'); set('#r2e', 'tom.patel@example.com'); set('#r2t', '0113 496 0001'); set('#kn', 'Sam Morgan'); set('#kr', 'Sibling'); set('#kt', '07700 900789'); set('#ka', '4 Hill Road, Leeds LS6 1AA'); set('#ban', 'A Morgan'); tick('btype', 'Personal'); set('#bsc', '00-00-00'); set('#bno', '12345678'); conditions(); }
     if (S.step === 5 || S.step === 6) {
       var items = S.step === 5 ? docItems() : trainItems(), store = S.step === 5 ? S.docs : S.train;
-      items.forEach(function (it, i) { if (it.kind === 'na') return; if (it.kind === 'pin') { store[it.key] = { pin: '12A3456E', exp: '2027-08-31' }; return; } store[it.key] = i % 4 === 3 ? { missing: true } : { file: HCC.renamed(S.ref, S.acct.first, S.acct.last, it.label.split(':')[0].replace(/\(.*\)/, ''), 'photo.jpg'), at: new Date().toISOString(), exp: S.step === 6 ? '2027-03-01' : '' }; });
+      items.forEach(function (it, i) { if (it.kind === 'na') return; if (it.kind === 'pin') { store[it.key] = { pin: '12A3456E', exp: '2027-08-31' }; return; } if (i % 4 === 3) { store[it.key] = { missing: true }; return; } var f = HCC.fileFor(S, it.key, S.step === 6, /photo|passport|address/i.test(it.key) ? 'photo.jpg' : 'scan.pdf'); if (S.step === 6) f.exp = '2027-03-01'; store[it.key] = f; });
       save(); S.step === 5 ? renderDocs() : renderTrain();
     }
   });

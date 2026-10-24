@@ -61,7 +61,7 @@
   <div class="staff-bar">
     <div class="wrap">
       <b>Staff portal</b>
-      <nav aria-label="Staff portal"><a href="workflow.html#dashboard">Dashboard</a><a href="staff.html" aria-current="page">Candidates</a><a href="workflow.html#emails">Emails</a></nav>
+      <nav aria-label="Staff portal"><a href="staff-dash.html">Dashboard</a><a href="staff.html" aria-current="page">Candidate folder</a><a href="workflow.html#emails">Emails</a></nav>
       <span class="who-in">Geraldine · Compliance Manager</span>
     </div>
   </div>
@@ -69,7 +69,7 @@
   <section class="section staff-body">
     <div class="wrap">
       <p class="demo-bar"><b>Mockup</b> · Approve, ask to replace, request missing items or add notes. Each change goes into the <b>Update for candidate</b> tray and is sent as one email when you press Send. <a href="portal.html?view=review">See the candidate's portal</a></p>
-      <div class="crumbs" style="color:var(--muted)"><a href="staff.html">Candidates</a> / <span id="sName"></span></div>
+      <div class="crumbs" style="color:var(--muted)"><a href="staff-dash.html">Dashboard</a> / <span id="sName"></span></div>
 
       <div class="s-head">
         <div>
@@ -81,9 +81,14 @@
           <label class="s-stage">Stage <select id="stage"><option>New registration</option><option selected>Documents</option><option>Checks in progress</option><option>Ready to work</option><option>Closed</option></select></label>
           <button class="btn btn-aqua btn-sm" type="button" id="approveAll">Approve all uploaded</button>
           <button class="btn btn-sun btn-sm" type="button" id="completeAll">Complete profile (100%)</button>
-          <button class="btn btn-ghost btn-sm" type="button">Download all (zip)</button>
+          <button class="btn btn-ghost btn-sm" type="button" id="zipBtn">Download all (zip)</button>
           <button class="btn btn-ghost btn-sm" type="button">Candidate report</button>
         </div>
+      </div>
+
+      <div class="finish-card" id="finishCard">
+        <div><b id="finishTitle">Finish onboarding</b><span id="finishText"></span></div>
+        <div class="finish-act"><label class="f" style="margin:0"><span class="sr">Signed off by</span><input type="text" id="finishBy" value="Geraldine" aria-label="Signed off by"></label><button class="btn btn-navy btn-sm" type="button" id="finishBtn">Finish onboarding and move to Staff completed</button></div>
       </div>
 
       <div class="staff-grid">
@@ -116,7 +121,7 @@
             <p class="hint" id="trayEmpty">No changes waiting. Approvals, replace requests, missing items and notes for the candidate collect here and go in one email.</p>
             <div id="trayList"></div>
             <div class="form-actions" id="trayActions" hidden style="margin-top:12px"><button class="btn btn-navy btn-sm" type="button" id="trayPreview">Preview and send email</button></div>
-            <p class="hint" id="trayAuto" hidden style="margin-top:10px">Not sent yet. If nobody presses Send, unsent updates go automatically at 6pm.</p>
+            <p class="hint" id="trayAuto" hidden style="margin-top:10px">Not sent yet. Nothing is sent automatically: until someone presses Send, this shows on the dashboard under <b>Updates not sent</b>, with who made the changes.</p>
           </div>
           <div class="p-card" id="mailPanel" hidden>
             <div class="p-card-head"><h2>Email to candidate</h2><button class="link-btn" type="button" id="mailClose">Back</button></div>
@@ -139,10 +144,16 @@
             <dl class="bank-dl" id="bankDl"></dl>
           </div>
           <div class="p-card">
-            <div class="p-card-head"><h2>General note</h2></div>
-            <div class="f"><label for="note">Note about this candidate</label><textarea id="note" placeholder="e.g. Called Alex, available nights from 1 Nov."></textarea></div>
-            <label class="consent" style="margin-top:8px"><input type="checkbox" id="internal" checked>Internal (candidate can't see it)</label>
-            <div class="form-actions" style="margin-top:10px"><button class="btn btn-ghost btn-sm" type="button" id="addNote">Add note</button></div>
+            <div class="p-card-head"><h2>Notes</h2></div>
+            <div class="note-tabs" role="tablist" aria-label="Note type"><button role="tab" type="button" aria-selected="true" data-nt="internal">Internal compliance note</button><button role="tab" type="button" aria-selected="false" data-nt="cand">Message to candidate</button></div>
+            <div class="f"><label for="note" id="noteLbl">Note (staff only)</label><textarea id="note" placeholder="e.g. Called Alex about the NI letter, posting a copy this week."></textarea></div>
+            <div class="form-grid" id="noteMeta" style="margin-top:10px">
+              <div class="f"><label for="noteBy">Signed off by</label><input type="text" id="noteBy" value="Geraldine"></div>
+              <div class="f"><label for="noteDue">Next action due</label><input type="date" id="noteDue"></div>
+              <div class="f full"><label for="noteNext">Next action for candidate (optional)</label><input type="text" id="noteNext" placeholder="e.g. Chase NI letter on Friday"></div>
+            </div>
+            <div class="form-actions" style="margin-top:10px"><button class="btn btn-ghost btn-sm" type="button" id="addNote">Save to profile</button></div>
+            <div class="cnotes" id="cnotes"></div>
           </div>
           <div class="p-card">
             <div class="p-card-head"><h2>Activity log</h2></div>
@@ -152,6 +163,20 @@
       </div>
     </div>
   </section>
+  <div class="modal" id="viewer" hidden role="dialog" aria-modal="true" aria-labelledby="vTitle">
+    <div class="modal-box">
+      <div class="modal-head"><b id="vTitle"></b><button class="link-btn" type="button" data-close>Close</button></div>
+      <div class="viewer-body" id="vBody"></div>
+      <div class="form-actions" style="margin-top:12px"><button class="btn btn-navy btn-sm" type="button" id="vDownload">Download</button><span class="form-note">View opens the file in the browser, nothing saved to your device. Download only when you need a copy.</span></div>
+    </div>
+  </div>
+  <div class="modal" id="zipModal" hidden role="dialog" aria-modal="true" aria-labelledby="zTitle">
+    <div class="modal-box">
+      <div class="modal-head"><b id="zTitle">Download all (zip)</b><button class="link-btn" type="button" data-close>Close</button></div>
+      <pre class="zip-tree" id="zTree"></pre>
+      <div class="form-actions" style="margin-top:12px"><button class="btn btn-navy btn-sm" type="button" data-close>Download zip</button><span class="form-note">Files in checklist order. Only the latest version of each file is included.</span></div>
+    </div>
+  </div>
   <div class="toast-pop" id="toastPop" role="status" aria-live="polite" hidden></div>
 </main>
 
@@ -227,7 +252,7 @@
   function load() { try { return JSON.parse(sessionStorage.getItem('hcc-reg') || 'null'); } catch (x) { return null; } }
   function save() { try { sessionStorage.setItem('hcc-reg', JSON.stringify(S)); } catch (x) {} }
   var S = load(); if (!S || !S.ref) { S = HCC.demoCandidate(); save(); }
-  S.review = S.review || {}; S.log = S.log || []; S.queue = S.queue || []; S.notes = S.notes || {};
+  S.review = S.review || {}; S.log = S.log || []; S.queue = S.queue || []; S.notes = S.notes || {}; S.cnotes = S.cnotes || [];
   var name = S.acct.first + ' ' + S.acct.last, a = S.answers || {};
   function fmt(d) { var x = new Date(d || Date.now()); return x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ', ' + x.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); }
   if (!S.log.length) S.log = [[S.registered, 'Account created and email verified', 'Candidate'], [S.prescreenDone || S.registered, 'Pre-screening submitted', 'Candidate'], [S.submitted || S.registered, 'Registration submitted. Staffing inbox emailed with full summary and CV attached', 'Candidate']];
@@ -248,7 +273,7 @@
   function st(it) { if (it.na) return 'na'; var r = S.review[it.key]; if (r) return r.status; var s = (it.t ? S.train : S.docs)[it.key] || {}; return (s.file || s.pin) ? 'review' : 'todo'; }
   function labelOf(k) { var all = allItems(); for (var i = 0; i < all.length; i++) if (all[i].key === k) return all[i].label; return k; }
   function log(text) { S.log.push([new Date().toISOString(), text, ME]); save(); }
-  function queue(type, key, text) { if (type !== 'note') S.queue = S.queue.filter(function (q) { return !(key && q.key === key && q.type !== 'note'); }); S.queue.push({ type: type, key: key || '', label: key ? labelOf(key) : '', text: text || '' }); save(); }
+  function queue(type, key, text) { if (type !== 'note') S.queue = S.queue.filter(function (q) { return !(key && q.key === key && q.type !== 'note'); }); S.queue.push({ type: type, key: key || '', label: key ? labelOf(key) : '', text: text || '', by: ME, at: new Date().toISOString() }); save(); }
   function toast(t) { var el = document.getElementById('toastPop'); el.textContent = t; el.hidden = false; clearTimeout(el._t); el._t = setTimeout(function () { el.hidden = true; }, 3200); }
   var AMEND = ['Photo is blurry', 'Corners are cut off', 'Document has expired', 'Name doesn\'t match your ID', 'Wrong document', 'Please upload both sides'];
 
@@ -257,7 +282,7 @@
       var s = st(it), file = (it.t ? S.train : S.docs)[it.key] || {}, c = CHIP[s], r = S.review[it.key] || {}, k = esc(it.key);
       var notes = (S.notes[it.key] || []).map(function (n) { return '<span class="d-note' + (n.internal ? ' internal' : '') + '">' + (n.internal ? 'Internal' : 'To candidate') + ' · ' + esc(n.by) + ': ' + esc(n.text) + '</span>'; }).join('');
       return '<div class="s-row s-' + s + '">' + (it.na ? '<span class="s-cb"></span>' : '<label class="s-cb"><input type="checkbox" data-k="' + k + '" aria-label="Select ' + esc(it.label) + '"></label>') +
-        '<div class="s-item"><b>' + esc(it.label) + '</b>' + (file.file ? '<a class="p-file" href="#" onclick="return false">' + esc(file.file) + '</a>' : file.pin ? '<span class="p-file">PIN ' + esc(file.pin) + ' · <a href="https://www.nmc.org.uk/registration/search-the-register/" target="_blank" rel="noopener">check NMC register</a></span>' : file.missing ? '<span class="p-file">Candidate ticked "I don\'t have this yet"</span>' : '') + (file.exp ? '<span class="p-file">Expires ' + esc(file.exp) + '</span>' : '') +
+        '<div class="s-item"><b>' + esc(it.label) + '</b>' + (file.file ? '<span class="f-line"><button type="button" class="p-file f-view" data-view="' + k + '">' + esc(file.file) + '</button><button type="button" class="f-act" data-view="' + k + '">View</button><button type="button" class="f-act" data-dl="' + k + '">Download</button></span>' : file.pin ? '<span class="p-file">PIN ' + esc(file.pin) + ' · <a href="https://www.nmc.org.uk/registration/search-the-register/" target="_blank" rel="noopener">check NMC register</a></span>' : file.missing ? '<span class="p-file">Candidate ticked "I don\'t have this yet"</span>' : '') + (file.exp ? '<span class="p-file">Expires ' + esc(file.exp) + '</span>' : '') +
         (r.reason ? '<span class="' + (s === 'override' ? 'p-ov' : 'p-reason') + '">' + (s === 'override' ? 'Override: ' : '') + esc(r.reason) + (r.by ? ' · ' + esc(r.by) : '') + '</span>' : '') + notes + '</div>' +
         '<span class="stat ' + c[1] + '">' + c[0] + '</span>' +
         (it.na ? '<span></span>' : '<span class="s-btns">' + (s === 'review' || s === 'amend' ? '<button type="button" class="mini ok" data-ok="' + k + '" title="Approve">✓</button><button type="button" class="mini am" data-open="am:' + k + '" title="Ask to replace">↺</button>' : '') + '<button type="button" class="mini nt" data-open="nt:' + k + '" title="Add a note">✎</button></span>') +
@@ -298,12 +323,30 @@
     var all = d.concat(t).filter(function (i) { return !i.na; }), ok = all.filter(function (i) { var s = st(i); return s === 'approved' || s === 'override'; }).length, pct = Math.round(ok / all.length * 100);
     document.getElementById('pctBar').style.width = pct + '%'; document.getElementById('pctTxt').textContent = 'Profile ' + pct + '% complete';
     document.getElementById('decSent').checked = !!S.decSent; document.getElementById('decSigned').checked = !!S.decSigned;
+    var done = pct === 100, dec = S.decSent && S.decSigned, fc = document.getElementById('finishCard');
+    fc.classList.toggle('ready', done && dec && !S.completed); fc.classList.toggle('complete', !!S.completed);
+    document.getElementById('finishBtn').disabled = !(done && dec) || !!S.completed || S.queue.length > 0;
+    document.getElementById('finishTitle').textContent = S.completed ? 'Onboarding complete' : 'Finish onboarding';
+    document.getElementById('finishText').textContent = S.completed ? 'Signed off by ' + S.completed.by + ' on ' + fmt(S.completed.at) + '. Moved to Staff completed.' :
+      [done ? '✓ Profile 100%' : '✗ Profile ' + pct + '%', S.decSent ? '✓ Declaration sent' : '✗ Declaration not sent', S.decSigned ? '✓ Signed declaration received' : '✗ Signed declaration not received', S.queue.length ? '✗ ' + S.queue.length + ' update(s) not sent' : '✓ No unsent updates'].join('   ');
+    document.querySelector('.finish-act').hidden = !!S.completed;
+    document.getElementById('cnotes').innerHTML = S.cnotes.slice().reverse().map(function (n) { return '<div class="cnote' + (n.type === 'cand' ? ' cand' : '') + '"><div class="cn-h"><b>' + (n.type === 'cand' ? 'Message to candidate' : 'Internal note') + '</b><span>' + fmt(n.at) + (n.by ? ' · signed off by ' + esc(n.by) : '') + '</span></div><p>' + esc(n.text) + '</p>' + (n.next ? '<span class="cn-next">Next action: ' + esc(n.next) + (n.due ? ' · due ' + esc(n.due) : '') + '</span>' : '') + '</div>'; }).join('');
     renderTray(); bind(); bulk();
   }
   function ticked() { return Array.prototype.map.call(document.querySelectorAll('.s-cb input:checked'), function (c) { return c.dataset.k; }); }
   function bulk() { var n = ticked().length; document.getElementById('bulk').hidden = !n; document.getElementById('bulkN').textContent = n + ' selected'; }
   function approve(ks, how) { ks.forEach(function (k) { S.review[k] = { status: 'approved' }; queue('approved', k); }); if (ks.length) log((how || 'Approved') + ': ' + ks.map(labelOf).join(', ')); }
+  function fileOf(k) { return S.docs[k] || S.train[k] || {}; }
   function bind() {
+    document.querySelectorAll('[data-view]').forEach(function (b) { b.addEventListener('click', function () {
+      var f = fileOf(b.dataset.view), img = /\.(jpe?g|png|heic)$/i.test(f.file);
+      document.getElementById('vTitle').textContent = f.file;
+      document.getElementById('vBody').innerHTML = img ? '<div class="v-img"><span>Image preview</span><b>' + esc(labelOf(b.dataset.view)) + '</b><small>Zoom and rotate controls in the live site</small></div>' : '<div class="v-pdf"><div class="v-page"><i></i><i></i><i></i><i class="s"></i><i></i><i class="s"></i></div><span>PDF opens in the browser\'s own viewer</span></div>';
+      document.getElementById('vDownload').dataset.k = b.dataset.view;
+      document.getElementById('viewer').hidden = false;
+      log('Viewed ' + f.file);
+    }); });
+    document.querySelectorAll('[data-dl]').forEach(function (b) { b.addEventListener('click', function () { log('Downloaded ' + fileOf(b.dataset.dl).file); render(); toast('Downloading ' + fileOf(b.dataset.dl).file); }); });
     document.querySelectorAll('.s-cb input').forEach(function (c) { c.addEventListener('change', bulk); });
     document.querySelectorAll('[data-ok]').forEach(function (b) { b.addEventListener('click', function () { approve([b.dataset.ok]); render(); toast('Approved. Added to the candidate update'); }); });
     document.querySelectorAll('[data-open]').forEach(function (b) { b.addEventListener('click', function () { var box = document.querySelector('[data-box="' + CSS.escape(b.dataset.open) + '"]'); box.hidden = !box.hidden; if (!box.hidden) { var f = box.querySelector('input[type=text],select'); if (f) f.focus(); } }); });
@@ -377,10 +420,37 @@
     S.queue = []; save(); document.getElementById('mailPanel').hidden = true; render(); toast('One email sent to ' + S.acct.first + ' with ' + n + ' changes');
   });
 
+  var noteType = 'internal';
+  document.querySelectorAll('[data-nt]').forEach(function (b) { b.addEventListener('click', function () {
+    noteType = b.dataset.nt; document.querySelectorAll('[data-nt]').forEach(function (o) { o.setAttribute('aria-selected', String(o === b)); });
+    document.getElementById('noteLbl').textContent = noteType === 'cand' ? 'Message (goes in the next update email)' : 'Note (staff only)';
+    document.getElementById('noteNext').closest('.f').hidden = noteType === 'cand'; document.getElementById('noteDue').closest('.f').hidden = noteType === 'cand';
+  }); });
   document.getElementById('addNote').addEventListener('click', function () {
-    var n = document.getElementById('note'), internal = document.getElementById('internal').checked, text = n.value.trim(); if (!text) return;
-    if (!internal) queue('note', '', text);
-    log((internal ? 'Internal note: ' : 'Note to candidate (added to update): ') + text); n.value = ''; render();
+    var n = document.getElementById('note'), text = n.value.trim(); if (!text) { n.focus(); return; }
+    var by = document.getElementById('noteBy').value.trim(), next = noteType === 'cand' ? '' : document.getElementById('noteNext').value.trim(), due = noteType === 'cand' ? '' : document.getElementById('noteDue').value;
+    S.cnotes.push({ type: noteType, text: text, by: by, next: next, due: due, at: new Date().toISOString() });
+    if (noteType === 'cand') queue('note', '', text);
+    log((noteType === 'cand' ? 'Message to candidate added to update: ' : 'Internal note: ') + text + (next ? ' · Next action: ' + next + (due ? ' (due ' + due + ')' : '') : '') + (by ? ' · signed off by ' + by : ''));
+    n.value = ''; document.getElementById('noteNext').value = ''; document.getElementById('noteDue').value = ''; save(); render(); toast('Saved to profile');
+  });
+  document.getElementById('zipBtn').addEventListener('click', function () {
+    var folder = S.ref + ' ' + name + ' - ' + R[S.role].name, lines = [folder + '/'];
+    R[S.role].docs.forEach(function (d) { var f = S.docs[d]; if (f && f.file) lines.push('├── ' + f.file); });
+    lines.push('├── Training/');
+    R[S.role].train.forEach(function (x) { var f = S.train[x]; if (f && f.file) lines.push('│   ├── ' + f.file); });
+    lines.push('└── ' + S.ref + ' ' + name + ' - Summary.pdf   (answers, referees, checks)');
+    document.getElementById('zTree').textContent = lines.join('\n');
+    document.getElementById('zipModal').hidden = false; log('Downloaded all files (zip)'); render();
+  });
+  document.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', function () { b.closest('.modal').hidden = true; }); });
+  document.querySelectorAll('.modal').forEach(function (m) { m.addEventListener('click', function (e) { if (e.target === m) m.hidden = true; }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') document.querySelectorAll('.modal').forEach(function (m) { m.hidden = true; }); });
+  document.getElementById('vDownload').addEventListener('click', function () { log('Downloaded ' + fileOf(this.dataset.k).file); document.getElementById('viewer').hidden = true; render(); toast('Downloading'); });
+  document.getElementById('finishBtn').addEventListener('click', function () {
+    var by = document.getElementById('finishBy').value.trim() || ME;
+    S.completed = { at: new Date().toISOString(), by: by }; document.getElementById('stage').value = 'Ready to work';
+    log('Onboarding finished and signed off by ' + by + '. Moved to Staff completed'); render(); toast('Moved to Staff completed');
   });
   ['decSent', 'decSigned'].forEach(function (id) { document.getElementById(id).addEventListener('change', function () { S[id] = this.checked; log(this.checked ? (id === 'decSent' ? 'Declaration sent to candidate' : 'Signed declaration received') : (id === 'decSent' ? 'Declaration marked as not sent' : 'Signed declaration unticked')); render(); }); });
   document.getElementById('stage').addEventListener('change', function () { log('Stage changed to ' + this.value + (this.value === 'Ready to work' ? ' (candidate emailed)' : '')); render(); });

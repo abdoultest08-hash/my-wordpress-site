@@ -111,6 +111,17 @@ var HCC = (function () {
     return ref + '_' + slug(last || 'Surname') + '-' + slug(first || 'First') + '_' + docKey + '_' + today() + ext;
   }
 
+  /* File names: documents numbered in checklist order, training prefixed T, so a zip sorts in order.
+     e.g. "01 - Alex Morgan - CV.pdf", "T03 - Alex Morgan - Safeguarding Adults.pdf". Replacements get (v2), (v3)... */
+  var SHORT = [[/^CV/, 'CV'], [/passport or driving/i, 'Passport or driving licence'], [/^Right to work/, 'Right to work'], [/proof of address/i, 'Proof of address'], [/National Insurance/, 'Proof of NI'], [/photograph/i, 'Professional photo'], [/^Enhanced DBS/, 'DBS certificate'], [/^Immunisation/, 'Immunisation record'], [/^NMC Statement/, 'NMC Statement of Entry'], [/diploma/i, 'Nursing diploma or degree']];
+  function shortLabel(d) { for (var i = 0; i < SHORT.length; i++) if (SHORT[i][0].test(d)) return SHORT[i][1]; return d.replace(/\s*\(.*\)$/, ''); }
+  function fileFor(S, key, isTrain, original, prev) {
+    var list = isTrain ? REQS[S.role].train : REQS[S.role].docs, n = list.indexOf(key) + 1;
+    var num = (isTrain ? 'T' : '') + String(n).padStart(2, '0');
+    var ext = ((original || '').match(/\.[a-z0-9]+$/i) || ['.pdf'])[0].toLowerCase();
+    var v = prev && prev.file ? ((prev.v || 1) + 1) : 1;
+    return { file: num + ' - ' + S.acct.first + ' ' + S.acct.last + ' - ' + (isTrain ? key.replace(/\s*\(.*\)$/, '') : shortLabel(key)) + (v > 1 ? ' (v' + v + ')' : '') + ext, v: v, at: new Date().toISOString() };
+  }
 
   /* Sample candidate for the portal and staff views when nobody has registered in this browser session */
   function demoCandidate() {
@@ -121,9 +132,9 @@ var HCC = (function () {
     REQS[role].docs.forEach(function (d) {
       if (/^NMC PIN/.test(d)) S.docs[d] = { pin: '12A3456E', exp: '2027-08-31' };
       else if (/National Insurance/.test(d)) S.docs[d] = { missing: true };
-      else if (!/^Two references/.test(d)) S.docs[d] = { file: renamed(S.ref, 'Alex', 'Morgan', d.split(':')[0].replace(/\(.*\)/, ''), 'scan.pdf') };
+      else if (!/^Two references/.test(d)) S.docs[d] = fileFor(S, d, false, /photograph/i.test(d) ? 'photo.jpg' : 'scan.pdf');
     });
-    REQS[role].train.forEach(function (t, i) { S.train[t] = i % 5 === 4 ? { missing: true } : { file: renamed(S.ref, 'Alex', 'Morgan', t, 'cert.pdf'), exp: '2027-03-01' }; });
+    REQS[role].train.forEach(function (t, i) { var f = fileFor(S, t, true, 'cert.pdf'); f.exp = '2027-03-01'; S.train[t] = i % 5 === 4 ? { missing: true } : f; });
     return S;
   }
 
@@ -192,5 +203,5 @@ var HCC = (function () {
     document.querySelectorAll('.nav-login[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
   });
   initMenu();
-  return { initFaqTabs: initFaqTabs, JOBS: JOBS, card: card, byId: byId, checklistFor: checklistFor, REQS: REQS, reqKey: reqKey, demoCandidate: demoCandidate, renamed: renamed, initApply: initApply, esc: esc };
+  return { initFaqTabs: initFaqTabs, JOBS: JOBS, card: card, byId: byId, checklistFor: checklistFor, REQS: REQS, reqKey: reqKey, demoCandidate: demoCandidate, fileFor: fileFor, shortLabel: shortLabel, renamed: renamed, initApply: initApply, esc: esc };
 })();
