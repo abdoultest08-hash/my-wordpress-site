@@ -1162,3 +1162,45 @@ form.inline { display: inline; }
 .robot-jp br { display: none; }
 .robot-jp label { font-weight: 700; font-size: 18px; color: var(--ink); }
 .robot-jp input[type=number], .robot-jp input.input { width: 90px !important; height: auto !important; padding: 10px 12px; border: 1px solid #CFD8D6; border-radius: 10px; font: 600 18px var(--body) !important; }
+
+/* Expiry and NMC PIN dates: visible labels, saved with a button */
+.exp-box { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; margin-top: 8px; }
+.exp-in { display: grid; gap: 4px; font-size: 13px; font-weight: 700; color: var(--ink); }
+.exp-in input, .pin-in input { border: 1px solid #CFD8D6; border-radius: 10px; padding: 8px 10px; font: 500 15px var(--body); min-height: 42px; background: var(--white); }
+.pin-in { display: grid; gap: 10px; min-width: 220px; }
+.pin-in label { display: grid; gap: 4px; font-size: 13px; font-weight: 700; color: var(--ink); }
+.pin-in small { font-weight: 500; color: var(--muted); font-size: 12px; }
+
+/* Candidate portal 2.0.5: one column, quick-jump bar, answers first */
+.portal-wrap { max-width: 900px; }
+.portal-wrap > * + * { margin-top: 18px; }
+.p-jump { position: sticky; top: calc(var(--header-h) + var(--adminbar, 0px) + 8px); z-index: 5; display: flex; gap: 8px; overflow-x: auto; padding: 8px; background: var(--white); border: 1px solid var(--line); border-radius: 999px; box-shadow: 0 8px 24px rgba(23,26,69,.08); scrollbar-width: none; }
+.p-jump::-webkit-scrollbar { display: none; }
+.p-jump a { flex: none; padding: 8px 14px; border-radius: 999px; font-weight: 700; font-size: 14px; color: var(--navy); text-decoration: none; background: var(--paper, #F4F8F7); }
+.p-jump a:hover { background: var(--aqua-tint); }
+.p-jump em { font-style: normal; font-size: 12px; background: var(--navy); color: var(--white); border-radius: 999px; padding: 1px 7px; margin-left: 4px; }
+#updates, #answers, #documents, #training { scroll-margin-top: calc(var(--header-h) + 80px); }
+.msg-card .msg-old { opacity: 1; background: var(--white); border: 1px solid var(--line); }
+.msg-card details.msg-old summary { cursor: pointer; list-style: none; }
+.msg-card details.msg-old summary::after { content: ' ▾'; color: var(--muted); }
+.msg-h { margin-top: 10px; font-weight: 800; font-size: 14px; color: var(--ink); }
+.msg-h.msg-amend, .msg-h.msg-missing { color: #B3261E; }
+.msg-h.msg-approved { color: #17694A; }
+.p-answers > summary { cursor: pointer; list-style: none; }
+.p-answers > summary::-webkit-details-marker { display: none; }
+.p-answers:not([open]) .p-count::after { content: ' · tap to show'; }
+.ans-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 6px; }
+.ans-group { border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.ans-group summary { font-size: 15px; font-weight: 800; color: var(--ink); cursor: pointer; list-style: none; display: flex; justify-content: space-between; }
+.ans-group summary::-webkit-details-marker { display: none; }
+.ans-group summary::after { content: '▾'; color: var(--muted); }
+.ans-group[open] summary { margin-bottom: 6px; }
+.ans-group[open] summary::after { content: '▴'; }
+.ans-group dl > div { display: grid; grid-template-columns: 44% 1fr; gap: 8px; padding: 5px 0; border-top: 1px solid #EEF2F1; font-size: 14px; }
+.ans-group dl > div:first-child { border-top: 0; }
+.ans-group dt { color: var(--muted); }
+.ans-group dd { color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
+@media (max-width: 700px) { .ans-grid { grid-template-columns: 1fr; } }
+.team-note { display: block; margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: #EEF0FB; color: var(--ink); font-size: 13px; }
+.team-note b { display: block; font-size: 12px; color: var(--navy); }
+.preview-bar { background: var(--sun); color: var(--ink); border-radius: 12px; padding: 10px 14px; font-weight: 600; }

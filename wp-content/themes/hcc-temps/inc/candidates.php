@@ -35,7 +35,7 @@ function hcc_name( $id ) {
 
 function hcc_applicant_for_user( $user_id ) {
 	$id = (int) get_user_meta( $user_id, 'hcc_applicant_id', true );
-	return ( $id && 'hcc_applicant' === get_post_type( $id ) ) ? $id : 0;
+	return ( $id && 'hcc_applicant' === get_post_type( $id ) && 'trash' !== get_post_status( $id ) && hcc_meta( $id, 'ref' ) ) ? $id : 0;
 }
 
 /** Activity log entry. $by defaults to the logged-in person. */
@@ -321,7 +321,7 @@ function hcc_answer_groups( $id, $with_bank = true ) {
 		'Experience'        => array( 'Education' => $g( 'edu' ), 'Employment status' => $g( 'emp' ), 'Experience in role' => $g( 'exp' ), 'Training in date' => $g( 'trainok' ), 'Uniform' => trim( $g( 'uniform' ) . ( $g( 'size' ) ? ' · size ' . $g( 'size' ) : '' ) ) ),
 		'Referee 1'         => array( 'Name' => $g( 'r1n' ), 'Position' => $g( 'r1p' ), 'Email' => $g( 'r1e' ), 'Phone' => $g( 'r1t' ) ),
 		'Referee 2'         => array( 'Name' => $g( 'r2n' ), 'Position' => $g( 'r2p' ), 'Email' => $g( 'r2e' ), 'Phone' => $g( 'r2t' ) ),
-		'Emergency contact' => array( 'Name' => trim( $g( 'kn' ) . ( $g( 'kr' ) ? ' (' . $g( 'kr' ) . ')' : '' ) ), 'Phone' => $g( 'kt' ), 'Address' => $g( 'ka' ) ),
+		'Emergency contact' => array( 'Name' => trim( $g( 'kn' ) . ( $g( 'kr' ) ? ' (' . $g( 'kr' ) . ')' : '' ) ), 'Phone' => $g( 'kt' ), 'Address' => trim( implode( ', ', array_filter( array( $g( 'ka' ), $g( 'ktown' ) ) ) ) . ' ' . strtoupper( $g( 'kpc' ) ) ) ),
 	);
 	if ( $with_bank ) {
 		$groups['Bank details'] = array( 'Account name' => $g( 'ban' ), 'Type' => $g( 'btype' ), 'Sort code' => $g( 'bsc' ), 'Account number' => $g( 'bno' ) );

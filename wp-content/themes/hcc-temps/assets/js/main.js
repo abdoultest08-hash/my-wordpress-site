@@ -221,12 +221,20 @@
     if (!form) return;
     if (t.classList.contains('up-input') && t.files.length) send(form, { files: Array.prototype.slice.call(t.files) });
     else if (t.name === 'missing') send(form, { missing: t.checked ? '1' : '0' });
-    else if (t.name === 'exp' && !form.querySelector('[name=pin]')) send(form, { exp: t.value });
+    // Date pickers fire "change" while the person is still choosing (iOS especially), so wait for Save.
+    else if (t.name === 'exp' && !form.querySelector('[name=pin]')) { var sv = form.querySelector('.exp-save'); if (sv) sv.hidden = false; }
+  });
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.exp-save');
+    if (b) { var f = b.closest('.item-form'); send(f, { exp: f.querySelector('[name=exp]').value }); }
   });
   document.addEventListener('submit', function (e) {
     var form = e.target;
     if (form.classList.contains('item-form') && form.querySelector('[name=pin]')) { e.preventDefault(); send(form, {}); }
   });
+
+  /* Candidate portal on phones: only the first group of answers starts open */
+  if (window.innerWidth < 700) document.querySelectorAll('.ans-group').forEach(function (d, i) { if (i) d.open = false; });
 
   /* Staff portal: Expand all / Collapse all sections */
   document.querySelectorAll('[data-sections]').forEach(function (b) {

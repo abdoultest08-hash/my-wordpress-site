@@ -199,7 +199,7 @@ get_header();
 					</fieldset>
 
 					<fieldset class="q-group"><legend>Emergency contact</legend><div class="form-grid">
-						<?php echo $text( 'kn', 'Name of next of kin' ) . $text( 'kr', 'Relationship' ) . $text( 'kt', 'Phone', 'tel' ) . $text( 'ka', 'Address and postcode' ); // phpcs:ignore ?>
+						<?php echo $text( 'kn', 'Name of next of kin' ) . $text( 'kr', 'Relationship' ) . $text( 'kt', 'Phone', 'tel' ) . '<div class="f full"><label for="ka">Address</label><input type="text" id="ka" name="ka" autocomplete="off" placeholder="House number and street" value="' . esc_attr( $g( 'ka' ) ) . '"></div>' . $text( 'ktown', 'Town or city' ) . $text( 'kpc', 'Postcode', 'text', ' autocapitalize="characters"' ); // phpcs:ignore ?>
 					</div></fieldset>
 
 					<fieldset class="q-group" id="bank"><legend>Bank details</legend>

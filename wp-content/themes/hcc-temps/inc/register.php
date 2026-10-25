@@ -180,7 +180,7 @@ add_action( 'admin_post_hcc_reg_role', function () {
 /* ---------- Step 4: pre-screening answers ---------- */
 
 function hcc_prescreen_fields() {
-	return array( 'title', 'dob', 'ni', 'british', 'visa', 'share', 'licence', 'vehicle', 'dbs', 'dbsno', 'edu', 'emp', 'exp', 'trainok', 'uniform', 'size', 'r1n', 'r1p', 'r1e', 'r1t', 'r2n', 'r2p', 'r2e', 'r2t', 'kn', 'kr', 'kt', 'ka', 'ban', 'btype', 'bsc', 'bno' );
+	return array( 'title', 'dob', 'ni', 'british', 'visa', 'share', 'licence', 'vehicle', 'dbs', 'dbsno', 'edu', 'emp', 'exp', 'trainok', 'uniform', 'size', 'r1n', 'r1p', 'r1e', 'r1t', 'r2n', 'r2p', 'r2e', 'r2t', 'kn', 'kr', 'kt', 'ka', 'ktown', 'kpc', 'ban', 'btype', 'bsc', 'bno' );
 }
 
 add_action( 'admin_post_hcc_reg_prescreen', function () {
@@ -375,7 +375,7 @@ function hcc_item_row( $id, $key, $it, $ctx = 'wizard' ) {
 	$h .= ! empty( $it['note'] ) || ! empty( $it['hint'] ) ? '<p>' . esc_html( ! empty( $it['note'] ) ? $it['note'] : $it['hint'] ) . '</p>' : '';
 	$h .= $files;
 	if ( ! empty( $st['pin'] ) && 'pin' === $it['kind'] ) {
-		$h .= '<span class="renamed">✓ PIN ' . esc_html( $st['pin'] ) . ( ! empty( $st['exp'] ) ? ' · expires ' . esc_html( wp_date( 'd/m/Y', strtotime( $st['exp'] ) ) ) : '' ) . '</span>';
+		$h .= '<span class="renamed">✓ PIN ' . esc_html( $st['pin'] ) . ( ! empty( $st['exp'] ) ? ' · valid until ' . esc_html( wp_date( 'd/m/Y', strtotime( $st['exp'] ) ) ) : '' ) . '</span>';
 	}
 	if ( $reason ) {
 		$h .= '<span class="p-reason">' . esc_html( $reason ) . '</span>';
@@ -383,16 +383,25 @@ function hcc_item_row( $id, $key, $it, $ctx = 'wizard' ) {
 	if ( ! empty( $st['missing'] ) && ! $has ) {
 		$h .= '<div class="later-note">Marked to follow. You can upload it later from your portal.</div>';
 	}
+	if ( 'wizard' !== $ctx ) { // Notes about this document that the team has sent to the candidate.
+		foreach ( (array) hcc_meta( $id, 'messages', array() ) as $m ) {
+			foreach ( isset( $m['items'] ) ? (array) $m['items'] : array() as $q ) {
+				if ( isset( $q['key'] ) && $q['key'] === $key && 'note' === $q['type'] && '' !== trim( (string) $q['text'] ) ) {
+					$h .= '<span class="team-note"><b>Note from our team · ' . esc_html( wp_date( 'j M', (int) $m['at'] ) ) . '</b>' . esc_html( $q['text'] ) . '</span>';
+				}
+			}
+		}
+	}
 	$h .= '<p class="up-msg" role="status" aria-live="polite"></p></div>';
 	// Right-hand controls.
 	$h .= '<div class="act">';
-	if ( 'portal' === $ctx ) {
+	if ( 'portal' === $ctx || 'preview' === $ctx ) {
 		$h .= hcc_status_chip( $status, 'portal' );
 	}
-	if ( empty( $it['na'] ) && ! in_array( $status, array( 'approved', 'override' ), true ) ) {
+	if ( 'preview' !== $ctx && empty( $it['na'] ) && ! in_array( $status, array( 'approved', 'override' ), true ) ) {
 		$form = '<form class="item-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" enctype="multipart/form-data"><input type="hidden" name="action" value="hcc_reg_item"><input type="hidden" name="hcc_nonce" value="' . esc_attr( $nonce ) . '"><input type="hidden" name="key" value="' . esc_attr( $key ) . '"><input type="hidden" name="ctx" value="' . esc_attr( $ctx ) . '">';
 		if ( 'pin' === $it['kind'] ) {
-			$h .= $form . '<div class="pin-in"><input type="text" name="pin" placeholder="e.g. 12A3456E" value="' . esc_attr( isset( $st['pin'] ) ? $st['pin'] : '' ) . '" aria-label="NMC PIN"><input type="date" name="exp" value="' . esc_attr( isset( $st['exp'] ) ? $st['exp'] : '' ) . '" aria-label="PIN expiry date"><button class="btn btn-ghost btn-sm" type="submit">Save</button></div></form>';
+			$h .= $form . '<div class="pin-in"><label>Your NMC PIN<input type="text" name="pin" placeholder="e.g. 12A3456E" value="' . esc_attr( isset( $st['pin'] ) ? $st['pin'] : '' ) . '" autocapitalize="characters"></label><label>Registration valid until<input type="date" name="exp" value="' . esc_attr( isset( $st['exp'] ) ? $st['exp'] : '' ) . '"><small>The renewal date shown on the NMC register.</small></label><button class="btn btn-navy btn-sm" type="submit">Save PIN</button></div></form>';
 		} else {
 			$fid = 'f-' . $ctx . '-' . $key;
 			$h  .= $form . '<label class="btn btn-ghost btn-sm" for="' . esc_attr( $fid ) . '">' . ( $has ? 'Replace' : 'Upload' ) . '</label><input class="up-input" type="file" id="' . esc_attr( $fid ) . '" name="file[]" accept=".pdf,.jpg,.jpeg,.png,.heic,.doc,.docx"' . ( ! empty( $it['multiple'] ) ? ' multiple' : '' ) . '>';
@@ -400,7 +409,7 @@ function hcc_item_row( $id, $key, $it, $ctx = 'wizard' ) {
 				$h .= '<label class="nohave"><input type="checkbox" name="missing" value="1"' . checked( ! empty( $st['missing'] ), true, false ) . '> I don\'t have this yet</label>';
 			}
 			if ( 0 === strpos( $key, 't-' ) && $has ) {
-				$h .= '<label class="exp-in">Expiry <input type="date" name="exp" value="' . esc_attr( isset( $st['exp'] ) ? $st['exp'] : '' ) . '"></label>';
+				$h .= '<div class="exp-box"><label class="exp-in">Certificate expiry date <input type="date" name="exp" value="' . esc_attr( isset( $st['exp'] ) ? $st['exp'] : '' ) . '"></label><button type="button" class="btn btn-navy btn-sm exp-save" hidden>Save date</button></div>';
 			}
 			$h .= '<noscript><button class="btn btn-sm btn-navy" type="submit">Save</button></noscript></form>';
 		}

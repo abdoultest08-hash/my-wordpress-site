@@ -160,6 +160,7 @@ get_header();
 					<?php endif; ?>
 					<a class="btn btn-ghost btn-sm" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=hcc_zip&a=' . $id ), 'hcc_zip_' . $id ) ); ?>">Download all (zip)</a>
 					<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=hcc_report&a=' . $id ), 'hcc_report_' . $id ) ); ?>">Candidate report</a>
+					<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="<?php echo esc_url( add_query_arg( 'preview', $id, hcc_portal_url() ) ); ?>">View as candidate</a>
 					<?php if ( $closed ) : ?>
 						<form method="post" action="<?php echo $post; ?>"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="reopen"><button class="btn btn-ghost btn-sm btn-red" type="submit">Reopen application</button></form>
 					<?php elseif ( ! $completed ) : ?>
@@ -275,6 +276,14 @@ get_header();
 				</div>
 
 				<aside>
+					<details open class="p-sec p-card" id="answers">
+						<summary class="p-card-head"><h2>Pre-screening answers</h2><span class="p-count">What the candidate told us first</span></summary>
+						<?php $i = 0;
+						foreach ( hcc_answer_groups( $id, false ) as $title => $rows ) : ?>
+							<details class="det"<?php echo $i++ < 2 ? ' open' : ''; ?>><summary><?php echo esc_html( $title ); ?></summary><dl><?php foreach ( $rows as $k => $v ) : ?><div><dt><?php echo esc_html( $k ); ?></dt><dd><?php echo esc_html( '' !== (string) $v ? $v : '—' ); ?></dd></div><?php endforeach; ?></dl></details>
+						<?php endforeach; ?>
+					</details>
+
 					<div class="p-card tray<?php echo $queue ? ' has' : ''; ?>" id="tray">
 						<div class="p-card-head"><h2>Update for <?php echo esc_html( hcc_meta( $id, 'first' ) ); ?></h2><span class="tray-n"><?php echo count( $queue ); ?></span></div>
 						<?php if ( ! $queue ) : ?>
@@ -348,13 +357,6 @@ get_header();
 						</details>
 					</details>
 
-					<details open class="p-sec p-card">
-						<summary class="p-card-head"><h2>Pre-screening answers</h2></summary>
-						<?php $i = 0;
-						foreach ( hcc_answer_groups( $id, false ) as $title => $rows ) : ?>
-							<details class="det"<?php echo $i++ < 2 ? ' open' : ''; ?>><summary><?php echo esc_html( $title ); ?></summary><dl><?php foreach ( $rows as $k => $v ) : ?><div><dt><?php echo esc_html( $k ); ?></dt><dd><?php echo esc_html( '' !== (string) $v ? $v : '—' ); ?></dd></div><?php endforeach; ?></dl></details>
-						<?php endforeach; ?>
-					</details>
 
 					<details open class="p-sec p-card" id="declaration">
 						<summary class="p-card-head"><h2>Declaration</h2><span class="p-count">Sent manually</span></summary>
