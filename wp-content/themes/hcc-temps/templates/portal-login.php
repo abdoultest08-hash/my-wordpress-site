@@ -46,7 +46,7 @@ get_header();
 				<?php if ( $failed ) : ?><p class="form-alert" role="alert">That didn't work. Check your email and password and complete the robot check, or reset your password below.</p><?php endif; ?>
 				<?php
 				wp_login_form( array(
-					'redirect'       => '',
+					'redirect'       => isset( $_GET['redirect_to'] ) ? wp_validate_redirect( esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ), '' ) : '', // phpcs:ignore WordPress.Security.NonceVerification
 					'label_username' => 'Email',
 					'label_password' => 'Password',
 					'label_remember' => 'Keep me logged in on this device',

@@ -141,8 +141,11 @@ function hcc_counts( $id, $items ) {
 		if ( ! empty( $it['na'] ) ) {
 			continue;
 		}
-		$c['need']++;
 		$st = hcc_file_state( $id, $k );
+		if ( ! empty( $it['optional'] ) && ! hcc_has_upload( $st ) && 'todo' === hcc_item_status( $id, $k, $it ) ) {
+			continue; // Optional and not provided: not counted against the candidate.
+		}
+		$c['need']++;
 		if ( hcc_has_upload( $st ) ) {
 			$c['have']++;
 		} elseif ( ! empty( $st['missing'] ) ) {
@@ -280,7 +283,7 @@ add_action( 'admin_post_hcc_zip', function () {
 		wp_die( 'Zip downloads are not available on this server. Download files one by one.' );
 	}
 	$folder = hcc_meta( $id, 'ref' ) . ' ' . hcc_name( $id ) . ' - ' . hcc_role_name( hcc_meta( $id, 'role_key' ) );
-	$folder = trim( str_replace( array( '/', '\\', ':' ), '-', $folder ) );
+	$folder = trim( str_replace( array( '/', '\\', ':', '"', '*', '?', '<', '>', '|' ), '-', $folder ) );
 	$dir    = hcc_private_dir( $id );
 	$tmp    = wp_tempnam( 'hcc-zip' );
 	$zip    = new ZipArchive();
@@ -295,7 +298,7 @@ add_action( 'admin_post_hcc_zip', function () {
 			}
 		}
 	}
-	$zip->addFromString( $folder . '/' . hcc_meta( $id, 'ref' ) . ' ' . hcc_name( $id ) . ' - Summary.html', hcc_summary_page( $id ) );
+	$zip->addFromString( $folder . '/' . hcc_meta( $id, 'ref' ) . ' ' . hcc_name( $id ) . ' - Summary.html', hcc_summary_page( $id, hcc_is_manager() ) );
 	$zip->close();
 	hcc_log( $id, 'Downloaded all files (zip)' );
 	nocache_headers();
@@ -330,10 +333,13 @@ function hcc_answer_groups( $id, $with_bank = true ) {
 }
 
 /** Printable summary (zip file and candidate report). */
-function hcc_summary_page( $id ) {
+function hcc_summary_page( $id, $full_bank = false ) {
 	$h = '<!doctype html><meta charset="utf-8"><title>' . esc_html( hcc_meta( $id, 'ref' ) . ' ' . hcc_name( $id ) ) . '</title><style>body{font:14px Arial,sans-serif;color:#1E2140;max-width:760px;margin:24px auto;padding:0 16px}h1{font-size:22px}h2{font-size:15px;background:#171A45;color:#fff;padding:6px 8px;margin:18px 0 0}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #ddd;padding:5px 8px;text-align:left;vertical-align:top}th{color:#5B6078;width:42%;font-weight:normal}</style>';
 	$h .= '<h1>' . esc_html( hcc_name( $id ) ) . ' · ' . esc_html( hcc_meta( $id, 'ref' ) ) . '</h1><p>' . esc_html( hcc_role_name( hcc_meta( $id, 'role_key' ) ) ) . ' · Registered ' . esc_html( wp_date( 'j M Y', (int) hcc_meta( $id, 'registered', time() ) ) ) . ' · Profile ' . hcc_progress( $id ) . '% complete</p>';
 	foreach ( hcc_answer_groups( $id ) as $title => $rows ) {
+		if ( 'Bank details' === $title && ! $full_bank ) {
+			$rows = array( 'Account name' => $rows['Account name'], 'Account' => $rows['Account number'] ? 'Ending ' . substr( $rows['Account number'], -4 ) . ' (managers see full details)' : '' );
+		}
 		$h .= '<h2>' . esc_html( $title ) . '</h2><table>';
 		foreach ( $rows as $k => $v ) {
 			$h .= '<tr><th>' . esc_html( $k ) . '</th><td>' . esc_html( $v ? $v : '—' ) . '</td></tr>';

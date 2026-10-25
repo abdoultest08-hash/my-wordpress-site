@@ -57,7 +57,7 @@ function hcc_reg_send_code( $id ) {
 /* ---------- Step 1: create the account ---------- */
 
 function hcc_reg_account() {
-	hcc_guard( 'hcc_reg_account', 'account' );
+	hcc_guard( 'hcc_reg_account', 'account', 25 );
 	$f = array();
 	foreach ( array( 'first', 'last', 'phone', 'addr1', 'town', 'postcode' ) as $k ) {
 		$f[ $k ] = hcc_field( $k );
@@ -413,7 +413,7 @@ function hcc_item_row( $id, $key, $it, $ctx = 'wizard' ) {
 			}
 			$h .= '<noscript><button class="btn btn-sm btn-navy" type="submit">Save</button></noscript></form>';
 		}
-	} elseif ( ! empty( $it['na'] ) && 'portal' !== $ctx ) {
+	} elseif ( ! empty( $it['na'] ) && ! in_array( $ctx, array( 'portal', 'preview' ), true ) ) {
 		$h .= '<span class="stat stat-na">Not needed</span>';
 	}
 	return $h . '</div></div>';

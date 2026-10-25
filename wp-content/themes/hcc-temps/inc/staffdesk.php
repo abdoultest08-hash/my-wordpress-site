@@ -47,7 +47,7 @@ function hcc_open_items( $id, $only_uploaded = false ) {
 	$out = array();
 	foreach ( hcc_all_items( $id ) as $k => $it ) {
 		$s = hcc_item_status( $id, $k, $it );
-		if ( in_array( $s, array( 'na', 'approved', 'override' ), true ) ) {
+		if ( in_array( $s, array( 'na', 'approved', 'override' ), true ) || ( ! empty( $it['optional'] ) && 'todo' === $s ) ) {
 			continue;
 		}
 		if ( $only_uploaded && 'review' !== $s ) {
@@ -100,8 +100,10 @@ add_action( 'admin_post_hcc_desk', function () {
 		}
 		if ( 'bulk' === $verb && $sel ) {
 			if ( 'approve' === $key ) {
-				hcc_desk_approve( $id, $sel );
-				hcc_desk_back( $id, array( 'msg' => 'approved' ), 'documents' );
+				$up   = array_values( array_filter( $sel, function ( $k ) use ( $id ) { return hcc_has_upload( hcc_file_state( $id, $k ) ); } ) );
+				$skip = array_diff( $sel, $up );
+				hcc_desk_approve( $id, $up );
+				hcc_desk_back( $id, array( 'msg' => $skip ? ( $up ? 'approved_some' : 'approve_none' ) : 'approved' ), 'documents' );
 			}
 			if ( 'missing' === $key ) {
 				foreach ( $sel as $k ) {
@@ -267,10 +269,12 @@ add_action( 'admin_post_hcc_desk', function () {
 		hcc_desk_back( $id, array( 'msg' => 'closed' ) );
 	}
 	if ( 'reopen' === $do ) {
-		$c = hcc_meta( $id, 'closed' );
+		$c  = hcc_meta( $id, 'closed' );
+		$cm = hcc_meta( $id, 'completed' );
 		delete_post_meta( $id, '_hcc_closed' );
-		hcc_set( $id, 'stage', 'Documents' );
-		hcc_log( $id, 'Application reopened' . ( is_array( $c ) ? ' (was: ' . $c['outcome'] . ')' : '' ) );
+		delete_post_meta( $id, '_hcc_completed' );
+		hcc_set( $id, 'stage', is_array( $cm ) ? 'Checks in progress' : 'Documents' );
+		hcc_log( $id, is_array( $cm ) ? 'Moved back to in progress (was signed off by ' . $cm['by'] . ')' : 'Application reopened' . ( is_array( $c ) ? ' (was: ' . $c['outcome'] . ')' : '' ) );
 		hcc_desk_back( $id, array( 'msg' => 'reopened' ) );
 	}
 
@@ -384,11 +388,17 @@ add_action( 'admin_post_hcc_export', function () {
 		$cm = hcc_meta( $id, 'completed' );
 		$cl = hcc_meta( $id, 'closed' );
 		$end = is_array( $cm ) ? $cm : ( is_array( $cl ) ? $cl : array() );
-		fputcsv( $out, array( hcc_meta( $id, 'ref' ), hcc_meta( $id, 'first' ), hcc_meta( $id, 'last' ), hcc_meta( $id, 'email' ), hcc_meta( $id, 'phone' ), hcc_meta( $id, 'postcode' ), hcc_role_name( hcc_meta( $id, 'role_key' ) ), hcc_meta( $id, 'stage' ), wp_date( 'Y-m-d', hcc_started( $id ) ), hcc_meta( $id, 'submitted' ) ? wp_date( 'Y-m-d', (int) hcc_meta( $id, 'submitted' ) ) : '', hcc_progress( $id ), $d['have'] . '/' . $d['need'], $t['have'] . '/' . $t['need'], isset( $a['british'] ) && 'Yes' === $a['british'] ? 'British/Irish' : ( isset( $a['visa'] ) ? $a['visa'] : '' ), isset( $a['dbs'] ) ? $a['dbs'] : '', $end ? wp_date( 'Y-m-d', (int) $end['at'] ) : '', $end ? $end['by'] : '', is_array( $cl ) ? $cl['outcome'] : '' ) );
+		fputcsv( $out, array_map( 'hcc_csv_safe', array( hcc_meta( $id, 'ref' ), hcc_meta( $id, 'first' ), hcc_meta( $id, 'last' ), hcc_meta( $id, 'email' ), hcc_meta( $id, 'phone' ), hcc_meta( $id, 'postcode' ), hcc_role_name( hcc_meta( $id, 'role_key' ) ), hcc_meta( $id, 'stage' ), wp_date( 'Y-m-d', hcc_started( $id ) ), hcc_meta( $id, 'submitted' ) ? wp_date( 'Y-m-d', (int) hcc_meta( $id, 'submitted' ) ) : '', hcc_progress( $id ), $d['have'] . '/' . $d['need'], $t['have'] . '/' . $t['need'], isset( $a['british'] ) && 'Yes' === $a['british'] ? 'British/Irish' : ( isset( $a['visa'] ) ? $a['visa'] : '' ), isset( $a['dbs'] ) ? $a['dbs'] : '', $end ? wp_date( 'Y-m-d', (int) $end['at'] ) : '', $end ? $end['by'] : '', is_array( $cl ) ? $cl['outcome'] : '' ) ) );
 	}
 	fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions
 	exit;
 } );
+
+/** Text typed by candidates can't run as a formula when the export is opened in Excel. */
+function hcc_csv_safe( $v ) {
+	$v = (string) $v;
+	return '' !== $v && in_array( $v[0], array( '=', '+', '-', '@', "\t", "\r" ), true ) ? "'" . $v : $v;
+}
 
 function hcc_field_get( $k ) {
 	return isset( $_GET[ $k ] ) ? sanitize_text_field( wp_unslash( $_GET[ $k ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
@@ -400,6 +410,6 @@ add_action( 'admin_post_hcc_report', function () {
 		wp_die( 'Not allowed.', 403 );
 	}
 	hcc_log( $id, 'Opened candidate report' );
-	echo hcc_summary_page( $id ) . '<script>window.print && setTimeout(function(){window.print()},400)</script>'; // phpcs:ignore WordPress.Security.EscapeOutput
+	echo hcc_summary_page( $id, hcc_is_manager() ) . '<script>window.print && setTimeout(function(){window.print()},400)</script>'; // phpcs:ignore WordPress.Security.EscapeOutput
 	exit;
 } );

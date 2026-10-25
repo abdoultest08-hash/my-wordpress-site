@@ -207,14 +207,16 @@
     var files = (extra && extra.files) || [];
     row.classList.add('uploading'); msg.textContent = files.length ? 'Uploading…' : 'Saving…';
     Promise.all(files.map(shrink)).then(function (list) {
+      var big = list.filter(function (f) { return f.size > 10 * 1024 * 1024; });
+      if (big.length) throw { msg: big[0].name + ' is larger than 10MB. Please upload a smaller file or a PDF.' };
       list.forEach(function (f) { fd.append('file[]', f, f.name); });
       return fetch(form.getAttribute('action'), { method: 'POST', body: fd, credentials: 'same-origin' });
-    }).then(function (r) { return r.json(); }).then(function (j) {
+    }).then(function (r) { return r.json().catch(function () { throw { msg: r.status === 413 ? 'That file is too large. Files must be 10MB or smaller.' : 'Upload failed. Please try again, or log in again if you have been away for a while.' }; }); }).then(function (j) {
       if (!j.success) { row.classList.remove('uploading'); msg.textContent = (j.data && j.data.message) || 'That did not work. Please try again.'; return; }
       var tmp = document.createElement('div'); tmp.innerHTML = j.data.html;
       var fresh = tmp.firstChild; row.replaceWith(fresh); counts(fresh, j.data.counts);
       var m2 = fresh.querySelector('.up-msg'); if (m2 && files.length) m2.textContent = 'Saved.';
-    }).catch(function () { row.classList.remove('uploading'); msg.textContent = 'Upload failed. Check your connection and try again.'; });
+    }).catch(function (err) { row.classList.remove('uploading'); msg.textContent = (err && err.msg) || 'Upload failed. Check your connection and try again.'; });
   }
   document.addEventListener('change', function (e) {
     var t = e.target, form = t.closest && t.closest('.item-form');
@@ -235,6 +237,18 @@
 
   /* Candidate portal on phones: only the first group of answers starts open */
   if (window.innerWidth < 700) document.querySelectorAll('.ans-group').forEach(function (d, i) { if (i) d.open = false; });
+
+  /* Every normal form: a second tap while the first is still sending does nothing (no double emails or accounts) */
+  document.addEventListener('submit', function (e) {
+    var f = e.target;
+    if (e.defaultPrevented || f.classList.contains('item-form') || (f.method || '').toLowerCase() !== 'post') return;
+    if (f.dataset.sending) { e.preventDefault(); return; }
+    f.dataset.sending = '1'; f.classList.add('is-sending');
+    setTimeout(function () { delete f.dataset.sending; f.classList.remove('is-sending'); }, 8000);
+  });
+  window.addEventListener('pageshow', function () {
+    document.querySelectorAll('form[data-sending]').forEach(function (f) { delete f.dataset.sending; f.classList.remove('is-sending'); });
+  });
 
   /* Staff portal: Expand all / Collapse all sections */
   document.querySelectorAll('[data-sections]').forEach(function (b) {

@@ -89,6 +89,7 @@ get_header();
 		<div class="wrap wiz-wrap">
 			<div class="wiz-main">
 				<?php echo $alert; // phpcs:ignore WordPress.Security.EscapeOutput ?>
+				<?php if ( 'exists' === $err ) : ?><p class="form-note" style="margin:-6px 0 14px"><a href="<?php echo esc_url( hcc_login_url() ); ?>">Log in to your candidate portal</a> · <a href="<?php echo esc_url( wp_lostpassword_url( hcc_login_url() ) ); ?>">Forgotten your password?</a></p><?php endif; ?>
 
 				<?php if ( 1 === $step ) : ?>
 				<form class="form-card wiz-step" method="post" action="<?php echo $form_url; ?>" id="account" novalidate>

@@ -75,8 +75,10 @@ add_filter( 'login_redirect', function ( $redirect, $requested, $user ) {
 	if ( user_can( $user, 'manage_options' ) ) {
 		return $requested ? $requested : $redirect;
 	}
+	// A link from an email (e.g. "Open in Staff portal" for one candidate) brings people back to that page.
+	$req = $requested ? wp_validate_redirect( $requested, '' ) : '';
 	if ( hcc_is_staff( $user ) ) {
-		return hcc_staff_url();
+		return $req && 0 === strpos( $req, hcc_staff_url() ) ? $req : hcc_staff_url();
 	}
 	$app = hcc_applicant_for_user( $user->ID );
 	return ( $app && ! hcc_meta( $app, 'submitted' ) ) ? hcc_apply_url() : hcc_portal_url();
@@ -216,19 +218,42 @@ function hcc_robot_ok() {
 	return ! empty( $b['success'] );
 }
 
-/* The branded login form posts an hcc_login flag; check the robot field before the password is even tried. */
+/**
+ * True when Jetpack's "Prove your humanity" sum is switched on for this request. Checked on the server
+ * so that posting a made-up Jetpack field can't be used to skip our own robot check.
+ */
+function hcc_jetpack_sum_on() {
+	global $wp_filter;
+	if ( empty( $wp_filter['login_form'] ) ) {
+		return false;
+	}
+	foreach ( $wp_filter['login_form']->callbacks as $cbs ) {
+		foreach ( $cbs as $cb ) {
+			if ( is_array( $cb['function'] ) && is_object( $cb['function'][0] ) && false !== stripos( get_class( $cb['function'][0] ), 'math' ) ) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/*
+ * The branded login form posts an hcc_login flag; its robot check is enforced here. This runs after
+ * WordPress's own password check (priority 20), which would otherwise replace an earlier error with
+ * the logged-in user, so a bot posting straight to wp-login.php can't skip the check.
+ */
 add_filter( 'authenticate', function ( $user, $username ) {
-	if ( empty( $_POST['hcc_login'] ) || ! $username ) { // phpcs:ignore WordPress.Security.NonceVerification
+	if ( empty( $_POST['hcc_login'] ) || ! $username || ! ( $user instanceof WP_User ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 		return $user;
 	}
-	if ( ! empty( $_POST['jetpack_protect_num'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+	if ( ! empty( $_POST['jetpack_protect_num'] ) && hcc_jetpack_sum_on() ) { // phpcs:ignore WordPress.Security.NonceVerification
 		return $user; // Jetpack's own sum was on the form and Jetpack checks the answer.
 	}
 	if ( ! hcc_robot_ok() ) {
 		return new WP_Error( 'hcc_robot', 'Please complete the robot check.' );
 	}
 	return $user;
-}, 5, 2 );
+}, 99, 2 );
 
 /* ---------- Staff accounts ---------- */
 

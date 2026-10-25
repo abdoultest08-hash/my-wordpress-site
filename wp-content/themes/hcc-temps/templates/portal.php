@@ -15,7 +15,7 @@ if ( hcc_is_staff() && ( ! $preview || 'hcc_applicant' !== get_post_type( $previ
 	exit;
 }
 $aid  = $preview ? $preview : hcc_my_record();
-$ctx = $preview ? 'preview' : 'portal';
+$ctx = $preview || ( $aid && 'closed' === hcc_state( $aid ) ) ? 'preview' : 'portal'; // Closed applications are read-only.
 if ( $aid && ! $preview && ! hcc_meta( $aid, 'submitted' ) ) {
 	wp_safe_redirect( hcc_apply_url() );
 	exit;
@@ -116,7 +116,7 @@ get_header();
 				<summary><span class="folder-ico" aria-hidden="true"><?php echo hcc_icon( 'doc', 22 ); // phpcs:ignore ?></span><span><b>Training certificates</b><small data-count><?php echo esc_html( $t['have'] . ' of ' . $t['need'] . ' added' . ( $t['later'] ? ' · ' . $t['later'] . ' to follow' : '' ) . ' · tap to open' ); ?></small></span><span class="folder-arrow" aria-hidden="true">▾</span></summary>
 				<div class="doc-list p-docs"><?php foreach ( $train as $k => $it ) { echo hcc_item_row( $aid, $k, $it, $ctx ); } // phpcs:ignore ?></div>
 			</details>
-			<?php if ( ! $preview ) : ?>
+			<?php if ( 'portal' === $ctx ) : ?>
 			<form class="p-card done-card" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="hcc_portal_done"><input type="hidden" name="hcc_nonce" value="<?php echo esc_attr( wp_create_nonce( 'hcc_portal_done' ) ); ?>">
 				<div><b>Added or replaced files?</b><span>We tell the compliance team automatically. To let them know straight away, press the button.</span></div>

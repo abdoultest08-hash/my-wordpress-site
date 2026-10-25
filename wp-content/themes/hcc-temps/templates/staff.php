@@ -5,7 +5,8 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( ! is_user_logged_in() ) {
-	wp_safe_redirect( add_query_arg( 'redirect_to', rawurlencode( get_permalink() ), hcc_login_url( true ) ) );
+	$here = isset( $_GET['candidate'] ) ? hcc_staff_url( array( 'candidate' => absint( $_GET['candidate'] ) ) ) : get_permalink(); // phpcs:ignore WordPress.Security.NonceVerification
+	wp_safe_redirect( add_query_arg( 'redirect_to', rawurlencode( $here ), hcc_login_url( true ) ) );
 	exit;
 }
 if ( ! hcc_is_staff() ) {
@@ -19,7 +20,7 @@ $msgs = array(
 	'approved' => 'Approved. Added to the update for the candidate.', 'queued' => 'Added to the update for the candidate. Press "Preview and send" when you are ready.', 'note' => 'Saved to the profile.', 'sent' => 'Update email sent to the candidate.',
 	'check' => 'Check saved.', 'check_result' => 'Choose a result before saving the check.', 'ref' => 'Reference details saved.', 'need_note' => 'Please add a note before marking this complete.', 'override_done' => 'Items marked complete.',
 	'finished' => 'Onboarding finished. Moved to Staff completed.', 'cant_finish' => 'Finish needs: profile 100%, declaration sent and signed, and no unsent updates.', 'closed' => 'Application closed and moved to Withdrawn / not qualified.', 'reopened' => 'Application reopened.',
-	'close_need' => 'Add a reason and your name to close the application.', 'staff_added' => 'Staff member added. They have been emailed a link to set their password.', 'staff_exists' => 'There is already an account with that email.', 'error' => 'Something went wrong. Please try again.', 'nothing' => 'Tick at least one item first.',
+	'close_need' => 'Add a reason and your name to close the application.', 'staff_added' => 'Staff member added. They have been emailed a link to set their password.', 'staff_exists' => 'There is already an account with that email.', 'error' => 'Something went wrong. Please try again.', 'nothing' => 'Tick at least one item first.', 'approved_some' => 'Uploaded items approved. Items with nothing uploaded were skipped: use "Mark complete (override)" for those.', 'approve_none' => 'Nothing was approved: the ticked items have no upload. Use "Mark complete (override)" and add a note.',
 );
 $form_url = esc_url( admin_url( 'admin-post.php' ) );
 $me   = hcc_staff_name();
@@ -40,7 +41,7 @@ get_header();
 
 	<section class="section staff-body">
 		<div class="wrap">
-			<?php if ( isset( $msgs[ $msg ] ) ) : ?><p class="<?php echo in_array( $msg, array( 'cant_finish', 'need_note', 'close_need', 'check_result', 'staff_exists', 'error', 'nothing' ), true ) ? 'form-alert' : 'form-ok'; ?>" role="status"><?php echo esc_html( $msgs[ $msg ] ); ?></p><?php endif; ?>
+			<?php if ( isset( $msgs[ $msg ] ) ) : ?><p class="<?php echo in_array( $msg, array( 'cant_finish', 'need_note', 'close_need', 'check_result', 'staff_exists', 'error', 'nothing', 'approve_none', 'approved_some' ), true ) ? 'form-alert' : 'form-ok'; ?>" role="status"><?php echo esc_html( $msgs[ $msg ] ); ?></p><?php endif; ?>
 
 <?php if ( 'dash' === $view ) :
 	$search = hcc_field_get( 'q' );
@@ -165,6 +166,8 @@ get_header();
 						<form method="post" action="<?php echo $form_url; ?>"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="reopen"><button class="btn btn-ghost btn-sm btn-red" type="submit">Reopen application</button></form>
 					<?php elseif ( ! $completed ) : ?>
 						<a class="btn btn-ghost btn-sm btn-red" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $aid, 'closing' => 1 ) ) ); ?>#close">Withdrawn / not qualified</a>
+					<?php else : ?>
+						<form method="post" action="<?php echo $form_url; ?>" onsubmit="return confirm('Move this candidate back to In progress? The sign-off is removed and noted in the activity log.');"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="reopen"><button class="btn btn-ghost btn-sm" type="submit">Move back to in progress</button></form>
 					<?php endif; ?>
 				</div>
 			</div>
@@ -258,7 +261,7 @@ get_header();
 											<div class="pop">
 												<?php if ( hcc_has_upload( $st ) ) : ?>
 													<label>Ask to replace<select name="reason[<?php echo esc_attr( $k ); ?>]"><?php foreach ( hcc_amend_reasons() as $o ) : ?><option><?php echo esc_html( $o ); ?></option><?php endforeach; ?></select></label>
-													<button type="submit" class="btn btn-sm btn-sun" name="act" value="amend:<?php echo esc_attr( $k ); ?>">Add to update</button>
+													<button type="submit" class="btn btn-sm btn-sun" name="act" value="amend:<?php echo esc_attr( $k ); ?>">Ask candidate to replace</button>
 												<?php endif; ?>
 												<label>Note<input type="text" name="dnote[<?php echo esc_attr( $k ); ?>]" placeholder="Note about this document"></label>
 												<div class="note-btns"><button type="submit" class="btn btn-sm btn-sun" name="act" value="notec:<?php echo esc_attr( $k ); ?>">Add to update for candidate</button><button type="submit" class="btn btn-sm btn-ghost" name="act" value="note:<?php echo esc_attr( $k ); ?>">Save as staff-only note</button></div>

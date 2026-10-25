@@ -31,7 +31,7 @@ function hcc_back( $args, $anchor = '' ) {
 	exit;
 }
 
-function hcc_guard( $action, $anchor ) {
+function hcc_guard( $action, $anchor, $limit = 8 ) {
 	if ( ! isset( $_POST['hcc_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['hcc_nonce'] ) ), $action ) ) {
 		hcc_back( array( 'hcc_err' => 'expired' ), $anchor );
 	}
@@ -41,7 +41,7 @@ function hcc_guard( $action, $anchor ) {
 	$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 	$key = 'hcc_rl_' . md5( $action . $ip );
 	$n   = (int) get_transient( $key );
-	if ( $n >= 8 ) {
+	if ( $n >= $limit ) {
 		hcc_back( array( 'hcc_err' => 'busy' ), $anchor );
 	}
 	set_transient( $key, $n + 1, HOUR_IN_SECONDS );
