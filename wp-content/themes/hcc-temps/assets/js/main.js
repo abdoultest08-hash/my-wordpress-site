@@ -36,8 +36,8 @@
       var pad = 14 * (1 - g);
       frame.style.cssText = 'left:' + (x - pad) + 'px;top:' + (y - pad) + 'px;width:' + (w + pad * 2) + 'px;height:' + (h + pad * 2) + 'px;transform:rotate(' + (-2.5 * (1 - g)) + 'deg);opacity:' + (1 - g);
       if (chef) {
-        var cw = narrow ? w0 * 0.34 : Math.min(200, w0 * 0.36), ch = cw * 4 / 3;
-        var cx = x0 - cw * (narrow ? 0.12 : 0.55), cy = narrow ? H - ch - 14 : Math.min(y0 + h0 * 0.12, H - ch - 64);
+        var cw = narrow ? w0 * 0.3 : Math.min(200, w0 * 0.36), ch = cw * 4 / 3;
+        var cx = x0 - cw * (narrow ? 0.28 : 0.55), cy = narrow ? H - ch - 14 : Math.min(y0 + h0 * 0.12, H - ch - 64);
         chef.style.cssText = 'left:' + cx + 'px;top:' + (cy + g * 80) + 'px;width:' + cw + 'px;height:' + ch + 'px;opacity:' + (1 - clamp(g * 1.8));
       }
       if (nurseTag) nurseTag.style.opacity = String(1 - clamp(g * 2.2));

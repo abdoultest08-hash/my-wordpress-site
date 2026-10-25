@@ -56,6 +56,9 @@ function hcc_seed() {
 		$by_slug = get_page_by_path( $p[1] );
 		if ( $by_slug ) {
 			update_post_meta( $by_slug->ID, '_wp_page_template', 'templates/' . $tpl . '.php' );
+			if ( 'publish' !== $by_slug->post_status ) {
+				wp_update_post( array( 'ID' => $by_slug->ID, 'post_status' => 'publish' ) );
+			}
 			continue;
 		}
 		$id = wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => $p[0], 'post_name' => $p[1] ) );
@@ -119,6 +122,14 @@ function hcc_seed() {
 
 // Runs on the first request after switching, once init has registered the post types.
 add_action( 'after_switch_theme', 'hcc_seed' );
+
+// Uploading a new version with "Replace current" doesn't fire after_switch_theme, so also run once per version:
+// creates any new pages (Privacy, Terms…) and refreshes the links for job pages.
+add_action( 'init', function () {
+	if ( get_option( 'hcc_seeded' ) !== HCC_VERSION ) {
+		hcc_seed();
+	}
+}, 99 );
 
 /* ---------- Tools → HCC demo content ---------- */
 

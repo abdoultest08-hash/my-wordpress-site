@@ -268,7 +268,7 @@ get_header();
 				<div class="side-card">
 					<h3>Registering as</h3>
 					<div class="side-role"><img src="<?php echo esc_url( hcc_img( $r['img'] ) ); ?>" alt="" width="56" height="56"><b><?php echo esc_html( $r['name'] ); ?></b></div>
-					<p style="font-size:14px;color:var(--muted)"><?php echo $id ? 'Your reference: <b>' . esc_html( hcc_meta( $id, 'ref' ) ) . '</b>. Every file you upload is renamed with your name and the document type.' : 'Your reference is created when you make your account.'; // phpcs:ignore ?></p>
+					<p style="font-size:14px;color:var(--muted)"><?php echo $id ? 'Your reference is <b>' . esc_html( hcc_meta( $id, 'ref' ) ) . '</b>.' : 'Your reference is created when you make your account.'; // phpcs:ignore ?></p>
 				</div>
 				<div class="side-card" style="background:var(--white);border:1px solid var(--line)">
 					<div class="lock"><?php echo hcc_icon( 'lock', 18 ); // phpcs:ignore ?><span>Your documents are stored privately. Only our compliance team can see them.</span></div>

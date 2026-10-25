@@ -203,6 +203,9 @@ add_filter( 'authenticate', function ( $user, $username ) {
 	if ( empty( $_POST['hcc_login'] ) || ! $username ) { // phpcs:ignore WordPress.Security.NonceVerification
 		return $user;
 	}
+	if ( ! empty( $_POST['jetpack_protect_num'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+		return $user; // Jetpack's own sum was on the form and Jetpack checks the answer.
+	}
 	if ( ! hcc_robot_ok() ) {
 		return new WP_Error( 'hcc_robot', 'Please complete the robot check.' );
 	}

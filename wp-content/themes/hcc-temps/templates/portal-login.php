@@ -10,7 +10,17 @@ if ( is_user_logged_in() ) {
 }
 $failed = isset( $_GET['login'] ) && 'failed' === $_GET['login']; // phpcs:ignore WordPress.Security.NonceVerification
 $staff  = isset( $_GET['for'] ) && 'staff' === $_GET['for']; // phpcs:ignore WordPress.Security.NonceVerification
-$extra  = function () { return '<input type="hidden" name="hcc_login" value="1">' . hcc_robot_field(); };
+$extra  = function () {
+	// Fields other plugins add to the normal login form. On WordPress.com this can be Jetpack's
+	// "Prove your humanity" sum: shown here, it replaces our tick box so there is one check and one page.
+	ob_start();
+	do_action( 'login_form' );
+	$more = ob_get_clean();
+	if ( false !== strpos( $more, 'jetpack_protect' ) ) {
+		return '<input type="hidden" name="hcc_login" value="1"><div class="robot robot-jp">' . $more . '</div>';
+	}
+	return '<input type="hidden" name="hcc_login" value="1">' . $more . hcc_robot_field();
+};
 add_filter( 'login_form_middle', $extra );
 get_header();
 ?>

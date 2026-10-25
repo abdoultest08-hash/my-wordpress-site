@@ -74,8 +74,20 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .menu-toggle span { width: 20px; height: 2.5px; background: var(--navy); border-radius: 2px; }
 .mobile-nav { border-top: 1px solid var(--line); padding-block: 12px 20px; padding-left: var(--gutter-l); padding-right: var(--gutter-r); display: grid; gap: 4px; background: var(--white); }
 .mobile-nav[hidden] { display: none; }
-.mobile-nav a { padding: 12px 4px; font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--line); }
-.mobile-nav .btn { margin-top: 12px; }
+.m-links { display: grid; }
+.m-links a { padding: 12px 4px; font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--line); }
+.m-account { margin-top: 16px; border: 1px solid var(--line); border-radius: 16px; padding: 14px; background: var(--paper, #F4F8F7); display: grid; gap: 10px; }
+.m-account.in { background: var(--aqua-tint); border-color: #BFE2DD; }
+.m-h { font-size: 14px; color: var(--muted); }
+.m-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.m-two .btn { justify-content: center; text-align: center; padding-inline: 8px; }
+.m-who { display: flex; gap: 12px; align-items: center; }
+.m-who small { display: block; font-size: 12px; color: var(--muted); }
+.m-who b { display: block; color: var(--ink); font-size: 16px; }
+.m-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--navy); color: var(--white); display: grid; place-items: center; font-weight: 800; flex: none; }
+.m-account .btn, .m-cta .btn { width: 100%; justify-content: center; }
+.m-logout { justify-self: center; font-size: 14px; font-weight: 600; color: var(--coral, #D93831); padding: 4px 8px; }
+.m-cta { display: grid; gap: 10px; margin-top: 14px; padding-bottom: 6px; }
 @media (max-width: 1020px) { .nav { display: none; } .header-cta .btn-ghost { display: none; } }
 @media (max-width: 640px) { .header-cta { display: none; } .menu-toggle { display: flex; } .logo img { height: 40px; } }
 
@@ -244,6 +256,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .float.f3 { width: 96px; height: 96px; right: 9%; top: 24%; animation-delay: -4s; }
 .float.f4 { width: 66px; height: 66px; right: 17%; bottom: 12%; animation-delay: -1s; }
 .blob { position: absolute; border-radius: 50%; }
+.cta .wrap { position: relative; z-index: 1; }
 @keyframes bob { 50% { transform: translateY(-12px); } }
 
 /* Footer (white) */
@@ -285,8 +298,9 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   .c-pill { display: none; }
   .stripes { inset: 30% -20% 10% -20%; }
   .float.f2, .float.f4 { display: none; }
-  .float.f1 { left: 4%; top: 6%; width: 64px; height: 64px; }
-  .float.f3 { right: 4%; top: auto; bottom: 6%; width: 64px; height: 64px; }
+  .float.f1 { left: 3%; top: 12px; width: 48px; height: 48px; border-width: 3px; }
+  .float.f3 { right: 4%; top: auto; bottom: 3%; width: 56px; height: 56px; }
+  .cta .blob { display: none; }
 }
 @media (max-width: 600px) {
   .jobs, .posts { grid-template-columns: 1fr; }
@@ -657,7 +671,7 @@ fieldset.f { border: 0; margin: 0; padding: 0; }
 .robot small { color: var(--muted); font-size: 11px; text-align: right; }
 .login-strip { margin-top: 18px; text-align: center; color: var(--muted); }
 .login-strip a { color: var(--navy); font-weight: 700; }
-@media (max-width: 640px) { .hero-photo img { object-position: 14% 28%; } }
+@media (max-width: 640px) { .hero-photo img { object-position: 0% 28%; } }
 @media (max-width: 640px) { .hero-photo .hero-tag { top: auto; bottom: 12px; right: 10px; } }
 .nums { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .nums > div:first-child { grid-column: 1 / -1; }
@@ -1141,3 +1155,10 @@ form.inline { display: inline; }
 .doc .f-line .f-act { text-decoration: none; }
 @media (max-width: 600px) { .item-form { justify-items: start; grid-auto-flow: row; } }
 .team-ph img { background: var(--paper); }
+
+/* Jetpack's sum check shown inside the login form (WordPress.com) */
+.robot-jp > div { margin: 0 !important; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.robot-jp p { margin: 0 !important; width: 100%; font-weight: 700; color: var(--ink); font-size: 14px !important; }
+.robot-jp br { display: none; }
+.robot-jp label { font-weight: 700; font-size: 18px; color: var(--ink); }
+.robot-jp input[type=number], .robot-jp input.input { width: 90px !important; height: auto !important; padding: 10px 12px; border: 1px solid #CFD8D6; border-radius: 10px; font: 600 18px var(--body) !important; }

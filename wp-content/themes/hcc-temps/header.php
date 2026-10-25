@@ -39,8 +39,7 @@
 		<button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Open menu"><span></span><span></span><span></span></button>
 	</div>
 	<nav class="mobile-nav" id="mobileNav" aria-label="Mobile" hidden>
-		<?php hcc_menu( true ); ?>
-		<?php if ( ! is_user_logged_in() ) : ?><a class="btn btn-aqua" href="<?php echo esc_url( hcc_page_url( 'register', '/register/' ) ); ?>">Register as a candidate</a><?php endif; ?>
-		<a class="btn btn-ghost" href="<?php echo esc_url( hcc_page_url( 'clients', '/for-clients/' ) . '#request' ); ?>">Request cover</a>
+		<div class="m-links"><?php hcc_menu( true ); ?></div>
+		<?php hcc_mobile_account(); ?>
 	</nav>
 </header>

@@ -195,8 +195,8 @@ function hcc_menu_fallback( $mobile = false ) {
 		array( hcc_page_url( 'contact', '/contact/' ), 'Contact', is_page_template( 'templates/contact.php' ) ),
 	);
 	foreach ( $items as $i ) {
-		if ( 'Contact' === $i[1] ) {
-			hcc_login_menu( $mobile );
+		if ( 'Contact' === $i[1] && ! $mobile ) {
+			hcc_login_menu();
 		}
 		printf( '<a href="%s"%s>%s</a>', esc_url( $i[0] ), $i[2] ? ' aria-current="page"' : '', esc_html( $i[1] ) );
 	}
@@ -206,30 +206,36 @@ function hcc_menu_fallback( $mobile = false ) {
  * "Log in" menu item with Candidate and Staff options (a dropdown on desktop,
  * two plain links in the mobile menu). Logged-in users see their portal instead.
  */
-function hcc_login_menu( $mobile = false ) {
-	if ( ! function_exists( 'hcc_login_url' ) ) {
-		return;
-	}
-	if ( is_user_logged_in() && ( hcc_is_staff() || hcc_applicant_for_user( get_current_user_id() ) ) ) {
-		$url = hcc_is_staff() ? hcc_staff_url() : hcc_portal_url();
-		printf( '<a href="%s">%s</a>', esc_url( $url ), hcc_is_staff() ? 'Staff portal' : 'My portal' );
-		if ( $mobile ) {
-			printf( '<a href="%s">Log out</a>', esc_url( wp_logout_url( home_url( '/' ) ) ) );
-		}
-		return;
-	}
-	$cand  = hcc_login_url();
-	$staff = hcc_login_url( true );
-	if ( $mobile ) {
-		printf( '<a href="%s">Candidate login</a><a href="%s">Staff login</a>', esc_url( $cand ), esc_url( $staff ) );
-		return;
+function hcc_login_menu() {
+	if ( ! function_exists( 'hcc_login_url' ) || is_user_logged_in() ) {
+		return; // Logged in: the header button and top bar show "My portal" and "Log out".
 	}
 	printf(
 		'<details class="nav-login"><summary%3$s>Log in</summary><div class="nav-login-menu"><a href="%1$s"><b>Candidate login</b><small>Your documents and progress</small></a><a href="%2$s"><b>Staff login</b><small>Staff and admin portal</small></a></div></details>',
-		esc_url( $cand ),
-		esc_url( $staff ),
+		esc_url( hcc_login_url() ),
+		esc_url( hcc_login_url( true ) ),
 		is_page_template( 'templates/portal-login.php' ) ? ' aria-current="page"' : ''
 	);
+}
+
+/** Bottom of the mobile menu: who is logged in with portal and log out, or the login and register options. */
+function hcc_mobile_account() {
+	if ( ! function_exists( 'hcc_login_url' ) ) {
+		return;
+	}
+	if ( is_user_logged_in() ) {
+		$u     = wp_get_current_user();
+		$staff = hcc_is_staff();
+		$aid   = $staff ? 0 : hcc_applicant_for_user( $u->ID );
+		$name  = $aid ? hcc_name( $aid ) : trim( $u->first_name . ' ' . $u->last_name );
+		$name  = $name ? $name : $u->display_name;
+		echo '<div class="m-account in"><div class="m-who"><span class="m-avatar" aria-hidden="true">' . esc_html( strtoupper( substr( $name, 0, 1 ) ) ) . '</span><span><small>Logged in as</small><b>' . esc_html( $name ) . '</b><small>' . esc_html( $staff ? ( hcc_is_manager() ? 'HCC manager' : 'HCC staff' ) : ( $aid ? 'Candidate · ' . hcc_meta( $aid, 'ref' ) : 'Account' ) ) . '</small></span></div>';
+		echo '<a class="btn btn-navy" href="' . esc_url( $staff ? hcc_staff_url() : hcc_portal_url() ) . '">' . ( $staff ? 'Open Staff portal' : 'Open my portal' ) . '</a>';
+		echo '<a class="m-logout" href="' . esc_url( wp_logout_url( home_url( '/' ) ) ) . '">Log out</a></div>';
+		return;
+	}
+	echo '<div class="m-account"><b class="m-h">Log in</b><div class="m-two"><a class="btn btn-ghost btn-sm" href="' . esc_url( hcc_login_url() ) . '">Candidate login</a><a class="btn btn-ghost btn-sm" href="' . esc_url( hcc_login_url( true ) ) . '">Staff login</a></div></div>';
+	echo '<div class="m-cta"><a class="btn btn-aqua" href="' . esc_url( hcc_page_url( 'register', '/register/' ) ) . '">Register as a candidate</a><a class="btn btn-ghost" href="' . esc_url( hcc_page_url( 'clients', '/for-clients/' ) . '#request' ) . '">Request cover</a></div>';
 }
 
 /** Render the primary menu as plain links (keeps the header markup flat). */
@@ -244,7 +250,9 @@ function hcc_menu( $mobile = false ) {
 			$current = untrailingslashit( $item->url ) === untrailingslashit( home_url( add_query_arg( array() ) ) );
 			printf( '<a href="%s"%s>%s</a>', esc_url( $item->url ), $current ? ' aria-current="page"' : '', esc_html( $item->title ) );
 		}
-		hcc_login_menu( $mobile );
+		if ( ! $mobile ) {
+			hcc_login_menu();
+		}
 		return;
 	}
 	hcc_menu_fallback( $mobile );
