@@ -36,10 +36,10 @@ $titles = array( 1 => 'Create your account', 2 => 'Verify your email', 3 => 'Con
 $errs   = array(
 	'rtw_dbs'     => 'Please answer the right to work and DBS questions.',
 	'bank'        => 'Please add your bank details: account name, account type, 6-digit sort code and 8-digit account number.',
-	'code'        => 'That code isn\'t right. Check the email and try again.',
+	'code'        => 'That code isn\'t right. Use the code from the most recent email, or send a new code.',
 	'code_old'    => 'That code has expired. Press "send a new code".',
 	'code_locked' => 'Too many tries. Press "send a new code".',
-	'code_wait'   => 'Please wait a minute before asking for another code.',
+	'code_wait'   => 'We sent a code less than 30 seconds ago. Check your inbox and spam folder, then try again.',
 	'upload'      => isset( $_GET['msg'] ) ? sanitize_text_field( wp_unslash( $_GET['msg'] ) ) : 'The upload did not work. Please try again.', // phpcs:ignore WordPress.Security.NonceVerification
 );
 $err = isset( $_GET['hcc_err'] ) ? sanitize_key( $_GET['hcc_err'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
@@ -117,7 +117,7 @@ get_header();
 				<div class="form-card wiz-step">
 					<h2>Check your email</h2>
 					<p class="sub">We've sent a 6-digit code to <b><?php echo esc_html( hcc_meta( $id, 'email' ) ); ?></b>. Enter it below to confirm your email address. The code works for 10 minutes.</p>
-					<?php if ( isset( $_GET['hcc_ok'] ) ) : // phpcs:ignore ?><p class="form-ok">A new code is on its way.</p><?php endif; ?>
+					<?php if ( isset( $_GET['hcc_ok'] ) ) : // phpcs:ignore ?><p class="form-ok">A new code is on its way to <?php echo esc_html( hcc_meta( $id, 'email' ) ); ?>. Only the newest code works.</p><?php endif; ?>
 					<form method="post" action="<?php echo $post; ?>" class="code-form">
 						<input type="hidden" name="action" value="hcc_reg_verify"><?php echo $nonce( 'hcc_reg_verify' ); // phpcs:ignore ?>
 						<div class="f" style="max-width:260px"><label for="code">6-digit code</label><input class="code-input" type="text" id="code" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" pattern="[0-9 ]*" required></div>

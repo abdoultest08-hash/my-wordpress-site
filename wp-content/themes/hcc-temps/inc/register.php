@@ -37,9 +37,17 @@ function hcc_reg_require( $action, $json = false ) {
 	return $id;
 }
 
+/**
+ * Keyed hash of an email code. Not wp_hash_password(): on WordPress.com, Jetpack's account
+ * protection filters password checks, which rejected correct codes.
+ */
+function hcc_code_hash( $id, $code ) {
+	return hash_hmac( 'sha256', (string) $code, wp_salt( 'auth' ) . '|' . (int) $id );
+}
+
 function hcc_reg_send_code( $id ) {
 	$code = (string) wp_rand( 100000, 999999 );
-	hcc_set( $id, 'code', wp_hash_password( $code ) );
+	hcc_set( $id, 'code', hcc_code_hash( $id, $code ) );
 	hcc_set( $id, 'code_exp', time() + 10 * MINUTE_IN_SECONDS );
 	hcc_set( $id, 'code_tries', 0 );
 	hcc_email_code( hcc_meta( $id, 'email' ), hcc_meta( $id, 'first' ), $code );
@@ -110,7 +118,7 @@ add_action( 'admin_post_hcc_reg_verify', function () {
 	if ( time() > (int) hcc_meta( $id, 'code_exp', 0 ) ) {
 		hcc_reg_back( 2, array( 'hcc_err' => 'code_old' ) );
 	}
-	if ( 6 !== strlen( $code ) || ! wp_check_password( $code, hcc_meta( $id, 'code' ) ) ) {
+	if ( 6 !== strlen( $code ) || ! hash_equals( (string) hcc_meta( $id, 'code' ), hcc_code_hash( $id, $code ) ) ) {
 		hcc_reg_back( 2, array( 'hcc_err' => 'code' ) );
 	}
 	delete_post_meta( $id, '_hcc_code' );
@@ -123,7 +131,7 @@ add_action( 'admin_post_hcc_reg_verify', function () {
 
 add_action( 'admin_post_hcc_reg_resend', function () {
 	$id = hcc_reg_require( 'hcc_reg_resend' );
-	if ( time() - ( (int) hcc_meta( $id, 'code_exp', 0 ) - 10 * MINUTE_IN_SECONDS ) < 60 ) {
+	if ( time() - ( (int) hcc_meta( $id, 'code_exp', 0 ) - 10 * MINUTE_IN_SECONDS ) < 30 ) {
 		hcc_reg_back( 2, array( 'hcc_err' => 'code_wait' ) );
 	}
 	hcc_reg_send_code( $id );
