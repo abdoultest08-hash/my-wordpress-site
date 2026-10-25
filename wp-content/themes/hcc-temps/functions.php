@@ -5,7 +5,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'HCC_VERSION', '2.0.3' );
+define( 'HCC_VERSION', '2.0.4' );
 define( 'HCC_DIR', get_template_directory() );
 define( 'HCC_URI', get_template_directory_uri() );
 

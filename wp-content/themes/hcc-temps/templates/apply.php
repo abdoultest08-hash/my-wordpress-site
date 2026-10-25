@@ -18,6 +18,8 @@ $want = isset( $_GET['step'] ) ? absint( $_GET['step'] ) : $max; // phpcs:ignore
 $step = $id ? min( max( 2, $want ), $max ) : 1;
 if ( $id && ! hcc_meta( $id, 'verified' ) ) {
 	$step = 2;
+} elseif ( $id && 2 === $step ) {
+	$step = min( 3, $max ); // Email already confirmed: never show the code step again.
 }
 $submitted = $id && hcc_meta( $id, 'submitted' );
 if ( $submitted && 4 !== $want && 7 !== $want ) {

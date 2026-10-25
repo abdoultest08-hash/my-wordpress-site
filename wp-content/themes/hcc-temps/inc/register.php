@@ -15,7 +15,8 @@ function hcc_my_record() {
 }
 
 function hcc_reg_back( $step, $args = array(), $anchor = '' ) {
-	$url = add_query_arg( array_merge( array( 'step' => $step ), $args ), hcc_apply_url() );
+	// "t" makes every step URL unique, so a page cache can never hand back an older copy of a step.
+	$url = add_query_arg( array_merge( array( 'step' => $step, 't' => time() ), $args ), hcc_apply_url() );
 	wp_safe_redirect( $url . ( $anchor ? '#' . $anchor : '' ) );
 	exit;
 }
@@ -109,13 +110,17 @@ add_action( 'admin_post_hcc_reg_account', 'hcc_reg_account' );
 
 add_action( 'admin_post_hcc_reg_verify', function () {
 	$id    = hcc_reg_require( 'hcc_reg_verify' );
+	if ( hcc_meta( $id, 'verified' ) ) { // Already confirmed (e.g. an old copy of the page was resubmitted): just move on.
+		hcc_reg_back( max( 3, (int) hcc_meta( $id, 'step', 3 ) ) );
+	}
 	$code  = preg_replace( '/\D/', '', hcc_field( 'code' ) );
 	$tries = (int) hcc_meta( $id, 'code_tries', 0 );
 	if ( $tries >= 5 ) {
 		hcc_reg_back( 2, array( 'hcc_err' => 'code_locked' ) );
 	}
 	hcc_set( $id, 'code_tries', $tries + 1 );
-	if ( 64 !== strlen( (string) hcc_meta( $id, 'code' ) ) ) { // Code made by an older version of the theme: send a fresh one.
+	$stored = (string) hcc_meta( $id, 'code' );
+	if ( '' !== $stored && 64 !== strlen( $stored ) ) { // Code made by an older version of the theme: send a fresh one.
 		hcc_reg_send_code( $id );
 		hcc_log( $id, 'Old-style email code replaced with a new one', 'Candidate' );
 		hcc_reg_back( 2, array( 'hcc_ok' => 'resent' ) );
@@ -138,6 +143,9 @@ add_action( 'admin_post_hcc_reg_verify', function () {
 
 add_action( 'admin_post_hcc_reg_resend', function () {
 	$id = hcc_reg_require( 'hcc_reg_resend' );
+	if ( hcc_meta( $id, 'verified' ) ) {
+		hcc_reg_back( max( 3, (int) hcc_meta( $id, 'step', 3 ) ) );
+	}
 	if ( time() - ( (int) hcc_meta( $id, 'code_exp', 0 ) - 10 * MINUTE_IN_SECONDS ) < 30 ) {
 		hcc_reg_back( 2, array( 'hcc_err' => 'code_wait' ) );
 	}

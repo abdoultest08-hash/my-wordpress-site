@@ -176,7 +176,7 @@ add_filter( 'two_factor_token_email_message', function ( $message, $token, $user
  */
 add_action( 'template_redirect', function () {
 	foreach ( array( 'portal-login', 'apply', 'portal', 'staff', 'contact', 'clients' ) as $tpl ) {
-		if ( is_page_template( 'templates/' . $tpl . '.php' ) ) {
+		if ( is_user_logged_in() || is_page_template( 'templates/' . $tpl . '.php' ) ) {
 			if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 				define( 'DONOTCACHEPAGE', true );
 			}
