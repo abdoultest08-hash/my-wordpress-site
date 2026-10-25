@@ -169,6 +169,24 @@ add_filter( 'two_factor_token_email_message', function ( $message, $token, $user
 	return 'Hi ' . ( $u && $u->first_name ? $u->first_name : 'there' ) . ",\n\nYour HCC-Temps login code is:\n\n" . substr( $token, 0, 3 ) . ' ' . substr( $token, 3 ) . "\n\nIt works for 15 minutes. If you didn't try to log in, change your password and call us on " . hcc_opt( 'phone' ) . ".\n\nHCC-Temps";
 }, 10, 3 );
 
+/*
+ * Pages with forms must never come from the page cache (WordPress.com's CDN caches pages for
+ * logged-out visitors): a cached copy carries an old security key and an expired Jetpack sum,
+ * which sent people to Jetpack's extra "Prove your humanity" page.
+ */
+add_action( 'template_redirect', function () {
+	foreach ( array( 'portal-login', 'apply', 'portal', 'staff', 'contact', 'clients' ) as $tpl ) {
+		if ( is_page_template( 'templates/' . $tpl . '.php' ) ) {
+			if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+				define( 'DONOTCACHEPAGE', true );
+			}
+			nocache_headers();
+			header( 'X-Accel-Expires: 0' );
+			return;
+		}
+	}
+}, 1 );
+
 /* ---------- Robot check ---------- */
 
 function hcc_turnstile_on() {

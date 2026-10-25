@@ -115,10 +115,17 @@ add_action( 'admin_post_hcc_reg_verify', function () {
 		hcc_reg_back( 2, array( 'hcc_err' => 'code_locked' ) );
 	}
 	hcc_set( $id, 'code_tries', $tries + 1 );
+	if ( 64 !== strlen( (string) hcc_meta( $id, 'code' ) ) ) { // Code made by an older version of the theme: send a fresh one.
+		hcc_reg_send_code( $id );
+		hcc_log( $id, 'Old-style email code replaced with a new one', 'Candidate' );
+		hcc_reg_back( 2, array( 'hcc_ok' => 'resent' ) );
+	}
 	if ( time() > (int) hcc_meta( $id, 'code_exp', 0 ) ) {
+		hcc_log( $id, 'Email code rejected: expired', 'Candidate' );
 		hcc_reg_back( 2, array( 'hcc_err' => 'code_old' ) );
 	}
 	if ( 6 !== strlen( $code ) || ! hash_equals( (string) hcc_meta( $id, 'code' ), hcc_code_hash( $id, $code ) ) ) {
+		hcc_log( $id, 'Email code rejected: ' . ( 6 !== strlen( $code ) ? 'entered ' . strlen( $code ) . ' digits' : 'does not match the latest code sent' ), 'Candidate' );
 		hcc_reg_back( 2, array( 'hcc_err' => 'code' ) );
 	}
 	delete_post_meta( $id, '_hcc_code' );
@@ -135,6 +142,7 @@ add_action( 'admin_post_hcc_reg_resend', function () {
 		hcc_reg_back( 2, array( 'hcc_err' => 'code_wait' ) );
 	}
 	hcc_reg_send_code( $id );
+	hcc_log( $id, 'New email code sent', 'Candidate' );
 	hcc_reg_back( 2, array( 'hcc_ok' => 'resent' ) );
 } );
 
