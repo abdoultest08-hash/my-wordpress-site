@@ -13,33 +13,34 @@
     });
   }
 
-  /* Hero: framed photo grows to full bleed as the page scrolls */
+  /* Log in dropdown: close when clicking elsewhere */
+  document.addEventListener('click', function (e) {
+    document.querySelectorAll('.nav-login[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
+  });
+
+  /* Hero: framed nurse photo grows to full bleed as the page scrolls; the chef card sits under its left edge */
   var track = $('heroTrack');
   if (track) {
-    var stage = $('heroStage'), photo = $('heroPhoto'), frame = $('heroFrame'), shade = $('heroShade'), dots = $('dots');
-    var colours = ['#6DC0B8', '#2D338C', '#D93831', '#F3D45E', '#7C4925'];
-    for (var i = 0; i < 46; i++) {
-      var d = document.createElement('i'), s = 4 + Math.random() * 9;
-      var x = Math.random() * 100, y = 40 + Math.random() * 58;
-      if (x > 30 && x < 70 && y > 52) { x = x < 50 ? x - 22 : x + 22; }
-      d.style.cssText = 'width:' + s + 'px;height:' + s + 'px;left:' + x + '%;top:' + y + '%;background:' + colours[i % 5] + ';opacity:' + (0.55 + Math.random() * 0.45);
-      dots.appendChild(d);
-    }
+    var stage = $('heroStage'), photo = $('heroPhoto'), frame = $('heroFrame'), shade = $('heroShade'), chef = $('heroChef'), nurseTag = $('nurseTag');
     var ease = function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; };
     var clamp = function (v) { return Math.max(0, Math.min(1, v)); };
     var heroFrame = function () {
       var W = stage.clientWidth, H = stage.clientHeight;
       var range = track.offsetHeight - H;
       var p = reduce || range <= 0 ? 0 : clamp(-track.getBoundingClientRect().top / range);
-      var g = ease(clamp(p / 0.8));
-      var narrow = W < 640;
-      var w0 = Math.min(narrow ? W * 0.84 : 520, W - 32), h0 = H * (narrow ? 0.34 : 0.4);
+      var g = ease(clamp(p / 0.8)), narrow = W < 640;
+      var w0 = Math.min(narrow ? W * 0.84 : 600, W - 32), h0 = H * (narrow ? 0.34 : 0.42);
       var x0 = (W - w0) / 2, y0 = H - h0 + (narrow ? 0 : H * 0.04);
-      var px = x0 * (1 - g), py = y0 * (1 - g), w = w0 + (W - w0) * g, h = h0 + (H - h0) * g;
-      photo.style.cssText = 'left:' + px + 'px;top:' + py + 'px;width:' + w + 'px;height:' + h + 'px;border-radius:' + (6 * (1 - g)) + 'px';
+      var x = x0 * (1 - g), y = y0 * (1 - g), w = w0 + (W - w0) * g, h = h0 + (H - h0) * g;
+      photo.style.cssText = 'left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px;border-radius:' + (6 * (1 - g)) + 'px';
       var pad = 14 * (1 - g);
-      frame.style.cssText = 'left:' + (px - pad) + 'px;top:' + (py - pad) + 'px;width:' + (w + pad * 2) + 'px;height:' + (h + pad * 2) + 'px;transform:rotate(' + (-2.5 * (1 - g)) + 'deg);opacity:' + (1 - g);
-      dots.style.opacity = String(1 - clamp(p * 2.4));
+      frame.style.cssText = 'left:' + (x - pad) + 'px;top:' + (y - pad) + 'px;width:' + (w + pad * 2) + 'px;height:' + (h + pad * 2) + 'px;transform:rotate(' + (-2.5 * (1 - g)) + 'deg);opacity:' + (1 - g);
+      if (chef) {
+        var cw = narrow ? w0 * 0.34 : Math.min(200, w0 * 0.36), ch = cw * 4 / 3;
+        var cx = x0 - cw * (narrow ? 0.12 : 0.55), cy = narrow ? H - ch - 14 : Math.min(y0 + h0 * 0.12, H - ch - 64);
+        chef.style.cssText = 'left:' + cx + 'px;top:' + (cy + g * 80) + 'px;width:' + cw + 'px;height:' + ch + 'px;opacity:' + (1 - clamp(g * 1.8));
+      }
+      if (nurseTag) nurseTag.style.opacity = String(1 - clamp(g * 2.2));
       var dark = clamp((p - 0.1) / 0.3);
       shade.style.opacity = String(dark);
       stage.classList.toggle('is-dark', dark > 0.35);
@@ -65,15 +66,15 @@
     });
   }
 
-  /* Five steps with a live preview card */
+  /* Five registration steps with a live preview card */
   var ui = $('uiCard');
   if (ui) {
     var cards = [
-      { s: 'Step 1 · Find a role', t: 'Senior Care Assistant', rows: [['Location', 'Basingstoke'], ['Pay', '£14.20 – £15.00/hr'], ['Shifts', 'Long days']], foot: '<span class="ok">Apply in 1 minute →</span>' },
-      { s: 'Step 2 · Apply', t: 'Your application', rows: [['Name', 'Priya Shah'], ['Phone', '07700 900123'], ['CV', 'priya-shah-cv.pdf']], foot: '<span class="ok">✓ Application sent</span>' },
-      { s: 'Step 3 · Documents', t: 'Your checklist', rows: [['Right to work', '<span class="ok">✓ Uploaded</span>'], ['DBS certificate', '<span class="ok">✓ Uploaded</span>'], ['Care Certificate', '<span class="wait">To upload</span>']], foot: '2 of 3 done · <b>Link sent by email</b>' },
-      { s: 'Step 4 · Checks', t: 'Compliance check', rows: [['Documents', '<span class="ok">✓ Verified</span>'], ['References', '<span class="ok">✓ Received</span>'], ['Status', '<span class="ok">Ready to work</span>']], foot: 'We will call you to confirm' },
-      { s: 'Step 5 · Start', t: 'Shift confirmed', rows: [['Where', 'Willow Court, Basingstoke'], ['When', 'Mon 07:00 – 19:00'], ['Pay', '£14.20/hr']], foot: '<span class="ok">✓ Sent by text and email</span>' }
+      { s: 'Step 1 · Create account', t: 'Register', rows: [['Name', 'Your name'], ['Email', 'you@email.com'], ['Password', '••••••••••']], foot: '<span class="ok">✓ Account created</span>' },
+      { s: 'Step 2 · Choose role', t: 'What do you do?', rows: [['Email', '<span class="ok">✓ Confirmed</span>'], ['Role', 'Registered Nurse'], ['Area', 'Leeds']], foot: '<span class="ok">Checklist ready →</span>' },
+      { s: 'Step 3 · Documents', t: 'Your checklist', rows: [['Passport', '<span class="ok">✓ Uploaded</span>'], ['NMC PIN', '<span class="ok">✓ Added</span>'], ['Enhanced DBS', '<span class="wait">To upload</span>']], foot: '2 of 3 done · <b>in your portal</b>' },
+      { s: 'Step 4 · Checks', t: 'Compliance check', rows: [['Documents', '<span class="ok">✓ Verified</span>'], ['References', '<span class="ok">✓ Received</span>'], ['Status', '<span class="ok">Ready to work</span>']], foot: 'Day 3 · We call you to confirm' },
+      { s: 'Step 5 · Start', t: 'Shift confirmed', rows: [['Where', 'Willow Court, Leeds'], ['When', 'Mon 07:00 – 19:00'], ['Pay', '£25.00/hr']], foot: '<span class="ok">✓ Sent by text and email</span>' }
     ];
     var btns = document.querySelectorAll('.step-btn'), cur = 0, timer = null;
     var showStep = function (n) {
@@ -90,12 +91,32 @@
     if (!reduce) timer = setInterval(function () { showStep((cur + 1) % cards.length); }, 3800);
   }
 
-  /* Why HCC collage slides */
+  /* Slot-machine counter, runs once when it scrolls into view */
+  var slot = document.querySelector('.slot');
+  if (slot && !reduce && 'IntersectionObserver' in window) {
+    var val = slot.dataset.value;
+    slot.innerHTML = val.split('').map(function (c) {
+      if (!/[0-9]/.test(c)) return '<span class="reel-sep" aria-hidden="true">' + c + '</span>';
+      var digits = ''; for (var k = 0; k < 3; k++) for (var n = 0; n < 10; n++) digits += '<span>' + n + '</span>';
+      return '<span class="reel" aria-hidden="true"><span class="reel-strip">' + digits + '<span>' + c + '</span></span></span>';
+    }).join('') + (slot.dataset.plus ? '<span class="reel-sep" aria-hidden="true">+</span>' : '');
+    var io = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      io.disconnect();
+      slot.querySelectorAll('.reel').forEach(function (r, i) {
+        r.firstChild.style.transition = 'transform ' + (1.4 + i * 0.35) + 's cubic-bezier(.15,.85,.25,1)';
+        r.firstChild.style.transform = 'translateY(-30em)';
+      });
+    }, { threshold: 0.6 });
+    io.observe(slot);
+  }
+
+  /* Why HCC: promise slides */
   var collage = $('collage');
   if (collage) {
     var slides = [
-      { big: '96%', lbl: 'of shifts filled on the first call', dark: 'Care homes, schools and hotels across England rely on us for cover.', q1: '"They found us a chef for the same afternoon when ours called in sick. The food was great and the residents never noticed the change."', c1: 'Care home manager, Cumbria', q2: '"Every nurse they send has their paperwork checked before they arrive. That saves our team hours every week."', c2: 'Deputy manager, nursing home, Solihull' },
-      { big: '2 hrs', lbl: 'average time to confirm urgent cover', dark: 'One phone number, a named consultant and cover day or night.', q1: '"We rang at 6am with two housekeepers off sick. Both shifts were covered before breakfast service."', c1: 'Hotel operations manager, Southampton', q2: '"The same faces come back each week, so our residents get to know them."', c2: 'Registered manager, care home, Hampshire' }
+      { big: '2 hrs', lbl: 'to cover an emergency call, nationwide', dark: 'Reliable, fully vetted staff for people who depend on care, any hour of the day.', q1: 'Fully vetted staff: DBS, right to work and training checked before their first shift.', c1: 'Our compliance promise', q2: 'One phone number, answered 24 hours a day by a team that knows your site.', c2: 'Our service promise' },
+      { big: '3 days', lbl: 'from registration to ready to work', dark: 'A steady supply of checked candidates, so the same faces can come back each week.', q1: 'We support vulnerable people, so we only send staff we would trust with our own families.', c1: 'Our care promise', q2: 'Candidates get a clear checklist and a named contact, so they are ready to work in 3 days.', c2: 'Our candidate promise' }
     ];
     var si = 0;
     var showSlide = function (n) {
@@ -106,29 +127,7 @@
     $('whyNext').addEventListener('click', function () { showSlide(si + 1); });
   }
 
-  /* Reviews */
-  var revImg = $('revImg');
-  if (revImg) {
-    var base = revImg.src.replace(/[^/]+$/, '');
-    var reviews = [
-      { t: 'I applied on my phone on the bus home. My documents were checked by Thursday and I worked my first shift on Monday.', w: 'Daniel A.', r: 'Hospitality assistant · sample review', img: 'hospman.jpg', pos: 'center 20%' },
-      { t: 'I choose my own shifts around the school run. The team always calls back, even on a Sunday.', w: 'Grace O.', r: 'Healthcare assistant · sample review', img: 'hero.jpg', pos: '30% 25%' },
-      { t: 'Uploading my certificates took ten minutes and I never had to send the same document twice.', w: 'Marta K.', r: 'Kitchen assistant · sample review', img: 'kitchen.jpg', pos: '58% 15%' }
-    ];
-    var ri = 0;
-    var showReview = function (n) {
-      ri = (n + reviews.length) % reviews.length;
-      var r = reviews[ri];
-      $('revText').textContent = r.t;
-      $('revWho').textContent = r.w;
-      $('revRole').textContent = r.r;
-      revImg.src = base + r.img; revImg.style.objectPosition = r.pos;
-    };
-    $('revPrev').addEventListener('click', function () { showReview(ri - 1); });
-    $('revNext').addEventListener('click', function () { showReview(ri + 1); });
-  }
-
-  /* FAQ tabs: candidates / employers */
+  /* FAQ tabs */
   document.querySelectorAll('.faq-tabs').forEach(function (list) {
     var tabs = list.querySelectorAll('[role=tab]');
     var select = function (t) {
@@ -149,58 +148,96 @@
       if (e.target.matches('input[type=checkbox], select')) board.submit();
     });
     var ft = $('filterToggle'), fl = $('filters');
-    ft.addEventListener('click', function () { var o = !fl.classList.contains('open'); fl.classList.toggle('open', o); ft.setAttribute('aria-expanded', String(o)); });
+    if (ft) ft.addEventListener('click', function () { var o = !fl.classList.contains('open'); fl.classList.toggle('open', o); ft.setAttribute('aria-expanded', String(o)); });
   }
 
-  /* CV drop zone: show the chosen file and accept drag and drop */
-  document.querySelectorAll('.drop').forEach(function (drop) {
-    var input = drop.querySelector('input[type=file]'), name = drop.querySelector('.file-name');
-    input.addEventListener('change', function () { name.textContent = input.files[0] ? '✓ ' + input.files[0].name : ''; });
-    ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('drag'); }); });
-    ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('drag'); }); });
-    drop.addEventListener('drop', function (e) {
-      if (e.dataTransfer.files.length) { input.files = e.dataTransfer.files; input.dispatchEvent(new Event('change')); }
-    });
+  /* For candidates: tap a role to open what it needs */
+  var picks = document.querySelectorAll('.role-pick[data-id]');
+  if (picks.length) {
+    var showRole = function (id, scroll) {
+      var panel = $('role-' + id); if (!panel) return;
+      picks.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.id === id)); });
+      document.querySelectorAll('.role-detail').forEach(function (p) { p.hidden = p !== panel; });
+      if (scroll) panel.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    };
+    picks.forEach(function (b) { b.addEventListener('click', function () { showRole(b.dataset.id, true); history.replaceState(null, '', '#role-' + b.dataset.id); }); });
+    var m = location.hash.match(/^#role-(.+)$/);
+    if (m) setTimeout(function () { showRole(m[1], true); }, 60);
+  }
+
+  /* Registration: follow-up questions appear only when relevant */
+  document.querySelectorAll('form').forEach(function (f) {
+    var shows = f.querySelectorAll('[data-show]');
+    if (!shows.length) return;
+    var val = function (name) {
+      var r = f.querySelector('[name="' + name + '"]:checked');
+      if (r) return r.value;
+      var el = f.querySelector('select[name="' + name + '"], input[name="' + name + '"]:not([type=radio])');
+      return el ? el.value : '';
+    };
+    var run = function () { shows.forEach(function (el) { var p = el.dataset.show.split('='); el.hidden = p[1].split('|').indexOf(val(p[0])) < 0; }); };
+    f.addEventListener('change', run); run();
   });
 
-  /* Register: pick a role card */
-  var roleInput = $('roleInput');
-  if (roleInput) {
-    var picks = document.querySelectorAll('.role-pick');
-    picks.forEach(function (b) {
-      b.addEventListener('click', function () {
-        picks.forEach(function (o) { o.setAttribute('aria-pressed', 'false'); });
-        b.setAttribute('aria-pressed', 'true');
-        roleInput.value = b.dataset.role;
-        $('chosen').textContent = b.dataset.role;
-        $('apply').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
-      });
-    });
-    $('apply').addEventListener('submit', function (e) {
-      if (!roleInput.value) {
-        e.preventDefault();
-        $('apply').querySelector('.error-msg').textContent = 'Please choose your role first.';
-        picks[0].scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
-      }
-    });
-  }
+  /* Email code: allow "482 913" and paste */
+  var code = document.querySelector('.code-input');
+  if (code) code.addEventListener('input', function () { code.value = code.value.replace(/[^0-9 ]/g, '').slice(0, 7); });
 
-  /* Upload page: show the name each file will be saved under */
-  var docs = $('docs');
-  if (docs && docs.querySelector('.doc')) {
-    var refEl = document.querySelector('.side-card .ref');
-    var today = new Date().toISOString().slice(0, 10);
-    docs.addEventListener('change', function (e) {
-      var input = e.target;
-      if (!input.files || !input.files[0]) return;
-      var row = input.closest('.doc');
-      var ext = (input.files[0].name.match(/\.[a-z0-9]+$/i) || ['.pdf'])[0].toLowerCase();
-      var key = row.dataset.label.replace(/[^A-Za-z0-9 ]+/g, ' ').split(/\s+/).filter(Boolean).map(function (w) { return w[0].toUpperCase() + w.slice(1); }).join('');
-      row.querySelector('.renamed').textContent = 'Will be saved as ' + refEl.dataset.ref + '_' + refEl.dataset.name + '_' + key + '_' + today + ext;
-      row.querySelector('label.btn').textContent = 'Change file';
-      row.classList.add('chosen');
+  /* Documents and training: each file uploads as soon as it is chosen; phone photos are made smaller first */
+  function shrink(file) {
+    return new Promise(function (resolve) {
+      if (!/^image\/(jpeg|png)$/.test(file.type) || file.size < 1.5 * 1024 * 1024 || !window.createImageBitmap) return resolve(file);
+      createImageBitmap(file).then(function (img) {
+        var max = 2000, sc = Math.min(1, max / Math.max(img.width, img.height));
+        var c = document.createElement('canvas'); c.width = Math.round(img.width * sc); c.height = Math.round(img.height * sc);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function (b) { resolve(b && b.size < file.size ? new File([b], file.name.replace(/\.png$/i, '.jpg'), { type: 'image/jpeg' }) : file); }, 'image/jpeg', 0.85);
+      }).catch(function () { resolve(file); });
     });
   }
+  function counts(row, c) {
+    var wrap = row.closest('[data-set]'); if (!wrap || !c) return;
+    var t = wrap.querySelector('[data-count]'); if (t) t.textContent = c.text;
+    var bar = wrap.querySelector('[data-bar] i'); if (bar) bar.style.width = c.pct + '%';
+  }
+  function send(form, extra) {
+    var row = form.closest('.doc'), msg = row.querySelector('.up-msg'), fd = new FormData(form);
+    fd.delete('file[]'); fd.append('ajax', '1');
+    Object.keys(extra || {}).forEach(function (k) { if (k !== 'files') fd.set(k, extra[k]); });
+    var files = (extra && extra.files) || [];
+    row.classList.add('uploading'); msg.textContent = files.length ? 'Uploading…' : 'Saving…';
+    Promise.all(files.map(shrink)).then(function (list) {
+      list.forEach(function (f) { fd.append('file[]', f, f.name); });
+      return fetch(form.action, { method: 'POST', body: fd, credentials: 'same-origin' });
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.success) { row.classList.remove('uploading'); msg.textContent = (j.data && j.data.message) || 'That did not work. Please try again.'; return; }
+      var tmp = document.createElement('div'); tmp.innerHTML = j.data.html;
+      var fresh = tmp.firstChild; row.replaceWith(fresh); counts(fresh, j.data.counts);
+      var m2 = fresh.querySelector('.up-msg'); if (m2 && files.length) m2.textContent = 'Saved.';
+    }).catch(function () { row.classList.remove('uploading'); msg.textContent = 'Upload failed. Check your connection and try again.'; });
+  }
+  document.addEventListener('change', function (e) {
+    var t = e.target, form = t.closest && t.closest('.item-form');
+    if (!form) return;
+    if (t.classList.contains('up-input') && t.files.length) send(form, { files: Array.prototype.slice.call(t.files) });
+    else if (t.name === 'missing') send(form, { missing: t.checked ? '1' : '0' });
+    else if (t.name === 'exp' && !form.querySelector('[name=pin]')) send(form, { exp: t.value });
+  });
+  document.addEventListener('submit', function (e) {
+    var form = e.target;
+    if (form.classList.contains('item-form') && form.querySelector('[name=pin]')) { e.preventDefault(); send(form, {}); }
+  });
+
+  /* Staff portal: Expand all / Collapse all sections */
+  document.querySelectorAll('[data-sections]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var open = b.dataset.sections === 'open';
+      document.querySelectorAll('.p-sec, .p-folder').forEach(function (d) { d.open = open; });
+    });
+  });
+  document.addEventListener('click', function (e) {
+    document.querySelectorAll('.mini-pop[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
+  });
 
   /* Contact: show the organisation field for employers */
   var org = $('orgField');
@@ -211,8 +248,8 @@
   }
 
   /* Bring success and error messages into view after a form redirect */
-  if (/[?&]hcc_(ok|err)=/.test(location.search) && location.hash) {
+  if (/[?&](hcc_(ok|err)|msg)=/.test(location.search) && location.hash) {
     var target = document.querySelector(location.hash);
-    if (target) { target.scrollIntoView({ block: 'start' }); if (target.tabIndex < 0) target.focus({ preventScroll: true }); }
+    if (target) { if (target.tagName === 'DETAILS') target.open = true; target.scrollIntoView({ block: 'start' }); }
   }
 })();

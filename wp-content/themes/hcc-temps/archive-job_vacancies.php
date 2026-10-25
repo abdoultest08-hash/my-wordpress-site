@@ -19,7 +19,7 @@ $found = (int) $wp_query->found_posts;
 		<div class="wrap">
 			<div class="crumbs"><a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a> / Job Board<?php echo $term_now ? ' / ' . esc_html( $term_now->name ) : ''; ?></div>
 			<h1><?php echo $term_now ? esc_html( $term_now->name ) . ' jobs' : 'Find your next shift'; ?></h1>
-			<p class="lead">Care, kitchen and hospitality work across England. Every job shows the pay and shift pattern up front.</p>
+			<p class="lead">Care, kitchen and hospitality work across the UK. Every job shows the pay and shift pattern up front.</p>
 		</div>
 	</section>
 

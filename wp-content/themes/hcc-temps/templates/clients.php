@@ -10,8 +10,8 @@ $sent = isset( $_GET['hcc_ok'] );
 	<section class="page-hero">
 		<div class="wrap">
 			<div class="crumbs"><a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a> / For clients</div>
-			<h1>Vetted staff for your shifts, often the same day</h1>
-			<p class="lead">Nurses, carers, chefs, kitchen and hospitality staff for care homes, hospitals, hotels and schools across England.</p>
+			<h1>Emergency cover within <span style="color:var(--aqua)">2 hours</span>, nationwide</h1>
+			<p class="lead">Registered nurses, care assistants, chefs and hospitality staff for care homes, hospitals, hotels and schools anywhere in the UK. Our line is open 24 hours.</p>
 			<div class="hero-actions" style="justify-content:flex-start">
 				<a class="btn btn-sun pulse" href="#request">Request cover</a>
 				<a class="btn btn-ghost-light" href="<?php echo esc_attr( hcc_tel( hcc_opt( 'phone' ) ) ); ?>">Call <?php echo esc_html( hcc_opt( 'phone' ) ); ?></a>
@@ -47,7 +47,7 @@ $sent = isset( $_GET['hcc_ok'] );
 				<div class="form-card success-card" id="request" tabindex="-1">
 					<div class="tick"><?php echo hcc_icon( 'check', 30 ); ?></div>
 					<h2>Thanks, we have your request</h2>
-					<p>We'll call you to confirm. We've also emailed you a copy. For shifts in the next 24 hours, please call <?php echo esc_html( hcc_opt( 'phone' ) ); ?>.</p>
+					<p>A consultant will call you back shortly. We have emailed you a confirmation. For emergency cover call <?php echo esc_html( hcc_opt( 'phone' ) ); ?>, any time, day or night.</p>
 				</div>
 			<?php else : ?>
 				<form class="form-card" id="request" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -56,20 +56,20 @@ $sent = isset( $_GET['hcc_ok'] );
 					<div class="hp" aria-hidden="true"><label for="website">Leave this empty</label><input type="text" id="website" name="website" tabindex="-1" autocomplete="off"></div>
 					<span class="eyebrow">Request cover</span>
 					<h2 style="margin-top:8px">Tell us about the shifts</h2>
-					<p class="sub">We'll call you back to confirm. For cover in the next 24 hours, please call <?php echo esc_html( hcc_opt( 'phone' ) ); ?>.</p>
+					<p class="sub">We'll call you back to confirm. For emergency cover, call <?php echo esc_html( hcc_opt( 'phone' ) ); ?> any time, day or night.</p>
 					<?php echo hcc_notice(); // phpcs:ignore -- escaped inside. ?>
 					<div class="form-grid">
 						<div class="f"><label for="org">Organisation *</label><input type="text" id="org" name="org" autocomplete="organization" required placeholder="e.g. Willow Court Care Home"></div>
 						<div class="f"><label for="cn">Your name *</label><input type="text" id="cn" name="name" autocomplete="name" required></div>
 						<div class="f"><label for="ce">Email *</label><input type="email" id="ce" name="email" autocomplete="email" required></div>
 						<div class="f"><label for="cp">Phone *</label><input type="tel" id="cp" name="phone" autocomplete="tel" required></div>
-						<div class="f"><label for="role">Role needed</label><select id="role" name="role"><option>Registered Nurse</option><option>Healthcare Assistant</option><option>Senior Care Assistant</option><option>Chef</option><option>Kitchen Assistant</option><option>Catering / Hospitality</option><option>Housekeeping</option><option>Cleaner</option><option>Receptionist / Admin</option></select></div>
+						<div class="f"><label for="role">Role needed</label><select id="role" name="role"><option>Registered Nurse</option><option>Healthcare Assistant</option><option>Senior Carer</option><option>Chef</option><option>Head Chef</option><option>Kitchen Assistant</option><option>Catering Assistant</option><option>Barista</option><option>Domestic Assistant</option><option>Administrative Assistant</option></select></div>
 						<div class="f"><label for="num">Number of staff</label><input type="number" id="num" name="num" min="1" value="1"></div>
 						<div class="f"><label for="from">First shift date</label><input type="date" id="from" name="from"></div>
 						<div class="f"><label for="pc">Site postcode</label><input type="text" id="pc" name="postcode" autocomplete="postal-code"></div>
 						<div class="f full"><label for="notes">Shift times and anything else we should know</label><textarea id="notes" name="notes" placeholder="e.g. 3 long days, 08:00 to 20:00, manual handling training needed"></textarea></div>
 					</div>
-					<div class="form-actions"><button class="btn btn-navy" type="submit">Send request</button></div>
+					<div class="form-actions"><button class="btn btn-navy" type="submit">Send request</button><span class="form-note">By sending this form you agree to our <a href="<?php echo esc_url( hcc_page_url( 'privacy', '/privacy-policy/' ) ); ?>">privacy policy</a>.</span></div>
 				</form>
 			<?php endif; ?>
 		</div>

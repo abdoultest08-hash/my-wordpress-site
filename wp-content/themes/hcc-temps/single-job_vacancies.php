@@ -62,7 +62,27 @@ $closed = $j['closing'] && $j['closing'] < current_time( 'Y-m-d' );
 			<?php if ( $closed ) : ?>
 				<div class="form-card" id="apply"><h2>This job has closed</h2><p class="sub">Have a look at our other vacancies, or register and we'll match you to new shifts.</p><div class="form-actions"><a class="btn btn-navy" href="<?php echo esc_url( hcc_jobs_url() ); ?>">See live jobs</a></div></div>
 			<?php else : ?>
-				<?php get_template_part( 'template-parts/apply-form', null, array( 'job_id' => $j['id'], 'title' => 'Apply for ' . $j['title'] ) ); ?>
+				<?php
+				$rk    = hcc_role_key_for( $j['title'] );
+				$docs  = hcc_role_docs( $rk );
+				$train = hcc_role_training( $rk );
+				?>
+				<div class="form-card" id="apply">
+					<h2>Apply for <?php echo esc_html( $j['title'] ); ?></h2>
+					<p class="sub">Create your account, answer a few questions and upload your documents in your candidate portal. Most candidates are ready to work within 3 days.</p>
+					<h4 class="need-h">Documents you'll need (<?php echo count( $docs ); ?>)</h4>
+					<ul class="need"><?php foreach ( $docs as $d ) : ?><li><span><b><?php echo esc_html( $d['label'] ); ?></b></span></li><?php endforeach; ?></ul>
+					<?php if ( $train ) : ?>
+					<details class="train-box"><summary>Training certificates (<?php echo count( $train ); ?>)</summary>
+						<ul class="need"><?php foreach ( $train as $t ) : ?><li><span><b><?php echo esc_html( $t['label'] ); ?></b></span></li><?php endforeach; ?></ul>
+					</details>
+					<?php endif; ?>
+					<p class="req-note">Missing something? You can still apply and upload what you have. We will tell you what is still needed.</p>
+					<div class="form-actions" style="margin-top:18px">
+						<a class="btn btn-sun" href="<?php echo esc_url( add_query_arg( 'job', $j['id'], hcc_apply_url( $rk ) ) ); ?>">Create my account and apply</a>
+						<a class="btn btn-ghost" href="<?php echo esc_url( hcc_login_url() ); ?>">I already have an account</a>
+					</div>
+				</div>
 			<?php endif; ?>
 		</div>
 	</section>

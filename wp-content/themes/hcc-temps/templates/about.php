@@ -17,14 +17,14 @@ get_header();
 	<section class="section">
 		<div class="wrap split">
 			<div>
-				<span class="eyebrow">Who we are</span>
-				<h2>A healthcare and hospitality recruitment agency</h2>
-				<p>HCC-Temps has supplied staff to care homes, hospitals, hotels and schools since 2006. We are based in London and work with clients across England.</p>
-				<p>We place registered nurses and healthcare assistants alongside chefs, kitchen staff and cleaners. Every candidate is vetted before their first shift, so you get people who are ready for the job on day one.</p>
+				<span class="eyebrow">Our story</span>
+				<h2>We started HCC-Temps to help</h2>
+				<p>HCC-Temps was created to support the care industry: to help care homes, hospitals and hospitality businesses find reliable people, and to look after the staff who do that work.</p>
+				<p>We believe in continuity of care. Wherever we can, we send familiar, fully vetted staff so residents and guests see the same faces. Our line is open 24 hours, because care doesn't stop at 5pm.</p>
 				<div class="facts-row">
-					<div><b>2006</b><span>Supplying staff since</span></div>
-					<div><b>2</b><span>Sectors: healthcare and hospitality</span></div>
-					<div><b>4</b><span>Regions across England</span></div>
+					<div><b>24/7</b><span>Phone line, always open</span></div>
+					<div><b>2 hrs</b><span>Emergency cover, nationwide</span></div>
+					<div><b>3 days</b><span>Registration to ready to work</span></div>
 				</div>
 			</div>
 			<div class="pic"><img src="<?php echo esc_url( hcc_img( 'nurse.jpg' ) ); ?>" alt="Nurse talking with two residents in a care home lounge" width="720" height="540" loading="lazy"></div>
@@ -33,29 +33,27 @@ get_header();
 
 	<section class="section alt">
 		<div class="wrap">
-			<div class="sec-head">
-				<span class="eyebrow">What makes us different</span>
-				<h2>Nationwide cover, with a team that knows your site</h2>
-				<p>We work with NHS trusts, private hospitals, care homes, hotels, restaurants and schools.</p>
+			<div class="sec-head"><span class="eyebrow">What we stand for</span><h2>Why clients and candidates choose us</h2></div>
+			<div class="values">
+				<?php foreach ( array( array( 'aqua', 'Reliability', 'When we say someone is coming, they come.' ), array( 'navy', 'A steady supply of staff', 'A large pool of checked candidates ready for shifts.' ), array( 'coral', 'Fully vetted', 'DBS, right to work and certificates checked before day one.' ), array( 'sun', 'Caring for vulnerable people', 'Our staff support people who depend on them, and we never forget it.' ), array( 'cocoa', 'We care about everyone', 'Clients and candidates both get a team that listens and calls back.' ), array( 'aqua-deep', 'Cover, fast', 'Emergency cover within 2 hours, anywhere in the UK.' ) ) as $v ) : ?>
+					<div class="value"><span class="dot" style="background:var(--<?php echo esc_attr( $v[0] ); ?>)"></span><h3><?php echo esc_html( $v[1] ); ?></h3><p><?php echo esc_html( $v[2] ); ?></p></div>
+				<?php endforeach; ?>
 			</div>
-			<div class="regions">
-				<div class="region"><h3>London</h3><p>Our home base, with same-day cover across the capital.</p></div>
-				<div class="region"><h3>South</h3><p>Hampshire, Surrey, Kent, the South West and the coast.</p></div>
-				<div class="region"><h3>Midlands</h3><p>Birmingham, Solihull, Derbyshire and surrounding areas.</p></div>
-				<div class="region"><h3>North</h3><p>Cumbria, the North East and beyond.</p></div>
-			</div>
-			<div class="settings"><span>NHS trusts</span><span>Private hospitals</span><span>Care and nursing homes</span><span>Hotels</span><span>Restaurants</span><span>Schools</span></div>
 		</div>
 	</section>
 
-	<section class="section">
+	<section class="section" id="team">
 		<div class="wrap">
-			<div class="vision">
-				<div><span class="eyebrow" style="color:var(--sun)">Our vision</span><h2 style="margin-top:10px">Raising the standard of temporary staffing</h2></div>
-				<div>
-					<p>We want to be the UK's most trusted staffing partner in healthcare and hospitality. That means sending trained, caring and reliable people who help our clients run safe, well-run services.</p>
-					<p>We treat our temps fairly, pay them properly and support their careers, because people who are looked after do better work.</p>
-				</div>
+			<div class="sec-head"><span class="eyebrow">Meet the team</span><h2>The people behind HCC-Temps</h2><p>Based in Leeds and London, covering the whole UK.</p></div>
+			<div class="team">
+				<?php foreach ( hcc_team_members() as $m ) : ?>
+					<div class="member<?php echo $m['lead'] ? ' lead' : ''; ?>"><img src="<?php echo esc_url( $m['img'] ); ?>" alt="Portrait of <?php echo esc_attr( $m['name'] ); ?>" width="640" height="640" loading="lazy"><h3><?php echo esc_html( $m['name'] ); ?></h3><p><?php echo esc_html( $m['role'] ); ?></p></div>
+				<?php endforeach; ?>
+			</div>
+			<div class="offices">
+				<div class="office"><h3>Leeds</h3><p><?php echo esc_html( hcc_opt( 'address' ) ); ?></p></div>
+				<div class="office"><h3>London</h3><p>Our London office, serving the capital and the South.</p></div>
+				<div class="office nat"><h3>Nationwide</h3><p>We cover everywhere in the UK. Call <?php echo esc_html( hcc_opt( 'phone' ) ); ?>, 24 hours a day.</p></div>
 			</div>
 		</div>
 	</section>
@@ -70,11 +68,11 @@ get_header();
 
 	<section class="section alt">
 		<div class="wrap big-quote">
-			<span class="eyebrow">Testimonial</span>
-			<div style="margin-top:14px"><?php echo hcc_stars(); // phpcs:ignore -- static SVG. ?></div>
-			<blockquote>"HCC-Temps has been an absolute game-changer for our care home. Every temporary nurse and caregiver has been skilled, professional and compassionate. We couldn't be happier with the partnership."</blockquote>
-			<div class="who">Sarah L.</div>
-			<div class="role">Care Home Manager</div>
+			<span class="eyebrow">From Trustpilot</span>
+			<div class="stars tp-stars" style="margin-top:14px" aria-label="5 out of 5 stars"><?php echo str_repeat( hcc_icon( 'star', 22 ), 5 ); // phpcs:ignore ?></div>
+			<blockquote>"It has been an awesome experience working with the agency as a chef. It has given great work experience, working in different kitchen locations, dealing with different cuisines. It's been pure bliss, growth and work fulfilment."</blockquote>
+			<div class="who">Oreoluwa F.</div>
+			<div class="role">Chef · Review on Trustpilot</div>
 		</div>
 	</section>
 
@@ -83,8 +81,8 @@ get_header();
 			<h2>Work with HCC-Temps</h2>
 			<p>Looking for shifts, or need staff for your service? We'd like to hear from you.</p>
 			<div class="hero-actions">
-				<a class="btn btn-sun pulse" href="<?php echo esc_url( hcc_jobs_url() ); ?>">Browse jobs</a>
-				<a class="btn btn-ghost-light" href="<?php echo esc_url( hcc_page_url( 'clients', '/for-clients/' ) ); ?>">Join as a company</a>
+				<a class="btn btn-sun pulse" href="<?php echo esc_url( hcc_page_url( 'register', '/register/' ) ); ?>">Start registration</a>
+				<a class="btn btn-ghost-light" href="<?php echo esc_url( hcc_page_url( 'clients', '/for-clients/' ) . '#request' ); ?>">Request cover</a>
 			</div>
 		</div>
 	</section>

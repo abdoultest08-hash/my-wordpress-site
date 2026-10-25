@@ -1,0 +1,189 @@
+<?php
+/**
+ * Template Name: Privacy policy
+ */
+defined( 'ABSPATH' ) || exit;
+get_header();
+?>
+<main id="main">
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="crumbs"><a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a> / Privacy policy</div>
+      <h1>Privacy policy</h1>
+      <p class="lead">How HCC-Temp Staffing Ltd collects, uses and protects your personal information. Last updated: October 2026.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap legal">
+      <nav class="legal-toc" aria-label="On this page">
+        <b>On this page</b>
+        <a href="#who">1. Who we are</a>
+        <a href="#summary">2. Summary</a>
+        <a href="#collect">3. What we collect</a>
+        <a href="#why">4. How we use it and our legal basis</a>
+        <a href="#special">5. Sensitive information</a>
+        <a href="#share">6. Who we share it with</a>
+        <a href="#transfers">7. Transfers outside the UK</a>
+        <a href="#keep">8. How long we keep it</a>
+        <a href="#security">9. How we protect it</a>
+        <a href="#rights">10. Your rights</a>
+        <a href="#cookies">11. Cookies</a>
+        <a href="#children">12. Children</a>
+        <a href="#changes">13. Changes to this policy</a>
+        <a href="#contact">14. Contact us and complaints</a>
+      </nav>
+
+      <article class="legal-body">
+        <p class="legal-draft">Draft for HCC-Temps to review with their legal or data protection adviser before publishing. Items in [brackets] need confirming.</p>
+
+        <h2 id="who">1. Who we are</h2>
+        <p>This website is run by <b>HCC-Temp Staffing Ltd</b> ("HCC-Temps", "we", "us"), a recruitment agency supplying temporary staff to the healthcare and hospitality sectors.</p>
+        <ul>
+          <li>Registered in England and Wales, company number <b>11486985</b></li>
+          <li>Registered office: Crown House, 94 Armley Road, Armley, Leeds LS12 2EJ</li>
+          <li>Registered with the Information Commissioner's Office (ICO), registration number <b>[ICO number]</b></li>
+          <li>Email: <a href="mailto:<?php echo esc_attr( hcc_opt( 'email' ) ); ?>"><?php echo esc_html( hcc_opt( 'email' ) ); ?></a> · Phone: <?php echo esc_html( hcc_opt( 'phone' ) ); ?></li>
+        </ul>
+        <p>We are the <b>data controller</b> for the personal information described in this policy. This means we decide how and why it is used, and we are responsible for keeping it safe under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
+
+        <h2 id="summary">2. Summary</h2>
+        <ul>
+          <li>We collect information so we can find you work, check you are safe and legally able to work, pay you, and supply staff to our clients.</li>
+          <li>We only share it with people who need it, such as clients you are placed with, vetting services and our payroll provider.</li>
+          <li>We never sell your information.</li>
+          <li>Your documents are stored privately and only our compliance team can see them.</li>
+          <li>You can ask to see, correct or delete your information at any time.</li>
+        </ul>
+
+        <h2 id="collect">3. What we collect</h2>
+        <h3>If you register as a candidate</h3>
+        <ul>
+          <li><b>Identity and contact details:</b> title, name, date of birth, address, email, phone number, a professional photograph.</li>
+          <li><b>Account details:</b> your login email, password (stored encrypted, we cannot see it) and login records, including the one-time codes we email you.</li>
+          <li><b>Right to work:</b> passport or driving licence, nationality, visa type, share code and supporting documents such as a certificate of sponsorship or university term-time letter.</li>
+          <li><b>Proof of address and National Insurance number.</b></li>
+          <li><b>Work history and qualifications:</b> CV, education, experience, training certificates, professional registration (for example your NMC PIN and Statement of Entry), nursing diploma or degree.</li>
+          <li><b>References:</b> the names and contact details of your referees, and the references they give.</li>
+          <li><b>Checks:</b> your DBS certificate or Update Service details and the results of checks (see section 5).</li>
+          <li><b>Health information:</b> immunisation records where a role requires them, and any information you choose to give us about adjustments you need.</li>
+          <li><b>Practical details:</b> availability, preferred locations, whether you drive or have a vehicle, uniform size.</li>
+          <li><b>Payment details:</b> bank account details and whether you work through a limited company.</li>
+          <li><b>Emergency contact:</b> the name, relationship and contact details of your next of kin. Please tell them you have shared their details with us.</li>
+          <li><b>Work records:</b> shifts, timesheets, pay, feedback from clients, and notes from our team.</li>
+        </ul>
+        <h3>If you are a client or request cover</h3>
+        <ul>
+          <li>Your name, job title, organisation, work email and phone number, site address, the shifts you need, and records of our contact and invoices.</li>
+        </ul>
+        <h3>If you visit our website or contact us</h3>
+        <ul>
+          <li>Messages you send through our forms, by email or by phone.</li>
+          <li>Technical information such as your IP address, browser type and the pages you visit, used to keep the site secure and working (see section 11).</li>
+        </ul>
+        <h3>Where we get it from</h3>
+        <p>Mostly from you. We also receive information from your referees, the Disclosure and Barring Service (DBS) and DBS umbrella bodies, the Nursing and Midwifery Council (NMC) register, the Home Office right to work service, job boards where you have posted your CV, and clients you have worked for.</p>
+
+        <h2 id="why">4. How we use it and our legal basis</h2>
+        <p>The law requires us to have a valid reason (a "lawful basis") for each use of your information.</p>
+        <div class="legal-table" role="table" aria-label="How we use your information">
+          <div role="row" class="lt-head"><span role="columnheader">What we do</span><span role="columnheader">Lawful basis</span></div>
+          <div role="row"><span role="cell">Create and manage your account, assess your suitability and offer you work</span><span role="cell">Taking steps at your request before entering a contract, and performing our contract with you</span></div>
+          <div role="row"><span role="cell">Check your identity and right to work in the UK</span><span role="cell">Legal obligation (Immigration, Asylum and Nationality Act 2006)</span></div>
+          <div role="row"><span role="cell">Check your DBS, professional registration, qualifications and references before placing you with clients</span><span role="cell">Legal obligation (Conduct of Employment Agencies and Employment Businesses Regulations 2003) and legitimate interests in protecting the vulnerable people our clients care for</span></div>
+          <div role="row"><span role="cell">Introduce or supply you to clients and share your profile with them</span><span role="cell">Performing our contract with you, and legitimate interests</span></div>
+          <div role="row"><span role="cell">Pay you, deduct tax and National Insurance, and manage holiday pay and pensions</span><span role="cell">Contract and legal obligation (tax and employment law)</span></div>
+          <div role="row"><span role="cell">Contact your emergency contact if something happens at work</span><span role="cell">Legitimate interests, or vital interests in an emergency</span></div>
+          <div role="row"><span role="cell">Supply staff to clients, manage bookings and invoices</span><span role="cell">Performing our contract with the client</span></div>
+          <div role="row"><span role="cell">Keep our website and systems secure, including login codes and logs</span><span role="cell">Legitimate interests in keeping your data safe</span></div>
+          <div role="row"><span role="cell">Send you job alerts or news you have asked for</span><span role="cell">Consent, which you can withdraw at any time</span></div>
+          <div role="row"><span role="cell">Deal with complaints, legal claims and audits</span><span role="cell">Legitimate interests and legal obligation</span></div>
+        </div>
+        <p>We do not make decisions about you using only automated processes. A member of our team always reviews your application and documents.</p>
+
+        <h2 id="special">5. Sensitive information</h2>
+        <p>Some information is given extra protection by law: health information, information about criminal convictions (including DBS results), and information about ethnicity, religion or disability.</p>
+        <ul>
+          <li>We use <b>DBS and criminal record information</b> only to decide whether you can safely work in roles involving children or vulnerable adults, as allowed by the Data Protection Act 2018 (Schedule 1) and the Rehabilitation of Offenders Act 1974 (Exceptions) Order 1975. We follow the DBS Code of Practice and keep this information only as long as needed.</li>
+          <li>We use <b>health information</b>, such as immunisation records, where a client or role requires it to protect patients, and to make reasonable adjustments for you. Our legal basis is our obligations in employment and social security law, and the provision of health and social care.</li>
+          <li>If we ask for <b>equal opportunities information</b>, it is optional, kept separate and used only to monitor fairness.</li>
+        </ul>
+
+        <h2 id="share">6. Who we share it with</h2>
+        <p>We only share what is needed, with:</p>
+        <ul>
+          <li><b>Clients</b> you are put forward to or work for, such as care homes, hospitals, hotels and schools. We share your profile, relevant checks and compliance documents they are required to see.</li>
+          <li><b>Vetting and verification services:</b> the DBS and DBS umbrella bodies, the NMC register, the Home Office right to work service, and identity verification providers [names to confirm].</li>
+          <li><b>Your referees</b>, to request references.</li>
+          <li><b>Payroll, pension and accountancy providers</b>, and HMRC.</li>
+          <li><b>IT and service providers</b> who host our website, email and systems, such as [hosting provider, email provider and backup storage]. They act on our instructions and must keep your data secure.</li>
+          <li><b>Regulators, police and public authorities</b> when the law requires it, for example the NMC, the Care Quality Commission, or to prevent fraud or harm.</li>
+          <li><b>Professional advisers</b> such as lawyers, auditors and insurers.</li>
+          <li>A <b>buyer of our business</b>, if HCC-Temps is ever sold or merged. They would have to protect your information in the same way.</li>
+        </ul>
+
+        <h2 id="transfers">7. Transfers outside the UK</h2>
+        <p>We aim to keep your information in the UK. Some of our service providers may store data in the European Economic Area or elsewhere. When this happens, we make sure it is protected by UK adequacy regulations or by approved contract clauses, as required by UK GDPR.</p>
+
+        <h2 id="keep">8. How long we keep it</h2>
+        <div class="legal-table" role="table" aria-label="How long we keep your information">
+          <div role="row" class="lt-head"><span role="columnheader">Information</span><span role="columnheader">How long</span></div>
+          <div role="row"><span role="cell">Candidates who register but are not placed</span><span role="cell">[12 months] after your last contact with us, unless you ask us to keep you on file</span></div>
+          <div role="row"><span role="cell">Records of work-seekers we supply or introduce</span><span role="cell">At least 1 year after we last provide services to you, as required by the Conduct Regulations 2003</span></div>
+          <div role="row"><span role="cell">Right to work check copies</span><span role="cell">For the time you work through us and 2 years after</span></div>
+          <div role="row"><span role="cell">Payroll, tax and pay records</span><span role="cell">6 years after the end of the tax year they relate to</span></div>
+          <div role="row"><span role="cell">DBS certificate details</span><span role="cell">Only as long as needed to make a decision, in line with the DBS Code of Practice; we record the certificate number, date and outcome</span></div>
+          <div role="row"><span role="cell">Client records</span><span role="cell">6 years after our last contract with the client</span></div>
+          <div role="row"><span role="cell">Website messages and enquiries</span><span role="cell">[2 years]</span></div>
+        </div>
+        <p>When we no longer need your information, we delete it securely or make it anonymous.</p>
+
+        <h2 id="security">9. How we protect it</h2>
+        <ul>
+          <li>Documents you upload are stored in a private area of our website that cannot be reached from the internet, and are only shown to logged-in members of our team.</li>
+          <li>Every login needs your password and a one-time code sent to your email.</li>
+          <li>Staff access is limited to what each person needs, and downloads are logged.</li>
+          <li>Our website uses an encrypted connection (HTTPS), and we keep regular backups.</li>
+          <li>If a data breach is likely to put you at risk, we will tell you and the ICO as the law requires.</li>
+        </ul>
+
+        <h2 id="rights">10. Your rights</h2>
+        <p>Under UK GDPR you have the right to:</p>
+        <ul>
+          <li><b>Access</b> your information and get a copy of it.</li>
+          <li><b>Correct</b> information that is wrong or incomplete. You can update many details yourself in your candidate portal.</li>
+          <li><b>Delete</b> your information where we no longer have a reason to keep it.</li>
+          <li><b>Restrict</b> how we use it while a concern is looked into.</li>
+          <li><b>Object</b> to us using it on the basis of legitimate interests, or for marketing.</li>
+          <li><b>Data portability</b>: receive information you gave us in a common format.</li>
+          <li><b>Withdraw consent</b> at any time, where we rely on consent.</li>
+        </ul>
+        <p>To use any of these rights, email <a href="mailto:<?php echo esc_attr( hcc_opt( 'email' ) ); ?>"><?php echo esc_html( hcc_opt( 'email' ) ); ?></a>. We will reply within one month. There is usually no charge. Some information must be kept by law even if you ask us to delete it, and we will explain if this applies.</p>
+
+        <h2 id="cookies">11. Cookies</h2>
+        <p>Cookies are small files saved on your device. We use:</p>
+        <ul>
+          <li><b>Essential cookies</b> to keep you logged in, remember your login choice ("Keep me logged in", up to 14 days), and protect forms from spam and robots (Cloudflare Turnstile). These are needed for the site to work, so we do not ask for consent.</li>
+          <li><b>Analytics cookies</b> [if used, for example Google Analytics or Jetpack Stats] to understand how visitors use the site. We only set these if you agree, and you can change your choice at any time.</li>
+        </ul>
+        <p>Embedded content from other sites, such as maps or videos, may set their own cookies. You can block or delete cookies in your browser settings.</p>
+
+        <h2 id="children">12. Children</h2>
+        <p>Our services are for people aged 18 and over. We do not knowingly collect information from children.</p>
+
+        <h2 id="changes">13. Changes to this policy</h2>
+        <p>We may update this policy from time to time. The date at the top shows when it last changed. If we make important changes, we will tell registered candidates and clients by email.</p>
+
+        <h2 id="contact">14. Contact us and complaints</h2>
+        <p>If you have a question or concern about how we use your information, contact us first:</p>
+        <ul>
+          <li>Email: <a href="mailto:<?php echo esc_attr( hcc_opt( 'email' ) ); ?>"><?php echo esc_html( hcc_opt( 'email' ) ); ?></a> (subject: Data protection)</li>
+          <li>Post: Data Protection, HCC-Temp Staffing Ltd, Crown House, 94 Armley Road, Armley, Leeds LS12 2EJ</li>
+        </ul>
+        <p>You also have the right to complain to the Information Commissioner's Office: <a href="https://ico.org.uk/make-a-complaint/" target="_blank" rel="noopener">ico.org.uk/make-a-complaint</a> or 0303 123 1113.</p>
+      </article>
+    </div>
+  </section>
+</main>
+<?php
+get_footer();
