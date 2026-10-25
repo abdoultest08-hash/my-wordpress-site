@@ -261,8 +261,7 @@ get_header();
 													<button type="submit" class="btn btn-sm btn-sun" name="act" value="amend:<?php echo esc_attr( $k ); ?>">Add to update</button>
 												<?php endif; ?>
 												<label>Note<input type="text" name="dnote[<?php echo esc_attr( $k ); ?>]" placeholder="Note about this document"></label>
-												<label class="nohave"><input type="checkbox" name="dint[<?php echo esc_attr( $k ); ?>]" value="1" checked> Internal (staff only)</label>
-												<button type="submit" class="btn btn-sm btn-ghost" name="act" value="note:<?php echo esc_attr( $k ); ?>">Add note</button>
+												<div class="note-btns"><button type="submit" class="btn btn-sm btn-sun" name="act" value="notec:<?php echo esc_attr( $k ); ?>">Add to update for candidate</button><button type="submit" class="btn btn-sm btn-ghost" name="act" value="note:<?php echo esc_attr( $k ); ?>">Save as staff-only note</button></div>
 											</div>
 										</details>
 									</span>
@@ -310,6 +309,16 @@ get_header();
 							<p class="hint" style="margin-top:10px">Not sent yet. Nothing is sent automatically: until someone presses Send, this shows on the dashboard under <b>Updates not sent</b>.</p>
 						<?php endif; ?>
 					</div>
+
+					<?php $sent = array_reverse( (array) hcc_meta( $id, 'messages', array() ) ); ?>
+					<details class="p-sec p-card" id="sent"<?php echo $sent ? '' : ' open'; ?>>
+						<summary class="p-card-head"><h2>Sent to candidate</h2><span class="p-count"><?php echo $sent ? count( $sent ) . ' update' . ( count( $sent ) > 1 ? 's' : '' ) . ' · also shown in their portal' : 'Nothing sent yet'; ?></span></summary>
+						<?php foreach ( $sent as $m ) : ?>
+							<div class="sent-item"><b><?php echo esc_html( wp_date( 'j M Y, H:i', (int) $m['at'] ) . ( ! empty( $m['by'] ) ? ' · ' . $m['by'] : '' ) ); ?></b><ul>
+								<?php foreach ( (array) $m['items'] as $q ) : ?><li><span class="sent-t sent-<?php echo esc_attr( $q['type'] ); ?>"><?php echo esc_html( array( 'approved' => 'Approved', 'amend' => 'Replace', 'missing' => 'Needed', 'note' => 'Message' )[ $q['type'] ] ?? $q['type'] ); ?></span> <?php echo esc_html( trim( $q['label'] . ( $q['label'] && $q['text'] ? ': ' : '' ) . $q['text'] ) ); ?></li><?php endforeach; ?>
+							</ul></div>
+						<?php endforeach; ?>
+					</details>
 
 					<details open class="p-sec p-card" id="checks">
 						<summary class="p-card-head"><h2>Checks</h2><span class="p-count">Who checked, when, result</span></summary>

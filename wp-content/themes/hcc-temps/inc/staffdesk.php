@@ -84,9 +84,9 @@ add_action( 'admin_post_hcc_desk', function () {
 			hcc_log( $id, 'Asked to replace ' . $items[ $key ]['label'] . ': ' . $reason );
 			hcc_desk_back( $id, array( 'msg' => 'queued' ), 'item-' . $key );
 		}
-		if ( 'note' === $verb && isset( $items[ $key ] ) ) {
+		if ( in_array( $verb, array( 'note', 'notec' ), true ) && isset( $items[ $key ] ) ) { // note = staff only, notec = to the candidate
 			$text     = isset( $_POST['dnote'][ $key ] ) ? sanitize_textarea_field( wp_unslash( $_POST['dnote'][ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
-			$internal = ! empty( $_POST['dint'][ $key ] ); // phpcs:ignore WordPress.Security.NonceVerification
+			$internal = 'note' === $verb;
 			if ( $text ) {
 				$notes           = (array) hcc_meta( $id, 'dnotes', array() );
 				$notes[ $key ][] = array( 'text' => $text, 'internal' => $internal, 'by' => $me, 'at' => time() );

@@ -1204,3 +1204,13 @@ form.inline { display: inline; }
 .team-note { display: block; margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: #EEF0FB; color: var(--ink); font-size: 13px; }
 .team-note b { display: block; font-size: 12px; color: var(--navy); }
 .preview-bar { background: var(--sun); color: var(--ink); border-radius: 12px; padding: 10px 14px; font-weight: 600; }
+
+/* Staff: document note buttons and the "Sent to candidate" history */
+.note-btns { display: grid; gap: 6px; }
+.sent-item { border-top: 1px solid var(--line); padding: 10px 0; font-size: 14px; }
+.sent-item:first-of-type { border-top: 0; }
+.sent-item ul { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.sent-t { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: 1px 7px; border-radius: 999px; background: var(--paper, #F4F8F7); color: var(--muted); }
+.sent-t.sent-approved { background: #DCF3E8; color: #17694A; }
+.sent-t.sent-amend, .sent-t.sent-missing { background: #FDE7E5; color: #B3261E; }
+.sent-t.sent-note { background: #EEF0FB; color: var(--navy); }
