@@ -14,9 +14,9 @@ if ( hcc_is_staff() && ( ! $preview || 'hcc_applicant' !== get_post_type( $previ
 	wp_safe_redirect( hcc_staff_url() );
 	exit;
 }
-$id  = $preview ? $preview : hcc_my_record();
+$aid  = $preview ? $preview : hcc_my_record();
 $ctx = $preview ? 'preview' : 'portal';
-if ( $id && ! $preview && ! hcc_meta( $id, 'submitted' ) ) {
+if ( $aid && ! $preview && ! hcc_meta( $aid, 'submitted' ) ) {
 	wp_safe_redirect( hcc_apply_url() );
 	exit;
 }
@@ -25,30 +25,30 @@ $ok      = isset( $_GET['hcc_ok'] ) ? sanitize_key( $_GET['hcc_ok'] ) : ''; // p
 get_header();
 ?>
 <main>
-<?php if ( ! $id ) : ?>
+<?php if ( ! $aid ) : ?>
 	<section class="section"><div class="wrap" style="max-width:720px"><div class="form-card"><h2>No registration found</h2><p class="sub">This account isn't linked to a candidate registration. Call us on <?php echo esc_html( hcc_opt( 'phone' ) ); ?> and we'll sort it out.</p></div></div></section>
 <?php else :
-	$docs  = hcc_items( $id, 'docs' );
-	$train = hcc_items( $id, 'train' );
-	$d     = hcc_counts( $id, $docs );
-	$t     = hcc_counts( $id, $train );
-	$state = hcc_state( $id );
+	$docs  = hcc_items( $aid, 'docs' );
+	$train = hcc_items( $aid, 'train' );
+	$d     = hcc_counts( $aid, $docs );
+	$t     = hcc_counts( $aid, $train );
+	$state = hcc_state( $aid );
 	$stages = array(
 		array( 'Account created', true ),
-		array( 'Pre-screening', (bool) hcc_meta( $id, 'prescreen_done' ) ),
+		array( 'Pre-screening', (bool) hcc_meta( $aid, 'prescreen_done' ) ),
 		array( 'Documents', $d['have'] >= $d['need'] && $t['have'] >= $t['need'] ? true : ( $d['have'] ? 'part' : false ) ),
 		array( 'Compliance review', 'completed' === $state ? true : 'part' ),
 		array( 'Ready to work', 'completed' === $state ),
 	);
-	$messages = array_reverse( (array) hcc_meta( $id, 'messages', array() ) );
+	$messages = array_reverse( (array) hcc_meta( $aid, 'messages', array() ) );
 	?>
 	<section class="portal-head">
 		<div class="wrap">
 			<div class="ph-top">
 				<div>
 					<span class="eyebrow" style="color:var(--aqua)">Candidate portal</span>
-					<h1>Hi <?php echo esc_html( hcc_meta( $id, 'first' ) ); ?></h1>
-					<p><?php echo esc_html( hcc_role_name( hcc_meta( $id, 'role_key' ) ) ); ?> · Reference <?php echo esc_html( hcc_meta( $id, 'ref' ) ); ?></p>
+					<h1>Hi <?php echo esc_html( hcc_meta( $aid, 'first' ) ); ?></h1>
+					<p><?php echo esc_html( hcc_role_name( hcc_meta( $aid, 'role_key' ) ) ); ?> · Reference <?php echo esc_html( hcc_meta( $aid, 'ref' ) ); ?></p>
 				</div>
 				<?php if ( ! $preview ) : ?><a class="btn btn-ghost-light btn-sm" href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>">Log out</a><?php endif; ?>
 			</div>
@@ -60,7 +60,7 @@ get_header();
 
 	<section class="section portal-body">
 		<div class="wrap portal-wrap">
-			<?php if ( $preview ) : ?><p class="preview-bar">Staff preview: this is what <?php echo esc_html( hcc_name( $id ) ); ?> sees. Read-only. <a href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $id ) ) ); ?>">Back to their folder</a></p><?php endif; ?>
+			<?php if ( $preview ) : ?><p class="preview-bar">Staff preview: this is what <?php echo esc_html( hcc_name( $aid ) ); ?> sees. Read-only. <a href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $aid ) ) ); ?>">Back to their folder</a></p><?php endif; ?>
 			<?php if ( isset( $ok_msgs[ $ok ] ) ) : ?><p class="form-ok"><?php echo esc_html( $ok_msgs[ $ok ] ); ?></p><?php endif; ?>
 			<?php echo hcc_notice(); // phpcs:ignore ?>
 
@@ -94,7 +94,7 @@ get_header();
 			<details class="p-card p-answers" id="answers" open>
 				<summary class="p-card-head"><h2>My answers</h2><span class="p-count">What you told us at registration · tap to hide</span></summary>
 				<div class="ans-grid">
-				<?php foreach ( hcc_answer_groups( $id, true ) as $title => $rows ) :
+				<?php foreach ( hcc_answer_groups( $aid, true ) as $title => $rows ) :
 					if ( 'Bank details' === $title ) {
 						$rows = array( 'Account name' => $rows['Account name'], 'Account' => ! empty( $rows['Account number'] ) ? 'Ending ' . substr( $rows['Account number'], -4 ) . ( $rows['Type'] ? ' · ' . $rows['Type'] : '' ) : 'Not added yet' );
 					}
@@ -110,11 +110,11 @@ get_header();
 			<div class="p-card" data-set="docs" id="documents">
 				<div class="p-card-head"><h2>My documents</h2><span class="p-count" data-count><?php echo esc_html( $d['have'] . ' of ' . $d['need'] . ' added' ); ?></span></div>
 				<?php if ( ! $preview ) : ?><p class="hint" style="margin-bottom:10px">Uploaded something by mistake? Press <b>Replace</b>. Photo tips: lay the document flat in daylight, show all four corners, no flash or glare.</p><?php endif; ?>
-				<div class="doc-list p-docs"><?php foreach ( $docs as $k => $it ) { echo hcc_item_row( $id, $k, $it, $ctx ); } // phpcs:ignore ?></div>
+				<div class="doc-list p-docs"><?php foreach ( $docs as $k => $it ) { echo hcc_item_row( $aid, $k, $it, $ctx ); } // phpcs:ignore ?></div>
 			</div>
 			<details class="p-card p-folder" data-set="train" id="training">
 				<summary><span class="folder-ico" aria-hidden="true"><?php echo hcc_icon( 'doc', 22 ); // phpcs:ignore ?></span><span><b>Training certificates</b><small data-count><?php echo esc_html( $t['have'] . ' of ' . $t['need'] . ' added' . ( $t['later'] ? ' · ' . $t['later'] . ' to follow' : '' ) . ' · tap to open' ); ?></small></span><span class="folder-arrow" aria-hidden="true">▾</span></summary>
-				<div class="doc-list p-docs"><?php foreach ( $train as $k => $it ) { echo hcc_item_row( $id, $k, $it, $ctx ); } // phpcs:ignore ?></div>
+				<div class="doc-list p-docs"><?php foreach ( $train as $k => $it ) { echo hcc_item_row( $aid, $k, $it, $ctx ); } // phpcs:ignore ?></div>
 			</details>
 			<?php if ( ! $preview ) : ?>
 			<form class="p-card done-card" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -123,7 +123,7 @@ get_header();
 				<button class="btn btn-navy btn-sm" type="submit">I've finished uploading</button>
 			</form>
 			<?php endif; ?>
-			<div class="help"><h3>Questions about your registration?</h3><p>Call the compliance team, 24 hours a day, and quote <?php echo esc_html( hcc_meta( $id, 'ref' ) ); ?>.</p><div class="line"><?php echo esc_html( hcc_opt( 'phone' ) ); ?></div></div>
+			<div class="help"><h3>Questions about your registration?</h3><p>Call the compliance team, 24 hours a day, and quote <?php echo esc_html( hcc_meta( $aid, 'ref' ) ); ?>.</p><div class="line"><?php echo esc_html( hcc_opt( 'phone' ) ); ?></div></div>
 		</div>
 	</section>
 <?php endif; ?>

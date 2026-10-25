@@ -8,20 +8,20 @@ if ( hcc_is_staff() ) {
 	wp_safe_redirect( hcc_staff_url() );
 	exit;
 }
-$id = hcc_my_record();
-if ( is_user_logged_in() && ! $id && ! current_user_can( 'edit_posts' ) ) {
+$aid = hcc_my_record();
+if ( is_user_logged_in() && ! $aid && ! current_user_can( 'edit_posts' ) ) {
 	wp_safe_redirect( hcc_portal_url() );
 	exit;
 }
-$max  = $id ? max( 1, (int) hcc_meta( $id, 'step', 2 ) ) : 1;
+$max  = $aid ? max( 1, (int) hcc_meta( $aid, 'step', 2 ) ) : 1;
 $want = isset( $_GET['step'] ) ? absint( $_GET['step'] ) : $max; // phpcs:ignore WordPress.Security.NonceVerification
-$step = $id ? min( max( 2, $want ), $max ) : 1;
-if ( $id && ! hcc_meta( $id, 'verified' ) ) {
+$step = $aid ? min( max( 2, $want ), $max ) : 1;
+if ( $aid && ! hcc_meta( $aid, 'verified' ) ) {
 	$step = 2;
-} elseif ( $id && 2 === $step ) {
+} elseif ( $aid && 2 === $step ) {
 	$step = min( 3, $max ); // Email already confirmed: never show the code step again.
 }
-$submitted = $id && hcc_meta( $id, 'submitted' );
+$submitted = $aid && hcc_meta( $aid, 'submitted' );
 if ( $submitted && 4 !== $want && 7 !== $want ) {
 	wp_safe_redirect( hcc_portal_url() );
 	exit;
@@ -29,9 +29,9 @@ if ( $submitted && 4 !== $want && 7 !== $want ) {
 if ( $submitted ) {
 	$step = $want;
 }
-$role = $id ? hcc_meta( $id, 'role_key' ) : ( isset( $_GET['role'] ) && hcc_role( sanitize_key( $_GET['role'] ) ) ? sanitize_key( $_GET['role'] ) : 'nurse' ); // phpcs:ignore WordPress.Security.NonceVerification
+$role = $aid ? hcc_meta( $aid, 'role_key' ) : ( isset( $_GET['role'] ) && hcc_role( sanitize_key( $_GET['role'] ) ) ? sanitize_key( $_GET['role'] ) : 'nurse' ); // phpcs:ignore WordPress.Security.NonceVerification
 $r    = hcc_role( $role );
-$a    = $id ? (array) hcc_meta( $id, 'answers', array() ) : array();
+$a    = $aid ? (array) hcc_meta( $aid, 'answers', array() ) : array();
 $g    = function ( $k ) use ( $a ) { return isset( $a[ $k ] ) ? $a[ $k ] : ''; };
 $keep = function ( $k ) { return isset( $_GET[ $k ] ) ? sanitize_text_field( wp_unslash( $_GET[ $k ] ) ) : ''; }; // phpcs:ignore WordPress.Security.NonceVerification
 $titles = array( 1 => 'Create your account', 2 => 'Verify your email', 3 => 'Confirm your role', 4 => $submitted ? 'Edit your answers' : 'Pre-screening questions', 5 => 'Upload your documents', 6 => 'Training certificates', 7 => 'Registration submitted' );
@@ -46,7 +46,7 @@ $errs   = array(
 );
 $err = isset( $_GET['hcc_err'] ) ? sanitize_key( $_GET['hcc_err'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 $alert = isset( $errs[ $err ] ) ? '<p class="form-alert" role="alert">' . esc_html( $errs[ $err ] ) . '</p>' : hcc_notice();
-$post  = esc_url( admin_url( 'admin-post.php' ) );
+$form_url  = esc_url( admin_url( 'admin-post.php' ) );
 $nonce = function ( $a ) { return '<input type="hidden" name="hcc_nonce" value="' . esc_attr( wp_create_nonce( $a ) ) . '">'; };
 $radio = function ( $name, $opts, $cur ) {
 	$h = '<div class="radios">';
@@ -77,7 +77,7 @@ get_header();
 			<ol class="stepper" aria-label="Registration steps">
 				<?php foreach ( array( 1 => 'Account', 2 => 'Verify email', 3 => 'Your role', 4 => 'About you', 5 => 'Documents', 6 => 'Training' ) as $n => $l ) : ?>
 					<li class="<?php echo $n < $step ? 'done' : ( $n === $step ? 'on' : '' ); ?>"<?php echo $n === $step ? ' aria-current="step"' : ''; ?>>
-						<?php if ( $id && $n < $step && $n > 2 && $n <= $max ) : ?><a href="<?php echo esc_url( add_query_arg( 'step', $n, hcc_apply_url() ) ); ?>"><span><?php echo (int) $n; ?></span><?php echo esc_html( $l ); ?></a><?php else : ?><span><?php echo (int) $n; ?></span><?php echo esc_html( $l ); ?><?php endif; ?>
+						<?php if ( $aid && $n < $step && $n > 2 && $n <= $max ) : ?><a href="<?php echo esc_url( add_query_arg( 'step', $n, hcc_apply_url() ) ); ?>"><span><?php echo (int) $n; ?></span><?php echo esc_html( $l ); ?></a><?php else : ?><span><?php echo (int) $n; ?></span><?php echo esc_html( $l ); ?><?php endif; ?>
 					</li>
 				<?php endforeach; ?>
 			</ol>
@@ -91,7 +91,7 @@ get_header();
 				<?php echo $alert; // phpcs:ignore WordPress.Security.EscapeOutput ?>
 
 				<?php if ( 1 === $step ) : ?>
-				<form class="form-card wiz-step" method="post" action="<?php echo $post; ?>" id="account" novalidate>
+				<form class="form-card wiz-step" method="post" action="<?php echo $form_url; ?>" id="account" novalidate>
 					<input type="hidden" name="action" value="hcc_reg_account"><?php echo $nonce( 'hcc_reg_account' ); // phpcs:ignore ?>
 					<input type="hidden" name="role" value="<?php echo esc_attr( $role ); ?>">
 					<div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
@@ -118,21 +118,21 @@ get_header();
 				<?php elseif ( 2 === $step ) : ?>
 				<div class="form-card wiz-step">
 					<h2>Check your email</h2>
-					<p class="sub">We've sent a 6-digit code to <b><?php echo esc_html( hcc_meta( $id, 'email' ) ); ?></b>. Enter it below to confirm your email address. The code works for 10 minutes.</p>
-					<?php if ( isset( $_GET['hcc_ok'] ) ) : // phpcs:ignore ?><p class="form-ok">A new code is on its way to <?php echo esc_html( hcc_meta( $id, 'email' ) ); ?>. Only the newest code works.</p><?php endif; ?>
-					<form method="post" action="<?php echo $post; ?>" class="code-form">
+					<p class="sub">We've sent a 6-digit code to <b><?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?></b>. Enter it below to confirm your email address. The code works for 10 minutes.</p>
+					<?php if ( isset( $_GET['hcc_ok'] ) ) : // phpcs:ignore ?><p class="form-ok">A new code is on its way to <?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?>. Only the newest code works.</p><?php endif; ?>
+					<form method="post" action="<?php echo $form_url; ?>" class="code-form">
 						<input type="hidden" name="action" value="hcc_reg_verify"><?php echo $nonce( 'hcc_reg_verify' ); // phpcs:ignore ?>
 						<div class="f" style="max-width:260px"><label for="code">6-digit code</label><input class="code-input" type="text" id="code" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" pattern="[0-9 ]*" required></div>
 						<div class="form-actions"><button class="btn btn-navy" type="submit">Verify email</button></div>
 					</form>
-					<form method="post" action="<?php echo $post; ?>" style="margin-top:14px">
+					<form method="post" action="<?php echo $form_url; ?>" style="margin-top:14px">
 						<input type="hidden" name="action" value="hcc_reg_resend"><?php echo $nonce( 'hcc_reg_resend' ); // phpcs:ignore ?>
 						<p class="form-note">Not arrived? Check your spam folder or <button class="link-btn" type="submit">send a new code</button>.</p>
 					</form>
 				</div>
 
 				<?php elseif ( 3 === $step ) : ?>
-				<form class="form-card wiz-step" method="post" action="<?php echo $post; ?>">
+				<form class="form-card wiz-step" method="post" action="<?php echo $form_url; ?>">
 					<input type="hidden" name="action" value="hcc_reg_role"><?php echo $nonce( 'hcc_reg_role' ); // phpcs:ignore ?>
 					<h2>Confirm your role</h2>
 					<p class="sub">You started registration as:</p>
@@ -147,7 +147,7 @@ get_header();
 				</form>
 
 				<?php elseif ( 4 === $step ) : ?>
-				<form class="wiz-step" method="post" action="<?php echo $post; ?>" id="prescreen">
+				<form class="wiz-step" method="post" action="<?php echo $form_url; ?>" id="prescreen">
 					<input type="hidden" name="action" value="hcc_reg_prescreen"><?php echo $nonce( 'hcc_reg_prescreen' ); // phpcs:ignore ?>
 					<div class="form-card"><h2>About you</h2><p class="sub">A few questions so we can match you to the right shifts. No uploads yet: that's the next step. Your answers save when you press Submit.</p></div>
 
@@ -216,8 +216,8 @@ get_header();
 
 				<?php elseif ( 5 === $step || 6 === $step ) :
 					$set   = 5 === $step ? 'docs' : 'train';
-					$items = hcc_items( $id, $set );
-					$cnt   = hcc_reg_counts_text( $id, $set );
+					$items = hcc_items( $aid, $set );
+					$cnt   = hcc_reg_counts_text( $aid, $set );
 					?>
 				<div class="form-card wiz-step" data-set="<?php echo esc_attr( $set ); ?>">
 					<?php if ( 5 === $step ) : ?>
@@ -231,9 +231,9 @@ get_header();
 					<?php endif; ?>
 					<div class="progress" data-bar><i style="width:<?php echo (int) $cnt['pct']; ?>%"></i></div>
 					<div class="doc-list">
-						<?php foreach ( $items as $k => $it ) { echo hcc_item_row( $id, $k, $it, 'wizard' ); } // phpcs:ignore ?>
+						<?php foreach ( $items as $k => $it ) { echo hcc_item_row( $aid, $k, $it, 'wizard' ); } // phpcs:ignore ?>
 					</div>
-					<form class="form-actions" method="post" action="<?php echo $post; ?>">
+					<form class="form-actions" method="post" action="<?php echo $form_url; ?>">
 						<?php if ( 5 === $step ) : ?>
 							<input type="hidden" name="action" value="hcc_reg_next"><input type="hidden" name="to" value="6"><?php echo $nonce( 'hcc_reg_next' ); // phpcs:ignore ?>
 							<button class="btn btn-navy" type="submit">Save and continue to training</button>
@@ -246,14 +246,14 @@ get_header();
 				</div>
 
 				<?php else :
-					$d = hcc_counts( $id, hcc_items( $id, 'docs' ) );
-					$t = hcc_counts( $id, hcc_items( $id, 'train' ) );
+					$d = hcc_counts( $aid, hcc_items( $aid, 'docs' ) );
+					$t = hcc_counts( $aid, hcc_items( $aid, 'train' ) );
 					?>
 				<div class="form-card wiz-step">
 					<div class="success" style="grid-template-columns:1fr"><div>
 						<div class="tick"><?php echo hcc_icon( 'check', 30 ); // phpcs:ignore ?></div>
-						<h2>Thank you, <?php echo esc_html( hcc_meta( $id, 'first' ) ); ?></h2>
-						<p>Your registration is with our compliance team. Your reference is <b><?php echo esc_html( hcc_meta( $id, 'ref' ) ); ?></b>.</p>
+						<h2>Thank you, <?php echo esc_html( hcc_meta( $aid, 'first' ) ); ?></h2>
+						<p>Your registration is with our compliance team. Your reference is <b><?php echo esc_html( hcc_meta( $aid, 'ref' ) ); ?></b>.</p>
 						<ol>
 							<li>We review your answers and files, usually within 1 working day.</li>
 							<li>If anything is missing or needs replacing, we email you and show it in your portal.</li>
@@ -270,7 +270,7 @@ get_header();
 				<div class="side-card">
 					<h3>Registering as</h3>
 					<div class="side-role"><img src="<?php echo esc_url( hcc_img( $r['img'] ) ); ?>" alt="" width="56" height="56"><b><?php echo esc_html( $r['name'] ); ?></b></div>
-					<p style="font-size:14px;color:var(--muted)"><?php echo $id ? 'Your reference is <b>' . esc_html( hcc_meta( $id, 'ref' ) ) . '</b>.' : 'Your reference is created when you make your account.'; // phpcs:ignore ?></p>
+					<p style="font-size:14px;color:var(--muted)"><?php echo $aid ? 'Your reference is <b>' . esc_html( hcc_meta( $aid, 'ref' ) ) . '</b>.' : 'Your reference is created when you make your account.'; // phpcs:ignore ?></p>
 				</div>
 				<div class="side-card" style="background:var(--white);border:1px solid var(--line)">
 					<div class="lock"><?php echo hcc_icon( 'lock', 18 ); // phpcs:ignore ?><span>Your documents are stored privately. Only our compliance team can see them.</span></div>

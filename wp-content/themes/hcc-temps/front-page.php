@@ -190,8 +190,8 @@ $sectors   = hcc_filter_terms( 'job_sector' );
 	</section>
 
 	<?php
-	$posts = new WP_Query( array( 'post_type' => 'post', 'posts_per_page' => 3, 'ignore_sticky_posts' => true, 'no_found_rows' => true ) );
-	if ( $posts->have_posts() ) :
+	$blog_q = new WP_Query( array( 'post_type' => 'post', 'posts_per_page' => 3, 'ignore_sticky_posts' => true, 'no_found_rows' => true ) );
+	if ( $blog_q->have_posts() ) :
 		$fallback = array( 'kitchen.jpg', 'nurse.jpg', 'housekeeping.jpg' );
 		$blog_url = get_option( 'page_for_posts' ) ? get_permalink( get_option( 'page_for_posts' ) ) : '';
 		?>
@@ -202,7 +202,7 @@ $sectors   = hcc_filter_terms( 'job_sector' );
 					<?php if ( $blog_url ) : ?><a class="link-arrow" href="<?php echo esc_url( $blog_url ); ?>">View all posts <span aria-hidden="true">→</span></a><?php endif; ?>
 				</div>
 				<div class="posts">
-					<?php $k = 0; while ( $posts->have_posts() ) : $posts->the_post(); $cat = get_the_category(); ?>
+					<?php $k = 0; while ( $blog_q->have_posts() ) : $blog_q->the_post(); $cat = get_the_category(); ?>
 						<article class="post">
 							<a href="<?php the_permalink(); ?>" tabindex="-1" aria-hidden="true"><img src="<?php echo esc_url( has_post_thumbnail() ? get_the_post_thumbnail_url( null, 'medium_large' ) : hcc_img( $fallback[ $k % 3 ] ) ); ?>" alt="" width="720" height="540" loading="lazy"></a>
 							<?php if ( $cat ) : ?><div class="cat"><?php echo esc_html( $cat[0]->name ); ?></div><?php endif; ?>
