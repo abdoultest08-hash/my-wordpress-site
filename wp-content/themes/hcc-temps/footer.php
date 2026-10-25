@@ -2,7 +2,6 @@
 defined( 'ABSPATH' ) || exit;
 $accred = array(
 	array( 'disability-confident.png', 'Disability Confident Committed employer', 437, 204, true ),
-	array( 'rec.png', 'REC Corporate Member', 405, 93, true ),
 	array( 'iso-27001.png', 'ISO 27001 certified, information security', 190, 191, false ),
 	array( 'iso-9001.png', 'ISO 9001:2015 certified, quality management', 194, 195, false ),
 	array( 'iso-14001.png', 'ISO 14001:2015 certified, environmental management', 177, 187, false ),
@@ -16,6 +15,7 @@ $socials = array(
 );
 ?>
 <!-- Theme build <?php echo esc_html( HCC_VERSION ); ?> / HCC-Temps -->
+<?php if ( is_front_page() || is_page_template( array( 'templates/about.php', 'templates/contact.php' ) ) ) : // Accreditation banner: Home, About and Contact only. ?>
 <section class="accred" aria-labelledby="accredTitle">
 	<div class="wrap accred-head">
 		<span class="eyebrow">Accredited provider</span>
@@ -29,6 +29,7 @@ $socials = array(
 		</div>
 	</div>
 </section>
+<?php endif; ?>
 
 <footer class="footer" id="footer">
 	<div class="brand-stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
@@ -36,7 +37,7 @@ $socials = array(
 		<div class="foot-grid">
 			<div>
 				<a class="foot-logo" href="<?php echo esc_url( home_url( '/' ) ); ?>"><img src="<?php echo esc_url( hcc_logo_url() ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" width="266" height="144" loading="lazy"></a>
-				<p class="foot-about">Recruitment agency supplying registered nurses, healthcare assistants, chefs, kitchen and hospitality staff across England since 2006.</p>
+				<p class="foot-about"><?php echo esc_html( hcc_opt( 'company' ) ); ?> supplies registered nurses, care assistants, chefs and hospitality staff nationwide. Our line is open 24 hours a day.</p>
 				<div class="socials">
 					<?php foreach ( $socials as $key => $s ) : $url = hcc_opt( $key ); if ( ! $url ) { continue; } ?>
 						<a href="<?php echo esc_url( $url ); ?>" aria-label="<?php echo esc_attr( $s[0] ); ?>" rel="noopener" target="_blank"><?php echo $s[1]; // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG. ?></a>
@@ -48,14 +49,15 @@ $socials = array(
 				<ul>
 					<li><a href="<?php echo esc_url( hcc_jobs_url() ); ?>">Find jobs</a></li>
 					<li><a href="<?php echo esc_url( hcc_page_url( 'register', '/register/' ) ); ?>">Register</a></li>
-					<li><a href="<?php echo esc_url( hcc_page_url( 'upload', '/upload-documents/' ) ); ?>">Upload documents</a></li>
-					<li><a href="<?php echo esc_url( home_url( '/#how' ) ); ?>">How it works</a></li>
+					<li><a href="<?php echo esc_url( hcc_page_url( 'register', '/register/' ) . '#how' ); ?>">How registration works</a></li>
+					<li><a href="<?php echo esc_url( hcc_login_url() ); ?>">Candidate login</a></li>
 				</ul>
 			</div>
 			<div>
 				<h4>Clients</h4>
 				<ul>
 					<li><a href="<?php echo esc_url( hcc_page_url( 'clients', '/for-clients/' ) . '#request' ); ?>">Request cover</a></li>
+					<li><a href="<?php echo esc_url( hcc_page_url( 'clients', '/for-clients/' ) ); ?>">Emergency cover in 2 hours</a></li>
 					<li><a href="<?php echo esc_url( hcc_page_url( 'clients', '/for-clients/' ) ); ?>">Healthcare staffing</a></li>
 					<li><a href="<?php echo esc_url( hcc_page_url( 'clients', '/for-clients/' ) ); ?>">Hospitality staffing</a></li>
 				</ul>
@@ -65,22 +67,21 @@ $socials = array(
 				<ul>
 					<li><a href="<?php echo esc_url( hcc_page_url( 'about', '/about-us/' ) ); ?>">About us</a></li>
 					<li><a href="<?php echo esc_url( home_url( '/#blog' ) ); ?>">Blog</a></li>
-					<?php $privacy = get_privacy_policy_url(); if ( $privacy ) : ?><li><a href="<?php echo esc_url( $privacy ); ?>">Privacy policy</a></li><?php endif; ?>
 					<li><a href="<?php echo esc_url( hcc_page_url( 'contact', '/contact/' ) ); ?>">Contact</a></li>
 				</ul>
 			</div>
 			<div>
 				<h4>Contact</h4>
 				<ul class="foot-contact">
-					<li><?php echo hcc_icon( 'phone' ); ?><a href="<?php echo esc_attr( hcc_tel( hcc_opt( 'phone' ) ) ); ?>"><?php echo esc_html( hcc_opt( 'phone' ) ); ?></a></li>
+					<li><?php echo hcc_icon( 'phone' ); ?><span><a href="<?php echo esc_attr( hcc_tel( hcc_opt( 'phone' ) ) ); ?>"><?php echo esc_html( hcc_opt( 'phone' ) ); ?></a> <small class="foot-small">24 hours, 7 days</small></span></li>
 					<li><?php echo hcc_icon( 'mail' ); ?><a href="mailto:<?php echo esc_attr( hcc_opt( 'email' ) ); ?>"><?php echo esc_html( hcc_opt( 'email' ) ); ?></a></li>
-					<li><?php echo hcc_icon( 'pin' ); echo esc_html( hcc_opt( 'address' ) ); ?></li>
+					<li><?php echo hcc_icon( 'pin' ); ?><span><?php echo esc_html( hcc_opt( 'address' ) ); ?><small class="foot-small"><?php echo esc_html( hcc_opt( 'address2' ) ); ?></small></span></li>
 				</ul>
 			</div>
 		</div>
 		<div class="foot-bottom">
-			<span>© <?php echo esc_html( wp_date( 'Y' ) ); ?> HCC-Temps</span>
-			<?php if ( has_nav_menu( 'footer' ) ) { wp_nav_menu( array( 'theme_location' => 'footer', 'container' => 'nav', 'depth' => 1 ) ); } ?>
+			<span>© <?php echo esc_html( wp_date( 'Y' ) . ' ' . hcc_opt( 'company' ) ); ?> · Registered in England and Wales, company no. <?php echo esc_html( hcc_opt( 'company_no' ) ); ?></span>
+			<nav aria-label="Legal"><a href="<?php echo esc_url( hcc_page_url( 'privacy', '/privacy-policy/' ) ); ?>">Privacy policy</a><a href="<?php echo esc_url( hcc_page_url( 'terms', '/terms-and-conditions/' ) ); ?>">Terms &amp; conditions</a><a href="<?php echo esc_url( hcc_page_url( 'privacy', '/privacy-policy/' ) . '#cookies' ); ?>">Cookies</a></nav>
 		</div>
 	</div>
 </footer>

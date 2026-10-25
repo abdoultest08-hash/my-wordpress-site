@@ -39,30 +39,33 @@ add_action( 'wp_head', function () {
 
 function hcc_defaults() {
 	return array(
-		'slogan'        => 'Temping made easy',
-		'since'         => 'Care and hospitality staff since 2006',
+		'slogan'        => 'Temp made easy',
+		'since'         => 'Open 24 hours · Nationwide cover',
 		'phone'         => '0330 321 3124',
 		'email'         => 'hello@hcctemps.co.uk',
-		'address'       => 'London, UK',
+		'company'       => 'HCC-Temp Staffing Ltd',
+		'company_no'    => '11486985',
+		'address'       => 'Crown House, 94 Armley Road, Armley, Leeds LS12 2EJ',
+		'address2'      => 'Also in London · Covering the whole UK',
 		'email_jobs'    => get_option( 'admin_email' ),
-		'email_clients' => get_option( 'admin_email' ),
-		'email_general' => get_option( 'admin_email' ),
-		'hero_title'    => 'Care and hospitality work, made easy',
-		'hero_text'     => 'HCC-Temps finds nurses, carers, chefs and hospitality staff for shifts across the UK. Find your next shift, or get cover for yours.',
+		'hero_title'    => 'Temp made easy for care and hospitality',
+		'hero_text'     => 'Registered nurses, care assistants and chefs, nationwide and 24 hours a day. Find your next shift, or get cover for yours.',
 		'hero_image'    => '',
-		'stat1_num'     => '100+',
-		'stat1_label'   => 'Live vacancies',
-		'stat2_num'     => '250+',
-		'stat2_label'   => 'Client sites we staff',
-		'stat3_num'     => '3,000+',
-		'stat3_label'   => 'Registered temps',
+		'stat1_num'     => '10,000+',
+		'stat1_label'   => 'Shifts covered',
+		'stat2_num'     => '2 hrs',
+		'stat2_label'   => 'Emergency cover, nationwide',
+		'stat3_num'     => '3 days',
+		'stat3_label'   => 'Registration to ready to work',
 		'stat4_num'     => '24/7',
-		'stat4_label'   => 'Cover line for clients',
+		'stat4_label'   => 'Phone line, always open',
+		'trustpilot'    => 'https://uk.trustpilot.com/review/healthcarecateringtemps.com',
 		'social_x'      => '',
 		'social_linkedin'  => '',
 		'social_instagram' => '',
 		'social_facebook'  => '',
-		'link_valid_days'  => 14,
+		'turnstile_site'   => '',
+		'turnstile_secret' => '',
 	);
 }
 
@@ -76,17 +79,21 @@ add_action( 'customize_register', function ( $wp_customize ) {
 	$wp_customize->add_panel( 'hcc', array( 'title' => 'HCC-Temps', 'priority' => 20 ) );
 	$sections = array(
 		'hcc_contact' => array( 'Contact details and emails', array(
-			'slogan' => 'Slogan (top bar)', 'since' => 'Top bar strapline', 'phone' => 'Phone number', 'email' => 'Public email', 'address' => 'Office address',
-			'email_jobs' => 'Applications and documents go to', 'email_clients' => 'Cover requests go to', 'email_general' => 'General enquiries go to',
-			'link_valid_days' => 'Document upload link valid for (days)',
+			'slogan' => 'Slogan (top bar)', 'since' => 'Top bar strapline', 'phone' => 'Phone number', 'email' => 'Public email',
+			'company' => 'Company name (footer)', 'company_no' => 'Company number', 'address' => 'Head office address', 'address2' => 'Second line under the address',
+			'email_jobs' => 'Staffing inbox: registrations, uploads, cover requests and contact form',
 		) ),
 		'hcc_home' => array( 'Homepage', array(
 			'hero_title' => 'Hero heading', 'hero_text' => 'Hero text',
-			'stat1_num' => 'Figure 1', 'stat1_label' => 'Figure 1 label', 'stat2_num' => 'Figure 2', 'stat2_label' => 'Figure 2 label',
+			'stat1_num' => 'Figure 1 (rolls like a slot machine)', 'stat1_label' => 'Figure 1 label', 'stat2_num' => 'Figure 2', 'stat2_label' => 'Figure 2 label',
 			'stat3_num' => 'Figure 3', 'stat3_label' => 'Figure 3 label', 'stat4_num' => 'Figure 4', 'stat4_label' => 'Figure 4 label',
+			'trustpilot' => 'Trustpilot page URL',
 		) ),
 		'hcc_social' => array( 'Social links', array(
 			'social_x' => 'X (Twitter) URL', 'social_linkedin' => 'LinkedIn URL', 'social_instagram' => 'Instagram URL', 'social_facebook' => 'Facebook URL',
+		) ),
+		'hcc_security' => array( 'Robot check (Cloudflare Turnstile)', array(
+			'turnstile_site' => 'Turnstile site key', 'turnstile_secret' => 'Turnstile secret key',
 		) ),
 	);
 	$d = hcc_defaults();
@@ -94,15 +101,15 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		$wp_customize->add_section( $id, array( 'title' => $sec[0], 'panel' => 'hcc' ) );
 		foreach ( $sec[1] as $key => $label ) {
 			$is_email = 0 === strpos( $key, 'email' );
-			$is_url   = 0 === strpos( $key, 'social' );
+			$is_url   = 0 === strpos( $key, 'social' ) || 'trustpilot' === $key;
 			$wp_customize->add_setting( 'hcc_' . $key, array(
 				'default'           => $d[ $key ],
-				'sanitize_callback' => $is_email ? 'sanitize_email' : ( $is_url ? 'esc_url_raw' : ( 'link_valid_days' === $key ? 'absint' : 'sanitize_text_field' ) ),
+				'sanitize_callback' => $is_email ? 'sanitize_email' : ( $is_url ? 'esc_url_raw' : 'sanitize_text_field' ),
 			) );
 			$wp_customize->add_control( 'hcc_' . $key, array(
 				'label'   => $label,
 				'section' => $id,
-				'type'    => 'hero_text' === $key ? 'textarea' : ( $is_email ? 'email' : ( $is_url ? 'url' : ( 'link_valid_days' === $key ? 'number' : 'text' ) ) ),
+				'type'    => 'hero_text' === $key ? 'textarea' : ( $is_email ? 'email' : ( $is_url ? 'url' : 'text' ) ),
 			) );
 		}
 	}
@@ -118,7 +125,7 @@ function hcc_img( $file ) {
 
 function hcc_hero_image() {
 	$custom = hcc_opt( 'hero_image' );
-	return $custom ? $custom : hcc_img( 'hero.jpg' );
+	return $custom ? $custom : hcc_img( 'hero-nurse.jpg' );
 }
 
 function hcc_logo_url() {
@@ -185,7 +192,6 @@ function hcc_menu_fallback( $mobile = false ) {
 		array( hcc_page_url( 'register', '/register/' ), 'For candidates', is_page_template( 'templates/register.php' ) ),
 		array( hcc_page_url( 'clients', '/for-clients/' ), 'For clients', is_page_template( 'templates/clients.php' ) ),
 		array( hcc_page_url( 'about', '/about-us/' ), 'About us', is_page_template( 'templates/about.php' ) ),
-		array( get_permalink( get_option( 'page_for_posts' ) ) ? get_permalink( get_option( 'page_for_posts' ) ) : home_url( '/#blog' ), 'Blog', ( is_home() && ! is_front_page() ) || is_singular( 'post' ) ),
 		array( hcc_page_url( 'contact', '/contact/' ), 'Contact', is_page_template( 'templates/contact.php' ) ),
 	);
 	foreach ( $items as $i ) {
@@ -206,20 +212,20 @@ function hcc_login_menu( $mobile = false ) {
 	}
 	if ( is_user_logged_in() && ( hcc_is_staff() || hcc_applicant_for_user( get_current_user_id() ) ) ) {
 		$url = hcc_is_staff() ? hcc_staff_url() : hcc_portal_url();
-		printf( '<a href="%s">%s</a>', esc_url( $url ), hcc_is_staff() ? 'Staff portal' : 'My application' );
+		printf( '<a href="%s">%s</a>', esc_url( $url ), hcc_is_staff() ? 'Staff portal' : 'My portal' );
 		if ( $mobile ) {
 			printf( '<a href="%s">Log out</a>', esc_url( wp_logout_url( home_url( '/' ) ) ) );
 		}
 		return;
 	}
 	$cand  = hcc_login_url();
-	$staff = add_query_arg( 'for', 'staff', hcc_login_url() );
+	$staff = hcc_login_url( true );
 	if ( $mobile ) {
 		printf( '<a href="%s">Candidate login</a><a href="%s">Staff login</a>', esc_url( $cand ), esc_url( $staff ) );
 		return;
 	}
 	printf(
-		'<div class="nav-drop"><a href="%1$s" class="nav-drop-toggle" aria-haspopup="true"%3$s>Log in <span aria-hidden="true">▾</span></a><div class="nav-drop-menu"><a href="%1$s">Candidate login</a><a href="%2$s">Staff login</a></div></div>',
+		'<details class="nav-login"><summary%3$s>Log in</summary><div class="nav-login-menu"><a href="%1$s"><b>Candidate login</b><small>Your documents and progress</small></a><a href="%2$s"><b>Staff login</b><small>Staff and admin portal</small></a></div></details>',
 		esc_url( $cand ),
 		esc_url( $staff ),
 		is_page_template( 'templates/portal-login.php' ) ? ' aria-current="page"' : ''
@@ -249,32 +255,32 @@ function hcc_menu( $mobile = false ) {
 function hcc_faqs( $set ) {
 	$faqs = array(
 		'candidates' => array(
-			array( 'How do I apply for a job?', 'Find a role on the Job Board and press Apply. We only ask for your name, phone, email and CV. It takes about a minute.' ),
-			array( 'What documents will I need?', 'It depends on the role. Most people need photo ID, proof of right to work and proof of address. Care roles also need a DBS and training certificates, and nurses need their NMC PIN. We email you a checklist for your role after you apply.' ),
-			array( "I don't have a DBS. Can I still apply?", 'Yes. Apply as normal and tell us. We can help you apply for one.' ),
-			array( 'How quickly can I start work?', 'Once your documents are checked and your references are back, you can start picking shifts. For many people this takes a few days.' ),
+			array( 'How do I register?', 'Choose your role on the For candidates page and press Start registration. Create your account, confirm your email with the code we send, answer a few questions and upload your documents in your portal.' ),
+			array( 'What documents will I need?', 'It depends on the role. Each role on the For candidates page and every job advert lists exactly what you need, including training certificates. Missing something? You can still register and upload what you have.' ),
+			array( "I don't have a DBS. Can I still register?", 'Yes. Register as normal and choose "No" when we ask about your DBS. We will apply for an enhanced DBS for you.' ),
+			array( 'How quickly can I start work?', 'Most candidates are ready to work within 3 days of registering, once all documents are uploaded and checked.' ),
 			array( 'Can I choose my own shifts?', "Yes. Tell us when you're available and we offer you shifts that fit. You can say no to any shift." ),
 			array( 'How and when do I get paid?', 'Draft: you are paid weekly for the hours on your approved timesheets. HCC to confirm pay day and method.' ),
 		),
 		'employers' => array(
-			array( 'How quickly can you send staff?', 'For urgent cover we often fill shifts on the same day. Call us for anything needed in the next 24 hours.' ),
-			array( 'Which roles can you cover?', 'Registered nurses, healthcare assistants, senior carers, chefs, kitchen assistants, catering and hospitality staff, housekeepers, cleaners and reception staff.' ),
-			array( 'Are your staff vetted?', 'Yes. We check right to work, ID, DBS, references and role-specific training before anyone is placed with you.' ),
-			array( 'Where do you supply staff?', 'Across England, including London, the South, the Midlands and the North.' ),
+			array( 'How quickly can you send staff?', 'For emergencies we cover shifts within 2 hours, anywhere in the UK. Our line is open 24 hours: call ' . hcc_opt( 'phone' ) . '.' ),
+			array( 'Which roles can you cover?', 'Registered nurses, healthcare assistants, senior carers, chefs, kitchen and catering assistants, baristas, domestic assistants and administrative staff.' ),
+			array( 'Are your staff vetted?', 'Yes. We check right to work, ID, enhanced DBS, references and role-specific training before anyone is placed with you.' ),
+			array( 'Where do you supply staff?', 'Everywhere in the UK. Our offices are in Leeds and London and we cover nationwide.' ),
 			array( 'Can I book the same temp each week?', 'Yes. Many clients ask for the same people so residents and guests see familiar faces. We do our best to keep them with you.' ),
 			array( 'How much does it cost?', 'Draft: rates depend on the role, location and shift times. Request cover and we send you a quote. HCC to confirm wording.' ),
 		),
 		'clients' => array(
-			array( 'How quickly can you send staff?', 'For urgent cover we often fill shifts on the same day. Call us for anything in the next 24 hours.' ),
-			array( 'What checks do your staff have?', "Right to work, photo ID, enhanced DBS where needed, two references and role-specific training. Nurses' NMC PINs are checked before every placement." ),
+			array( 'How quickly can you send staff?', 'For emergencies we cover shifts within 2 hours, anywhere in the UK. Call ' . hcc_opt( 'phone' ) . ', 24 hours a day.' ),
+			array( 'What checks do your staff have?', "Right to work, photo ID, enhanced DBS, two references and role-specific training. Nurses' NMC PINs are checked on the NMC register." ),
 			array( 'Can we have the same staff each week?', 'Yes. Ask for named temps and we will keep them with you wherever we can.' ),
 			array( 'Do you offer temp to perm?', "Yes. If you'd like to keep someone permanently, talk to us about the options." ),
 			array( 'How are timesheets and invoices handled?', 'Draft: you approve timesheets weekly and we invoice you for the hours worked. HCC to confirm process.' ),
 		),
 		'contact' => array(
-			array( 'What are your office hours?', 'Draft: Monday to Friday, 8am to 6pm. Our on-call line covers urgent requests outside these hours.' ),
-			array( "I've applied. When will I hear back?", 'Usually within two working days. Uploading your documents straight away speeds things up.' ),
-			array( "How do I send my documents if I've lost the link?", "Reply to your application email or call us and we'll send a new private link." ),
+			array( 'What are your opening hours?', 'We are open 24 hours a day, 7 days a week. Call ' . hcc_opt( 'phone' ) . ' any time, including out of hours.' ),
+			array( "I've registered. When will I hear back?", 'Usually within 1 working day. Uploading all your documents in your portal speeds things up.' ),
+			array( 'I forgot my password', 'Use "Forgotten your password?" on the Log in page and we will email you a link.' ),
 			array( 'Can I visit the office?', 'Yes, by appointment. Call us first so the right person is there to meet you.' ),
 			array( 'How do I make a complaint?', 'Email us with "Complaint" in the subject. A manager will reply within five working days.' ),
 		),

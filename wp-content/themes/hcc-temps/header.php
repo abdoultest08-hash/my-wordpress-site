@@ -14,7 +14,7 @@
 		<span class="slogan"><span class="figs" aria-hidden="true"><i style="background:var(--cocoa)"></i><i style="background:var(--navy)"></i><i style="background:var(--white)"></i><i style="background:var(--coral)"></i><i style="background:var(--sun)"></i></span><?php echo esc_html( hcc_opt( 'slogan' ) ); ?> <em>· <?php echo esc_html( hcc_opt( 'since' ) ); ?></em></span>
 		<span class="quick">
 			<?php if ( is_user_logged_in() && ( hcc_is_staff() || hcc_applicant_for_user( get_current_user_id() ) ) ) : ?>
-				<a href="<?php echo esc_url( hcc_is_staff() ? hcc_staff_url() : hcc_portal_url() ); ?>" class="hide-sm"><?php echo hcc_is_staff() ? 'Staff portal' : 'My application'; ?></a>
+				<a href="<?php echo esc_url( hcc_is_staff() ? hcc_staff_url() : hcc_portal_url() ); ?>" class="hide-sm"><?php echo hcc_is_staff() ? 'Staff portal' : 'My portal'; ?></a>
 				<a href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>" class="hide-sm">Log out</a>
 			<?php else : ?>
 				<a href="<?php echo esc_url( hcc_login_url() ); ?>" class="hide-sm">Candidate login</a>
