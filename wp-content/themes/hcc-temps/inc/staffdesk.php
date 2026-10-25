@@ -347,7 +347,13 @@ function hcc_desk_list( $tab, $search = '' ) {
 function hcc_last_activity( $id ) {
 	$log = (array) hcc_meta( $id, 'log', array() );
 	$l   = end( $log );
-	return $l ? (int) $l['time'] : (int) hcc_meta( $id, 'registered', get_post_time( 'U', true, $id ) );
+	return $l && ! empty( $l['time'] ) ? (int) $l['time'] : hcc_started( $id );
+}
+
+/** When the candidate created their account (older records fall back to the record date). */
+function hcc_started( $id ) {
+	$t = (int) hcc_meta( $id, 'registered', 0 );
+	return $t ? $t : (int) get_post_time( 'U', true, $id );
 }
 
 function hcc_ago( $t ) {
@@ -378,7 +384,7 @@ add_action( 'admin_post_hcc_export', function () {
 		$cm = hcc_meta( $id, 'completed' );
 		$cl = hcc_meta( $id, 'closed' );
 		$end = is_array( $cm ) ? $cm : ( is_array( $cl ) ? $cl : array() );
-		fputcsv( $out, array( hcc_meta( $id, 'ref' ), hcc_meta( $id, 'first' ), hcc_meta( $id, 'last' ), hcc_meta( $id, 'email' ), hcc_meta( $id, 'phone' ), hcc_meta( $id, 'postcode' ), hcc_role_name( hcc_meta( $id, 'role_key' ) ), hcc_meta( $id, 'stage' ), wp_date( 'Y-m-d', (int) hcc_meta( $id, 'registered', 0 ) ), hcc_meta( $id, 'submitted' ) ? wp_date( 'Y-m-d', (int) hcc_meta( $id, 'submitted' ) ) : '', hcc_progress( $id ), $d['have'] . '/' . $d['need'], $t['have'] . '/' . $t['need'], isset( $a['british'] ) && 'Yes' === $a['british'] ? 'British/Irish' : ( isset( $a['visa'] ) ? $a['visa'] : '' ), isset( $a['dbs'] ) ? $a['dbs'] : '', $end ? wp_date( 'Y-m-d', (int) $end['at'] ) : '', $end ? $end['by'] : '', is_array( $cl ) ? $cl['outcome'] : '' ) );
+		fputcsv( $out, array( hcc_meta( $id, 'ref' ), hcc_meta( $id, 'first' ), hcc_meta( $id, 'last' ), hcc_meta( $id, 'email' ), hcc_meta( $id, 'phone' ), hcc_meta( $id, 'postcode' ), hcc_role_name( hcc_meta( $id, 'role_key' ) ), hcc_meta( $id, 'stage' ), wp_date( 'Y-m-d', hcc_started( $id ) ), hcc_meta( $id, 'submitted' ) ? wp_date( 'Y-m-d', (int) hcc_meta( $id, 'submitted' ) ) : '', hcc_progress( $id ), $d['have'] . '/' . $d['need'], $t['have'] . '/' . $t['need'], isset( $a['british'] ) && 'Yes' === $a['british'] ? 'British/Irish' : ( isset( $a['visa'] ) ? $a['visa'] : '' ), isset( $a['dbs'] ) ? $a['dbs'] : '', $end ? wp_date( 'Y-m-d', (int) $end['at'] ) : '', $end ? $end['by'] : '', is_array( $cl ) ? $cl['outcome'] : '' ) );
 	}
 	fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions
 	exit;

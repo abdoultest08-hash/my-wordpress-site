@@ -30,13 +30,17 @@
 		<nav class="nav" aria-label="Main"><?php hcc_menu(); ?></nav>
 		<div class="header-cta">
 			<a class="btn btn-ghost btn-sm" href="<?php echo esc_url( hcc_page_url( 'clients', '/for-clients/' ) . '#request' ); ?>">Request cover</a>
+			<?php if ( is_user_logged_in() ) : ?>
+			<a class="btn btn-aqua btn-sm" href="<?php echo esc_url( hcc_is_staff() ? hcc_staff_url() : hcc_portal_url() ); ?>"><?php echo hcc_is_staff() ? 'Staff portal' : 'My portal'; ?></a>
+			<?php else : ?>
 			<a class="btn btn-aqua btn-sm" href="<?php echo esc_url( hcc_page_url( 'register', '/register/' ) ); ?>">Register</a>
+			<?php endif; ?>
 		</div>
 		<button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Open menu"><span></span><span></span><span></span></button>
 	</div>
 	<nav class="mobile-nav" id="mobileNav" aria-label="Mobile" hidden>
 		<?php hcc_menu( true ); ?>
-		<a class="btn btn-aqua" href="<?php echo esc_url( hcc_page_url( 'register', '/register/' ) ); ?>">Register as a candidate</a>
+		<?php if ( ! is_user_logged_in() ) : ?><a class="btn btn-aqua" href="<?php echo esc_url( hcc_page_url( 'register', '/register/' ) ); ?>">Register as a candidate</a><?php endif; ?>
 		<a class="btn btn-ghost" href="<?php echo esc_url( hcc_page_url( 'clients', '/for-clients/' ) . '#request' ); ?>">Request cover</a>
 	</nav>
 </header>

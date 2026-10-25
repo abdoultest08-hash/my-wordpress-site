@@ -156,6 +156,19 @@ add_filter( 'two_factor_enabled_providers_for_user', function ( $providers, $use
 	return $providers;
 }, 10, 2 );
 
+add_action( 'admin_notices', function () {
+	if ( ! class_exists( 'Two_Factor_Core' ) && current_user_can( 'activate_plugins' ) ) {
+		echo '<div class="notice notice-error"><p><b>HCC-Temps:</b> install and activate the free <a href="' . esc_url( admin_url( 'plugin-install.php?s=two-factor&tab=search&type=term' ) ) . '">Two Factor</a> plugin so candidates and staff get a 6-digit code by email at every login.</p></div>';
+	}
+} );
+
+add_filter( 'two_factor_email_token_length', function () { return 6; } );
+add_filter( 'two_factor_token_email_subject', function () { return 'Your HCC-Temps login code'; } );
+add_filter( 'two_factor_token_email_message', function ( $message, $token, $user_id ) {
+	$u = get_userdata( $user_id );
+	return 'Hi ' . ( $u && $u->first_name ? $u->first_name : 'there' ) . ",\n\nYour HCC-Temps login code is:\n\n" . substr( $token, 0, 3 ) . ' ' . substr( $token, 3 ) . "\n\nIt works for 15 minutes. If you didn't try to log in, change your password and call us on " . hcc_opt( 'phone' ) . ".\n\nHCC-Temps";
+}, 10, 3 );
+
 /* ---------- Robot check ---------- */
 
 function hcc_turnstile_on() {

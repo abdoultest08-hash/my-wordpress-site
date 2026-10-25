@@ -53,7 +53,7 @@ get_header();
 	$days   = array();
 	foreach ( hcc_desk_list( 'completed' ) as $id ) {
 		$c = hcc_meta( $id, 'completed' );
-		$days[] = max( 0, ( $c['at'] - (int) hcc_meta( $id, 'registered', $c['at'] ) ) / DAY_IN_SECONDS );
+		$days[] = max( 0, ( $c['at'] - hcc_started( $id ) ) / DAY_IN_SECONDS );
 	}
 	?>
 			<div class="s-head" style="margin-top:0">
@@ -92,9 +92,9 @@ get_header();
 						$c   = hcc_counts( $id, hcc_all_items( $id ) );
 						$pct = hcc_progress( $id );
 						$dup = ! hcc_meta( $id, 'dup_ok' ) && hcc_duplicates( $id );
-						$stage = hcc_meta( $id, 'submitted' ) ? hcc_meta( $id, 'stage', 'Documents' ) : 'Registering (step ' . (int) hcc_meta( $id, 'step', 1 ) . ' of 6)';
+						$stage = hcc_meta( $id, 'submitted' ) ? hcc_meta( $id, 'stage', 'Documents' ) : 'Registering (step ' . (int) hcc_meta( $id, 'step', 1 ) . ' of 7)';
 						?>
-						<a class="d-row d-prog" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $id ) ) ); ?>"><span><b><?php echo esc_html( hcc_name( $id ) ); ?></b><?php echo $dup ? ' <em class="dup-tag">possible duplicate</em>' : ''; ?><?php echo hcc_meta( $id, 'queue' ) ? ' <em class="unsent-tag">update not sent</em>' : ''; ?><small><?php echo esc_html( hcc_meta( $id, 'ref' ) . ' · ' . $role_label( $id ) ); ?></small></span><span data-l="Started"><?php echo esc_html( wp_date( 'j M Y', (int) hcc_meta( $id, 'registered', 0 ) ) ); ?></span><span data-l="Stage"><?php echo esc_html( $stage ); ?></span><span data-l="Profile"><span class="mini-bar"><i style="width:<?php echo (int) $pct; ?>%"></i></span><?php echo (int) $pct; ?>%</span><span data-l="Missing"><?php echo (int) $c['todo']; ?></span><span data-l="Last activity"><?php echo esc_html( hcc_ago( hcc_last_activity( $id ) ) ); ?></span></a>
+						<a class="d-row d-prog" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $id ) ) ); ?>"><span><b><?php echo esc_html( hcc_name( $id ) ); ?></b><?php echo $dup ? ' <em class="dup-tag">possible duplicate</em>' : ''; ?><?php echo hcc_meta( $id, 'queue' ) ? ' <em class="unsent-tag">update not sent</em>' : ''; ?><small><?php echo esc_html( hcc_meta( $id, 'ref' ) . ' · ' . $role_label( $id ) ); ?></small></span><span data-l="Started"><?php echo esc_html( wp_date( 'j M Y', hcc_started( $id ) ) ); ?></span><span data-l="Stage"><?php echo esc_html( $stage ); ?></span><span data-l="Profile"><span class="mini-bar"><i style="width:<?php echo (int) $pct; ?>%"></i></span><?php echo (int) $pct; ?>%</span><span data-l="Missing"><?php echo (int) $c['todo']; ?></span><span data-l="Last activity"><?php echo esc_html( hcc_ago( hcc_last_activity( $id ) ) ); ?></span></a>
 					<?php endforeach; ?>
 				<?php else : ?>
 					<div class="d-row d-hd d-done"><span>Candidate</span><span>Application started</span><span><?php echo 'completed' === $tab ? 'Signed off' : 'Closed'; ?></span><span><?php echo 'completed' === $tab ? 'Days' : 'Outcome'; ?></span><span>Signed off by</span><span></span></div>
@@ -102,7 +102,7 @@ get_header();
 						$e = hcc_meta( $id, 'completed' === $tab ? 'completed' : 'closed' );
 						$e = is_array( $e ) ? $e : array( 'at' => 0, 'by' => '' );
 						?>
-						<div class="d-row d-done"><span><b><?php echo esc_html( hcc_name( $id ) ); ?></b><small><?php echo esc_html( hcc_meta( $id, 'ref' ) . ' · ' . $role_label( $id ) . ( ! empty( $e['why'] ) ? ' · ' . $e['why'] : '' ) ); ?></small></span><span data-l="Started"><?php echo esc_html( wp_date( 'j M Y', (int) hcc_meta( $id, 'registered', 0 ) ) ); ?></span><span data-l="<?php echo 'completed' === $tab ? 'Signed off' : 'Closed'; ?>"><?php echo esc_html( wp_date( 'j M Y', (int) $e['at'] ) ); ?></span><span data-l="<?php echo 'completed' === $tab ? 'Days' : 'Outcome'; ?>"><?php echo esc_html( 'completed' === $tab ? max( 0, round( ( $e['at'] - (int) hcc_meta( $id, 'registered', $e['at'] ) ) / DAY_IN_SECONDS ) ) : $e['outcome'] ); ?></span><span data-l="By"><?php echo esc_html( $e['by'] ); ?></span><span><a class="link-btn" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $id ) ) ); ?>">Open file</a></span></div>
+						<div class="d-row d-done"><span><b><?php echo esc_html( hcc_name( $id ) ); ?></b><small><?php echo esc_html( hcc_meta( $id, 'ref' ) . ' · ' . $role_label( $id ) . ( ! empty( $e['why'] ) ? ' · ' . $e['why'] : '' ) ); ?></small></span><span data-l="Started"><?php echo esc_html( wp_date( 'j M Y', hcc_started( $id ) ) ); ?></span><span data-l="<?php echo 'completed' === $tab ? 'Signed off' : 'Closed'; ?>"><?php echo esc_html( wp_date( 'j M Y', (int) $e['at'] ) ); ?></span><span data-l="<?php echo 'completed' === $tab ? 'Days' : 'Outcome'; ?>"><?php echo esc_html( 'completed' === $tab ? max( 0, round( ( $e['at'] - hcc_started( $id ) ) / DAY_IN_SECONDS ) ) : $e['outcome'] ); ?></span><span data-l="By"><?php echo esc_html( $e['by'] ); ?></span><span><a class="link-btn" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $id ) ) ); ?>">Open file</a></span></div>
 					<?php endforeach; ?>
 				<?php endif; ?>
 				<?php if ( ! $lists[ $tab ] ) : ?><p class="hint" style="padding:12px 6px">No candidates here<?php echo $search ? ' matching "' . esc_html( $search ) . '"' : ''; ?>.</p><?php endif; ?>
@@ -150,12 +150,14 @@ get_header();
 				<div>
 					<h1><?php echo esc_html( hcc_name( $id ) ); ?></h1>
 					<div class="pct"><div class="progress"><i style="width:<?php echo (int) $pct; ?>%"></i></div><b>Profile <?php echo (int) $pct; ?>% complete</b></div>
-					<p><?php echo esc_html( $role_label( $id ) ); ?> · <b><?php echo esc_html( hcc_meta( $id, 'ref' ) ); ?></b> · Registered <?php echo esc_html( wp_date( 'j M Y, H:i', (int) hcc_meta( $id, 'registered', 0 ) ) ); ?> · <?php echo esc_html( hcc_meta( $id, 'email' ) ); ?> · <?php echo esc_html( hcc_meta( $id, 'phone' ) ); ?><?php echo hcc_meta( $id, 'submitted' ) ? '' : ' · <b>Still registering (step ' . (int) hcc_meta( $id, 'step', 1 ) . ' of 6)</b>'; ?></p>
+					<p><?php echo esc_html( $role_label( $id ) ); ?> · <b><?php echo esc_html( hcc_meta( $id, 'ref' ) ); ?></b> · Registered <?php echo esc_html( wp_date( 'j M Y, H:i', hcc_started( $id ) ) ); ?> · <?php echo esc_html( hcc_meta( $id, 'email' ) ); ?> · <?php echo esc_html( hcc_meta( $id, 'phone' ) ); ?><?php echo hcc_meta( $id, 'submitted' ) ? '' : ' · <b>Still registering (step ' . (int) hcc_meta( $id, 'step', 1 ) . ' of 7)</b>'; ?></p>
 				</div>
 				<div class="s-actions">
 					<form method="post" action="<?php echo $post; ?>" class="s-stage"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="stage"><label>Stage <select name="stage" onchange="this.form.submit()"><?php foreach ( hcc_stage_options() as $o ) : ?><option<?php selected( hcc_meta( $id, 'stage' ), $o ); ?>><?php echo esc_html( $o ); ?></option><?php endforeach; ?></select></label><noscript><button class="btn btn-ghost btn-sm" type="submit">Set</button></noscript></form>
+					<?php if ( 'in_progress' === $state ) : ?>
 					<form method="post" action="<?php echo $post; ?>"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="approve_all"><button class="btn btn-aqua btn-sm" type="submit">Approve all uploaded</button></form>
 					<form method="post" action="<?php echo $post; ?>"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="complete_all"><button class="btn btn-sun btn-sm" type="submit">Complete profile (100%)</button></form>
+					<?php endif; ?>
 					<a class="btn btn-ghost btn-sm" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=hcc_zip&a=' . $id ), 'hcc_zip_' . $id ) ); ?>">Download all (zip)</a>
 					<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=hcc_report&a=' . $id ), 'hcc_report_' . $id ) ); ?>">Candidate report</a>
 					<?php if ( $closed ) : ?>

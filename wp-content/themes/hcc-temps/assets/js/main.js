@@ -208,7 +208,7 @@
     row.classList.add('uploading'); msg.textContent = files.length ? 'Uploading…' : 'Saving…';
     Promise.all(files.map(shrink)).then(function (list) {
       list.forEach(function (f) { fd.append('file[]', f, f.name); });
-      return fetch(form.action, { method: 'POST', body: fd, credentials: 'same-origin' });
+      return fetch(form.getAttribute('action'), { method: 'POST', body: fd, credentials: 'same-origin' });
     }).then(function (r) { return r.json(); }).then(function (j) {
       if (!j.success) { row.classList.remove('uploading'); msg.textContent = (j.data && j.data.message) || 'That did not work. Please try again.'; return; }
       var tmp = document.createElement('div'); tmp.innerHTML = j.data.html;

@@ -243,7 +243,8 @@ function hcc_reg_save_item( $id, $key, $uploads, $changes ) {
 	}
 	if ( array_key_exists( 'pin', $changes ) ) {
 		$clean['pin'] = strtoupper( sanitize_text_field( $changes['pin'] ) );
-		if ( $clean['pin'] && $after ) {
+		$old_pin      = hcc_file_state( $id, $key );
+		if ( $clean['pin'] && $after && ( empty( $old_pin['pin'] ) || $old_pin['pin'] !== $clean['pin'] ) ) {
 			hcc_set_review( $id, $key, '' );
 			hcc_queue_upload( $id, $key, true );
 		}

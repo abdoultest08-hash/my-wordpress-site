@@ -185,7 +185,7 @@ function hcc_store_item( $id, $key, $item, $uploads ) {
 	$saved = array();
 	$prev  = hcc_file_state( $id, $key );
 	$v     = ! empty( $prev['files'] ) ? ( isset( $prev['v'] ) ? (int) $prev['v'] : 1 ) + 1 : 1;
-	$base  = $item['num'] . ' - ' . sanitize_file_name( remove_accents( hcc_name( $id ) ) ) . ' - ' . $item['short'] . ( $v > 1 ? ' (v' . $v . ')' : '' );
+	$base  = $item['num'] . ' - ' . trim( preg_replace( '/[^A-Za-z0-9 \'-]+/', '', remove_accents( hcc_name( $id ) ) ) ) . ' - ' . $item['short'] . ( $v > 1 ? ' (v' . $v . ')' : '' );
 	$base  = str_replace( array( '/', '\\', ':', '*', '?', '"', '<', '>', '|' ), '-', $base );
 	$dir   = hcc_private_dir( $id );
 	$many  = count( $uploads ) > 1;
