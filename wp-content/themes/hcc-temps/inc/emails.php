@@ -152,6 +152,12 @@ function hcc_email_update( $id, $queue ) {
 	return hcc_mail( hcc_meta( $id, 'email' ), ( $action ? 'Action needed: ' : '' ) . 'Update on your HCC-Temps registration', $body, array(), hcc_opt( 'email_jobs' ) );
 }
 
+/** Sent to the old address after an email change, so a change nobody asked for doesn't go unnoticed. */
+function hcc_email_changed_notice( $id, $old ) {
+	return hcc_mail( $old, 'Your HCC-Temps email address was changed',
+		'<p>Hi ' . esc_html( hcc_meta( $id, 'first' ) ) . ',</p><p>The email address for your HCC-Temps registration (' . esc_html( hcc_meta( $id, 'ref' ) ) . ') was changed to <b>' . esc_html( hcc_meta( $id, 'email' ) ) . '</b>. From now on, log in with the new address.</p><p>If you didn\'t ask for this, please call us straight away on <b>' . esc_html( hcc_opt( 'phone' ) ) . '</b>.</p>', array(), hcc_opt( 'email_jobs' ) );
+}
+
 function hcc_email_ready( $id ) {
 	return hcc_mail( hcc_meta( $id, 'email' ), 'You\'re ready to work with HCC-Temps',
 		'<p>Hi ' . esc_html( hcc_meta( $id, 'first' ) ) . ',</p><p>All your checks are complete and you\'re ready to work. We\'ll be in touch about shifts near you.</p>' . hcc_button( hcc_portal_url(), 'See my portal' ), array(), hcc_opt( 'email_jobs' ) );

@@ -20,7 +20,17 @@ if ( $aid && ! $preview && ! hcc_meta( $aid, 'submitted' ) ) {
 	wp_safe_redirect( hcc_apply_url() );
 	exit;
 }
-$ok_msgs = array( 'notified' => 'Thank you. We have let the compliance team know about your new files.', 'nothing' => 'There are no new files to tell the team about.', 'answers' => 'Your answers have been saved.' );
+$ok_msgs = array( 'notified' => 'Thank you. We have let the compliance team know about your new files.', 'nothing' => 'There are no new files to tell the team about.', 'answers' => 'Your answers have been saved.', 'email_changed' => 'Your email has been changed. Use the new address next time you log in.', 'email_code_sent' => 'We sent a code to your new email address. Enter it under "Change my email address" below.' );
+$email_errs = array(
+	'email_code'     => 'That code isn\'t right. Check the email we sent to your new address.',
+	'email_code_old' => 'That code has expired or was tried too many times. Please start again.',
+	'email_wait'     => 'We sent a code less than 30 seconds ago. Please wait a moment.',
+	'email_taken'    => 'There is already an account with that email. Please call us if it\'s yours.',
+	'email_email'    => 'Please enter a valid email address.',
+	'email_same'     => 'That is already your email address.',
+	'email_user'     => 'We could not change your email. Please call us.',
+);
+$err = isset( $_GET['hcc_err'] ) ? sanitize_key( $_GET['hcc_err'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 $ok      = isset( $_GET['hcc_ok'] ) ? sanitize_key( $_GET['hcc_ok'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 get_header();
 ?>
@@ -105,6 +115,34 @@ get_header();
 				<?php endforeach; ?>
 				</div>
 				<?php if ( ! $preview && 'completed' !== $state && 'closed' !== $state ) : ?><div class="form-actions" style="margin-top:14px"><a class="btn btn-ghost btn-sm" href="<?php echo esc_url( add_query_arg( 'step', 4, hcc_apply_url() ) ); ?>">Change my answers</a></div><?php endif; ?>
+				<?php if ( ! $preview && 'closed' !== $state ) :
+					$pend = (array) hcc_meta( $aid, 'email_pending', array() );
+					$pending = ! empty( $pend['email'] ) && time() < (int) $pend['exp'];
+					?>
+				<details class="email-fix" id="change-email"<?php echo $pending || isset( $email_errs[ $err ] ) || 'email_code_sent' === $ok ? ' open' : ''; ?>>
+					<summary>Change my email address</summary>
+					<?php if ( isset( $email_errs[ $err ] ) ) : ?><p class="form-alert" role="alert"><?php echo esc_html( $email_errs[ $err ] ); ?></p><?php endif; ?>
+					<?php if ( $pending ) : ?>
+						<p class="hint">We sent a 6-digit code to <b><?php echo esc_html( $pend['email'] ); ?></b>. Enter it to finish the change. It works for 15 minutes.</p>
+						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+							<input type="hidden" name="action" value="hcc_portal_email"><input type="hidden" name="stage" value="confirm"><input type="hidden" name="hcc_nonce" value="<?php echo esc_attr( wp_create_nonce( 'hcc_portal_email' ) ); ?>">
+							<div class="f" style="max-width:260px"><label for="ecode">6-digit code</label><input class="code-input" type="text" id="ecode" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" required></div>
+							<div class="form-actions" style="margin-top:10px"><button class="btn btn-navy btn-sm" type="submit">Confirm new email</button></div>
+						</form>
+						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:8px">
+							<input type="hidden" name="action" value="hcc_portal_email"><input type="hidden" name="stage" value="cancel"><input type="hidden" name="hcc_nonce" value="<?php echo esc_attr( wp_create_nonce( 'hcc_portal_email' ) ); ?>">
+							<button class="link-btn" type="submit">Cancel the change</button>
+						</form>
+					<?php else : ?>
+						<p class="hint">Your email is <b><?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?></b>. It's also your username. We'll send a code to the new address to check it's yours.</p>
+						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+							<input type="hidden" name="action" value="hcc_portal_email"><input type="hidden" name="hcc_nonce" value="<?php echo esc_attr( wp_create_nonce( 'hcc_portal_email' ) ); ?>">
+							<div class="f" style="max-width:420px"><label for="pnew">New email address</label><input type="email" id="pnew" name="new_email" autocomplete="email" required></div>
+							<div class="form-actions" style="margin-top:10px"><button class="btn btn-ghost btn-sm" type="submit">Send code to new email</button></div>
+						</form>
+					<?php endif; ?>
+				</details>
+				<?php endif; ?>
 			</details>
 
 			<div class="p-card" data-set="docs" id="documents">

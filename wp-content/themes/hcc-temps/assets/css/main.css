@@ -1217,3 +1217,22 @@ form.inline { display: inline; }
 
 /* A form that is sending: dim its buttons */
 form.is-sending button[type=submit], form.is-sending .btn[type=submit] { opacity: .6; cursor: progress; }
+
+/* Change email (registration code step, portal, staff folder) */
+.email-fix { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 12px; }
+.email-fix > summary { cursor: pointer; font-weight: 700; color: var(--navy); font-size: 14px; }
+.email-fix[open] > summary { margin-bottom: 10px; }
+.email-fix .hint { margin: 6px 0; }
+
+/* Sister company link: HCC Care & Support (home care) */
+.homecare-band { background: var(--paper, #F4F8F7); border-top: 1px solid var(--line); padding-block: 44px; }
+.homecare-band .wrap { display: grid; grid-template-columns: 200px 1fr auto; gap: 28px; align-items: center; }
+.homecare-band .hc-logo img { width: 100%; height: auto; display: block; background: var(--white); border-radius: 18px; padding: 10px 14px; }
+.homecare-band h2 { font-size: clamp(22px, 2.4vw, 30px); color: var(--ink); margin-top: 6px; }
+.homecare-band p { margin-top: 8px; color: var(--muted); max-width: 60ch; }
+@media (max-width: 760px) { .homecare-band .wrap { grid-template-columns: 1fr; text-align: center; justify-items: center; gap: 16px; } .homecare-band .hc-logo { max-width: 200px; } .homecare-band p { margin-inline: auto; } }
+.homecare-card { display: grid; grid-template-columns: 120px 1fr; gap: 16px; align-items: center; border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; background: var(--white); margin-top: 22px; }
+.homecare-card img { width: 100%; height: auto; display: block; }
+.homecare-card b { color: var(--ink); }
+.homecare-card p { margin: 4px 0 6px; color: var(--muted); font-size: 14px; }
+.screen-reader-text { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap; }

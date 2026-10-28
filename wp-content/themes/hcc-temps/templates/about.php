@@ -76,6 +76,8 @@ get_header();
 		</div>
 	</section>
 
+	<?php get_template_part( 'template-parts/homecare', null, array( 'style' => 'band' ) ); ?>
+
 	<section class="cta" aria-label="Work with us">
 		<div class="wrap">
 			<h2>Work with HCC-Temps</h2>

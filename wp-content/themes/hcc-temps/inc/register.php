@@ -154,6 +154,111 @@ add_action( 'admin_post_hcc_reg_resend', function () {
 	hcc_reg_back( 2, array( 'hcc_ok' => 'resent' ) );
 } );
 
+/* ---------- Changing the email address ---------- */
+
+/**
+ * Move a candidate to a new email: their WordPress login (which is the email), the account email and the record.
+ * Keeps them logged in when it's their own change. Returns true or a WP_Error with a message to show.
+ */
+function hcc_change_email( $id, $new, $by ) {
+	global $wpdb;
+	$new = strtolower( trim( $new ) );
+	$old = hcc_meta( $id, 'email' );
+	$uid = (int) hcc_meta( $id, 'user_id' );
+	if ( ! is_email( $new ) ) {
+		return new WP_Error( 'email', 'Please enter a valid email address.' );
+	}
+	if ( $new === strtolower( $old ) ) {
+		return new WP_Error( 'same', 'That is already the email on this registration.' );
+	}
+	$taken = email_exists( $new ) ? email_exists( $new ) : username_exists( $new );
+	if ( $taken && (int) $taken !== $uid ) {
+		return new WP_Error( 'taken', 'There is already an account with that email. If it\'s yours, log in with it instead, or call us.' );
+	}
+	if ( ! $uid || ! get_userdata( $uid ) ) {
+		return new WP_Error( 'user', 'We could not find the login for this registration. Please call us.' );
+	}
+	add_filter( 'send_email_change_email', '__return_false' ); // We send our own notice.
+	$r = wp_update_user( array( 'ID' => $uid, 'user_email' => $new ) );
+	remove_filter( 'send_email_change_email', '__return_false' );
+	if ( is_wp_error( $r ) ) {
+		return $r;
+	}
+	$wpdb->update( $wpdb->users, array( 'user_login' => $new ), array( 'ID' => $uid ) ); // The login name is the email.
+	clean_user_cache( $uid );
+	hcc_set( $id, 'email', $new );
+	hcc_log( $id, 'Email changed from ' . $old . ' to ' . $new, $by );
+	if ( get_current_user_id() === $uid ) {
+		wp_set_auth_cookie( $uid, true ); // The login cookie holds the login name, so renew it.
+	}
+	return true;
+}
+
+/* Registration, before the email is confirmed: the address was typed wrongly, so just switch it and send a new code. */
+add_action( 'admin_post_hcc_reg_email', function () {
+	$id = hcc_reg_require( 'hcc_reg_email' );
+	if ( hcc_meta( $id, 'verified' ) ) {
+		hcc_reg_back( max( 3, (int) hcc_meta( $id, 'step', 3 ) ) );
+	}
+	$n = (int) hcc_meta( $id, 'email_changes', 0 );
+	if ( $n >= 5 ) {
+		hcc_reg_back( 2, array( 'hcc_err' => 'email_many' ) );
+	}
+	$r = hcc_change_email( $id, hcc_field( 'new_email', 'email' ), 'Candidate' );
+	if ( is_wp_error( $r ) ) {
+		hcc_reg_back( 2, array( 'hcc_err' => 'email_' . $r->get_error_code() ) );
+	}
+	hcc_set( $id, 'email_changes', $n + 1 );
+	hcc_reg_send_code( $id );
+	hcc_reg_back( 2, array( 'hcc_ok' => 'email_changed' ) );
+} );
+
+/* Portal, after the email is confirmed: a code goes to the new address and the change happens once it's entered. */
+add_action( 'admin_post_hcc_portal_email', function () {
+	$id   = hcc_reg_require( 'hcc_portal_email' );
+	$back = function ( $args ) { wp_safe_redirect( add_query_arg( $args, hcc_portal_url() ) . '#answers' ); exit; };
+	if ( 'confirm' === hcc_field( 'stage' ) ) {
+		$p     = (array) hcc_meta( $id, 'email_pending', array() );
+		$code  = preg_replace( '/\D/', '', hcc_field( 'code' ) );
+		$tries = isset( $p['tries'] ) ? (int) $p['tries'] : 0;
+		if ( empty( $p['email'] ) || time() > (int) $p['exp'] || $tries >= 5 ) {
+			delete_post_meta( $id, '_hcc_email_pending' );
+			$back( array( 'hcc_err' => 'email_code_old' ) );
+		}
+		if ( ! hash_equals( (string) $p['hash'], hcc_code_hash( $id, $code ) ) ) {
+			$p['tries'] = $tries + 1;
+			hcc_set( $id, 'email_pending', $p );
+			$back( array( 'hcc_err' => 'email_code' ) );
+		}
+		$old = hcc_meta( $id, 'email' );
+		$r   = hcc_change_email( $id, $p['email'], 'Candidate' );
+		delete_post_meta( $id, '_hcc_email_pending' );
+		if ( is_wp_error( $r ) ) {
+			$back( array( 'hcc_err' => 'email_' . $r->get_error_code() ) );
+		}
+		hcc_email_changed_notice( $id, $old );
+		$back( array( 'hcc_ok' => 'email_changed' ) );
+	}
+	if ( 'cancel' === hcc_field( 'stage' ) ) {
+		delete_post_meta( $id, '_hcc_email_pending' );
+		$back( array() );
+	}
+	$new = strtolower( hcc_field( 'new_email', 'email' ) );
+	$p   = (array) hcc_meta( $id, 'email_pending', array() );
+	if ( ! empty( $p['sent'] ) && time() - (int) $p['sent'] < 30 ) {
+		$back( array( 'hcc_err' => 'email_wait' ) );
+	}
+	$taken = email_exists( $new ) ? email_exists( $new ) : username_exists( $new );
+	if ( ! is_email( $new ) || $new === strtolower( hcc_meta( $id, 'email' ) ) || ( $taken && (int) $taken !== (int) hcc_meta( $id, 'user_id' ) ) ) {
+		$back( array( 'hcc_err' => ! is_email( $new ) ? 'email_email' : ( $taken ? 'email_taken' : 'email_same' ) ) );
+	}
+	$code = (string) wp_rand( 100000, 999999 );
+	hcc_set( $id, 'email_pending', array( 'email' => $new, 'hash' => hcc_code_hash( $id, $code ), 'exp' => time() + 15 * MINUTE_IN_SECONDS, 'sent' => time(), 'tries' => 0 ) );
+	hcc_email_code( $new, hcc_meta( $id, 'first' ), $code );
+	hcc_log( $id, 'Asked to change email to ' . $new . ' (code sent to the new address)', 'Candidate' );
+	$back( array( 'hcc_ok' => 'email_code_sent' ) );
+} );
+
 /* Logging in later with the emailed login code also proves the email address. */
 add_action( 'two_factor_user_authenticated', function ( $user ) {
 	$id = hcc_applicant_for_user( $user->ID );

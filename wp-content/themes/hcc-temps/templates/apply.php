@@ -42,6 +42,11 @@ $errs   = array(
 	'code_old'    => 'That code has expired. Press "send a new code".',
 	'code_locked' => 'Too many tries. Press "send a new code".',
 	'code_wait'   => 'We sent a code less than 30 seconds ago. Check your inbox and spam folder, then try again.',
+	'email_email' => 'Please enter a valid email address.',
+	'email_same'  => 'That is already the email on your registration. Check your spam folder, or send a new code.',
+	'email_taken' => 'There is already an account with that email. If it\'s yours, log in with it instead, or call us.',
+	'email_user'  => 'We could not change the email. Please call us.',
+	'email_many'  => 'The email has been changed too many times. Please call us and we\'ll sort it out.',
 	'upload'      => isset( $_GET['msg'] ) ? sanitize_text_field( wp_unslash( $_GET['msg'] ) ) : 'The upload did not work. Please try again.', // phpcs:ignore WordPress.Security.NonceVerification
 );
 $err = isset( $_GET['hcc_err'] ) ? sanitize_key( $_GET['hcc_err'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
@@ -120,7 +125,7 @@ get_header();
 				<div class="form-card wiz-step">
 					<h2>Check your email</h2>
 					<p class="sub">We've sent a 6-digit code to <b><?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?></b>. Enter it below to confirm your email address. The code works for 10 minutes.</p>
-					<?php if ( isset( $_GET['hcc_ok'] ) ) : // phpcs:ignore ?><p class="form-ok">A new code is on its way to <?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?>. Only the newest code works.</p><?php endif; ?>
+					<?php if ( isset( $_GET['hcc_ok'] ) ) : // phpcs:ignore ?><p class="form-ok"><?php echo 'email_changed' === $_GET['hcc_ok'] ? 'Email changed. ' : ''; // phpcs:ignore ?>A new code is on its way to <?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?>. Only the newest code works.</p><?php endif; ?>
 					<form method="post" action="<?php echo $form_url; ?>" class="code-form">
 						<input type="hidden" name="action" value="hcc_reg_verify"><?php echo $nonce( 'hcc_reg_verify' ); // phpcs:ignore ?>
 						<div class="f" style="max-width:260px"><label for="code">6-digit code</label><input class="code-input" type="text" id="code" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" pattern="[0-9 ]*" required></div>
@@ -130,6 +135,15 @@ get_header();
 						<input type="hidden" name="action" value="hcc_reg_resend"><?php echo $nonce( 'hcc_reg_resend' ); // phpcs:ignore ?>
 						<p class="form-note">Not arrived? Check your spam folder or <button class="link-btn" type="submit">send a new code</button>.</p>
 					</form>
+					<details class="email-fix"<?php echo 0 === strpos( $err, 'email_' ) ? ' open' : ''; ?>>
+						<summary>Wrong email address? Change it</summary>
+						<form method="post" action="<?php echo $form_url; ?>">
+							<input type="hidden" name="action" value="hcc_reg_email"><?php echo $nonce( 'hcc_reg_email' ); // phpcs:ignore ?>
+							<div class="f" style="max-width:420px"><label for="new_email">Correct email address</label><input type="email" id="new_email" name="new_email" autocomplete="email" required></div>
+							<p class="hint">This also becomes your username. We'll send a new code to it.</p>
+							<div class="form-actions" style="margin-top:10px"><button class="btn btn-ghost btn-sm" type="submit">Change email and send code</button></div>
+						</form>
+					</details>
 				</div>
 
 				<?php elseif ( 3 === $step ) : ?>

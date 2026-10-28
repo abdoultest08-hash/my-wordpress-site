@@ -20,7 +20,7 @@ $msgs = array(
 	'approved' => 'Approved. Added to the update for the candidate.', 'queued' => 'Added to the update for the candidate. Press "Preview and send" when you are ready.', 'note' => 'Saved to the profile.', 'sent' => 'Update email sent to the candidate.',
 	'check' => 'Check saved.', 'check_result' => 'Choose a result before saving the check.', 'ref' => 'Reference details saved.', 'need_note' => 'Please add a note before marking this complete.', 'override_done' => 'Items marked complete.',
 	'finished' => 'Onboarding finished. Moved to Staff completed.', 'cant_finish' => 'Finish needs: profile 100%, declaration sent and signed, and no unsent updates.', 'closed' => 'Application closed and moved to Withdrawn / not qualified.', 'reopened' => 'Application reopened.',
-	'close_need' => 'Add a reason and your name to close the application.', 'staff_added' => 'Staff member added. They have been emailed a link to set their password.', 'staff_exists' => 'There is already an account with that email.', 'error' => 'Something went wrong. Please try again.', 'nothing' => 'Tick at least one item first.', 'approved_some' => 'Uploaded items approved. Items with nothing uploaded were skipped: use "Mark complete (override)" for those.', 'approve_none' => 'Nothing was approved: the ticked items have no upload. Use "Mark complete (override)" and add a note.',
+	'close_need' => 'Add a reason and your name to close the application.', 'staff_added' => 'Staff member added. They have been emailed a link to set their password.', 'staff_exists' => 'There is already an account with that email.', 'error' => 'Something went wrong. Please try again.', 'nothing' => 'Tick at least one item first.', 'email_changed' => 'Email changed. The candidate logs in with the new address; both addresses were told.', 'email_taken' => 'Another account already uses that email.', 'email_email' => 'That is not a valid email address.', 'email_same' => 'That is already the candidate\'s email.', 'email_user' => 'This registration has no login to update.', 'approved_some' => 'Uploaded items approved. Items with nothing uploaded were skipped: use "Mark complete (override)" for those.', 'approve_none' => 'Nothing was approved: the ticked items have no upload. Use "Mark complete (override)" and add a note.',
 );
 $form_url = esc_url( admin_url( 'admin-post.php' ) );
 $me   = hcc_staff_name();
@@ -41,7 +41,7 @@ get_header();
 
 	<section class="section staff-body">
 		<div class="wrap">
-			<?php if ( isset( $msgs[ $msg ] ) ) : ?><p class="<?php echo in_array( $msg, array( 'cant_finish', 'need_note', 'close_need', 'check_result', 'staff_exists', 'error', 'nothing', 'approve_none', 'approved_some' ), true ) ? 'form-alert' : 'form-ok'; ?>" role="status"><?php echo esc_html( $msgs[ $msg ] ); ?></p><?php endif; ?>
+			<?php if ( isset( $msgs[ $msg ] ) ) : ?><p class="<?php echo in_array( $msg, array( 'cant_finish', 'need_note', 'close_need', 'check_result', 'staff_exists', 'error', 'nothing', 'approve_none', 'approved_some', 'email_taken', 'email_email', 'email_same', 'email_user' ), true ) ? 'form-alert' : 'form-ok'; ?>" role="status"><?php echo esc_html( $msgs[ $msg ] ); ?></p><?php endif; ?>
 
 <?php if ( 'dash' === $view ) :
 	$search = hcc_field_get( 'q' );
@@ -280,6 +280,13 @@ get_header();
 				<aside>
 					<details open class="p-sec p-card" id="answers">
 						<summary class="p-card-head"><h2>Pre-screening answers</h2><span class="p-count">What the candidate told us first</span></summary>
+						<details class="email-fix" style="margin:0 0 12px;padding-top:0;border-top:0"><summary>Change email address</summary>
+							<form method="post" action="<?php echo $form_url; ?>"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="email">
+								<p class="hint">Now: <b><?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?></b>. The new email becomes their login. Both addresses get a notice.</p>
+								<div class="f"><label for="sne">New email address</label><input type="email" id="sne" name="new_email" required></div>
+								<div class="form-actions" style="margin-top:8px"><button class="btn btn-ghost btn-sm" type="submit">Change email</button></div>
+							</form>
+						</details>
 						<?php $i = 0;
 						foreach ( hcc_answer_groups( $aid, false ) as $title => $rows ) : ?>
 							<details class="det"<?php echo $i++ < 2 ? ' open' : ''; ?>><summary><?php echo esc_html( $title ); ?></summary><dl><?php foreach ( $rows as $k => $v ) : ?><div><dt><?php echo esc_html( $k ); ?></dt><dd><?php echo esc_html( '' !== (string) $v ? $v : '—' ); ?></dd></div><?php endforeach; ?></dl></details>

@@ -60,6 +60,7 @@ function hcc_defaults() {
 		'stat4_num'     => '24/7',
 		'stat4_label'   => 'Phone line, always open',
 		'trustpilot'    => 'https://uk.trustpilot.com/review/healthcarecateringtemps.com',
+		'homecare_url'  => 'https://hcchome-care.co.uk/',
 		'social_x'      => '',
 		'social_linkedin'  => '',
 		'social_instagram' => '',
@@ -87,7 +88,7 @@ add_action( 'customize_register', function ( $wp_customize ) {
 			'hero_title' => 'Hero heading', 'hero_text' => 'Hero text',
 			'stat1_num' => 'Figure 1 (rolls like a slot machine)', 'stat1_label' => 'Figure 1 label', 'stat2_num' => 'Figure 2', 'stat2_label' => 'Figure 2 label',
 			'stat3_num' => 'Figure 3', 'stat3_label' => 'Figure 3 label', 'stat4_num' => 'Figure 4', 'stat4_label' => 'Figure 4 label',
-			'trustpilot' => 'Trustpilot page URL',
+			'trustpilot' => 'Trustpilot page URL', 'homecare_url' => 'Home care website (HCC Care & Support)',
 		) ),
 		'hcc_social' => array( 'Social links', array(
 			'social_x' => 'X (Twitter) URL', 'social_linkedin' => 'LinkedIn URL', 'social_instagram' => 'Instagram URL', 'social_facebook' => 'Facebook URL',
@@ -101,7 +102,7 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		$wp_customize->add_section( $id, array( 'title' => $sec[0], 'panel' => 'hcc' ) );
 		foreach ( $sec[1] as $key => $label ) {
 			$is_email = 0 === strpos( $key, 'email' );
-			$is_url   = 0 === strpos( $key, 'social' ) || 'trustpilot' === $key;
+			$is_url   = 0 === strpos( $key, 'social' ) || in_array( $key, array( 'trustpilot', 'homecare_url' ), true );
 			$wp_customize->add_setting( 'hcc_' . $key, array(
 				'default'           => $d[ $key ],
 				'sanitize_callback' => $is_email ? 'sanitize_email' : ( $is_url ? 'esc_url_raw' : 'sanitize_text_field' ),

@@ -278,6 +278,19 @@ add_action( 'admin_post_hcc_desk', function () {
 		hcc_desk_back( $id, array( 'msg' => 'reopened' ) );
 	}
 
+	/* Change the candidate's email (e.g. they phoned in): login, account and record all move to the new address. */
+	if ( 'email' === $do ) {
+		$old = hcc_meta( $id, 'email' );
+		$r   = hcc_change_email( $id, hcc_field( 'new_email', 'email' ), $me );
+		if ( is_wp_error( $r ) ) {
+			hcc_desk_back( $id, array( 'msg' => 'email_' . $r->get_error_code() ), 'answers' );
+		}
+		delete_post_meta( $id, '_hcc_email_pending' );
+		hcc_email_changed_notice( $id, $old );
+		hcc_mail( hcc_meta( $id, 'email' ), 'Your HCC-Temps login email has been updated', '<p>Hi ' . esc_html( hcc_meta( $id, 'first' ) ) . ',</p><p>Our team has updated the email for your registration (' . esc_html( hcc_meta( $id, 'ref' ) ) . '). Use this address to log in from now on.</p>' . hcc_button( hcc_login_url(), 'Log in' ), array(), hcc_opt( 'email_jobs' ) );
+		hcc_desk_back( $id, array( 'msg' => 'email_changed' ), 'answers' );
+	}
+
 	if ( 'dup_ok' === $do ) {
 		hcc_set( $id, 'dup_ok', time() );
 		hcc_log( $id, 'Duplicate warning checked: not a duplicate' );

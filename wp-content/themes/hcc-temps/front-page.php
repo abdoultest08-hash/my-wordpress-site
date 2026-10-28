@@ -248,6 +248,8 @@ $sectors   = hcc_filter_terms( 'job_sector' );
 		</div>
 	</section>
 
+	<?php get_template_part( 'template-parts/homecare', null, array( 'style' => 'band' ) ); ?>
+
 	<section class="cta" aria-label="Get started">
 		<div class="blob" style="width:18px;height:18px;background:var(--coral);left:24%;top:30%" aria-hidden="true"></div>
 		<div class="blob" style="width:12px;height:12px;background:var(--sun);right:28%;top:18%" aria-hidden="true"></div>
