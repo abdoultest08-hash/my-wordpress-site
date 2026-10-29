@@ -79,6 +79,17 @@ get_header();
 				<?php else : ?><p class="hint">All updates have been sent.</p><?php endif; ?>
 			</div>
 
+			<?php
+			$with_msgs = array_filter( array_merge( $all_in, hcc_desk_list( 'completed' ), hcc_desk_list( 'closed' ) ), 'hcc_unread_msgs' );
+			if ( $with_msgs ) : ?>
+				<div class="p-card unsent has" id="newmsgs" style="border-color:var(--pink)">
+					<div class="p-card-head"><h2>New messages <span class="tray-n" style="background:var(--pink);color:#fff"><?php echo count( $with_msgs ); ?></span></h2><span class="p-count">From candidates, not opened yet</span></div>
+					<div class="d-table"><div class="d-row d-hd"><span>Candidate</span><span>Message</span><span>Received</span><span></span><span></span></div>
+					<?php foreach ( $with_msgs as $aid ) : $cm = (array) hcc_meta( $aid, 'cmsgs' ); $last = end( $cm ); ?>
+						<div class="d-row"><span><b><?php echo esc_html( hcc_name( $aid ) ); ?></b><small><?php echo esc_html( hcc_meta( $aid, 'ref' ) . ' · ' . hcc_unread_msgs( $aid ) . ' new' ); ?></small></span><span data-l="Message"><?php echo esc_html( mb_strimwidth( $last['text'], 0, 80, '…' ) ); ?></span><span data-l="Received"><?php echo esc_html( hcc_ago( (int) $last['at'] ) ); ?></span><span></span><span><a class="btn btn-sm btn-navy" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $aid ) ) ); ?>#messages">Open and reply</a></span></div>
+					<?php endforeach; ?></div>
+				</div>
+			<?php endif; ?>
 			<form class="d-tabs" method="get" action="<?php echo esc_url( hcc_staff_url() ); ?>">
 				<?php foreach ( array( 'in_progress' => 'In progress', 'completed' => 'Staff completed', 'closed' => 'Withdrawn / not qualified' ) as $k => $l ) : ?>
 					<a role="tab" aria-selected="<?php echo $k === $tab ? 'true' : 'false'; ?>" href="<?php echo esc_url( add_query_arg( array_filter( array( 'tab' => $k, 'q' => $search ) ), hcc_staff_url() ) ); ?>"><?php echo esc_html( $l ); ?> (<?php echo count( $lists[ $k ] ); ?>)</a>
@@ -95,7 +106,7 @@ get_header();
 						$dup = ! hcc_meta( $aid, 'dup_ok' ) && hcc_duplicates( $aid );
 						$stage = hcc_meta( $aid, 'submitted' ) ? hcc_meta( $aid, 'stage', 'Documents' ) : 'Registering (step ' . (int) hcc_meta( $aid, 'step', 1 ) . ' of 7)';
 						?>
-						<a class="d-row d-prog" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $aid ) ) ); ?>"><span><b><?php echo esc_html( hcc_name( $aid ) ); ?></b><?php echo $dup ? ' <em class="dup-tag">possible duplicate</em>' : ''; ?><?php echo hcc_meta( $aid, 'queue' ) ? ' <em class="unsent-tag">update not sent</em>' : ''; ?><small><?php echo esc_html( hcc_meta( $aid, 'ref' ) . ' · ' . $role_label( $aid ) ); ?></small></span><span data-l="Started"><?php echo esc_html( wp_date( 'j M Y', hcc_started( $aid ) ) ); ?></span><span data-l="Stage"><?php echo esc_html( $stage ); ?></span><span data-l="Profile"><span class="mini-bar"><i style="width:<?php echo (int) $pct; ?>%"></i></span><?php echo (int) $pct; ?>%</span><span data-l="Missing"><?php echo (int) $c['todo']; ?></span><span data-l="Last activity"><?php echo esc_html( hcc_ago( hcc_last_activity( $aid ) ) ); ?></span></a>
+						<a class="d-row d-prog" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $aid ) ) ); ?>"><span><b><?php echo esc_html( hcc_name( $aid ) ); ?></b><?php echo $dup ? ' <em class="dup-tag">possible duplicate</em>' : ''; ?><?php echo hcc_meta( $aid, 'queue' ) ? ' <em class="unsent-tag">update not sent</em>' : ''; ?><?php echo hcc_unread_msgs( $aid ) ? ' <em class="new-msg-tag">new message</em>' : ''; ?><small><?php echo esc_html( hcc_meta( $aid, 'ref' ) . ' · ' . $role_label( $aid ) ); ?></small></span><span data-l="Started"><?php echo esc_html( wp_date( 'j M Y', hcc_started( $aid ) ) ); ?></span><span data-l="Stage"><?php echo esc_html( $stage ); ?></span><span data-l="Profile"><span class="mini-bar"><i style="width:<?php echo (int) $pct; ?>%"></i></span><?php echo (int) $pct; ?>%</span><span data-l="Missing"><?php echo (int) $c['todo']; ?></span><span data-l="Last activity"><?php echo esc_html( hcc_ago( hcc_last_activity( $aid ) ) ); ?></span></a>
 					<?php endforeach; ?>
 				<?php else : ?>
 					<div class="d-row d-hd d-done"><span>Candidate</span><span>Application started</span><span><?php echo 'completed' === $tab ? 'Signed off' : 'Closed'; ?></span><span><?php echo 'completed' === $tab ? 'Days' : 'Outcome'; ?></span><span>Signed off by</span><span></span></div>
@@ -103,7 +114,7 @@ get_header();
 						$e = hcc_meta( $aid, 'completed' === $tab ? 'completed' : 'closed' );
 						$e = is_array( $e ) ? $e : array( 'at' => 0, 'by' => '' );
 						?>
-						<div class="d-row d-done"><span><b><?php echo esc_html( hcc_name( $aid ) ); ?></b><small><?php echo esc_html( hcc_meta( $aid, 'ref' ) . ' · ' . $role_label( $aid ) . ( ! empty( $e['why'] ) ? ' · ' . $e['why'] : '' ) ); ?></small></span><span data-l="Started"><?php echo esc_html( wp_date( 'j M Y', hcc_started( $aid ) ) ); ?></span><span data-l="<?php echo 'completed' === $tab ? 'Signed off' : 'Closed'; ?>"><?php echo esc_html( wp_date( 'j M Y', (int) $e['at'] ) ); ?></span><span data-l="<?php echo 'completed' === $tab ? 'Days' : 'Outcome'; ?>"><?php echo esc_html( 'completed' === $tab ? max( 0, round( ( $e['at'] - hcc_started( $aid ) ) / DAY_IN_SECONDS ) ) : $e['outcome'] ); ?></span><span data-l="By"><?php echo esc_html( $e['by'] ); ?></span><span><a class="link-btn" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $aid ) ) ); ?>">Open file</a></span></div>
+						<div class="d-row d-done"><span><b><?php echo esc_html( hcc_name( $aid ) ); ?></b><?php echo hcc_unread_msgs( $aid ) ? ' <em class="new-msg-tag">new message</em>' : ''; ?><small><?php echo esc_html( hcc_meta( $aid, 'ref' ) . ' · ' . $role_label( $aid ) . ( ! empty( $e['why'] ) ? ' · ' . $e['why'] : '' ) ); ?></small></span><span data-l="Started"><?php echo esc_html( wp_date( 'j M Y', hcc_started( $aid ) ) ); ?></span><span data-l="<?php echo 'completed' === $tab ? 'Signed off' : 'Closed'; ?>"><?php echo esc_html( wp_date( 'j M Y', (int) $e['at'] ) ); ?></span><span data-l="<?php echo 'completed' === $tab ? 'Days' : 'Outcome'; ?>"><?php echo esc_html( 'completed' === $tab ? max( 0, round( ( $e['at'] - hcc_started( $aid ) ) / DAY_IN_SECONDS ) ) : $e['outcome'] ); ?></span><span data-l="By"><?php echo esc_html( $e['by'] ); ?></span><span><a class="link-btn" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $aid ) ) ); ?>">Open file</a></span></div>
 					<?php endforeach; ?>
 				<?php endif; ?>
 				<?php if ( ! $lists[ $tab ] ) : ?><p class="hint" style="padding:12px 6px">No candidates here<?php echo $search ? ' matching "' . esc_html( $search ) . '"' : ''; ?>.</p><?php endif; ?>
@@ -291,6 +302,33 @@ get_header();
 						foreach ( hcc_answer_groups( $aid, false ) as $title => $rows ) : ?>
 							<details class="det"<?php echo $i++ < 2 ? ' open' : ''; ?>><summary><?php echo esc_html( $title ); ?></summary><dl><?php foreach ( $rows as $k => $v ) : ?><div><dt><?php echo esc_html( $k ); ?></dt><dd><?php echo esc_html( '' !== (string) $v ? $v : '—' ); ?></dd></div><?php endforeach; ?></dl></details>
 						<?php endforeach; ?>
+					</details>
+
+					<?php
+					$seen_before = (int) hcc_meta( $aid, 'cmsg_seen', 0 );
+					$unread      = hcc_unread_msgs( $aid );
+					$thread      = hcc_thread( $aid );
+					if ( $unread ) {
+						hcc_set( $aid, 'cmsg_seen', time() );
+						hcc_log( $aid, 'Opened ' . $unread . ' new message' . ( $unread > 1 ? 's' : '' ) . ' from the candidate' );
+					}
+					?>
+					<details class="p-sec p-card" id="messages"<?php echo $thread ? ' open' : ''; ?>>
+						<summary class="p-card-head"><h2>Messages<?php echo $unread ? ' <em class="new-msg-tag">' . (int) $unread . ' new</em>' : ''; ?></h2><span class="p-count">With the candidate</span></summary>
+						<?php if ( $thread ) : ?>
+							<ol class="thread">
+								<?php foreach ( array_slice( $thread, -30 ) as $m ) : ?>
+									<li class="<?php echo esc_attr( $m['from'] ) . ( 'cand' === $m['from'] && $m['at'] > $seen_before ? ' new' : '' ); ?>"><span class="who"><?php echo esc_html( ( 'cand' === $m['from'] ? hcc_meta( $aid, 'first' ) : $m['by'] ) . ' · ' . wp_date( 'j M, H:i', $m['at'] ) . ( $m['label'] ? ' · about ' . $m['label'] : '' ) ); ?></span><?php echo nl2br( esc_html( $m['text'] ) ); ?></li>
+								<?php endforeach; ?>
+							</ol>
+						<?php else : ?>
+							<p class="hint">No messages yet. Candidates can write to you from their portal.</p>
+						<?php endif; ?>
+						<form method="post" action="<?php echo $form_url; ?>" class="msg-form"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="cnote"><input type="hidden" name="type" value="cand"><input type="hidden" name="by" value="<?php echo esc_attr( $me ); ?>"><input type="hidden" name="back" value="messages">
+							<label for="mreply" class="screen-reader-text">Reply</label>
+							<textarea id="mreply" name="text" rows="2" placeholder="Reply to <?php echo esc_attr( hcc_meta( $aid, 'first' ) ); ?>…" required></textarea>
+							<div class="form-actions" style="margin-top:8px"><button class="btn btn-navy btn-sm" type="submit">Add reply to update</button><span class="form-note">Goes out with the next update email when you press Send.</span></div>
+						</form>
 					</details>
 
 					<div class="p-card tray<?php echo $queue ? ' has' : ''; ?>" id="tray">

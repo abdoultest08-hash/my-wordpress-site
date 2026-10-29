@@ -1263,3 +1263,13 @@ main > .section:nth-of-type(3n+2) .eyebrow { color: var(--cocoa); }
 main > .section:nth-of-type(3n) .eyebrow { color: var(--pink-deep); }
 .homecare-band { background: linear-gradient(180deg, var(--pink-tint), #fff 85%); }
 .value .dot { box-shadow: 0 0 0 4px #fff; }
+
+/* Message conversation (candidate portal and staff folder) */
+.thread { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 10px; max-height: 460px; overflow-y: auto; }
+.thread li { text-align: left; max-width: 86%; padding: 10px 14px; border-radius: 16px; font-size: 14.5px; line-height: 1.5; overflow-wrap: anywhere; }
+.thread li.me, .thread li.cand { justify-self: end; background: var(--aqua-tint); border-bottom-right-radius: 4px; }
+.thread li.team { justify-self: start; background: var(--pink-tint); border-bottom-left-radius: 4px; }
+.thread li.new { box-shadow: 0 0 0 2px var(--pink); }
+.thread .who { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 2px; }
+.msg-form textarea { width: 100%; border: 1px solid #CFD8D6; border-radius: 12px; padding: 10px 12px; font: 500 15px var(--body); resize: vertical; }
+.new-msg-tag { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--pink); color: #fff; font-size: 11px; font-weight: 700; font-style: normal; }

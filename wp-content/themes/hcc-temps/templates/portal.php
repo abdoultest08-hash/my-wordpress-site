@@ -76,6 +76,7 @@ get_header();
 
 			<nav class="p-jump" aria-label="On this page">
 				<a href="#updates">Updates<?php echo $messages ? ' <em>' . count( $messages ) . '</em>' : ''; ?></a>
+				<a href="#messages">Messages</a>
 				<a href="#answers">My answers</a>
 				<a href="#documents">Documents <em><?php echo (int) $d['have'] . '/' . (int) $d['need']; ?></em></a>
 				<a href="#training">Training <em><?php echo (int) $t['have'] . '/' . (int) $t['need']; ?></em></a>
@@ -99,6 +100,31 @@ get_header();
 						<?php endforeach; ?>
 					</<?php echo $i ? 'details' : 'div'; ?>>
 				<?php endforeach; ?>
+			</div>
+
+			<div class="p-card" id="messages">
+				<div class="p-card-head"><h2>Messages</h2><span class="p-count">Write to the compliance team</span></div>
+				<?php if ( 'msg_sent' === $ok ) : ?><p class="form-ok">Message sent. The team will reply here and by email.</p><?php endif; ?>
+				<?php if ( 'msg_empty' === $err ) : ?><p class="form-alert" role="alert">Please write a message first.</p><?php endif; ?>
+				<?php if ( 'msg_many' === $err ) : ?><p class="form-alert" role="alert">You've sent a lot of messages today. Please call us on <?php echo esc_html( hcc_opt( 'phone' ) ); ?> if it's urgent.</p><?php endif; ?>
+				<?php $thread = array_slice( hcc_thread( $aid ), -30 ); ?>
+				<?php if ( $thread ) : ?>
+					<ol class="thread">
+						<?php foreach ( $thread as $m ) : ?>
+							<li class="<?php echo 'cand' === $m['from'] ? 'me' : 'team'; ?>"><span class="who"><?php echo esc_html( ( 'cand' === $m['from'] ? 'You' : 'HCC team' ) . ' · ' . wp_date( 'j M, H:i', $m['at'] ) . ( $m['label'] ? ' · about ' . $m['label'] : '' ) ); ?></span><?php echo nl2br( esc_html( $m['text'] ) ); ?></li>
+						<?php endforeach; ?>
+					</ol>
+				<?php else : ?>
+					<p class="hint">Questions about your registration or a document? Send us a message here.</p>
+				<?php endif; ?>
+				<?php if ( 'portal' === $ctx ) : ?>
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="msg-form">
+						<input type="hidden" name="action" value="hcc_portal_msg"><input type="hidden" name="hcc_nonce" value="<?php echo esc_attr( wp_create_nonce( 'hcc_portal_msg' ) ); ?>">
+						<label for="pmsg" class="screen-reader-text">Your message</label>
+						<textarea id="pmsg" name="msg" rows="3" maxlength="2000" placeholder="e.g. I've booked my DBS appointment for Friday." required></textarea>
+						<div class="form-actions" style="margin-top:8px"><button class="btn btn-navy btn-sm" type="submit">Send message</button><span class="form-note">For anything urgent, call <?php echo esc_html( hcc_opt( 'phone' ) ); ?>.</span></div>
+					</form>
+				<?php endif; ?>
 			</div>
 
 			<details class="p-card p-answers" id="answers" open>

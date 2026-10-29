@@ -152,6 +152,17 @@ function hcc_email_update( $id, $queue ) {
 	return hcc_mail( hcc_meta( $id, 'email' ), ( $action ? 'Action needed: ' : '' ) . 'Update on your HCC-Temps registration', $body, array(), hcc_opt( 'email_jobs' ) );
 }
 
+/** A candidate wrote to the team from their portal. */
+function hcc_email_candidate_message( $id, $text ) {
+	$short = mb_strlen( $text ) > 60 ? mb_substr( $text, 0, 57 ) . '…' : $text;
+	return hcc_mail( hcc_opt( 'email_jobs' ), '[MESSAGE] ' . hcc_meta( $id, 'ref' ) . ' ' . hcc_name( $id ) . ': "' . $short . '"',
+		'<p><b>' . esc_html( hcc_name( $id ) ) . '</b> (' . esc_html( hcc_meta( $id, 'ref' ) . ' · ' . hcc_role_name( hcc_meta( $id, 'role_key' ) ) ) . ') sent a message from their candidate portal:</p>'
+			. '<p style="background:#F4F8F7;border-left:4px solid #6DC0B8;padding:10px 14px;border-radius:8px">' . nl2br( esc_html( $text ) ) . '</p>'
+			. hcc_button( hcc_staff_url( array( 'candidate' => $id ) ) . '#messages', 'Open and reply in the Staff portal' )
+			. '<p style="font-size:13px;color:#5B6078">Replying in the Staff portal keeps the conversation in their folder and their portal. Replying to this email goes straight to the candidate.</p>',
+		array(), hcc_meta( $id, 'email' ) );
+}
+
 /** Sent to the old address after an email change, so a change nobody asked for doesn't go unnoticed. */
 function hcc_email_changed_notice( $id, $old ) {
 	return hcc_mail( $old, 'Your HCC-Temps email address was changed',

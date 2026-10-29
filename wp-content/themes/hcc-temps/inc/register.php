@@ -259,6 +259,57 @@ add_action( 'admin_post_hcc_portal_email', function () {
 	$back( array( 'hcc_ok' => 'email_code_sent' ) );
 } );
 
+/* ---------- Candidate messages to the team ---------- */
+
+/**
+ * The conversation for a candidate, oldest first: their own messages plus the team's messages
+ * (notes sent to them in update emails). Each: array( from => cand|team, text, at, by, label ).
+ */
+function hcc_thread( $id ) {
+	$out = array();
+	foreach ( (array) hcc_meta( $id, 'cmsgs', array() ) as $m ) {
+		$out[] = array( 'from' => 'cand', 'text' => $m['text'], 'at' => (int) $m['at'], 'by' => hcc_meta( $id, 'first' ), 'label' => '' );
+	}
+	foreach ( (array) hcc_meta( $id, 'messages', array() ) as $m ) {
+		foreach ( isset( $m['items'] ) ? (array) $m['items'] : array() as $q ) {
+			if ( 'note' === $q['type'] && '' !== trim( (string) $q['text'] ) ) {
+				$out[] = array( 'from' => 'team', 'text' => $q['text'], 'at' => (int) $m['at'], 'by' => ! empty( $m['by'] ) ? $m['by'] : 'HCC team', 'label' => $q['label'] );
+			}
+		}
+	}
+	usort( $out, function ( $x, $y ) { return $x['at'] - $y['at']; } );
+	return $out;
+}
+
+/** Candidate messages staff haven't seen yet. */
+function hcc_unread_msgs( $id ) {
+	$seen = (int) hcc_meta( $id, 'cmsg_seen', 0 );
+	return count( array_filter( (array) hcc_meta( $id, 'cmsgs', array() ), function ( $m ) use ( $seen ) { return (int) $m['at'] > $seen; } ) );
+}
+
+add_action( 'admin_post_hcc_portal_msg', function () {
+	$id   = hcc_reg_require( 'hcc_portal_msg' );
+	$back = function ( $args ) { wp_safe_redirect( add_query_arg( $args, hcc_portal_url() ) . '#messages' ); exit; };
+	if ( 'closed' === hcc_state( $id ) ) {
+		$back( array() );
+	}
+	$text = trim( hcc_field( 'msg', 'textarea' ) );
+	if ( '' === $text ) {
+		$back( array( 'hcc_err' => 'msg_empty' ) );
+	}
+	$text  = mb_substr( $text, 0, 2000 );
+	$msgs  = (array) hcc_meta( $id, 'cmsgs', array() );
+	$today = array_filter( $msgs, function ( $m ) { return (int) $m['at'] > time() - DAY_IN_SECONDS; } );
+	if ( count( $today ) >= 10 ) {
+		$back( array( 'hcc_err' => 'msg_many' ) );
+	}
+	$msgs[] = array( 'text' => $text, 'at' => time() );
+	hcc_set( $id, 'cmsgs', $msgs );
+	hcc_log( $id, 'Message from candidate: ' . $text, 'Candidate' );
+	hcc_email_candidate_message( $id, $text );
+	$back( array( 'hcc_ok' => 'msg_sent' ) );
+} );
+
 /* Logging in later with the emailed login code also proves the email address. */
 add_action( 'two_factor_user_authenticated', function ( $user ) {
 	$id = hcc_applicant_for_user( $user->ID );

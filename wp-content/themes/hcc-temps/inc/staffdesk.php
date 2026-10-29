@@ -184,7 +184,7 @@ add_action( 'admin_post_hcc_desk', function () {
 			}
 			hcc_log( $id, ( 'cand' === $type ? 'Message to candidate added to update: ' : 'Internal note: ' ) . $text . ( $n['next'] ? ' · Next action: ' . $n['next'] . ( $n['due'] ? ' (due ' . $n['due'] . ')' : '' ) : '' ) . ( $n['by'] ? ' · signed off by ' . $n['by'] : '' ) );
 		}
-		hcc_desk_back( $id, array( 'msg' => 'cand' === $type ? 'queued' : 'note' ), 'notes' );
+		hcc_desk_back( $id, array( 'msg' => 'cand' === $type ? 'queued' : 'note' ), 'messages' === hcc_field( 'back' ) ? 'tray' : 'notes' );
 	}
 
 	/* Checks: who, when, result, outcome; visa expiry typed in by hand. */

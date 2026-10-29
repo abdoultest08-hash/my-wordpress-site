@@ -246,6 +246,24 @@ function hcc_import_page() {
 		echo '<p class="description">Row numbers match the rows in your spreadsheet. Rows with problems are skipped.</p></div>';
 		return;
 	}
+	// One click: the adverts from the current hcctemps.co.uk website, shipped with the theme.
+	$bundled = get_template_directory() . '/data/jobs-old-site-all-live.csv';
+	if ( is_readable( $bundled ) ) {
+		$n_old  = count( (array) hcc_import_read( $bundled ) );
+		$n_demo = count( get_posts( array( 'post_type' => 'job_vacancies', 'post_status' => 'any', 'meta_key' => '_hcc_demo', 'numberposts' => -1, 'fields' => 'ids' ) ) );
+		echo '<div class="card" style="max-width:820px;padding:16px 20px;margin:16px 0 24px"><h2 style="margin-top:0">Jobs from the current website</h2>';
+		echo '<p>' . (int) $n_old . ' adverts copied from hcctemps.co.uk (October 2026). Jobs already on this site with the same web address are updated, not duplicated, and importing again is safe.</p>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="hcc_import_bundled">';
+		wp_nonce_field( 'hcc_import_bundled' );
+		echo '<p><label><input type="radio" name="set" value="all-live" checked> <b>All live</b>: to see the job board working while the client reviews the adverts</label><br>';
+		echo '<label><input type="radio" name="set" value="suggested"> <b>Suggested</b>: only the 3 adverts from the last 6 months live, older ones closed (hidden)</label></p>';
+		if ( $n_demo ) {
+			echo '<p><label><input type="checkbox" name="remove_demo" value="1" checked> Also remove the ' . (int) $n_demo . ' sample jobs that came with the theme</label></p>';
+		}
+		echo '<p><button class="button button-primary">Import ' . (int) $n_old . ' jobs</button></p></form>';
+		echo '<p class="description">When the client sends back the reviewed spreadsheet, import that file below: it updates these same jobs.</p></div>';
+	}
+	echo '<h2>Import your own spreadsheet</h2>';
 	echo '<ol><li><a href="' . esc_url( admin_url( 'admin-post.php?action=hcc_import_template' ) ) . '">Download the CSV template</a> and open it in Excel or Google Sheets.</li><li>Add one job per row. Keep the first row (the column names). Delete the example row.</li><li>Save as <b>CSV UTF-8</b>, upload it below and check the preview.</li></ol>';
 	echo '<form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="hcc_import">';
 	wp_nonce_field( 'hcc_import' );
@@ -256,3 +274,37 @@ function hcc_import_page() {
 	}
 	echo '</tbody></table><p class="description">To update a job, use the same ref. To close jobs, set status to expired or give a closing date in the past. Separate several locations with a | character.</p></div>';
 }
+
+/* Import the adverts shipped with the theme (copied from the old website). */
+add_action( 'admin_post_hcc_import_bundled', function () {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		wp_die( 'Not allowed.' );
+	}
+	check_admin_referer( 'hcc_import_bundled' );
+	$back = admin_url( 'edit.php?post_type=job_vacancies&page=hcc-import' );
+	$file = get_template_directory() . '/data/jobs-old-site-' . ( 'suggested' === hcc_field( 'set' ) ? 'suggested' : 'all-live' ) . '.csv';
+	$rows = hcc_import_read( $file );
+	if ( is_wp_error( $rows ) ) {
+		wp_safe_redirect( add_query_arg( 'err', rawurlencode( $rows->get_error_message() ), $back ) );
+		exit;
+	}
+	if ( ! empty( $_POST['remove_demo'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+		foreach ( get_posts( array( 'post_type' => 'job_vacancies', 'post_status' => 'any', 'meta_key' => '_hcc_demo', 'numberposts' => -1, 'fields' => 'ids' ) ) as $demo ) {
+			wp_delete_post( $demo, true );
+		}
+	}
+	@set_time_limit( 300 ); // phpcs:ignore
+	$made = 0;
+	$upd  = 0;
+	foreach ( $rows as $r ) {
+		if ( hcc_import_check( $r ) ) {
+			continue;
+		}
+		$had = hcc_import_find( $r['ref'], $r['slug'] );
+		if ( hcc_import_row( $r ) ) {
+			$had ? $upd++ : $made++;
+		}
+	}
+	wp_safe_redirect( add_query_arg( array( 'done' => $made, 'upd' => $upd ), $back ) );
+	exit;
+} );
