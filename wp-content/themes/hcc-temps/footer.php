@@ -81,10 +81,16 @@ $socials = array(
 		</div>
 		<div class="foot-bottom">
 			<span>© <?php echo esc_html( wp_date( 'Y' ) . ' ' . hcc_opt( 'company' ) ); ?> · Registered in England and Wales, company no. <?php echo esc_html( hcc_opt( 'company_no' ) ); ?></span>
-			<nav aria-label="Legal"><a href="<?php echo esc_url( hcc_page_url( 'privacy', '/privacy-policy/' ) ); ?>">Privacy policy</a><a href="<?php echo esc_url( hcc_page_url( 'terms', '/terms-and-conditions/' ) ); ?>">Terms &amp; conditions</a><a href="<?php echo esc_url( hcc_page_url( 'privacy', '/privacy-policy/' ) . '#cookies' ); ?>">Cookies</a></nav>
+			<nav aria-label="Legal"><a href="<?php echo esc_url( hcc_page_url( 'privacy', '/privacy-policy/' ) ); ?>">Privacy policy</a><a href="<?php echo esc_url( hcc_page_url( 'terms', '/terms-and-conditions/' ) ); ?>">Terms &amp; conditions</a><a href="<?php echo esc_url( hcc_page_url( 'privacy', '/privacy-policy/' ) . '#cookies' ); ?>">Cookies</a><button type="button" class="link-btn cookie-open">Cookie settings</button></nav>
 		</div>
 	</div>
 </footer>
+<div class="cookie-bar" id="cookieBar" role="dialog" aria-live="polite" aria-label="Cookie choice" hidden>
+	<div class="cookie-in">
+		<p><b>Cookies on this website.</b> We use essential cookies to make the site work, for example to keep you logged in. With your permission we'd also like to use analytics cookies to see how the site is used. <a href="<?php echo esc_url( hcc_page_url( 'privacy', '/privacy-policy/' ) . '#cookies' ); ?>">How we use cookies</a></p>
+		<div class="cookie-btns"><button type="button" class="btn btn-sm btn-ghost" data-consent="essential">Essential only</button><button type="button" class="btn btn-sm btn-navy" data-consent="all">Accept all</button></div>
+	</div>
+</div>
 <?php wp_footer(); ?>
 </body>
 </html>

@@ -27,7 +27,7 @@ $sent = isset( $_GET['hcc_ok'] );
 		<div class="wrap contact-grid">
 			<div>
 				<span class="eyebrow">Write to us</span>
-				<h2 style="font-size:clamp(30px,3.6vw,44px);color:var(--ink);margin-top:10px">We reply within one working day</h2>
+				<h2 style="font-size:clamp(25px,3.10vw,39px);color:var(--ink);margin-top:10px">We reply within one working day</h2>
 				<p style="margin-top:14px;color:var(--muted)">For emergency cover, call <?php echo esc_html( hcc_opt( 'phone' ) ); ?>. We answer 24 hours a day and can cover within 2 hours.</p>
 				<div class="pic"><img src="<?php echo esc_url( hcc_img( 'reception.jpg' ) ); ?>" alt="Receptionist smiling behind an office front desk" width="720" height="540" loading="lazy"></div>
 				<?php get_template_part( 'template-parts/homecare', null, array( 'style' => 'card' ) ); ?>

@@ -18,26 +18,28 @@
     document.querySelectorAll('.nav-login[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
   });
 
-  /* Hero: framed nurse photo grows to full bleed as the page scrolls; the chef card sits under its left edge */
+  /* Hero: framed nurse photo with the chef card under its left edge. Fixed: it no longer zooms on scroll. */
   var track = $('heroTrack');
   if (track) {
     var stage = $('heroStage'), photo = $('heroPhoto'), frame = $('heroFrame'), shade = $('heroShade'), chef = $('heroChef'), nurseTag = $('nurseTag');
     var ease = function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; };
     var clamp = function (v) { return Math.max(0, Math.min(1, v)); };
     var heroFrame = function () {
-      var W = stage.clientWidth, H = stage.clientHeight;
-      var range = track.offsetHeight - H;
-      var p = reduce || range <= 0 ? 0 : clamp(-track.getBoundingClientRect().top / range);
-      var g = ease(clamp(p / 0.8)), narrow = W < 640;
-      var w0 = Math.min(narrow ? W * 0.84 : 600, W - 32), h0 = H * (narrow ? 0.34 : 0.42);
-      var x0 = (W - w0) / 2, y0 = H - h0 + (narrow ? 0 : H * 0.04);
+      var W = stage.clientWidth, narrow = W < 640;
+      var p = 0, g = 0; // fixed layout: the photo sits under the headline and buttons
+      var copy = stage.querySelector('.hero-copy');
+      var top = copy ? copy.offsetTop + copy.offsetHeight + (narrow ? 34 : 46) : 360;
+      var w0 = Math.min(narrow ? W * 0.84 : 680, W - 32), h0 = narrow ? w0 * 0.78 : Math.min(400, w0 * 0.58);
+      var H = top + h0 + (narrow ? 34 : 56);
+      stage.style.height = H + 'px';
+      var x0 = (W - w0) / 2, y0 = top;
       var x = x0 * (1 - g), y = y0 * (1 - g), w = w0 + (W - w0) * g, h = h0 + (H - h0) * g;
       photo.style.cssText = 'left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px;border-radius:' + (6 * (1 - g)) + 'px';
       var pad = 14 * (1 - g);
       frame.style.cssText = 'left:' + (x - pad) + 'px;top:' + (y - pad) + 'px;width:' + (w + pad * 2) + 'px;height:' + (h + pad * 2) + 'px;transform:rotate(' + (-2.5 * (1 - g)) + 'deg);opacity:' + (1 - g);
       if (chef) {
         var cw = narrow ? w0 * 0.3 : Math.min(200, w0 * 0.36), ch = cw * 4 / 3;
-        var cx = x0 - cw * (narrow ? 0.28 : 0.55), cy = narrow ? H - ch - 14 : Math.min(y0 + h0 * 0.12, H - ch - 64);
+        var cx = x0 - cw * (narrow ? 0.28 : 0.55), cy = narrow ? y0 + h0 - ch + 18 : y0 + h0 * 0.18;
         chef.style.cssText = 'left:' + cx + 'px;top:' + (cy + g * 80) + 'px;width:' + cw + 'px;height:' + ch + 'px;opacity:' + (1 - clamp(g * 1.8));
       }
       if (nurseTag) nurseTag.style.opacity = String(1 - clamp(g * 2.2));
@@ -46,9 +48,8 @@
       stage.classList.toggle('is-dark', dark > 0.35);
     };
     var ticking = false;
-    var onScroll = function () { if (!ticking) { ticking = true; requestAnimationFrame(function () { heroFrame(); ticking = false; }); } };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    var onResize = function () { if (!ticking) { ticking = true; requestAnimationFrame(function () { heroFrame(); ticking = false; }); } };
+    window.addEventListener('resize', onResize);
     heroFrame();
   }
 
@@ -237,6 +238,22 @@
 
   /* Candidate portal on phones: only the first group of answers starts open */
   if (window.innerWidth < 700) document.querySelectorAll('.ans-group').forEach(function (d, i) { if (i) d.open = false; });
+
+  /* Cookie choice: asked once, remembered for 12 months; "Cookie settings" in the footer reopens it.
+     Anything optional (analytics) waits for "all": listen for the hcc:consent event or check window.hccConsent(). */
+  var cbar = $('cookieBar');
+  var getConsent = function () { var m = document.cookie.match(/(?:^|; )hcc_consent=(all|essential)/); return m ? m[1] : ''; };
+  window.hccConsent = getConsent;
+  if (cbar) {
+    if (!getConsent()) cbar.hidden = false;
+    cbar.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-consent]'); if (!b) return;
+      document.cookie = 'hcc_consent=' + b.dataset.consent + '; max-age=' + (365 * 24 * 3600) + '; path=/; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : '');
+      cbar.hidden = true;
+      document.dispatchEvent(new CustomEvent('hcc:consent', { detail: b.dataset.consent }));
+    });
+    document.querySelectorAll('.cookie-open').forEach(function (b) { b.addEventListener('click', function () { cbar.hidden = false; cbar.querySelector('[data-consent="all"]').focus(); }); });
+  }
 
   /* Every normal form: a second tap while the first is still sending does nothing (no double emails or accounts) */
   document.addEventListener('submit', function (e) {

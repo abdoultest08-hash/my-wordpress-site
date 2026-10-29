@@ -23,7 +23,7 @@ function hcc_asset_ver( $rel ) {
 }
 
 add_action( 'wp_enqueue_scripts', function () {
-	wp_enqueue_style( 'hcc-fonts', 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap', array(), null );
+	wp_enqueue_style( 'hcc-fonts', 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap', array(), null );
 	wp_enqueue_style( 'hcc-main', HCC_URI . '/assets/css/main.css', array(), hcc_asset_ver( '/assets/css/main.css' ) );
 	wp_enqueue_script( 'hcc-main', HCC_URI . '/assets/js/main.js', array(), hcc_asset_ver( '/assets/js/main.js' ), true );
 } );
@@ -61,6 +61,10 @@ function hcc_defaults() {
 		'stat4_label'   => 'Phone line, always open',
 		'trustpilot'    => 'https://uk.trustpilot.com/review/healthcarecateringtemps.com',
 		'homecare_url'  => 'https://hcchome-care.co.uk/',
+		'ico_number'    => '',
+		'ga_id'         => '',
+		'mail_from'     => '',
+		'mail_from_name' => 'HCC-Temps',
 		'social_x'      => '',
 		'social_linkedin'  => '',
 		'social_instagram' => '',
@@ -83,6 +87,9 @@ add_action( 'customize_register', function ( $wp_customize ) {
 			'slogan' => 'Slogan (top bar)', 'since' => 'Top bar strapline', 'phone' => 'Phone number', 'email' => 'Public email',
 			'company' => 'Company name (footer)', 'company_no' => 'Company number', 'address' => 'Head office address', 'address2' => 'Second line under the address',
 			'email_jobs' => 'Staffing inbox: registrations, uploads, cover requests and contact form',
+			'ico_number' => 'ICO registration number (shown in the privacy policy when filled in)',
+			'mail_from_name' => 'Emails sent by the website: sender name', 'mail_from' => 'Emails sent by the website: sender email (an address on your own domain, e.g. staffing@hcctemps.co.uk)',
+			'ga_id'      => 'Google Analytics ID, e.g. G-XXXXXXX (optional; loads only if a visitor accepts cookies)',
 		) ),
 		'hcc_home' => array( 'Homepage', array(
 			'hero_title' => 'Hero heading', 'hero_text' => 'Hero text',
@@ -101,7 +108,7 @@ add_action( 'customize_register', function ( $wp_customize ) {
 	foreach ( $sections as $id => $sec ) {
 		$wp_customize->add_section( $id, array( 'title' => $sec[0], 'panel' => 'hcc' ) );
 		foreach ( $sec[1] as $key => $label ) {
-			$is_email = 0 === strpos( $key, 'email' );
+			$is_email = 0 === strpos( $key, 'email' ) || 'mail_from' === $key;
 			$is_url   = 0 === strpos( $key, 'social' ) || in_array( $key, array( 'trustpilot', 'homecare_url' ), true );
 			$wp_customize->add_setting( 'hcc_' . $key, array(
 				'default'           => $d[ $key ],
@@ -296,3 +303,35 @@ function hcc_faqs( $set ) {
 	);
 	return apply_filters( 'hcc_faqs', isset( $faqs[ $set ] ) ? $faqs[ $set ] : array(), $set );
 }
+
+/* Google Analytics, only when an ID is set in the Customizer and only after the visitor chooses "Accept all". */
+add_action( 'wp_footer', function () {
+	$ga = preg_replace( '/[^A-Z0-9-]/', '', strtoupper( (string) hcc_opt( 'ga_id' ) ) );
+	if ( ! $ga || is_user_logged_in() ) {
+		return;
+	}
+	?>
+	<script>
+	(function () {
+		var load = function () {
+			if (window.hccGaLoaded) return; window.hccGaLoaded = true;
+			var s = document.createElement('script'); s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=<?php echo esc_js( $ga ); ?>'; document.head.appendChild(s);
+			window.dataLayer = window.dataLayer || []; window.gtag = function () { dataLayer.push(arguments); };
+			gtag('js', new Date()); gtag('config', '<?php echo esc_js( $ga ); ?>', { anonymize_ip: true });
+		};
+		if (window.hccConsent && window.hccConsent() === 'all') load();
+		document.addEventListener('hcc:consent', function (e) { if (e.detail === 'all') load(); });
+	})();
+	</script>
+	<?php
+}, 30 );
+
+/* Every email the website sends goes out under the sender set in the Customizer (otherwise WordPress uses wordpress@yourdomain). */
+add_filter( 'wp_mail_from', function ( $from ) {
+	$set = sanitize_email( (string) hcc_opt( 'mail_from' ) );
+	return is_email( $set ) ? $set : $from;
+}, 20 );
+add_filter( 'wp_mail_from_name', function ( $name ) {
+	$set = trim( (string) hcc_opt( 'mail_from_name' ) );
+	return '' !== $set ? $set : $name;
+}, 20 );

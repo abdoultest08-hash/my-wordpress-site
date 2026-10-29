@@ -34,6 +34,7 @@ get_header();
 	<section class="section alt">
 		<div class="wrap">
 			<div class="sec-head"><span class="eyebrow">What we stand for</span><h2>Why clients and candidates choose us</h2></div>
+			<figure class="illo"><img src="<?php echo esc_url( hcc_img( 'team-illustration.jpg' ) ); ?>" alt="Illustration of a chef, nurse, carer, cleaner, barista, receptionist and support worker together under one roof" width="1400" height="788" loading="lazy"></figure>
 			<div class="values">
 				<?php foreach ( array( array( 'aqua', 'Reliability', 'When we say someone is coming, they come.' ), array( 'navy', 'A steady supply of staff', 'A large pool of checked candidates ready for shifts.' ), array( 'coral', 'Fully vetted', 'DBS, right to work and certificates checked before day one.' ), array( 'sun', 'Caring for vulnerable people', 'Our staff support people who depend on them, and we never forget it.' ), array( 'cocoa', 'We care about everyone', 'Clients and candidates both get a team that listens and calls back.' ), array( 'aqua-deep', 'Cover, fast', 'Emergency cover within 2 hours, anywhere in the UK.' ) ) as $v ) : ?>
 					<div class="value"><span class="dot" style="background:var(--<?php echo esc_attr( $v[0] ); ?>)"></span><h3><?php echo esc_html( $v[1] ); ?></h3><p><?php echo esc_html( $v[2] ); ?></p></div>

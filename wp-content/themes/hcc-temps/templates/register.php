@@ -26,6 +26,7 @@ $focus = array( 'nurse' => '28% 30%', 'chef' => '50% 20%' );
 				<h2>From sign-up to your first shift</h2>
 				<p>Everything happens in your own candidate portal, step by step.</p>
 			</div>
+			<figure class="illo"><img src="<?php echo esc_url( hcc_img( 'team-illustration.jpg' ) ); ?>" alt="Illustration of a chef, nurse, carer, cleaner, barista, receptionist and support worker together under one roof" width="1400" height="788" loading="lazy"></figure>
 			<ol class="reg-steps">
 				<li><b>Check what you need</b><span>Choose your role below and see the documents to have ready.</span></li>
 				<li><b>Create your account</b><span>Name, contact details and a password. Accept the terms and privacy policy.</span></li>
@@ -86,7 +87,7 @@ $focus = array( 'nurse' => '28% 30%', 'chef' => '50% 20%' );
 
 	<section class="section" id="register">
 		<div class="wrap" style="max-width:760px;text-align:center">
-			<h2 style="font-size:clamp(26px,3vw,36px);color:var(--ink)">Ready to start?</h2>
+			<h2 style="font-size:clamp(21px,2.58vw,32px);color:var(--ink)">Ready to start?</h2>
 			<p style="margin-top:10px;color:var(--muted)">Choose your role above, then press Start registration. It takes about 15 minutes and you can stop and come back.</p>
 			<p class="login-strip">Already registered? <a href="<?php echo esc_url( hcc_login_url() ); ?>">Log in to your candidate portal</a></p>
 		</div>

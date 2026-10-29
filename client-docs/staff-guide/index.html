@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HCC-Temps Staff Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --navy: #2D338C; --ink: #171A45; --aqua: #6DC0B8; --aqua-deep: #237D74; --sun: #F3D45E; --pink: #E0127C; --cocoa: #7C4925; --muted: #5B6078; --line: #E1E7E6; --paper: #F4F8F7; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.6 Montserrat, "Segoe UI", Arial, sans-serif; color: #1E2140; background: #fff; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 32px 60px; }
+  .stripe { height: 8px; background: linear-gradient(90deg, #7C4925 0 20%, #2D338C 20% 40%, #6DC0B8 40% 60%, #D93831 60% 80%, #F3D45E 80%); }
+  .cover { min-height: 92vh; display: flex; flex-direction: column; justify-content: center; padding: 60px 0; }
+  .cover img { width: 220px; }
+  .cover h1 { font-size: 46px; color: var(--ink); margin: 26px 0 8px; line-height: 1.1; }
+  .cover p.sub { font-size: 19px; color: var(--muted); margin: 0; }
+  .cover .meta { margin-top: 36px; font-size: 14px; color: var(--muted); }
+  h2 { font-size: 30px; color: var(--ink); margin: 0 0 6px; line-height: 1.15; padding-top: 34px; }
+  h2 .part { display: block; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--pink); margin-bottom: 6px; }
+  h3 { font-size: 20px; color: var(--navy); margin: 30px 0 8px; }
+  h4 { font-size: 16px; color: var(--ink); margin: 18px 0 6px; }
+  p { margin: 8px 0; }
+  a { color: var(--navy); }
+  .lead { font-size: 17px; color: var(--muted); }
+  figure { margin: 14px 0 18px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--paper); }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { font-size: 13px; color: var(--muted); padding: 8px 12px; background: #fff; border-top: 1px solid var(--line); }
+  ol.steps { padding-left: 0; list-style: none; counter-reset: s; }
+  ol.steps > li { counter-increment: s; position: relative; padding: 4px 0 4px 40px; margin: 6px 0; }
+  ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 3px; width: 26px; height: 26px; border-radius: 50%; background: var(--pink); color: #fff; font-weight: 700; font-size: 13px; text-align: center; line-height: 26px; }
+  ol.plain { padding-left: 22px; }
+  ol.plain li, ul li { margin: 4px 0; }
+  .tip, .warn, .note { border-radius: 12px; padding: 12px 16px; margin: 14px 0; font-size: 14.5px; }
+  .tip { background: #E4F4F2; border-left: 5px solid var(--aqua-deep); }
+  .warn { background: #FFF2F1; border-left: 5px solid #D93831; }
+  .note { background: #FDF6DA; border-left: 5px solid var(--sun); }
+  .tip b:first-child, .warn b:first-child, .note b:first-child { display: block; margin-bottom: 2px; }
+  .path { display: inline-block; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 1px 8px; font-weight: 600; font-size: 14px; white-space: nowrap; }
+  .btnx { display: inline-block; border: 2px solid var(--navy); color: var(--navy); border-radius: 999px; padding: 0 10px; font-weight: 700; font-size: 13px; white-space: nowrap; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { border-bottom: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--ink); color: #fff; font-weight: 600; }
+  .toc { columns: 2; column-gap: 40px; padding-left: 20px; }
+  .toc li { break-inside: avoid; margin: 3px 0; }
+  .toc a { text-decoration: none; }
+  .q { font-weight: 700; color: var(--ink); margin-top: 18px; }
+  section { page-break-before: always; }
+  section.keep { page-break-before: auto; }
+  @media print {
+    @page { size: A4; margin: 14mm 12mm 16mm; }
+    body { font-size: 11pt; }
+    .wrap { padding: 0; max-width: none; }
+    .cover { min-height: 250mm; }
+    figure { break-inside: avoid; text-align: center; }
+    figure img { width: auto; max-width: 100%; max-height: 118mm; margin: 0 auto; }
+    figcaption { text-align: left; }
+    h3, h4 { break-after: avoid; }
+    .tip, .warn, .note { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="stripe"></div>
+<div class="wrap">
+
+<div class="cover">
+  <img src="../../wp-content/themes/hcc-temps/assets/img/logo.png" alt="HCC-Temps">
+  <h1>Staff Guide</h1>
+  <p class="sub">The Staff portal, the WordPress dashboard and what to do when something goes wrong.</p>
+  <p class="meta">For HCC-Temps compliance staff, managers and administrators · Desktop · Version 2.3 · October 2026</p>
+</div>
+
+<section class="keep">
+<h2>Contents</h2>
+<ol class="toc">
+  <li><a href="#overview">How the system fits together</a></li>
+  <li><a href="#login">Logging in to the Staff portal</a></li>
+  <li><a href="#dashboard">The dashboard</a></li>
+  <li><a href="#folder">A candidate's folder</a></li>
+  <li><a href="#documents">Reviewing documents</a></li>
+  <li><a href="#tray">The update email to the candidate</a></li>
+  <li><a href="#override">Mark complete (override)</a></li>
+  <li><a href="#checks">Checks, references and declaration</a></li>
+  <li><a href="#notes">Notes and the activity log</a></li>
+  <li><a href="#email">Changing a candidate's email</a></li>
+  <li><a href="#finish">Finishing onboarding, or closing</a></li>
+  <li><a href="#files">Viewing and downloading files</a></li>
+  <li><a href="#team">Adding staff to the Staff portal</a></li>
+  <li><a href="#wp">The WordPress dashboard</a></li>
+  <li><a href="#jobs">Job Board: add, change, close</a></li>
+  <li><a href="#import">Importing jobs from a spreadsheet</a></li>
+  <li><a href="#delete">Deleting a candidate</a></li>
+  <li><a href="#users">Admin access and login codes</a></li>
+  <li><a href="#settings">Website settings (Customize)</a></li>
+  <li><a href="#aboutteam">Team members on About us</a></li>
+  <li><a href="#emails">Automatic emails and reminders</a></li>
+  <li><a href="#trouble">Troubleshooting</a></li>
+</ol>
+</section>
+
+<section id="overview">
+<h2><span class="part">Start here</span>How the system fits together</h2>
+<p class="lead">There are two places to work. Most day-to-day work happens in the <b>Staff portal</b>. The <b>WordPress dashboard</b> is for the website itself: jobs, settings and user accounts.</p>
+<table>
+  <tr><th style="width:28%">Where</th><th>What you do there</th><th style="width:26%">Address</th></tr>
+  <tr><td><b>Staff portal</b></td><td>Review candidates and documents, send updates, record checks and references, sign candidates off, download files, add staff.</td><td><span class="path">hcctemps.co.uk/staff</span></td></tr>
+  <tr><td><b>WordPress dashboard</b></td><td>Job adverts, importing jobs, deleting candidate records, website settings, About us team, user accounts.</td><td><span class="path">hcctemps.co.uk/wp-admin</span></td></tr>
+  <tr><td><b>Candidate portal</b></td><td>What candidates see: their answers, documents, training and your updates. You can open it read-only with <b>View as candidate</b>.</td><td><span class="path">hcctemps.co.uk/my-application</span></td></tr>
+</table>
+<h4>The life of a registration</h4>
+<ol class="plain">
+  <li>The candidate creates an account and confirms their email with a 6-digit code.</li>
+  <li>They answer the pre-screening questions, then upload documents and training certificates. Anything they don't have yet can be marked "I don't have this yet".</li>
+  <li>When they submit, the staffing inbox gets a full summary with their CV attached.</li>
+  <li>You review in the Staff portal: approve, ask for replacements, request missing items, record checks and references.</li>
+  <li>Your changes collect in an <b>Update</b> tray and go to the candidate in one email when you press Send.</li>
+  <li>When everything is complete you press <b>Finish onboarding</b>. The candidate moves to <b>Staff completed</b> and gets a "ready to work" email.</li>
+</ol>
+<h4>Who can do what</h4>
+<table>
+  <tr><th style="width:24%">Access</th><th>Can do</th></tr>
+  <tr><td><b>HCC Staff</b></td><td>Everything in the Staff portal for candidates. Sees only the last 4 digits of bank details.</td></tr>
+  <tr><td><b>HCC Manager</b></td><td>As Staff, plus sees bank details in full and can add staff from the <b>Team</b> page.</td></tr>
+  <tr><td><b>Administrator</b></td><td>Everything, including the WordPress dashboard (jobs, settings, user accounts, deleting records).</td></tr>
+</table>
+</section>
+
+<section id="login">
+<h2><span class="part">Staff portal</span>Logging in</h2>
+<p>On the website, choose <span class="path">Log in → Staff login</span>, or go straight to <span class="path">hcctemps.co.uk/candidate-login/?for=staff</span>.</p>
+<figure><img src="img/01-staff-login.png" alt="Staff login page"><figcaption>The Staff login page.</figcaption></figure>
+<ol class="steps">
+  <li>Make sure <b>I'm HCC staff</b> is selected at the top.</li>
+  <li>Type your work email.</li>
+  <li>Type your password.</li>
+  <li>Tick <b>I'm not a robot</b>. Sometimes a short sum appears here instead ("Prove your humanity"): type the answer.</li>
+  <li>Press <b>Log in</b>.</li>
+</ol>
+<figure><img src="img/02-code-screen.png" alt="Verification code screen"><figcaption>Every login asks for a code sent to your email.</figcaption></figure>
+<ol class="steps">
+  <li>Type the 6-digit code from the email "Your HCC-Temps login code". It works for 15 minutes.</li>
+  <li>Press <b>Verify</b> (it often logs you in on its own once the 6 digits are typed).</li>
+  <li>No email? Check spam, then press <b>Resend Code</b>. Only the newest code works.</li>
+</ol>
+<div class="tip"><b>Tip</b>If you clicked a link in an email (for example "Open in Staff portal" for one candidate), you'll land on that candidate after logging in.</div>
+</section>
+
+<section id="dashboard">
+<h2><span class="part">Staff portal</span>The dashboard</h2>
+<p>The first page after logging in. Go back to it any time with <b>Dashboard</b> in the dark blue bar.</p>
+<figure><img src="img/03-dashboard.png" alt="Staff portal dashboard"><figcaption>Dashboard.</figcaption></figure>
+<ol class="steps">
+  <li><b>Figures at a glance</b>: candidates in progress, candidates with files to review, candidates with updates not sent, completed in the last 30 days, and the average days from registering to sign-off.</li>
+  <li><b>Updates not sent</b>: candidates where someone made changes (approvals, replace requests, notes) but hasn't pressed Send yet. It shows who made the changes and how long they've waited. Press <b>Open and send</b>. Nothing is ever emailed to a candidate automatically.</li>
+  <li><b>Tabs</b>: In progress, Staff completed, and Withdrawn / not qualified. Click a candidate's row to open their folder.</li>
+  <li><b>Search</b> by name, reference, role, email or phone, then press Enter.</li>
+  <li><b>Export to Excel (CSV)</b> downloads the list in the current tab.</li>
+</ol>
+<div class="note"><b>Tags on a row</b>"possible duplicate" means another record has the same NI number or phone number. "update not sent" means the tray has unsent changes.</div>
+</section>
+
+<section id="folder">
+<h2><span class="part">Staff portal</span>A candidate's folder</h2>
+<p>Everything about one candidate is on one page: documents and training on the left, then answers, the update tray, checks, references, declaration, bank details, notes and the activity log on the right. Use <b>Expand all</b> / <b>Collapse all</b> to open or fold every section.</p>
+<figure><img src="img/04-folder-top.png" alt="Top of a candidate folder"><figcaption>The buttons at the top of the folder.</figcaption></figure>
+<ol class="steps">
+  <li><b>View as candidate</b>: opens their portal read-only in a new tab, exactly as they see it.</li>
+  <li><b>Approve all uploaded</b>: approves every document that is uploaded and waiting for review.</li>
+  <li><b>Complete profile (100%)</b>: approves what's uploaded, then asks you to override each remaining item one at a time, with a reason and a note (see <a href="#override">Mark complete</a>).</li>
+  <li><b>Download all (zip)</b>: every file in checklist order, plus a summary page.</li>
+  <li><b>Candidate report</b>: everything on one printable page.</li>
+  <li><b>Stage</b>: a label for where the candidate is (New registration, Documents, Checks in progress, Ready to work). Changing it saves straight away.</li>
+  <li><b>Withdrawn / not qualified</b>: closes the application (see <a href="#finish">Finishing or closing</a>).</li>
+</ol>
+<div class="note"><b>Possible duplicate</b>If a pink box says "Possible duplicate", open the other record to check. If it's a different person, press <b>Checked: not a duplicate</b>.</div>
+</section>
+
+<section id="documents">
+<h2><span class="part">Staff portal</span>Reviewing documents</h2>
+<figure><img src="img/05-documents.png" alt="Documents list"><figcaption>Documents. Training certificates work the same way, in the folder below.</figcaption></figure>
+<ol class="steps">
+  <li><b>Tick boxes</b>: tick several items to act on them together.</li>
+  <li><b>With ticked items</b>: <b>Approve</b> (only items that have a file), <b>Request as missing</b>, or <b>Mark complete (override)</b>.</li>
+  <li><b>View</b> opens the file in a new tab. <b>Download</b> saves it. Both are recorded in the activity log.</li>
+  <li><b>Status</b>: To review, Approved, Replace requested, Requested, Missing, Completed by staff, Not needed.</li>
+  <li><b>✓</b> approves this one document.</li>
+  <li><b>⋯</b> opens more actions for this document.</li>
+</ol>
+<figure><img src="img/06-doc-menu.png" alt="Document actions menu"><figcaption>The ⋯ menu on a document.</figcaption></figure>
+<ol class="steps">
+  <li>Choose why it needs replacing (blurry, corners cut off, expired, name doesn't match, wrong document, both sides needed).</li>
+  <li><b>Ask candidate to replace</b> adds the request to the update for the candidate.</li>
+  <li>Type a note about this document.</li>
+  <li><b>Add to update for candidate</b>: the note goes to the candidate in the next update email, and shows on that document in their portal.</li>
+  <li><b>Save as staff-only note</b>: never shown to the candidate.</li>
+</ol>
+<div class="tip"><b>When a candidate replaces a file</b>The document goes back to "To review", the old file is kept (the new one is named "(v2)"), and the staffing inbox gets one "[DOCUMENTS]" email listing everything they uploaded in that visit.</div>
+</section>
+
+<section id="tray">
+<h2><span class="part">Staff portal</span>The update email to the candidate</h2>
+<p>Approvals, replace requests, missing items and notes for the candidate all collect in the <b>Update for [name]</b> card at the top right. They go in <b>one</b> email when you press Send. Nothing is sent automatically.</p>
+<figure><img src="img/07-tray.png" alt="Update tray with preview"><figcaption>The update tray with the email preview open.</figcaption></figure>
+<ol class="steps">
+  <li>The number of changes waiting.</li>
+  <li>The changes, grouped. Press <b>remove</b> next to one to take it out of this email (the approval itself stays).</li>
+  <li><b>Preview and send email</b> shows exactly what the candidate will receive.</li>
+  <li>Press <b>Send email</b>. The update also appears in the candidate's portal and in the <b>Sent to candidate</b> card.</li>
+</ol>
+<div class="warn"><b>Don't forget to send</b>Unsent changes show on the dashboard under <b>Updates not sent</b> until someone presses Send. You can't finish onboarding while changes are unsent.</div>
+</section>
+
+<section id="override">
+<h2><span class="part">Staff portal</span>Mark complete (override)</h2>
+<p>Use this when an item is satisfied without an upload, for example you saw the original passport in the office, or a document isn't needed for this candidate. You'll be asked about each item in turn.</p>
+<figure><img src="img/08-override.png" alt="Override panel"><figcaption>Overriding one item at a time.</figcaption></figure>
+<ol class="steps">
+  <li>Choose the reason.</li>
+  <li>Write a note. This is required, for example "Original passport checked in the Leeds office, copy on file".</li>
+  <li><b>Confirm and next</b> moves to the next item.</li>
+  <li><b>Skip this item</b> leaves it as it is.</li>
+</ol>
+<p>Your name, the reason and the note are saved in the activity log. Optional items ("where applicable") that weren't provided aren't counted, so you won't be asked about them.</p>
+</section>
+
+<section id="checks">
+<h2><span class="part">Staff portal</span>Checks, references and declaration</h2>
+<h3>Checks</h3>
+<figure><img src="img/09-checks.png" alt="Checks"><figcaption>Right to work, DBS, NMC register (nurses) and identity.</figcaption></figure>
+<ol class="steps">
+  <li>Open a check, then choose the <b>Result</b>: Pass, Fail or Follow-up needed.</li>
+  <li>Fill in the visa expiry date (right to work, non-British candidates) and the outcome or notes.</li>
+  <li><b>Open official check</b> opens the government or NMC website in a new tab.</li>
+  <li>Press <b>Save check</b>. The date and your name are filled in for you.</li>
+</ol>
+<h3>References</h3>
+<figure><img src="img/10-references.png" alt="References"><figcaption>The two referees the candidate gave, recorded by hand.</figcaption></figure>
+<ol class="steps">
+  <li>The date you sent the reference request.</li>
+  <li>The date it came back.</li>
+  <li>The outcome (Satisfactory, Concerns, Not received), then <b>Save</b>.</li>
+  <li><b>Replace referee</b> if one doesn't reply (the old one is kept in the history), or <b>+ Add another referee</b>.</li>
+</ol>
+<h3>Declaration</h3>
+<figure><img src="img/11-declaration.png" alt="Declaration"><figcaption>The declaration itself is sent manually; record it here.</figcaption></figure>
+<ol class="steps">
+  <li>Tick <b>Declaration sent to candidate</b> when you send it.</li>
+  <li>Tick <b>Signed declaration received</b> when it comes back, then press <b>Save</b>.</li>
+</ol>
+</section>
+
+<section id="notes">
+<h2><span class="part">Staff portal</span>Notes and the activity log</h2>
+<figure><img src="img/12-notes.png" alt="Notes card"><figcaption>Notes about the whole application.</figcaption></figure>
+<ol class="steps">
+  <li>Choose <b>Internal compliance note</b> (staff only) or <b>Message to candidate</b> (goes in the next update email).</li>
+  <li>Write the note.</li>
+  <li>For internal notes you can add who signed it off, the next action and when it's due. These are optional.</li>
+  <li>Press <b>Save to profile</b>.</li>
+</ol>
+<figure><img src="img/16-activity.png" alt="Activity log"><figcaption>The activity log, newest first.</figcaption></figure>
+<p>Everything is recorded with the date, time and who did it: uploads, replacements, logins, approvals, notes, checks, emails sent, views and downloads of files, and email changes.</p>
+</section>
+
+<section id="email">
+<h2><span class="part">Staff portal</span>Changing a candidate's email</h2>
+<p>If a candidate typed their email wrongly or has a new one, they can fix it themselves:</p>
+<ul>
+  <li><b>While registering:</b> on the "Check your email" step, <b>Wrong email address? Change it</b>.</li>
+  <li><b>After registering:</b> in their portal, under My answers, <b>Change my email address</b>. A code is sent to the new address.</li>
+</ul>
+<p>If they phone you instead, change it from their folder:</p>
+<figure><img src="img/13-change-email.png" alt="Change email in the folder"><figcaption>At the top of Pre-screening answers.</figcaption></figure>
+<ol class="steps">
+  <li>Open <b>Change email address</b>.</li>
+  <li>Type the new email.</li>
+  <li>Press <b>Change email</b>. It becomes their login straight away. The old and new addresses both get a short notice, and it's written in the activity log.</li>
+</ol>
+</section>
+
+<section id="finish">
+<h2><span class="part">Staff portal</span>Finishing onboarding, or closing</h2>
+<figure><img src="img/14-finish.png" alt="Finish onboarding"><figcaption>The Finish onboarding box shows what's still needed.</figcaption></figure>
+<ol class="steps">
+  <li>Each condition shows ✓ or ✗: profile 100%, declaration sent, signed declaration received, no unsent updates.</li>
+  <li>The name of the person signing off.</li>
+  <li>When everything is ✓, press <b>Finish onboarding and move to Staff completed</b>. The candidate gets a "ready to work" email.</li>
+</ol>
+<div class="tip"><b>Made a mistake?</b>On a completed candidate, press <b>Move back to in progress</b>. The sign-off is removed and the change is logged.</div>
+<h3>Withdrawn / not qualified</h3>
+<figure><img src="img/15-close.png" alt="Close application"><figcaption>Closing an application.</figcaption></figure>
+<ol class="steps">
+  <li>Choose the outcome: Withdrawn by candidate, Not qualified, or Not suitable.</li>
+  <li>Write the reason.</li>
+  <li>Your name (signed off by) and the date.</li>
+  <li>Press <b>Close application</b>. The candidate moves to the Withdrawn / not qualified tab and their portal becomes read-only. <b>Reopen application</b> brings them back.</li>
+</ol>
+</section>
+
+<section id="files">
+<h2><span class="part">Staff portal</span>Viewing and downloading files</h2>
+<ul>
+  <li><b>One file:</b> in the Documents list, <b>View</b> opens it in a new tab and <b>Download</b> saves it.</li>
+  <li><b>Everything:</b> <b>Download all (zip)</b> at the top of the folder. You get a folder named "HCC-001072 Alex Morgan - Registered Nurse" with documents numbered in checklist order (01 - Alex Morgan - CV.pdf…), a Training subfolder, and a summary page.</li>
+  <li><b>Printable summary:</b> <b>Candidate report</b>.</li>
+</ul>
+<div class="note"><b>Where are the files kept?</b>Candidate documents are stored in a private folder on the website. They are <b>not</b> in the WordPress Media Library, and there's no public link to them. Always open them through the Staff portal: every view and download is logged. Managers see bank details in full in reports and zips; staff see the last 4 digits.</div>
+<figure><img src="img/17-view-as-candidate.png" alt="View as candidate"><figcaption>View as candidate.</figcaption></figure>
+<ol class="steps">
+  <li>The yellow bar shows it's a read-only staff preview. <b>Back to their folder</b> returns you.</li>
+  <li>The candidate's quick-jump bar: Updates, My answers, Documents, Training.</li>
+</ol>
+</section>
+
+<section id="team">
+<h2><span class="part">Staff portal</span>Adding staff to the Staff portal</h2>
+<p>Managers can add staff without going into WordPress.</p>
+<figure><img src="img/18-team.png" alt="Team page"><figcaption>Team.</figcaption></figure>
+<ol class="steps">
+  <li>Open <b>Team</b> in the dark blue bar (managers only).</li>
+  <li>First name (and last name).</li>
+  <li>Their work email.</li>
+  <li><b>Staff</b> or <b>Manager</b> (managers see bank details in full and can add staff).</li>
+  <li>Press <b>Add and email invite</b>. They get an email with a link to set their password, then log in at Staff login with an emailed code.</li>
+</ol>
+<p>To remove someone's access, see <a href="#users">Admin access and login codes</a>.</p>
+</section>
+
+<section id="wp">
+<h2><span class="part">WordPress dashboard</span>Getting into the WordPress dashboard</h2>
+<p>Go to <span class="path">hcctemps.co.uk/wp-admin</span> and log in with your administrator account. The menu down the left side has the parts you'll use:</p>
+<table>
+  <tr><th style="width:30%">Menu</th><th>What it's for</th></tr>
+  <tr><td><b>Job Board</b></td><td>Job adverts: All jobs, Add new job, Sectors, Job types, Locations, Contracts, Job status, Import jobs (CSV).</td></tr>
+  <tr><td><b>Candidates</b></td><td>A simple list of candidate records with a link to each one in the Staff portal. Used to delete records.</td></tr>
+  <tr><td><b>Team</b></td><td>The people shown on the About us page.</td></tr>
+  <tr><td><b>Pages</b></td><td>The website pages. Their layout comes from the theme.</td></tr>
+  <tr><td><b>Appearance → Customize</b></td><td>Phone, emails, staffing inbox, homepage figures, links and other settings.</td></tr>
+  <tr><td><b>Users</b></td><td>Accounts and access levels.</td></tr>
+</table>
+<div class="note"><b>WordPress.com</b>On WordPress.com the dashboard has an extra WordPress.com menu and may look slightly different from these screenshots. The menu items named here are the same.</div>
+</section>
+
+<section id="jobs">
+<h2><span class="part">WordPress dashboard</span>Job Board: add, change, close</h2>
+<figure><img src="img/20-wp-jobs.png" alt="All jobs"><figcaption>Job Board → All jobs.</figcaption></figure>
+<ol class="steps">
+  <li><b>Job Board</b> in the left menu.</li>
+  <li><b>Add new job</b> to create one.</li>
+  <li>Click a job's title to change it.</li>
+  <li><b>Import jobs (CSV)</b> to add or update many jobs from a spreadsheet (next page).</li>
+</ol>
+<figure><img src="img/21-wp-job-edit.png" alt="Editing a job"><figcaption>Editing a job.</figcaption></figure>
+<ol class="steps">
+  <li>The job title, as shown on the site.</li>
+  <li>The description: what they'll do, what they need, what they get.</li>
+  <li>Tick the <b>Sector</b> on the right, and below it the <b>Job type</b>, <b>Location</b> and <b>Contract</b>. Use "+ Add" to create a new one, for example a new town.</li>
+  <li>Press <b>Publish</b> (new job) or <b>Update</b> (existing job).</li>
+</ol>
+<figure><img src="img/21b-wp-job-details.png" alt="Job details box"><figcaption>The Job details box, under the description.</figcaption></figure>
+<ol class="steps">
+  <li>Pay as shown on the site, e.g. "£14.20 – £15.00 per hour".</li>
+  <li>The lowest hourly rate as a number, e.g. 14.20. Used for "sort by pay" and Google Jobs.</li>
+  <li>Shift pattern, e.g. "Long days, nights".</li>
+  <li>Badge: New or Urgent.</li>
+  <li>Closing date: the job disappears from the site by itself after this date.</li>
+</ol>
+<h4>To close a job</h4>
+<p>Either set a closing date in the past, or in <b>Job status</b> (right side) tick <b>Expired Jobs</b> instead of Live Jobs and press Update. Closed jobs stay in the dashboard so you can reopen them later. <b>Move to Trash</b> removes a job completely.</p>
+</section>
+
+<section id="import">
+<h2><span class="part">WordPress dashboard</span>Importing jobs from a spreadsheet</h2>
+<figure><img src="img/22-wp-import.png" alt="Import jobs"><figcaption>Job Board → Import jobs (CSV).</figcaption></figure>
+<ol class="steps">
+  <li><b>Download the CSV template</b> and open it in Excel or Google Sheets. Keep the first row (column names); one job per row.</li>
+  <li>Save as <b>CSV UTF-8</b>, then choose the file.</li>
+  <li>Press <b>Upload and preview</b>. The preview shows each row as New, Update or Skip (with the reason). Press <b>Import</b> to finish.</li>
+</ol>
+<div class="tip"><b>Updating, not duplicating</b>A row with the same <b>ref</b> (or the same web address in the <b>slug</b> column) as an existing job updates that job. To close jobs, put <b>expired</b> in the status column. Several locations go in one cell separated by <b>|</b>, e.g. "Leeds | Bradford".</div>
+</section>
+
+<section id="delete">
+<h2><span class="part">WordPress dashboard</span>Deleting a candidate</h2>
+<p>For test registrations, duplicates, or someone who needs to start again (for example "There is already an account with this email" and they can't get in).</p>
+<figure><img src="img/23-wp-candidates.png" alt="Candidates list"><figcaption>Candidates in the left menu.</figcaption></figure>
+<ol class="steps">
+  <li>Open <b>Candidates</b> in the left menu.</li>
+  <li>Hover over the candidate. <b>Open in Staff portal</b> takes you to their folder.</li>
+  <li>Press <b>Trash</b>.</li>
+</ol>
+<figure><img src="img/24-wp-trash.png" alt="Trash"><figcaption>Candidates → Trash.</figcaption></figure>
+<ol class="steps">
+  <li>Click <b>Trash</b> at the top of the list.</li>
+  <li><b>Restore</b> brings a record back if it was a mistake.</li>
+  <li><b>Delete Permanently</b> removes the record, <b>all their uploaded files</b> and their login. The email can then be used to register again.</li>
+  <li><b>Empty Trash</b> permanently deletes everything in the trash.</li>
+</ol>
+<div class="warn"><b>Trash alone is not enough</b>A candidate in the Trash still has a login, so their email still says "already registered". Permanent deletion can't be undone: download the zip first if you need to keep anything.</div>
+</section>
+
+<section id="users">
+<h2><span class="part">WordPress dashboard</span>Admin access and login codes</h2>
+<figure><img src="img/25-wp-add-user.png" alt="Add user"><figcaption>Users → Add New User.</figcaption></figure>
+<ol class="steps">
+  <li><b>Users → Add New User</b>.</li>
+  <li>Username and email (use their work email for both).</li>
+  <li>Tick <b>Send the new user an email about their account</b> so they can set a password.</li>
+  <li>Choose the <b>Role</b>: <b>Administrator</b> (everything), <b>HCC Manager</b> or <b>HCC Staff</b> (Staff portal only).</li>
+  <li>Press <b>Add New User</b>.</li>
+</ol>
+<h4>Login codes (two-step verification)</h4>
+<ul>
+  <li>HCC Staff, HCC Managers and candidates always get a 6-digit code by email at login. This needs the free <b>Two Factor</b> plugin to be active (Plugins menu). If it's switched off, a red notice appears in the dashboard.</li>
+  <li>Administrators can turn the same code on for themselves: <span class="path">Users → Profile → Two-Factor Options → Email</span>.</li>
+</ul>
+<h4>Removing someone's access</h4>
+<p><span class="path">Users → All Users</span>, hover over the person, then <b>Delete</b> (WordPress asks what to do with any content they wrote; choose to give it to another administrator). To change someone's level, edit the user and change <b>Role</b>.</p>
+</section>
+
+<section id="settings">
+<h2><span class="part">WordPress dashboard</span>Website settings (Customize)</h2>
+<figure><img src="img/26-customize.png" alt="Customize"><figcaption>Appearance → Customize.</figcaption></figure>
+<ol class="steps">
+  <li>Open the <b>HCC-Temps</b> panel.</li>
+</ol>
+<figure><img src="img/27-customize-contact.png" alt="Contact details and emails"><figcaption>HCC-Temps → Contact details and emails.</figcaption></figure>
+<ol class="steps">
+  <li><b>Staffing inbox</b>: where registrations, uploads, cover requests and contact messages go. Candidates' replies also go here.</li>
+  <li><b>Sender name and email</b>: who website emails come from, e.g. "HCC-Temps" and staffing@hcctemps.co.uk.</li>
+  <li>Press <b>Publish</b> to save.</li>
+</ol>
+<table>
+  <tr><th style="width:32%">Section</th><th>Settings</th></tr>
+  <tr><td>Contact details and emails</td><td>Slogan, phone, public email, company name and number, addresses, staffing inbox, ICO number (shown in the privacy policy), sender name and email, Google Analytics ID.</td></tr>
+  <tr><td>Homepage</td><td>Hero heading and text, the four figures, Trustpilot link, home care (HCC Care &amp; Support) link.</td></tr>
+  <tr><td>Social links</td><td>X, LinkedIn, Instagram, Facebook.</td></tr>
+  <tr><td>Robot check</td><td>Cloudflare Turnstile keys (optional). Without them, a simple "I'm not a robot" tick is used.</td></tr>
+</table>
+</section>
+
+<section id="aboutteam">
+<h2><span class="part">WordPress dashboard</span>Team members on About us</h2>
+<figure><img src="img/28-wp-team.png" alt="Team list"><figcaption>Team in the left menu.</figcaption></figure>
+<ol class="steps">
+  <li>Open <b>Team</b>. Use <b>Add New</b> at the top for someone new.</li>
+  <li>Click a name to change it. The title is their first name. Fill in <b>Role</b> (e.g. Compliance Manager), set the <b>Photo</b> on the right, and use <b>Order</b> (Page attributes) for their position: 1 shows first. Press <b>Update</b>.</li>
+</ol>
+<p>To remove someone, press <b>Trash</b> under their name.</p>
+<figure><img src="img/29-wp-pages.png" alt="Pages"><figcaption>Pages: the website pages. Their layout and wording come from the theme. Ask your web developer to change the wording on Privacy Policy and Terms.</figcaption></figure>
+</section>
+
+<section id="emails">
+<h2><span class="part">Reference</span>Automatic emails and reminders</h2>
+<table>
+  <tr><th style="width:34%">Email</th><th style="width:20%">Goes to</th><th>When</th></tr>
+  <tr><td>Your HCC-Temps code</td><td>Candidate</td><td>When they create an account (or change email while registering).</td></tr>
+  <tr><td>Welcome</td><td>Candidate</td><td>After they confirm their email.</td></tr>
+  <tr><td>Your registration is nearly done</td><td>Candidate</td><td><b>Automatic reminders</b> if they haven't submitted: 24 hours and 3 days after registering.</td></tr>
+  <tr><td>We have your registration</td><td>Candidate</td><td>When they submit.</td></tr>
+  <tr><td>[REGISTRATION] full summary + CV</td><td>Staffing inbox</td><td>When they submit.</td></tr>
+  <tr><td>[DOCUMENTS] uploaded…</td><td>Staffing inbox</td><td>After they upload in the portal: 10 minutes after their last upload, or straight away when they press "I've finished uploading".</td></tr>
+  <tr><td>Update on your registration</td><td>Candidate</td><td>Only when staff press <b>Send email</b> in the update tray.</td></tr>
+  <tr><td>You're ready to work</td><td>Candidate</td><td>When staff press Finish onboarding.</td></tr>
+  <tr><td>Email changed notices</td><td>Old (and new) address</td><td>When an email is changed in the portal or by staff.</td></tr>
+  <tr><td>[COVER REQUEST] / [CONTACT]</td><td>Staffing inbox, and a copy to the sender</td><td>From the Request cover and Contact forms.</td></tr>
+  <tr><td>Your HCC-Temps login code</td><td>Whoever is logging in</td><td>Every login (candidates and staff).</td></tr>
+</table>
+<div class="note"><b>"Updates not sent" is your reminder</b>There is no automatic reminder for staff. The dashboard's <b>Updates not sent</b> box shows every candidate with unsent changes and how long they've waited (in red after a day).</div>
+</section>
+
+<section id="trouble">
+<h2><span class="part">Reference</span>Troubleshooting</h2>
+
+<p class="q">A candidate typed the wrong email when registering</p>
+<p>On the "Check your email" step they press <b>Wrong email address? Change it</b> and a new code goes to the right address. If they've closed the page, change it for them in their folder (<a href="#email">Changing a candidate's email</a>), then they log in with the new email.</p>
+
+<p class="q">A candidate says the code didn't arrive, or "That code isn't right"</p>
+<ul>
+  <li>Check spam or junk.</li>
+  <li>Use <b>send a new code</b>. Wait 30 seconds between requests, and only the newest code works.</li>
+  <li>After 5 wrong tries the code locks; sending a new code unlocks it.</li>
+  <li>The activity log in their folder shows each code sent and why one was refused.</li>
+</ul>
+
+<p class="q">"There is already an account with this email"</p>
+<p>They already registered. They should use <b>Log in</b>, or <b>Forgotten your password?</b> (both links appear under the message). If they need to start again from scratch, delete the old record permanently (<a href="#delete">Deleting a candidate</a>).</p>
+
+<p class="q">Someone forgot their password</p>
+<p>On the login page, <b>Forgotten your password?</b>, then enter their email. They get a reset link. This works for candidates and staff.</p>
+
+<p class="q">A staff member isn't getting the login code</p>
+<p>Check spam. Check the Two Factor plugin is active (Plugins). Check their email in <span class="path">Users</span> is right. They can press <b>Resend Code</b>.</p>
+
+<p class="q">"Too many attempts. Please wait a while or call us."</p>
+<p>The website limits repeated form attempts from one internet connection to stop spam. It clears by itself within an hour.</p>
+
+<p class="q">An upload fails</p>
+<p>Files must be PDF, JPG, PNG, HEIC or Word, up to 10MB. Phone photos are made smaller automatically. If a candidate has been away a long time, ask them to log in again.</p>
+
+<p class="q">A candidate's portal or a page looks out of date</p>
+<p>Ask them to refresh the page. After a website update, clear the WordPress.com cache once (WordPress.com dashboard → Settings → Caching → Clear all caches).</p>
+
+<p class="q">Emails aren't arriving in the staffing inbox</p>
+<p>Check <b>Staffing inbox</b> in <span class="path">Appearance → Customize → HCC-Temps → Contact details and emails</span>, and check spam. If emails go to spam, the domain's email settings (SPF and DKIM) may need to be set up by whoever manages the domain.</p>
+
+<p class="q">I approved or finished something by mistake</p>
+<ul>
+  <li><b>An approval:</b> use ⋯ → <b>Ask candidate to replace</b>, or remove the line from the update tray before sending.</li>
+  <li><b>Finish onboarding:</b> <b>Move back to in progress</b>.</li>
+  <li><b>A closed application:</b> <b>Reopen application</b>.</li>
+</ul>
+<p>Everything you do is in the activity log.</p>
+
+<p class="q">"Possible duplicate"</p>
+<p>Another record has the same NI number or phone. Open it to check. If it's the same person, close or delete the extra one. If not, press <b>Checked: not a duplicate</b>.</p>
+</section>
+
+</div>
+<div class="stripe"></div>
+</body>
+</html>

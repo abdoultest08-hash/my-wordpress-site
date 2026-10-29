@@ -305,3 +305,10 @@ add_action( 'wp_head', function () {
 	}
 	echo '<script type="application/ld+json">' . wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "</script>\n";
 } );
+
+/* Job adverts use the classic editor: the text, then the Job details box right under it, with sector,
+   location and contract boxes on the right. Simpler for staff than the block editor, which tucks the
+   Job details box away at the bottom of the screen. */
+add_filter( 'use_block_editor_for_post_type', function ( $use, $post_type ) {
+	return 'job_vacancies' === $post_type ? false : $use;
+}, 10, 2 );

@@ -22,6 +22,7 @@ function hcc_import_columns() {
 		'badge'       => array( 'new, urgent or blank', 'urgent' ),
 		'closing'     => array( 'Closing date YYYY-MM-DD or DD/MM/YYYY', '2026-12-31' ),
 		'status'      => array( 'live or expired (blank = live)', 'live' ),
+		'slug'        => array( 'Web address of the advert (optional). Keeps links from the old website, Google and job boards working, and matches jobs already on the site so they are updated, not duplicated.', 'registered-nurse-leeds' ),
 		'description' => array( 'Job description. Plain text or HTML. Blank lines start new paragraphs.', 'Nights in a nursing home…' ),
 	);
 }
@@ -93,12 +94,26 @@ function hcc_import_date( $s ) {
 	return $t ? gmdate( 'Y-m-d', $t ) : '';
 }
 
-function hcc_import_find( $ref ) {
-	if ( '' === $ref ) {
-		return 0;
+/**
+ * The existing job for a row: first by job reference, then by web address (slug) for adverts that were
+ * already on the site before the importer was used (they have no reference yet), so they are updated
+ * in place rather than duplicated.
+ */
+function hcc_import_find( $ref, $slug = '' ) {
+	if ( '' !== $ref ) {
+		$ids = get_posts( array( 'post_type' => 'job_vacancies', 'post_status' => 'any', 'meta_key' => '_hcc_ref', 'meta_value' => $ref, 'numberposts' => 1, 'fields' => 'ids' ) );
+		if ( $ids ) {
+			return (int) $ids[0];
+		}
 	}
-	$ids = get_posts( array( 'post_type' => 'job_vacancies', 'post_status' => 'any', 'meta_key' => '_hcc_ref', 'meta_value' => $ref, 'numberposts' => 1, 'fields' => 'ids' ) );
-	return $ids ? (int) $ids[0] : 0;
+	$slug = sanitize_title( $slug );
+	if ( '' !== $slug ) {
+		$ids = get_posts( array( 'post_type' => 'job_vacancies', 'post_status' => 'any', 'name' => $slug, 'numberposts' => 1, 'fields' => 'ids' ) );
+		if ( $ids && ( '' === $ref || ! get_post_meta( $ids[0], '_hcc_ref', true ) ) ) {
+			return (int) $ids[0];
+		}
+	}
+	return 0;
 }
 
 /** Problems with a row, or an empty array. */
@@ -117,12 +132,15 @@ function hcc_import_check( $r ) {
 }
 
 function hcc_import_row( $r ) {
-	$id   = hcc_import_find( $r['ref'] );
+	$id   = hcc_import_find( $r['ref'], $r['slug'] );
 	$desc = $r['description'];
 	if ( $desc && false === strpos( $desc, '<' ) ) {
 		$desc = wpautop( $desc );
 	}
 	$post = array( 'post_type' => 'job_vacancies', 'post_status' => 'publish', 'post_title' => $r['title'] );
+	if ( '' !== $r['slug'] ) {
+		$post['post_name'] = sanitize_title( $r['slug'] ); // Same web address as the old advert.
+	}
 	if ( '' !== $desc || ! $id ) {
 		$post['post_content'] = wp_kses_post( $desc );
 	}
@@ -181,7 +199,7 @@ add_action( 'admin_post_hcc_import', function () {
 			if ( hcc_import_check( $r ) ) {
 				continue;
 			}
-			$had = hcc_import_find( $r['ref'] );
+			$had = hcc_import_find( $r['ref'], $r['slug'] );
 			if ( hcc_import_row( $r ) ) {
 				$had ? $upd++ : $made++;
 			}
@@ -219,7 +237,7 @@ function hcc_import_page() {
 		foreach ( $rows as $i => $r ) {
 			$err = hcc_import_check( $r );
 			$ok += $err ? 0 : 1;
-			$act = $err ? 'Skip' : ( hcc_import_find( $r['ref'] ) ? 'Update' : 'New' );
+			$act = $err ? 'Skip' : ( hcc_import_find( $r['ref'], $r['slug'] ) ? 'Update' : 'New' );
 			printf( '<tr><td>%d</td><td><b>%s</b></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td style="color:#b32d2e">%s</td></tr>', $i + 2, esc_html( $act ), esc_html( $r['ref'] ), esc_html( $r['title'] ), esc_html( $r['sector'] ), esc_html( $r['location'] ), esc_html( $r['pay'] ), esc_html( hcc_import_date( $r['closing'] ) ), esc_html( $r['status'] ? $r['status'] : 'live' ), esc_html( implode( ', ', $err ) ) );
 		}
 		echo '</tbody></table><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin-top:16px"><input type="hidden" name="action" value="hcc_import">';

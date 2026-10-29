@@ -62,7 +62,7 @@ for j in sorted(J, key=lambda x: x['date'], reverse=True):
     rows.append({
         'status': 'Live' if age <= 183 else 'Closed', 'title': title, 'location': ' | '.join(loc), 'pay': pay, 'pay_min': pmin, 'shifts': '',
         'contract': contract, 'sector': sector, 'job_type': ' | '.join(dict.fromkeys(types)), 'closing': '', 'badge': '', 'client_notes': '',
-        'flags': '\n'.join(flags), 'posted': posted.strftime('%d/%m/%Y'), 'link': j['link'], 'ref': 'HCC-W%d' % j['id'], 'description': clean_html(j['content']['rendered']),
+        'flags': '\n'.join(flags), 'posted': posted.strftime('%d/%m/%Y'), 'link': j['link'], 'slug': j['slug'], 'ref': 'HCC-W%d' % j['id'], 'description': clean_html(j['content']['rendered']),
     })
 
 # ---- Workbook for the client ----
@@ -72,7 +72,7 @@ cols = [  # key, header, width, editable
     ('pay', 'Pay shown on the site', 26, True), ('pay_min', 'Lowest hourly rate (number only)', 16, True), ('shifts', 'Shift pattern (e.g. Days, Nights)', 22, True),
     ('contract', 'Contract', 15, True), ('sector', 'Sector', 22, True), ('job_type', 'Job type', 22, True), ('closing', 'Closing date (optional)', 15, True),
     ('badge', 'Badge (optional)', 12, True), ('client_notes', 'Notes for us', 30, True), ('flags', 'Please check (from us)', 44, False),
-    ('posted', 'First posted', 12, False), ('link', 'Current advert', 40, False), ('ref', 'Job ref (do not change)', 16, False), ('description', 'Description (optional to edit)', 60, True),
+    ('posted', 'First posted', 12, False), ('link', 'Current advert', 40, False), ('ref', 'Job ref (do not change)', 16, False), ('slug', 'Web address (do not change)', 30, False), ('description', 'Description (optional to edit)', 60, True),
 ]
 edit_fill = PatternFill('solid', fgColor='FFFFFF'); lock_fill = PatternFill('solid', fgColor='EEF3F2'); head_fill = PatternFill('solid', fgColor='171A45')
 flag_fill = PatternFill('solid', fgColor='FFF2CC'); thin = Side(style='thin', color='D5DEDC')
@@ -111,7 +111,7 @@ lines = [
     ('4. Shift pattern, closing date and badge (New / Urgent) are optional.', False),
     ('5. The yellow "Please check" column shows what we spotted: old adverts, missing pay, or pay below the minimum wage (£%.2f an hour from April 2026).' % NLW, False),
     ('6. To add a new job, add a row at the bottom and leave "Job ref" empty.', False),
-    ('7. Grey columns are for reference. Please don\'t change "Job ref": it links each row to its advert.', False),
+    ('7. Grey columns are for reference. Please don\'t change "Job ref" or "Web address": they link each row to its advert.', False),
     ('', False),
     ('We have suggested Live for adverts posted in the last 6 months and Closed for older ones. Please change these to what is right today.', False),
     ('Summary: %d adverts · %d suggested Live · %d with pay below minimum wage · %d with no pay found.' % (len(rows), sum(r['status'] == 'Live' for r in rows), sum('minimum wage' in r['flags'] for r in rows), sum('No pay' in r['flags'] for r in rows)), True),
@@ -125,7 +125,13 @@ wb.save(OUT_X)
 # ---- Importer-ready CSV (same columns as Job Board → Import jobs) ----
 with open(OUT_C, 'w', newline='', encoding='utf-8-sig') as f:
     w = csv.writer(f)
-    w.writerow(['ref', 'title', 'sector', 'job_type', 'location', 'contract', 'pay', 'pay_min', 'shifts', 'badge', 'closing', 'status', 'description'])
+    w.writerow(['ref', 'title', 'sector', 'job_type', 'location', 'contract', 'pay', 'pay_min', 'shifts', 'badge', 'closing', 'status', 'slug', 'description'])
     for r in rows:
-        w.writerow([r['ref'], r['title'], r['sector'], r['job_type'], r['location'], r['contract'], r['pay'], r['pay_min'], '', '', '', 'live' if r['status'] == 'Live' else 'expired', r['description']])
+        w.writerow([r['ref'], r['title'], r['sector'], r['job_type'], r['location'], r['contract'], r['pay'], r['pay_min'], '', '', '', 'live' if r['status'] == 'Live' else 'expired', r['slug'], r['description']])
+# Same jobs, all live: for trying the job board before the client's review comes back.
+with open(OUT_C.replace('.csv', '-AllLive.csv'), 'w', newline='', encoding='utf-8-sig') as f:
+    w = csv.writer(f)
+    w.writerow(['ref', 'title', 'sector', 'job_type', 'location', 'contract', 'pay', 'pay_min', 'shifts', 'badge', 'closing', 'status', 'slug', 'description'])
+    for r in rows:
+        w.writerow([r['ref'], r['title'], r['sector'], r['job_type'], r['location'], r['contract'], r['pay'], r['pay_min'], '', '', '', 'live', r['slug'], r['description']])
 print(len(rows), 'jobs |', sum(r['status'] == 'Live' for r in rows), 'live |', sum('minimum wage' in r['flags'] for r in rows), 'below NLW |', sum('No pay' in r['flags'] for r in rows), 'no pay |', sum('No location' in r['flags'] for r in rows), 'no location')

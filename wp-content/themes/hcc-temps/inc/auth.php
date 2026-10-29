@@ -117,9 +117,10 @@ add_filter( 'login_url', function ( $url, $redirect ) {
 /* ---------- Branded wp-login.php (password reset and the code screen) ---------- */
 
 add_action( 'login_enqueue_scripts', function () {
+	wp_enqueue_style( 'hcc-fonts', 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap', array(), null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 	?>
 	<style>
-		body.login { background: #EEF3F2; font-family: Figtree, "Segoe UI", system-ui, sans-serif; }
+		body.login { background: #EEF3F2; font-family: Montserrat, "Segoe UI", system-ui, sans-serif; }
 		body.login::before { content: ""; position: fixed; inset: 0 0 auto; height: 6px; background: linear-gradient(90deg,#7C4925 0 20%,#2D338C 20% 40%,#6DC0B8 40% 60%,#D93831 60% 80%,#F3D45E 80%); }
 		#login h1 a, .login h1 a { background-image: url(<?php echo esc_url( hcc_logo_url() ); ?>) !important; background-size: contain !important; background-position: center !important; width: 200px !important; height: 108px !important; }
 		.login .message, .login .notice { border-left-color: #6DC0B8 !important; border-radius: 12px; }
@@ -132,6 +133,7 @@ add_action( 'login_enqueue_scripts', function () {
 		.jetpack-sso-wrap, #jetpack-sso-wrap, .jetpack-sso-or, .jetpack-sso-toggle, .jetpack-sso-wrap__user { display: none !important; }
 		#loginform p, #loginform .user-pass-wrap, #loginform input, #loginform label { display: block; }
 		#loginform input[type=checkbox] { display: inline-block; }
+		#loginform .forgetmenot label { display: inline; }
 		#loginform #authcode, #loginform input[name="two-factor-email-code"] { display: block !important; width: 100%; font-size: 24px; letter-spacing: .2em; text-align: center; }
 		#loginform .submit, #loginform #submit { display: block !important; }
 	</style>

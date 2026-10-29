@@ -35,8 +35,6 @@ get_header();
       </nav>
 
       <article class="legal-body">
-        <p class="legal-draft">Draft for HCC-Temps to review with their legal adviser before publishing. Items in [brackets] need confirming.</p>
-
         <h2 id="about">1. About these terms</h2>
         <p>These terms apply to your use of www.hcctemps.co.uk and our candidate and staff portals (the "website"). The website is run by <b>HCC-Temp Staffing Ltd</b>, registered in England and Wales (company number 11486985), Crown House, 94 Armley Road, Armley, Leeds LS12 2EJ.</p>
         <p>By using the website or creating an account you agree to these terms. Please also read our <a href="<?php echo esc_url( hcc_page_url( 'privacy', '/privacy-policy/' ) ); ?>">privacy policy</a>, which explains how we use your personal information.</p>

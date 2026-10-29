@@ -14,7 +14,7 @@ head = [str(c.value or '').strip() for c in ws[1]]
 col = lambda name: head.index(name)
 H = {'status': 'Live or Closed?', 'title': 'Job title', 'location': 'Location (town or city)', 'pay': 'Pay shown on the site', 'pay_min': 'Lowest hourly rate (number only)',
      'shifts': 'Shift pattern (e.g. Days, Nights)', 'contract': 'Contract', 'sector': 'Sector', 'job_type': 'Job type', 'closing': 'Closing date (optional)',
-     'badge': 'Badge (optional)', 'ref': 'Job ref (do not change)', 'description': 'Description (optional to edit)', 'notes': 'Notes for us'}
+     'badge': 'Badge (optional)', 'ref': 'Job ref (do not change)', 'slug': 'Web address (do not change)', 'description': 'Description (optional to edit)', 'notes': 'Notes for us'}
 plain = lambda s: re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', s or ''))).strip()
 out, notes = [], []
 for row in ws.iter_rows(min_row=2, values_only=True):
@@ -34,12 +34,12 @@ for row in ws.iter_rows(min_row=2, values_only=True):
     pmin = g('pay_min')
     out.append([ref, title, g('sector') or '', g('job_type') or '', g('location') or '', g('contract') or 'Temporary', g('pay') or '',
                 '' if pmin in (None, '') else pmin, g('shifts') or '', str(g('badge') or '').lower(), closing,
-                'live' if str(g('status') or '').strip().lower() == 'live' else 'expired', desc])
+                'live' if str(g('status') or '').strip().lower() == 'live' else 'expired', (str(g('slug') or '').strip() if 'slug' in H and H['slug'] in head else o.get('slug', '')), desc])
     if g('notes'):
         notes.append('%s: %s' % (ref or title, g('notes')))
 with open(OUT, 'w', newline='', encoding='utf-8-sig') as f:
     w = csv.writer(f)
-    w.writerow(['ref', 'title', 'sector', 'job_type', 'location', 'contract', 'pay', 'pay_min', 'shifts', 'badge', 'closing', 'status', 'description'])
+    w.writerow(['ref', 'title', 'sector', 'job_type', 'location', 'contract', 'pay', 'pay_min', 'shifts', 'badge', 'closing', 'status', 'slug', 'description'])
     w.writerows(out)
 print(len(out), 'jobs written,', sum(r[11] == 'live' for r in out), 'live.')
 if notes:

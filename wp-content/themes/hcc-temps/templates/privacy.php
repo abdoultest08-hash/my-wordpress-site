@@ -35,14 +35,12 @@ get_header();
       </nav>
 
       <article class="legal-body">
-        <p class="legal-draft">Draft for HCC-Temps to review with their legal or data protection adviser before publishing. Items in [brackets] need confirming.</p>
-
         <h2 id="who">1. Who we are</h2>
         <p>This website is run by <b>HCC-Temp Staffing Ltd</b> ("HCC-Temps", "we", "us"), a recruitment agency supplying temporary staff to the healthcare and hospitality sectors.</p>
         <ul>
           <li>Registered in England and Wales, company number <b>11486985</b></li>
           <li>Registered office: Crown House, 94 Armley Road, Armley, Leeds LS12 2EJ</li>
-          <li>Registered with the Information Commissioner's Office (ICO), registration number <b>[ICO number]</b></li>
+          <?php if ( hcc_opt( 'ico_number' ) ) : ?><li>Registered with the Information Commissioner's Office (ICO), registration number <b><?php echo esc_html( hcc_opt( 'ico_number' ) ); ?></b></li><?php endif; ?>
           <li>Email: <a href="mailto:<?php echo esc_attr( hcc_opt( 'email' ) ); ?>"><?php echo esc_html( hcc_opt( 'email' ) ); ?></a> · Phone: <?php echo esc_html( hcc_opt( 'phone' ) ); ?></li>
         </ul>
         <p>We are the <b>data controller</b> for the personal information described in this policy. This means we decide how and why it is used, and we are responsible for keeping it safe under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
@@ -113,10 +111,10 @@ get_header();
         <p>We only share what is needed, with:</p>
         <ul>
           <li><b>Clients</b> you are put forward to or work for, such as care homes, hospitals, hotels and schools. We share your profile, relevant checks and compliance documents they are required to see.</li>
-          <li><b>Vetting and verification services:</b> the DBS and DBS umbrella bodies, the NMC register, the Home Office right to work service, and identity verification providers [names to confirm].</li>
+          <li><b>Vetting and verification services:</b> the DBS and DBS umbrella bodies, the NMC register, the Home Office right to work service, and identity verification providers we use to confirm who you are.</li>
           <li><b>Your referees</b>, to request references.</li>
           <li><b>Payroll, pension and accountancy providers</b>, and HMRC.</li>
-          <li><b>IT and service providers</b> who host our website, email and systems, such as [hosting provider, email provider and backup storage]. They act on our instructions and must keep your data secure.</li>
+          <li><b>IT and service providers</b> who host our website, email and systems, such as our website host, email provider and backup storage. They act on our instructions and must keep your data secure.</li>
           <li><b>Regulators, police and public authorities</b> when the law requires it, for example the NMC, the Care Quality Commission, or to prevent fraud or harm.</li>
           <li><b>Professional advisers</b> such as lawyers, auditors and insurers.</li>
           <li>A <b>buyer of our business</b>, if HCC-Temps is ever sold or merged. They would have to protect your information in the same way.</li>
@@ -128,19 +126,20 @@ get_header();
         <h2 id="keep">8. How long we keep it</h2>
         <div class="legal-table" role="table" aria-label="How long we keep your information">
           <div role="row" class="lt-head"><span role="columnheader">Information</span><span role="columnheader">How long</span></div>
-          <div role="row"><span role="cell">Candidates who register but are not placed</span><span role="cell">[12 months] after your last contact with us, unless you ask us to keep you on file</span></div>
+          <div role="row"><span role="cell">Candidates who register but are not placed</span><span role="cell">12 months after your last contact with us, unless you ask us to keep you on file</span></div>
           <div role="row"><span role="cell">Records of work-seekers we supply or introduce</span><span role="cell">At least 1 year after we last provide services to you, as required by the Conduct Regulations 2003</span></div>
           <div role="row"><span role="cell">Right to work check copies</span><span role="cell">For the time you work through us and 2 years after</span></div>
           <div role="row"><span role="cell">Payroll, tax and pay records</span><span role="cell">6 years after the end of the tax year they relate to</span></div>
           <div role="row"><span role="cell">DBS certificate details</span><span role="cell">Only as long as needed to make a decision, in line with the DBS Code of Practice; we record the certificate number, date and outcome</span></div>
           <div role="row"><span role="cell">Client records</span><span role="cell">6 years after our last contract with the client</span></div>
-          <div role="row"><span role="cell">Website messages and enquiries</span><span role="cell">[2 years]</span></div>
+          <div role="row"><span role="cell">Withdrawn or unsuccessful applications, and the documents uploaded with them</span><span role="cell">12 months after the application is closed</span></div>
+          <div role="row"><span role="cell">Website messages and enquiries</span><span role="cell">12 months</span></div>
         </div>
         <p>When we no longer need your information, we delete it securely or make it anonymous.</p>
 
         <h2 id="security">9. How we protect it</h2>
         <ul>
-          <li>Documents you upload are stored in a private area of our website that cannot be reached from the internet, and are only shown to logged-in members of our team.</li>
+          <li>Documents you upload are stored in a private area of our website. They are not listed or linked anywhere public, are renamed and kept in a folder with a random name, and are only shown to logged-in members of our team.</li>
           <li>Every login needs your password and a one-time code sent to your email.</li>
           <li>Staff access is limited to what each person needs, and downloads are logged.</li>
           <li>Our website uses an encrypted connection (HTTPS), and we keep regular backups.</li>
@@ -164,7 +163,7 @@ get_header();
         <p>Cookies are small files saved on your device. We use:</p>
         <ul>
           <li><b>Essential cookies</b> to keep you logged in, remember your login choice ("Keep me logged in", up to 14 days), and protect forms from spam and robots (Cloudflare Turnstile). These are needed for the site to work, so we do not ask for consent.</li>
-          <li><b>Analytics cookies</b> [if used, for example Google Analytics or Jetpack Stats] to understand how visitors use the site. We only set these if you agree, and you can change your choice at any time.</li>
+          <li><b>Analytics cookies</b>, if we use them, to understand how visitors use the site, for example which pages are visited most. We only set these if you choose "Accept all" in our cookie banner. You can change your choice at any time with the "Cookie settings" link at the bottom of every page.</li>
         </ul>
         <p>Embedded content from other sites, such as maps or videos, may set their own cookies. You can block or delete cookies in your browser settings.</p>
 
