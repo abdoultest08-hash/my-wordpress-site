@@ -111,28 +111,99 @@ function hcc_first_term( $post_id, $tax ) {
 	return ( $terms && ! is_wp_error( $terms ) ) ? $terms[0]->name : '';
 }
 
-/** Photo for a job card: featured image, demo image, or one matched to the role. */
+/**
+ * Which photo group a job belongs to, from its role, sector and title.
+ * Order matters: "Nurse" before "care", "Chef" before "catering", and so on.
+ */
+function hcc_job_photo_group( $text ) {
+	$groups = array(
+		'nurse'   => array( 'nurse', 'rgn', 'rmn' ),
+		'care'    => array( 'care', 'carer', 'health', 'support worker' ),
+		'chef'    => array( 'chef', 'cook' ),
+		'barista' => array( 'barista', 'coffee' ),
+		'bar'     => array( 'bartender', 'bar staff', 'mixolog' ),
+		'clean'   => array( 'housekeep', 'clean', 'domestic', 'laundry', 'room attendant' ),
+		'kitchen' => array( 'kitchen', 'porter', 'catering assistant' ),
+		'hosp'    => array( 'catering', 'hospitality', 'wait', 'server', 'front of house', 'recept', 'admin', 'event' ),
+	);
+	foreach ( $groups as $group => $needles ) {
+		foreach ( $needles as $needle ) {
+			if ( false !== strpos( $text, $needle ) ) {
+				return $group;
+			}
+		}
+	}
+	return 'hosp';
+}
+
+/** The photos in a group: assets/img/jobs/{group}-*.jpg plus the original photo for that role. */
+function hcc_job_photos( $group ) {
+	static $cache = array();
+	if ( ! isset( $cache[ $group ] ) ) {
+		$legacy = array( 'nurse' => array( 'nurse.jpg' ), 'care' => array( 'carer.jpg' ), 'chef' => array( 'chef.jpg' ), 'barista' => array( 'barista.jpg' ), 'clean' => array( 'housekeeping.jpg', 'cleaner.jpg' ), 'kitchen' => array( 'kitchen.jpg' ), 'hosp' => array( 'reception.jpg' ) );
+		$files  = glob( get_template_directory() . '/assets/img/jobs/' . $group . '-*.jpg' );
+		$list   = array();
+		foreach ( $files ? $files : array() as $f ) {
+			$list[] = 'jobs/' . basename( $f );
+		}
+		sort( $list, SORT_NATURAL );
+		$cache[ $group ] = array_merge( $list, isset( $legacy[ $group ] ) ? $legacy[ $group ] : array() );
+		if ( ! $cache[ $group ] ) {
+			$cache[ $group ] = 'hosp' === $group ? array( 'hospman.jpg' ) : hcc_job_photos( 'hosp' );
+		}
+	}
+	return $cache[ $group ];
+}
+
+/**
+ * Photo for a job card: the job's own featured image if staff set one, otherwise one from a
+ * set of photos for that type of role. Each job always gets the same photo, and jobs added
+ * one after another get different ones, so a list of care jobs doesn't repeat the same picture.
+ */
 function hcc_job_image( $post_id, $role = '', $sector = '' ) {
 	if ( has_post_thumbnail( $post_id ) ) {
 		return get_the_post_thumbnail_url( $post_id, 'medium_large' );
 	}
-	$demo = get_post_meta( $post_id, '_hcc_image', true );
-	if ( $demo ) {
-		return hcc_img( $demo );
-	}
-	$text = strtolower( $role . ' ' . $sector . ' ' . get_the_title( $post_id ) );
-	$map  = array(
-		'nurse' => 'nurse.jpg', 'senior' => 'carer.jpg', 'care' => 'carer.jpg', 'health' => 'hero.jpg', 'chef' => 'chef.jpg', 'cook' => 'chef.jpg',
-		'kitchen' => 'kitchen.jpg', 'barista' => 'barista.jpg', 'housekeep' => 'housekeeping.jpg', 'clean' => 'cleaner.jpg',
-		'recept' => 'reception.jpg', 'admin' => 'reception.jpg', 'catering' => 'hospman.jpg', 'hospitality' => 'hospman.jpg',
-	);
-	foreach ( $map as $needle => $file ) {
-		if ( false !== strpos( $text, $needle ) ) {
-			return hcc_img( $file );
-		}
-	}
-	return hcc_img( 'hospman.jpg' );
+	$photos = hcc_job_photos( hcc_job_photo_group( strtolower( $role . ' ' . $sector . ' ' . get_the_title( $post_id ) ) ) );
+	$map    = hcc_job_photo_map();
+	$n      = isset( $map[ $post_id ] ) ? $map[ $post_id ] : absint( $post_id );
+	return hcc_img( $photos[ $n % count( $photos ) ] );
 }
+
+/**
+ * Numbers each job within its photo group, in the order jobs were added (job 0, 1, 2… of the
+ * care jobs, of the chef jobs…). Neighbouring jobs of the same type then get different photos.
+ * Worked out once and remembered until a job is added, changed or deleted.
+ */
+function hcc_job_photo_map() {
+	static $map = null;
+	if ( null !== $map ) {
+		return $map;
+	}
+	$map = get_transient( 'hcc_job_photo_map' );
+	if ( is_array( $map ) ) {
+		return $map;
+	}
+	$map   = array();
+	$count = array();
+	$jobs  = get_posts( array( 'post_type' => 'job_vacancies', 'post_status' => array( 'publish', 'future', 'draft', 'pending', 'private' ), 'numberposts' => -1, 'orderby' => 'date ID', 'order' => 'ASC', 'no_found_rows' => true ) );
+	foreach ( $jobs as $job ) {
+		$group = hcc_job_photo_group( strtolower( hcc_first_term( $job->ID, 'job_type' ) . ' ' . hcc_first_term( $job->ID, 'job_sector' ) . ' ' . $job->post_title ) );
+		$count[ $group ]   = isset( $count[ $group ] ) ? $count[ $group ] + 1 : 0;
+		$map[ $job->ID ] = $count[ $group ];
+	}
+	set_transient( 'hcc_job_photo_map', $map, WEEK_IN_SECONDS );
+	return $map;
+}
+
+function hcc_job_photo_map_reset( $post_id = 0 ) {
+	if ( ! $post_id || 'job_vacancies' === get_post_type( $post_id ) ) {
+		delete_transient( 'hcc_job_photo_map' );
+	}
+}
+add_action( 'save_post_job_vacancies', 'hcc_job_photo_map_reset' );
+add_action( 'deleted_post', 'hcc_job_photo_map_reset' );
+add_action( 'set_object_terms', 'hcc_job_photo_map_reset' );
 
 function hcc_job( $post = null ) {
 	$post   = get_post( $post );

@@ -123,10 +123,11 @@ $sectors   = hcc_filter_terms( 'job_sector' );
 			</div>
 			<div class="jobs-more">
 				<?php if ( $i > 6 ) : ?>
-					<button class="btn btn-sun" id="moreJobs" type="button" aria-controls="jobGrid" aria-expanded="false" data-href="<?php echo esc_url( $jobs_url ); ?>" data-label="See all <?php echo (int) $job_count; ?> vacancies →">Show more jobs</button>
+					<button class="btn btn-sun d-only" id="moreJobs" type="button" aria-controls="jobGrid" aria-expanded="false" data-href="<?php echo esc_url( $jobs_url ); ?>" data-label="See all <?php echo (int) $job_count; ?> vacancies →">Show more jobs</button>
 				<?php else : ?>
 					<a class="btn btn-sun" href="<?php echo esc_url( $jobs_url ); ?>">See all vacancies</a>
 				<?php endif; ?>
+				<?php if ( $i > 4 ) : ?><a class="btn btn-sun m-only" href="<?php echo esc_url( $jobs_url ); ?>">See all <?php echo (int) $job_count; ?> vacancies <span aria-hidden="true">→</span></a><?php endif; ?>
 			</div>
 		</div>
 	</section>
@@ -211,6 +212,7 @@ $sectors   = hcc_filter_terms( 'job_sector' );
 						</article>
 					<?php $k++; endwhile; wp_reset_postdata(); ?>
 				</div>
+				<?php if ( $blog_url ) : ?><div class="blog-more m-only"><a class="btn btn-ghost" href="<?php echo esc_url( $blog_url ); ?>">See more articles <span aria-hidden="true">→</span></a></div><?php endif; ?>
 			</div>
 		</section>
 	<?php endif; ?>

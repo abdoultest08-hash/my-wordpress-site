@@ -291,6 +291,9 @@
   }
 
   /* Bring success and error messages into view after a form redirect */
+  /* Message boxes open on the newest message (older ones scroll up) */
+  document.querySelectorAll('.thread').forEach(function (t) { t.scrollTop = t.scrollHeight; });
+
   if (/[?&](hcc_(ok|err)|msg)=/.test(location.search) && location.hash) {
     var target = document.querySelector(location.hash);
     if (target) { if (target.tagName === 'DETAILS') target.open = true; target.scrollIntoView({ block: 'start' }); }
