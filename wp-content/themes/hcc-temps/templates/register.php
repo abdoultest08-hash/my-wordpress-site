@@ -26,7 +26,7 @@ $focus = array( 'nurse' => '28% 30%', 'chef' => '50% 20%' );
 				<h2>From sign-up to your first shift</h2>
 				<p>Everything happens in your own candidate portal, step by step.</p>
 			</div>
-			<figure class="illo"><img src="<?php echo esc_url( hcc_img( 'team-illustration.jpg' ) ); ?>" alt="Illustration of a chef, nurse, carer, cleaner, barista, receptionist and support worker together under one roof" width="1400" height="696" loading="lazy"></figure>
+			<figure class="illo"><img src="<?php echo esc_url( hcc_img( 'team-illustration-hcc.jpg' ) ); ?>" alt="Illustration of a chef, nurse, carer, cleaner, barista, receptionist and support worker together under one roof" width="1400" height="696" loading="lazy"></figure>
 			<ol class="reg-steps">
 				<li><b>Check what you need</b><span>Choose your role below and see the documents to have ready.</span></li>
 				<li><b>Create your account</b><span>Name, contact details and a password. Accept the terms and privacy policy.</span></li>

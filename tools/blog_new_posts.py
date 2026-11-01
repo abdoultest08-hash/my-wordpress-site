@@ -416,7 +416,7 @@ POSTS = [
 'title': 'Care and Hospitality Staffing in Leeds, London and Across the UK',
 'date': '2026-10-21 09:30:00',
 'category': 'News from HCC-Temps',
-'image': 'theme:team-illustration.jpg',
+'image': 'theme:team-illustration-hcc.jpg',
 'excerpt': 'HCC-Temps supplies nurses, carers, chefs and hospitality staff from offices in Leeds and London, with a 24-hour line, emergency cover within 2 hours and candidates ready to work in 3 days.',
 'content': '''<p>HCC-Temps is a care and hospitality staffing agency with offices in <strong>Leeds</strong> and <strong>London</strong>, supplying staff to care homes, hospitals, schools, hotels and kitchens <strong>across the UK</strong>. Whether you need a nurse tonight or you're looking for your next shift, here's how we work.</p>
 
