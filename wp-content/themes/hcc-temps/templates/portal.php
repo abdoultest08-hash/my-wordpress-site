@@ -93,7 +93,7 @@ get_header();
 				<?php foreach ( $messages as $i => $m ) : ?>
 					<<?php echo $i ? 'details' : 'div'; ?> class="msg<?php echo $i ? ' msg-old' : ''; ?>">
 						<?php echo $i ? '<summary>' : ''; ?><b>Update from the HCC compliance team · <?php echo esc_html( wp_date( 'j M Y, H:i', (int) $m['at'] ) ); ?></b><?php echo $i ? '</summary>' : ''; ?>
-						<?php foreach ( array( 'amend' => 'Please replace', 'missing' => 'Still needed from you', 'note' => 'Messages from our team', 'approved' => 'Approved' ) as $type => $title ) :
+						<?php foreach ( array( 'amend' => 'Please replace', 'missing' => 'Still needed from you', 'training' => 'Training you still need (you can buy these courses online)', 'note' => 'Messages from our team', 'approved' => 'Approved' ) as $type => $title ) :
 							$rows = array_filter( (array) $m['items'], function ( $q ) use ( $type ) { return $q['type'] === $type; } );
 							if ( ! $rows ) { continue; } ?>
 							<p class="msg-h msg-<?php echo esc_attr( $type ); ?>"><?php echo esc_html( $title ); ?></p><ul><?php foreach ( $rows as $q ) : ?><li><?php echo esc_html( trim( $q['label'] . ( $q['label'] && $q['text'] ? ': ' : '' ) . $q['text'] ) ); ?></li><?php endforeach; ?></ul>
@@ -121,7 +121,7 @@ get_header();
 					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="msg-form">
 						<input type="hidden" name="action" value="hcc_portal_msg"><input type="hidden" name="hcc_nonce" value="<?php echo esc_attr( wp_create_nonce( 'hcc_portal_msg' ) ); ?>">
 						<label for="pmsg" class="screen-reader-text">Your message</label>
-						<textarea id="pmsg" name="msg" rows="3" maxlength="2000" placeholder="e.g. I've booked my DBS appointment for Friday." required></textarea>
+						<textarea id="pmsg" name="msg" rows="3" maxlength="2000" placeholder="e.g. I've booked my DBS appointment for Friday." required><?php echo 'training' === ( isset( $_GET['ask'] ) ? sanitize_key( $_GET['ask'] ) : '' ) && hcc_missing_training( $aid ) ? esc_textarea( 'Please help me set up training for: ' . implode( ', ', hcc_missing_training( $aid ) ) . '.' ) : ''; // phpcs:ignore ?></textarea>
 						<div class="form-actions" style="margin-top:8px"><button class="btn btn-navy btn-sm" type="submit">Send message</button><span class="form-note">For anything urgent, call <?php echo esc_html( hcc_opt( 'phone' ) ); ?>.</span></div>
 					</form>
 				<?php endif; ?>
@@ -178,6 +178,7 @@ get_header();
 			</div>
 			<details class="p-card p-folder" data-set="train" id="training">
 				<summary><span class="folder-ico" aria-hidden="true"><?php echo hcc_icon( 'doc', 22 ); // phpcs:ignore ?></span><span><b>Training certificates</b><small data-count><?php echo esc_html( $t['have'] . ' of ' . $t['need'] . ' added' . ( $t['later'] ? ' · ' . $t['later'] . ' to follow' : '' ) . ' · tap to open' ); ?></small></span><span class="folder-arrow" aria-hidden="true">▾</span></summary>
+				<?php if ( 'portal' === $ctx ) { echo hcc_training_box( $aid, true, true ); } // phpcs:ignore ?>
 				<div class="doc-list p-docs"><?php foreach ( $train as $k => $it ) { echo hcc_item_row( $aid, $k, $it, $ctx ); } // phpcs:ignore ?></div>
 			</details>
 			<?php if ( 'portal' === $ctx ) : ?>

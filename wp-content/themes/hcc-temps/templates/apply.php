@@ -243,6 +243,7 @@ get_header();
 						<h2>Training certificates</h2>
 						<p class="sub">Certificates for <b><?php echo esc_html( $r['name'] ); ?></b>. They should be in date and show your full name. Missing some? Tick "I don't have this yet". We can help you book training.</p>
 						<?php if ( ! empty( $r['train_note'] ) ) : ?><p class="note-info">For this role training is <?php echo esc_html( strtolower( $r['train_note'] ) ); ?>.</p><?php endif; ?>
+						<?php echo hcc_training_box( $aid, false ); // phpcs:ignore ?>
 					<?php endif; ?>
 					<div class="progress" data-bar><i style="width:<?php echo (int) $cnt['pct']; ?>%"></i></div>
 					<div class="doc-list">
@@ -275,6 +276,7 @@ get_header();
 							<li>Most candidates are ready to work within 3 days.</li>
 						</ol>
 						<p style="margin-top:14px">You added <b><?php echo (int) $d['have']; ?> of <?php echo (int) $d['need']; ?></b> documents and <b><?php echo (int) $t['have']; ?> of <?php echo (int) $t['need']; ?></b> training certificates.<?php echo $d['have'] < $d['need'] || $t['have'] < $t['need'] ? ' You can add the rest from your portal at any time.' : ''; ?></p>
+						<?php echo hcc_training_box( $aid, true, true ); // phpcs:ignore ?>
 						<div class="form-actions"><a class="btn btn-sun" href="<?php echo esc_url( hcc_portal_url() ); ?>">Go to my candidate portal</a></div>
 					</div></div>
 				</div>

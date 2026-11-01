@@ -267,6 +267,10 @@
     document.querySelectorAll('form[data-sending]').forEach(function (f) { delete f.dataset.sending; f.classList.remove('is-sending'); });
   });
 
+  /* Training page: select all */
+  var tall = $('tall');
+  if (tall) tall.addEventListener('change', function () { document.querySelectorAll('#train-list input[name="ids[]"]').forEach(function (c) { c.checked = tall.checked; }); });
+
   /* Staff portal: Expand all / Collapse all sections */
   document.querySelectorAll('[data-sections]').forEach(function (b) {
     b.addEventListener('click', function () {

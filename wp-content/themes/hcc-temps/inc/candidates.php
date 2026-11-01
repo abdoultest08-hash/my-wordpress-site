@@ -400,3 +400,26 @@ function hcc_duplicates( $id ) {
 	}
 	return $out;
 }
+
+/* ---------- Training courses: the e-learning portal ---------- */
+
+/** Links into HCC's e-learning portal (VideoTile): buy a course, free trial, candidate login. */
+function hcc_elearn_links() {
+	$base = trailingslashit( preg_replace( '#/index\.php$#', '', (string) hcc_opt( 'elearn_url' ) ) );
+	if ( '/' === $base ) {
+		return array();
+	}
+	return array( 'buy' => $base . 'purchaseCourse.php', 'trial' => $base . 'freeTrial.php', 'login' => $base . 'index.php' );
+}
+
+/** Training certificates still to come (not uploaded, not approved or completed by staff), optional ones included. */
+function hcc_missing_training( $id ) {
+	$out = array();
+	foreach ( hcc_items( $id, 'train' ) as $k => $it ) {
+		$s = hcc_item_status( $id, $k, $it );
+		if ( in_array( $s, array( 'todo', 'requested' ), true ) ) {
+			$out[ $k ] = $it['label'];
+		}
+	}
+	return $out;
+}

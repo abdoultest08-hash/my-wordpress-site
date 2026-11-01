@@ -37,6 +37,7 @@ function hcc_email_received( $id ) {
 	return hcc_mail( hcc_meta( $id, 'email' ), 'We have your registration (' . hcc_meta( $id, 'ref' ) . ')',
 		'<p>Hi ' . esc_html( hcc_meta( $id, 'first' ) ) . ',</p><p>Thank you. Our compliance team will review your answers and files, usually within 1 working day.</p>'
 			. '<p>You added <b>' . $d['have'] . ' of ' . $d['need'] . '</b> documents and <b>' . $t['have'] . ' of ' . $t['need'] . '</b> training certificates.' . ( $d['have'] < $d['need'] || $t['have'] < $t['need'] ? ' You can add the rest any time from your portal.' : '' ) . '</p>'
+			. ( hcc_missing_training( $id ) ? '<p><b>Training still needed:</b> ' . esc_html( implode( ', ', hcc_missing_training( $id ) ) ) . '.</p>' . hcc_training_buy_block() : '' )
 			. hcc_button( hcc_portal_url(), 'Open my portal' ), array(), hcc_opt( 'email_jobs' ) );
 }
 
@@ -133,7 +134,7 @@ function hcc_queue_upload( $id, $key, $replaced, $after = '' ) {
 
 /** The staff "Update for candidate" tray as one email. */
 function hcc_email_update( $id, $queue ) {
-	$groups = array( 'approved' => 'Approved', 'amend' => 'Please replace', 'missing' => 'Still needed from you', 'note' => 'Messages from our team' );
+	$groups = array( 'approved' => 'Approved', 'amend' => 'Please replace', 'missing' => 'Still needed from you', 'training' => 'Training you still need', 'note' => 'Messages from our team' );
 	$body   = '<p>Hi ' . esc_html( hcc_meta( $id, 'first' ) ) . ',</p><p>Here is an update on your registration (' . esc_html( hcc_meta( $id, 'ref' ) ) . '):</p>';
 	$action = false;
 	foreach ( $groups as $type => $title ) {
@@ -141,15 +142,41 @@ function hcc_email_update( $id, $queue ) {
 		if ( ! $rows ) {
 			continue;
 		}
-		$action = $action || in_array( $type, array( 'amend', 'missing' ), true );
+		$action = $action || in_array( $type, array( 'amend', 'missing', 'training' ), true );
 		$body  .= '<p style="margin-bottom:4px"><b>' . $title . '</b></p><ul style="margin-top:0">';
 		foreach ( $rows as $q ) {
 			$body .= '<li>' . esc_html( trim( $q['label'] . ( $q['label'] && $q['text'] ? ': ' : '' ) . $q['text'] ) ) . '</li>';
 		}
 		$body .= '</ul>';
+		if ( 'training' === $type ) {
+			$body .= hcc_training_buy_block();
+		}
 	}
 	$body .= hcc_button( hcc_portal_url(), 'Open my portal' ) . '<p style="font-size:13px;color:#5B6078">Questions? Call ' . esc_html( hcc_opt( 'phone' ) ) . ', 24 hours a day.</p>';
 	return hcc_mail( hcc_meta( $id, 'email' ), ( $action ? 'Action needed: ' : '' ) . 'Update on your HCC-Temps registration', $body, array(), hcc_opt( 'email_jobs' ) );
+}
+
+/** How to get missing training: buy the course on the e-learning portal, then upload the certificate. */
+function hcc_training_buy_block() {
+	$l = hcc_elearn_links();
+	if ( ! $l ) {
+		return '<p>Call us on <b>' . esc_html( hcc_opt( 'phone' ) ) . '</b> and we will help you book these courses.</p>';
+	}
+	return '<div style="background:#FDF6DA;border-radius:10px;padding:12px 14px;margin:6px 0 14px">'
+		. '<p style="margin:0 0 8px"><b>You can buy these courses online</b> through our e-learning portal and do them at your own pace. Prices are shown on the portal before you pay.</p>'
+		. '<p style="margin:0 0 8px"><a href="' . esc_url( $l['buy'] ) . '" style="background:#2D338C;color:#fff;text-decoration:none;font-weight:bold;padding:10px 16px;border-radius:999px;display:inline-block">Buy a course</a> &nbsp; <a href="' . esc_url( $l['trial'] ) . '">Free trial</a> &nbsp;·&nbsp; <a href="' . esc_url( $l['login'] ) . '">Already have an account? Log in</a></p>'
+		. '<p style="margin:0;font-size:13px">When you finish a course, download the certificate and upload it in your portal under Training. Prefer help? Reply to this email or message us from your portal and we will get you set up.</p></div>';
+}
+
+/** Training reminder sent to one candidate from the Staff portal's Training page. */
+function hcc_email_training_reminder( $id, $labels, $note = '' ) {
+	$body = '<p>Hi ' . esc_html( hcc_meta( $id, 'first' ) ) . ',</p><p>To finish your registration as a <b>' . esc_html( hcc_role_name( hcc_meta( $id, 'role_key' ) ) ) . '</b> (' . esc_html( hcc_meta( $id, 'ref' ) ) . '), we still need these training certificates:</p><ul>'
+		. implode( '', array_map( function ( $l ) { return '<li>' . esc_html( $l ) . '</li>'; }, $labels ) ) . '</ul>'
+		. ( $note ? '<p style="background:#E4F4F2;padding:10px 14px;border-radius:10px">' . nl2br( esc_html( $note ) ) . '</p>' : '' )
+		. hcc_training_buy_block()
+		. hcc_button( hcc_portal_url(), 'Upload certificates in my portal' )
+		. '<p style="font-size:13px;color:#5B6078">Questions? Call ' . esc_html( hcc_opt( 'phone' ) ) . ', 24 hours a day.</p>';
+	return hcc_mail( hcc_meta( $id, 'email' ), 'Action needed: training certificates for your HCC-Temps registration', $body, array(), hcc_opt( 'email_jobs' ) );
 }
 
 /** A candidate wrote to the team from their portal. */

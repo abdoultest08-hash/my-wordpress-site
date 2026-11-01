@@ -14,13 +14,13 @@ if ( ! hcc_is_staff() ) {
 	exit;
 }
 $cid  = isset( $_GET['candidate'] ) ? absint( $_GET['candidate'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification
-$view = $cid && 'hcc_applicant' === get_post_type( $cid ) ? 'folder' : ( isset( $_GET['view'] ) && 'team' === $_GET['view'] ? 'team' : 'dash' ); // phpcs:ignore WordPress.Security.NonceVerification
+$view = $cid && 'hcc_applicant' === get_post_type( $cid ) ? 'folder' : ( isset( $_GET['view'] ) && in_array( $_GET['view'], array( 'team', 'training' ), true ) ? sanitize_key( $_GET['view'] ) : 'dash' ); // phpcs:ignore WordPress.Security.NonceVerification
 $msg  = isset( $_GET['msg'] ) ? sanitize_key( $_GET['msg'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 $msgs = array(
 	'approved' => 'Approved. Added to the update for the candidate.', 'queued' => 'Added to the update for the candidate. Press "Preview and send" when you are ready.', 'note' => 'Saved to the profile.', 'sent' => 'Update email sent to the candidate.',
 	'check' => 'Check saved.', 'check_result' => 'Choose a result before saving the check.', 'ref' => 'Reference details saved.', 'need_note' => 'Please add a note before marking this complete.', 'override_done' => 'Items marked complete.',
 	'finished' => 'Onboarding finished. Moved to Staff completed.', 'cant_finish' => 'Finish needs: profile 100%, declaration sent and signed, and no unsent updates.', 'closed' => 'Application closed and moved to Withdrawn / not qualified.', 'reopened' => 'Application reopened.',
-	'close_need' => 'Add a reason and your name to close the application.', 'staff_added' => 'Staff member added. They have been emailed a link to set their password.', 'staff_exists' => 'There is already an account with that email.', 'error' => 'Something went wrong. Please try again.', 'nothing' => 'Tick at least one item first.', 'email_changed' => 'Email changed. The candidate logs in with the new address; both addresses were told.', 'email_taken' => 'Another account already uses that email.', 'email_email' => 'That is not a valid email address.', 'email_same' => 'That is already the candidate\'s email.', 'email_user' => 'This registration has no login to update.', 'approved_some' => 'Uploaded items approved. Items with nothing uploaded were skipped: use "Mark complete (override)" for those.', 'approve_none' => 'Nothing was approved: the ticked items have no upload. Use "Mark complete (override)" and add a note.',
+	'close_need' => 'Add a reason and your name to close the application.', 'staff_added' => 'Staff member added. They have been emailed a link to set their password.', 'staff_exists' => 'There is already an account with that email.', 'error' => 'Something went wrong. Please try again.', 'nothing' => 'Tick at least one item first.', 'train_none' => 'Tick at least one course for the training reminder.', 'email_changed' => 'Email changed. The candidate logs in with the new address; both addresses were told.', 'email_taken' => 'Another account already uses that email.', 'email_email' => 'That is not a valid email address.', 'email_same' => 'That is already the candidate\'s email.', 'email_user' => 'This registration has no login to update.', 'approved_some' => 'Uploaded items approved. Items with nothing uploaded were skipped: use "Mark complete (override)" for those.', 'approve_none' => 'Nothing was approved: the ticked items have no upload. Use "Mark complete (override)" and add a note.',
 );
 $form_url = esc_url( admin_url( 'admin-post.php' ) );
 $me   = hcc_staff_name();
@@ -33,6 +33,7 @@ get_header();
 			<b>Staff portal</b>
 			<nav aria-label="Staff portal">
 				<a href="<?php echo esc_url( hcc_staff_url() ); ?>"<?php echo 'dash' === $view ? ' aria-current="page"' : ''; ?>>Dashboard</a>
+				<a href="<?php echo esc_url( hcc_staff_url( array( 'view' => 'training' ) ) ); ?>"<?php echo 'training' === $view ? ' aria-current="page"' : ''; ?>>Training</a>
 				<?php if ( hcc_is_manager() ) : ?><a href="<?php echo esc_url( hcc_staff_url( array( 'view' => 'team' ) ) ); ?>"<?php echo 'team' === $view ? ' aria-current="page"' : ''; ?>>Team</a><?php endif; ?>
 			</nav>
 			<span class="who-in"><?php echo esc_html( wp_get_current_user()->display_name ); ?> · <a href="<?php echo esc_url( wp_logout_url( hcc_login_url( true ) ) ); ?>">Log out</a></span>
@@ -41,7 +42,7 @@ get_header();
 
 	<section class="section staff-body">
 		<div class="wrap">
-			<?php if ( isset( $msgs[ $msg ] ) ) : ?><p class="<?php echo in_array( $msg, array( 'cant_finish', 'need_note', 'close_need', 'check_result', 'staff_exists', 'error', 'nothing', 'approve_none', 'approved_some', 'email_taken', 'email_email', 'email_same', 'email_user' ), true ) ? 'form-alert' : 'form-ok'; ?>" role="status"><?php echo esc_html( $msgs[ $msg ] ); ?></p><?php endif; ?>
+			<?php if ( isset( $msgs[ $msg ] ) ) : ?><p class="<?php echo in_array( $msg, array( 'train_none', 'cant_finish', 'need_note', 'close_need', 'check_result', 'staff_exists', 'error', 'nothing', 'approve_none', 'approved_some', 'email_taken', 'email_email', 'email_same', 'email_user' ), true ) ? 'form-alert' : 'form-ok'; ?>" role="status"><?php echo esc_html( $msgs[ $msg ] ); ?></p><?php endif; ?>
 
 <?php if ( 'dash' === $view ) :
 	$search = hcc_field_get( 'q' );
@@ -119,6 +120,55 @@ get_header();
 				<?php endif; ?>
 				<?php if ( ! $lists[ $tab ] ) : ?><p class="hint" style="padding:12px 6px">No candidates here<?php echo $search ? ' matching "' . esc_html( $search ) . '"' : ''; ?>.</p><?php endif; ?>
 			</div></div>
+
+<?php elseif ( 'training' === $view ) :
+	$tlist   = hcc_training_list();
+	$prev    = array_values( array_filter( array_map( 'absint', explode( ',', hcc_field_get( 'preview' ) ) ), function ( $x ) use ( $tlist ) { return isset( $tlist[ $x ] ); } ) );
+	$tnote   = isset( $_GET['note'] ) ? sanitize_textarea_field( wp_unslash( rawurldecode( $_GET['note'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+	$sent_n  = isset( $_GET['sent'] ) ? absint( $_GET['sent'] ) : null; // phpcs:ignore WordPress.Security.NonceVerification
+	$links   = hcc_elearn_links();
+	?>
+			<div class="s-head" style="margin-top:0">
+				<div><h1>Training</h1><p>Candidates who have submitted their registration and still have training certificates to come. Send them a reminder with links to buy the courses on the e-learning portal.</p></div>
+				<?php if ( $links ) : ?><div class="s-actions"><a class="btn btn-ghost btn-sm" href="<?php echo esc_url( $links['login'] ); ?>" target="_blank" rel="noopener">Open the e-learning portal ↗</a></div><?php endif; ?>
+			</div>
+			<?php if ( null !== $sent_n ) : ?><p class="form-ok">Training reminder emailed to <?php echo (int) $sent_n; ?> candidate<?php echo 1 === $sent_n ? '' : 's'; ?>. Each email listed their own missing courses.</p><?php endif; ?>
+
+			<?php if ( $prev ) :
+				$first = $prev[0]; ?>
+				<div class="p-card" id="preview" style="border:2px solid var(--sun)">
+					<div class="p-card-head"><h2>Preview</h2><span class="p-count"><?php echo count( $prev ); ?> candidate<?php echo count( $prev ) > 1 ? 's' : ''; ?> selected</span></div>
+					<p class="hint">Each candidate gets their own email listing only the courses they are missing. This is <?php echo esc_html( hcc_name( $first ) ); ?>'s:</p>
+					<div class="email"><div class="email-meta"><span>To: <?php echo esc_html( hcc_meta( $first, 'email' ) ); ?></span><span>Subject: Action needed: training certificates for your HCC-Temps registration</span></div><div class="email-body">
+						<p>Hi <?php echo esc_html( hcc_meta( $first, 'first' ) ); ?>,</p><p>To finish your registration as a <b><?php echo esc_html( hcc_role_name( hcc_meta( $first, 'role_key' ) ) ); ?></b>, we still need these training certificates:</p>
+						<ul><?php foreach ( $tlist[ $first ] as $l ) : ?><li><?php echo esc_html( $l ); ?></li><?php endforeach; ?></ul>
+						<?php if ( $tnote ) : ?><p style="background:var(--aqua-tint);padding:10px 14px;border-radius:10px"><?php echo nl2br( esc_html( $tnote ) ); ?></p><?php endif; ?>
+						<p><b>You can buy these courses online</b> through our e-learning portal (Buy a course · Free trial · Log in). When you finish, download the certificate and upload it in your portal under Training.</p>
+					</div></div>
+					<form method="post" action="<?php echo $form_url; ?>" class="form-actions"><input type="hidden" name="action" value="hcc_train_bulk"><input type="hidden" name="step" value="send"><?php wp_nonce_field( 'hcc_train_bulk' ); ?>
+						<?php foreach ( $prev as $x ) : ?><input type="hidden" name="ids[]" value="<?php echo (int) $x; ?>"><?php endforeach; ?>
+						<input type="hidden" name="note" value="<?php echo esc_attr( $tnote ); ?>">
+						<button class="btn btn-navy" type="submit">Send to <?php echo count( $prev ); ?> candidate<?php echo count( $prev ) > 1 ? 's' : ''; ?></button>
+						<a class="link-btn" href="<?php echo esc_url( hcc_staff_url( array( 'view' => 'training' ) ) ); ?>">Cancel</a>
+					</form>
+				</div>
+			<?php endif; ?>
+
+			<form method="post" action="<?php echo $form_url; ?>" class="p-card" id="train-list"><input type="hidden" name="action" value="hcc_train_bulk"><input type="hidden" name="step" value="preview"><?php wp_nonce_field( 'hcc_train_bulk' ); ?>
+				<div class="p-card-head"><h2>Missing training <span class="tray-n"><?php echo count( $tlist ); ?></span></h2><span class="p-count">Optional courses are included</span></div>
+				<?php if ( ! $tlist ) : ?>
+					<p class="hint">Nobody is waiting on training certificates right now.</p>
+				<?php else : ?>
+					<div class="d-table">
+						<div class="d-row d-hd d-train"><span><label><input type="checkbox" id="tall" aria-label="Select all"></label></span><span>Candidate</span><span>Missing</span><span>Courses</span><span>Last reminder</span></div>
+						<?php foreach ( $tlist as $x => $miss ) : $tr = hcc_meta( $x, 'train_reminded' ); ?>
+							<div class="d-row d-train"><span><input type="checkbox" name="ids[]" value="<?php echo (int) $x; ?>"<?php checked( in_array( $x, $prev, true ) ); ?> aria-label="Select <?php echo esc_attr( hcc_name( $x ) ); ?>"></span><span><a href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $x ) ) ); ?>"><b><?php echo esc_html( hcc_name( $x ) ); ?></b></a><small><?php echo esc_html( hcc_meta( $x, 'ref' ) . ' · ' . $role_label( $x ) ); ?></small></span><span data-l="Missing"><b><?php echo count( $miss ); ?></b></span><span data-l="Courses"><?php echo esc_html( mb_strimwidth( implode( ', ', $miss ), 0, 120, '…' ) ); ?></span><span data-l="Last reminder"<?php echo is_array( $tr ) && $tr['at'] > time() - 3 * DAY_IN_SECONDS ? ' class="late" title="Reminded in the last 3 days"' : ''; ?>><?php echo is_array( $tr ) ? esc_html( hcc_ago( (int) $tr['at'] ) . ' · ' . $tr['by'] ) : 'Never'; ?></span></div>
+						<?php endforeach; ?>
+					</div>
+					<div class="f full" style="margin-top:14px"><label for="bnote">Note to include (optional)</label><textarea id="bnote" name="note" placeholder="e.g. These are needed before we can offer you shifts."><?php echo esc_textarea( $tnote ); ?></textarea></div>
+					<div class="form-actions"><button class="btn btn-navy" type="submit">Preview training reminders</button><span class="form-note">Nothing is sent until you press Send on the preview.</span></div>
+				<?php endif; ?>
+			</form>
 
 <?php elseif ( 'team' === $view && hcc_is_manager() ) : ?>
 			<div class="s-head" style="margin-top:0"><div><h1>Team</h1><p>People who can log in to the Staff portal. Managers can add staff and see bank details in full.</p></div></div>
@@ -204,6 +254,18 @@ get_header();
 				</form>
 			<?php endif; ?>
 
+			<?php if ( hcc_field_get( 'training' ) && 'in_progress' === $state && hcc_missing_training( $aid ) ) : ?>
+				<form class="p-card ov-panel" id="train-panel" method="post" action="<?php echo $form_url; ?>"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="train_queue">
+					<div class="p-card-head"><h2>Training reminder</h2><a class="link-btn" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $aid ) ) ); ?>">Cancel</a></div>
+					<p class="hint">The ticked courses go into the update for <?php echo esc_html( hcc_meta( $aid, 'first' ) ); ?>, with the links to buy them on the e-learning portal. Press Send in the update tray to email it.</p>
+					<div class="tsel">
+						<?php foreach ( hcc_missing_training( $aid ) as $k => $label ) : ?><label class="radio"><input type="checkbox" name="tsel[]" value="<?php echo esc_attr( $k ); ?>" checked><span><?php echo esc_html( $label ); ?></span></label><?php endforeach; ?>
+					</div>
+					<div class="f full" style="margin-top:12px"><label for="tnote">Note (optional)</label><textarea id="tnote" name="note" placeholder="e.g. Fire Safety and First Aid are needed before your first shift on Monday."></textarea></div>
+					<div class="form-actions"><button class="btn btn-navy" type="submit">Add to update</button></div>
+				</form>
+			<?php endif; ?>
+
 			<?php if ( $ovkeys && isset( $items[ $ovkeys[0] ] ) ) : $ok = $ovkeys[0]; ?>
 				<form class="p-card ov-panel" id="override" method="post" action="<?php echo $form_url; ?>"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="override"><input type="hidden" name="keys" value="<?php echo esc_attr( implode( ',', $ovkeys ) ); ?>">
 					<div class="p-card-head"><h2>Mark complete (override)</h2><span class="p-count">Item 1 of <?php echo count( $ovkeys ); ?></span></div>
@@ -244,6 +306,8 @@ get_header();
 								<div class="bulk"><span>With ticked items:</span><button class="btn btn-sm btn-aqua" type="submit" name="act" value="bulk:approve">Approve</button><button class="btn btn-sm btn-sun" type="submit" name="act" value="bulk:missing">Request as missing</button><button class="btn btn-sm btn-ghost-light" type="submit" name="act" value="bulk:override">Mark complete (override)</button></div>
 							<?php else : ?>
 								<summary><span class="folder-ico" aria-hidden="true"><?php echo hcc_icon( 'doc', 22 ); // phpcs:ignore ?></span><span><b>Training certificates</b><small><?php echo esc_html( $sum ); ?></small></span><span class="folder-arrow" aria-hidden="true">▾</span></summary>
+								<?php $tmiss = hcc_missing_training( $aid ); $trem = hcc_meta( $aid, 'train_reminded' ); ?>
+								<div class="train-remind"><span><?php echo $tmiss ? esc_html( count( $tmiss ) . ' training certificate' . ( count( $tmiss ) > 1 ? 's' : '' ) . ' still to come.' ) : 'No training certificates missing.'; ?><?php echo is_array( $trem ) ? ' <small>' . esc_html( 'Last reminder ' . wp_date( 'j M Y', (int) $trem['at'] ) . ' by ' . $trem['by'] . ' (' . (int) $trem['n'] . ' course' . ( (int) $trem['n'] > 1 ? 's' : '' ) . ')' ) . '</small>' : ''; // phpcs:ignore ?></span><?php if ( $tmiss && 'in_progress' === $state ) : ?><a class="btn btn-sm btn-sun" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $aid, 'training' => 1 ) ) ); ?>#train-panel">Send training reminder</a><?php endif; ?></div>
 							<?php endif; ?>
 							<div class="s-table">
 							<?php foreach ( $list as $k => $it ) :
@@ -336,7 +400,7 @@ get_header();
 						<?php if ( ! $queue ) : ?>
 							<p class="hint">No changes waiting. Approvals, replace requests, missing items and notes for the candidate collect here and go in one email.</p>
 						<?php else :
-							foreach ( array( 'approved' => 'Approved', 'amend' => 'Please replace', 'missing' => 'Still needed from you', 'note' => 'Messages from our team' ) as $type => $title ) :
+							foreach ( array( 'approved' => 'Approved', 'amend' => 'Please replace', 'missing' => 'Still needed from you', 'training' => 'Training still needed (can be bought online)', 'note' => 'Messages from our team' ) as $type => $title ) :
 								$rows = array_filter( $queue, function ( $q ) use ( $type ) { return $q['type'] === $type; } );
 								if ( ! $rows ) { continue; } ?>
 								<div class="tray-g"><b><?php echo esc_html( $title ); ?></b><ul>
@@ -346,7 +410,7 @@ get_header();
 							<details class="tray-preview"><summary class="btn btn-navy btn-sm">Preview and send email</summary>
 								<div class="email" style="margin-top:12px"><div class="email-meta"><span>To: <?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?></span></div><div class="email-body">
 									<p>Hi <?php echo esc_html( hcc_meta( $aid, 'first' ) ); ?>,</p><p>Here is an update on your registration (<?php echo esc_html( hcc_meta( $aid, 'ref' ) ); ?>):</p>
-									<?php foreach ( array( 'approved' => 'Approved', 'amend' => 'Please replace', 'missing' => 'Still needed from you', 'note' => 'Messages from our team' ) as $type => $title ) :
+									<?php foreach ( array( 'approved' => 'Approved', 'amend' => 'Please replace', 'missing' => 'Still needed from you', 'training' => 'Training still needed (can be bought online)', 'note' => 'Messages from our team' ) as $type => $title ) :
 										$rows = array_filter( $queue, function ( $q ) use ( $type ) { return $q['type'] === $type; } );
 										if ( ! $rows ) { continue; } ?>
 										<p><b><?php echo esc_html( $title ); ?></b></p><ul><?php foreach ( $rows as $q ) : ?><li><?php echo esc_html( trim( $q['label'] . ( $q['label'] && $q['text'] ? ': ' : '' ) . $q['text'] ) ); ?></li><?php endforeach; ?></ul>
@@ -363,7 +427,7 @@ get_header();
 						<summary class="p-card-head"><h2>Sent to candidate</h2><span class="p-count"><?php echo $sent ? count( $sent ) . ' update' . ( count( $sent ) > 1 ? 's' : '' ) . ' · also shown in their portal' : 'Nothing sent yet'; ?></span></summary>
 						<?php foreach ( $sent as $m ) : ?>
 							<div class="sent-item"><b><?php echo esc_html( wp_date( 'j M Y, H:i', (int) $m['at'] ) . ( ! empty( $m['by'] ) ? ' · ' . $m['by'] : '' ) ); ?></b><ul>
-								<?php foreach ( (array) $m['items'] as $q ) : ?><li><span class="sent-t sent-<?php echo esc_attr( $q['type'] ); ?>"><?php echo esc_html( array( 'approved' => 'Approved', 'amend' => 'Replace', 'missing' => 'Needed', 'note' => 'Message' )[ $q['type'] ] ?? $q['type'] ); ?></span> <?php echo esc_html( trim( $q['label'] . ( $q['label'] && $q['text'] ? ': ' : '' ) . $q['text'] ) ); ?></li><?php endforeach; ?>
+								<?php foreach ( (array) $m['items'] as $q ) : ?><li><span class="sent-t sent-<?php echo esc_attr( $q['type'] ); ?>"><?php echo esc_html( array( 'approved' => 'Approved', 'amend' => 'Replace', 'missing' => 'Needed', 'training' => 'Training', 'note' => 'Message' )[ $q['type'] ] ?? $q['type'] ); ?></span> <?php echo esc_html( trim( $q['label'] . ( $q['label'] && $q['text'] ? ': ' : '' ) . $q['text'] ) ); ?></li><?php endforeach; ?>
 							</ul></div>
 						<?php endforeach; ?>
 					</details>

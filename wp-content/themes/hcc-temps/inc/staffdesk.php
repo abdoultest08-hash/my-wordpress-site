@@ -278,6 +278,25 @@ add_action( 'admin_post_hcc_desk', function () {
 		hcc_desk_back( $id, array( 'msg' => 'reopened' ) );
 	}
 
+	/* Training reminder for one candidate: the ticked missing courses go into the update tray. */
+	if ( 'train_queue' === $do ) {
+		$missing = hcc_missing_training( $id );
+		$keys    = isset( $_POST['tsel'] ) ? array_values( array_intersect( array_map( 'sanitize_key', (array) wp_unslash( $_POST['tsel'] ) ), array_keys( $missing ) ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification
+		if ( ! $keys ) {
+			hcc_desk_back( $id, array( 'msg' => 'train_none', 'training' => 1 ), 'training' );
+		}
+		foreach ( $keys as $k ) {
+			hcc_queue( $id, 'training', $k );
+		}
+		$note = hcc_field( 'note', 'textarea' );
+		if ( $note ) {
+			hcc_queue( $id, 'note', '', $note );
+		}
+		hcc_set( $id, 'train_reminded', array( 'at' => time(), 'by' => $me, 'n' => count( $keys ), 'how' => 'update' ) );
+		hcc_log( $id, 'Training reminder added to the update (' . count( $keys ) . ' course' . ( count( $keys ) > 1 ? 's' : '' ) . ': ' . implode( ', ', array_map( function ( $k ) use ( $missing ) { return $missing[ $k ]; }, $keys ) ) . ')' );
+		hcc_desk_back( $id, array( 'msg' => 'queued' ), 'tray' );
+	}
+
 	/* Change the candidate's email (e.g. they phoned in): login, account and record all move to the new address. */
 	if ( 'email' === $do ) {
 		$old = hcc_meta( $id, 'email' );
@@ -426,3 +445,59 @@ add_action( 'admin_post_hcc_report', function () {
 	echo hcc_summary_page( $id, hcc_is_manager() ) . '<script>window.print && setTimeout(function(){window.print()},400)</script>'; // phpcs:ignore WordPress.Security.EscapeOutput
 	exit;
 } );
+
+/* Training page: send each ticked candidate their own training reminder straight away (after a preview). */
+add_action( 'admin_post_hcc_train_bulk', function () {
+	if ( ! hcc_is_staff() || ! check_admin_referer( 'hcc_train_bulk' ) ) {
+		wp_die( 'Not allowed.', 403 );
+	}
+	$ids  = array_filter( array_map( 'absint', isset( $_POST['ids'] ) ? (array) wp_unslash( $_POST['ids'] ) : array() ) ); // phpcs:ignore WordPress.Security.NonceVerification
+	$note = hcc_field( 'note', 'textarea' );
+	$me   = hcc_staff_name();
+	$back = hcc_staff_url( array( 'view' => 'training' ) );
+	if ( 'preview' === hcc_field( 'step' ) ) {
+		wp_safe_redirect( add_query_arg( array( 'preview' => implode( ',', $ids ), 'note' => rawurlencode( $note ) ), $back ) . '#preview' );
+		exit;
+	}
+	$sent = 0;
+	foreach ( $ids as $id ) {
+		if ( 'hcc_applicant' !== get_post_type( $id ) ) {
+			continue;
+		}
+		$missing = hcc_missing_training( $id );
+		if ( ! $missing ) {
+			continue;
+		}
+		hcc_email_training_reminder( $id, array_values( $missing ), $note );
+		$items = array();
+		foreach ( $missing as $k => $label ) {
+			$items[] = array( 'type' => 'training', 'key' => $k, 'label' => $label, 'text' => '', 'by' => $me, 'at' => time() );
+		}
+		if ( $note ) {
+			$items[] = array( 'type' => 'note', 'key' => '', 'label' => '', 'text' => $note, 'by' => $me, 'at' => time() );
+		}
+		$msgs   = (array) hcc_meta( $id, 'messages', array() );
+		$msgs[] = array( 'at' => time(), 'by' => $me, 'items' => $items );
+		hcc_set( $id, 'messages', $msgs );
+		hcc_set( $id, 'train_reminded', array( 'at' => time(), 'by' => $me, 'n' => count( $missing ), 'how' => 'email' ) );
+		hcc_log( $id, 'Training reminder emailed (' . count( $missing ) . ' course' . ( count( $missing ) > 1 ? 's' : '' ) . ': ' . implode( ', ', $missing ) . ')' );
+		$sent++;
+	}
+	wp_safe_redirect( add_query_arg( 'sent', $sent, $back ) );
+	exit;
+} );
+
+/** Candidates in progress who have submitted and still have training certificates to come. */
+function hcc_training_list() {
+	$out = array();
+	foreach ( hcc_desk_list( 'in_progress' ) as $id ) {
+		if ( ! hcc_meta( $id, 'submitted' ) ) {
+			continue;
+		}
+		$m = hcc_missing_training( $id );
+		if ( $m ) {
+			$out[ $id ] = $m;
+		}
+	}
+	return $out;
+}
