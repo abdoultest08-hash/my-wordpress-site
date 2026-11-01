@@ -40,7 +40,7 @@ get_header();
         <ul>
           <li>Registered in England and Wales, company number <b>11486985</b></li>
           <li>Registered office: Crown House, 94 Armley Road, Armley, Leeds LS12 2EJ</li>
-          <?php if ( hcc_opt( 'ico_number' ) ) : ?><li>Registered with the Information Commissioner's Office (ICO), registration number <b><?php echo esc_html( hcc_opt( 'ico_number' ) ); ?></b></li><?php endif; ?>
+          <li>Registered with the Information Commissioner's Office (ICO), the UK's data protection regulator</li>
           <li>Email: <a href="mailto:<?php echo esc_attr( hcc_opt( 'email' ) ); ?>"><?php echo esc_html( hcc_opt( 'email' ) ); ?></a> · Phone: <?php echo esc_html( hcc_opt( 'phone' ) ); ?></li>
         </ul>
         <p>We are the <b>data controller</b> for the personal information described in this policy. This means we decide how and why it is used, and we are responsible for keeping it safe under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>

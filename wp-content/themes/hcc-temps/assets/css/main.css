@@ -1285,3 +1285,20 @@ main > .section:nth-of-type(3n) .eyebrow { color: var(--pink-deep); }
 .train-box-cand ul { margin: 6px 0 8px 18px; padding: 0; }
 .train-links { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 6px; }
 .course-link { display: inline-block; margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--navy); }
+
+/* Blog: category chips, article page */
+.cat-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.cat-chips a { padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,.35); color: #fff; text-decoration: none; font-weight: 600; font-size: 14px; }
+.cat-chips a[aria-current] { background: var(--sun); border-color: var(--sun); color: var(--ink); }
+.page-hero .crumbs a { color: inherit; }
+.post-hero-img { width: 100%; height: auto; border-radius: 20px; margin-bottom: 28px; }
+.post-body img { max-width: 100%; height: auto; border-radius: 14px; }
+.post-body img.alignright { float: right; margin: 4px 0 14px 20px; max-width: 45%; }
+.post-body img.alignleft { float: left; margin: 4px 20px 14px 0; max-width: 45%; }
+.post-body img.aligncenter { display: block; margin: 18px auto; }
+@media (max-width: 640px) { .post-body img.alignright, .post-body img.alignleft { float: none; margin: 14px 0; max-width: 100%; } }
+.post-body h2 { margin-top: 36px; }
+.post-body h3 { margin-top: 24px; }
+.post-cta { clear: both; margin-top: 40px; padding: 22px 24px; border-radius: 18px; background: var(--sun-tint); border: 1px solid #F0DE9A; }
+.post-cta b { font-size: 19px; color: var(--ink); }
+.post-cta p { margin: 6px 0 0; }

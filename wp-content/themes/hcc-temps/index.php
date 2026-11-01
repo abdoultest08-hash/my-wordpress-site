@@ -5,7 +5,12 @@ get_header();
 <main id="main">
 	<section class="page-hero">
 		<div class="wrap">
-			<h1><?php echo is_home() ? 'From the HCC blog' : esc_html( wp_strip_all_tags( get_the_archive_title() ) ); ?></h1>
+			<div class="crumbs"><a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a> / <?php echo is_home() ? 'Blog' : '<a href="' . esc_url( hcc_blog_url() ) . '">Blog</a> / ' . esc_html( single_cat_title( '', false ) ); ?></div>
+			<h1><?php echo is_home() ? 'From the HCC blog' : esc_html( is_category() ? single_cat_title( '', false ) : wp_strip_all_tags( get_the_archive_title() ) ); ?></h1>
+			<p class="lead">Guides and news for nurses, carers, chefs and care home managers.</p>
+			<?php $cats = get_categories( array( 'hide_empty' => true ) ); if ( count( $cats ) > 1 ) : ?>
+				<nav class="cat-chips" aria-label="Blog categories"><a href="<?php echo esc_url( hcc_blog_url() ); ?>"<?php echo is_home() ? ' aria-current="page"' : ''; ?>>All</a><?php foreach ( $cats as $c ) : ?><a href="<?php echo esc_url( get_category_link( $c ) ); ?>"<?php echo is_category( $c->term_id ) ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $c->name ); ?></a><?php endforeach; ?></nav>
+			<?php endif; ?>
 		</div>
 	</section>
 	<section class="section">

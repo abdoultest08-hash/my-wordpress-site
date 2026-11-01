@@ -66,7 +66,7 @@ $socials = array(
 				<h4>Company</h4>
 				<ul>
 					<li><a href="<?php echo esc_url( hcc_page_url( 'about', '/about-us/' ) ); ?>">About us</a></li>
-					<li><a href="<?php echo esc_url( home_url( '/#blog' ) ); ?>">Blog</a></li>
+					<li><a href="<?php echo esc_url( hcc_blog_url() ); ?>">Blog</a></li>
 					<li><a href="<?php echo esc_url( hcc_page_url( 'contact', '/contact/' ) ); ?>">Contact</a></li>
 				</ul>
 			</div>

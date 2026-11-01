@@ -116,6 +116,9 @@ function hcc_seed() {
 			update_post_meta( $id, '_hcc_demo', 1 );
 		}
 	}
+	if ( function_exists( 'hcc_blog_setup_pages' ) ) {
+		hcc_blog_setup_pages();
+	}
 	update_option( 'hcc_seeded', HCC_VERSION );
 	flush_rewrite_rules();
 }
