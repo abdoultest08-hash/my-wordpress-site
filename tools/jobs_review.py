@@ -89,7 +89,7 @@ for r, row in enumerate(rows, 2):
         cell.fill = flag_fill if (k == 'flags' and v) else (edit_fill if ed else lock_fill)
         cell.border = Border(bottom=thin)
         if k == 'link': cell.hyperlink = v; cell.font = Font(color='2D338C', underline='single')
-        if k == 'pay_min' and v != '': cell.number_format = '£0.00'
+        if k == 'pay_min' and v != '': cell.number_format = '0.00'
     ws.row_dimensions[r].height = 60
 ws.freeze_panes = 'C2'; ws.auto_filter.ref = 'A1:%s%d' % (get_column_letter(len(cols)), len(rows) + 1)
 n = len(rows) + 1

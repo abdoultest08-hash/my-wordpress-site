@@ -1,6 +1,8 @@
 """Build the simple client check workbook (2 tabs: Instructions, Jobs to check) from the job import CSV.
 
 Usage: python3 tools/jobs_check.py client-docs/HCC-Jobs-Import.csv client-docs/HCC-Jobs-Review.xlsx client-docs/HCC-Jobs-Check.xlsx
+After building, re-save it through LibreOffice so Excel opens it reliably:
+  soffice --headless --calc --convert-to 'xlsx:Calc MS Excel 2007 XML' --outdir <dir> client-docs/HCC-Jobs-Check.xlsx
 The import CSV holds the jobs as they are on the site; the older review workbook supplies the date each
 advert was first posted and its link on the current website. Read the returned file back with
 tools/jobs_from_review.py.
@@ -177,7 +179,7 @@ for i, j in enumerate(jobs, 2):
         if k == 'link' and data['link']:
             cell.hyperlink = data['link']; cell.value = 'Open advert'; cell.font = Font(color='2D338C', underline='single')
         if k == 'n_pmin':
-            cell.number_format = '£0.00'
+            cell.number_format = '0.00'
     ws.row_dimensions[i].height = max(32, 15 * sum(math.ceil(len(f) / 40) for f in fl) + 8, 15 * math.ceil(len(j['title']) / 38) + 8)
 n = len(jobs) + 1
 ws.freeze_panes = 'C2'
