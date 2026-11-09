@@ -14,37 +14,48 @@ if ( ! hcc_is_staff() ) {
 	exit;
 }
 $cid  = isset( $_GET['candidate'] ) ? absint( $_GET['candidate'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification
-$view = $cid && 'hcc_applicant' === get_post_type( $cid ) ? 'folder' : ( isset( $_GET['view'] ) && in_array( $_GET['view'], array( 'team', 'training' ), true ) ? sanitize_key( $_GET['view'] ) : 'dash' ); // phpcs:ignore WordPress.Security.NonceVerification
+$view = $cid && 'hcc_applicant' === get_post_type( $cid ) ? 'folder' : ( isset( $_GET['view'] ) && in_array( $_GET['view'], apply_filters( 'hcc_staff_views', array( 'team', 'training' ) ), true ) ? sanitize_key( $_GET['view'] ) : 'dash' ); // phpcs:ignore WordPress.Security.NonceVerification
 $msg  = isset( $_GET['msg'] ) ? sanitize_key( $_GET['msg'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 $msgs = array(
 	'approved' => 'Approved. Added to the update for the candidate.', 'queued' => 'Added to the update for the candidate. Press "Preview and send" when you are ready.', 'note' => 'Saved to the profile.', 'sent' => 'Update email sent to the candidate.',
 	'check' => 'Check saved.', 'check_result' => 'Choose a result before saving the check.', 'ref' => 'Reference details saved.', 'need_note' => 'Please add a note before marking this complete.', 'override_done' => 'Items marked complete.',
 	'finished' => 'Onboarding finished. Moved to Staff completed.', 'cant_finish' => 'Finish needs: profile 100%, declaration sent and signed, and no unsent updates.', 'closed' => 'Application closed and moved to Withdrawn / not qualified.', 'reopened' => 'Application reopened.',
-	'close_need' => 'Add a reason and your name to close the application.', 'staff_added' => 'Staff member added. They have been emailed a link to set their password.', 'staff_exists' => 'There is already an account with that email.', 'error' => 'Something went wrong. Please try again.', 'nothing' => 'Tick at least one item first.', 'train_none' => 'Tick at least one course for the training reminder.', 'email_changed' => 'Email changed. The candidate logs in with the new address; both addresses were told.', 'email_taken' => 'Another account already uses that email.', 'email_email' => 'That is not a valid email address.', 'email_same' => 'That is already the candidate\'s email.', 'email_user' => 'This registration has no login to update.', 'approved_some' => 'Uploaded items approved. Items with nothing uploaded were skipped: use "Mark complete (override)" for those.', 'approve_none' => 'Nothing was approved: the ticked items have no upload. Use "Mark complete (override)" and add a note.',
+	'close_need' => 'Add a reason and your name to close the application.', 'staff_added' => 'Staff member added. They have been emailed a link to set their password.', 'staff_exists' => 'There is already an account with that email.', 'error' => 'Something went wrong. Please try again.', 'nothing' => 'Tick at least one item first.', 'train_none' => 'Tick at least one course for the training reminder.', 'email_changed' => 'Email changed. The candidate logs in with the new address; both addresses were told.', 'email_taken' => 'Another account already uses that email.', 'email_email' => 'That is not a valid email address.', 'email_same' => 'That is already the candidate\'s email.', 'email_user' => 'This registration has no login to update.', 'approved_some' => 'Uploaded items approved. Items with nothing uploaded were skipped: use "Mark complete (override)" for those.', 'exp_ok' => 'Expiry date saved and marked as checked.', 'exp_bad' => 'Enter a valid expiry date.', 'approve_none' => 'Nothing was approved: the ticked items have no upload. Use "Mark complete (override)" and add a note.',
 );
 $form_url = esc_url( admin_url( 'admin-post.php' ) );
 $me   = hcc_staff_name();
 $role_label = function ( $aid ) { return hcc_role_name( hcc_meta( $aid, 'role_key' ) ); };
 get_header();
 ?>
-<main class="staff-page">
-	<div class="staff-bar">
-		<div class="wrap">
-			<b>Staff portal</b>
-			<nav aria-label="Staff portal">
-				<a href="<?php echo esc_url( hcc_staff_url() ); ?>"<?php echo 'dash' === $view ? ' aria-current="page"' : ''; ?>>Dashboard</a>
-				<a href="<?php echo esc_url( hcc_staff_url( array( 'view' => 'training' ) ) ); ?>"<?php echo 'training' === $view ? ' aria-current="page"' : ''; ?>>Training</a>
-				<?php if ( hcc_is_manager() ) : ?><a href="<?php echo esc_url( hcc_staff_url( array( 'view' => 'team' ) ) ); ?>"<?php echo 'team' === $view ? ' aria-current="page"' : ''; ?>>Team</a><?php endif; ?>
-			</nav>
-			<span class="who-in"><?php echo esc_html( wp_get_current_user()->display_name ); ?> · <a href="<?php echo esc_url( wp_logout_url( hcc_login_url( true ) ) ); ?>">Log out</a></span>
-		</div>
-	</div>
+<main class="staff-page app-wrap">
+<?php
+$unread_n = count( array_filter( array_merge( hcc_desk_list( 'in_progress' ), hcc_desk_list( 'completed' ) ), 'hcc_unread_msgs' ) );
+$snav     = array(
+	array( 'dash', 'Dashboard', 'home', hcc_staff_url() ),
+	array( 'messages', 'New messages', 'chat', hcc_staff_url() . '#newmsgs', $unread_n ? $unread_n : '' ),
+	array( 'training', 'Training', 'grad', hcc_staff_url( array( 'view' => 'training' ) ) ),
+);
+$snav = apply_filters( 'hcc_staff_nav', $snav );
+if ( hcc_is_manager() ) {
+	$snav[] = array( 'sep', 'Manage' );
+	$snav[] = array( 'team', 'Team', 'users', hcc_staff_url( array( 'view' => 'team' ) ) );
+	$snav[] = array( 'settings', 'Website settings', 'cog', admin_url() );
+}
+hcc_app_open( array(
+	'kind'    => 'staff',
+	'title'   => 'Staff portal',
+	'sub'     => 'Staff portal',
+	'items'   => $snav,
+	'current' => 'folder' === $view ? 'dash' : $view,
+	'who'     => wp_get_current_user()->display_name,
+	'logout'  => wp_logout_url( hcc_login_url( true ) ),
+) );
+?>
+			<?php if ( isset( $msgs[ $msg ] ) ) : ?><p class="<?php echo in_array( $msg, array( 'train_none', 'cant_finish', 'need_note', 'close_need', 'check_result', 'staff_exists', 'error', 'nothing', 'approve_none', 'approved_some', 'email_taken', 'email_email', 'email_same', 'email_user', 'exp_bad' ), true ) ? 'form-alert' : 'form-ok'; ?>" role="status"><?php echo esc_html( $msgs[ $msg ] ); ?></p><?php endif; ?>
 
-	<section class="section staff-body">
-		<div class="wrap">
-			<?php if ( isset( $msgs[ $msg ] ) ) : ?><p class="<?php echo in_array( $msg, array( 'train_none', 'cant_finish', 'need_note', 'close_need', 'check_result', 'staff_exists', 'error', 'nothing', 'approve_none', 'approved_some', 'email_taken', 'email_email', 'email_same', 'email_user' ), true ) ? 'form-alert' : 'form-ok'; ?>" role="status"><?php echo esc_html( $msgs[ $msg ] ); ?></p><?php endif; ?>
-
-<?php if ( 'dash' === $view ) :
+<?php if ( has_action( 'hcc_staff_view_' . $view ) ) :
+	do_action( 'hcc_staff_view_' . $view, $form_url, $me );
+elseif ( 'dash' === $view ) :
 	$search = hcc_field_get( 'q' );
 	$tab    = in_array( hcc_field_get( 'tab' ), array( 'in_progress', 'completed', 'closed' ), true ) ? hcc_field_get( 'tab' ) : 'in_progress';
 	$lists  = array( 'in_progress' => hcc_desk_list( 'in_progress', $search ), 'completed' => hcc_desk_list( 'completed', $search ), 'closed' => hcc_desk_list( 'closed', $search ) );
@@ -62,6 +73,7 @@ get_header();
 				<div><h1>Dashboard</h1><p>Candidates in onboarding, updates waiting to be sent, and completed staff.</p></div>
 				<div class="s-actions"><a class="btn btn-ghost btn-sm" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=hcc_export&tab=' . $tab ), 'hcc_export' ) ); ?>">Export to Excel (CSV)</a></div>
 			</div>
+			<?php do_action( 'hcc_staff_dash_top' ); ?>
 			<div class="kpis kpis-5">
 				<div><b><?php echo count( $all_in ); ?></b><span>In progress</span></div>
 				<div><b><?php echo count( $review ); ?></b><span>With files to review</span></div>
@@ -322,7 +334,7 @@ get_header();
 											<span class="f-line"><a class="p-file f-view" href="<?php echo esc_url( hcc_file_url( $aid, $k, $n ) ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $f['name'] ); ?></a><a class="f-act" href="<?php echo esc_url( hcc_file_url( $aid, $k, $n ) ); ?>" target="_blank" rel="noopener">View</a><a class="f-act" href="<?php echo esc_url( hcc_file_url( $aid, $k, $n, true ) ); ?>">Download</a></span>
 										<?php endforeach; ?>
 										<?php if ( ! empty( $st['pin'] ) ) : ?><span class="p-file">PIN <?php echo esc_html( $st['pin'] ); ?> · <a href="https://www.nmc.org.uk/registration/search-the-register/" target="_blank" rel="noopener">check NMC register</a></span><?php endif; ?>
-										<?php if ( ! empty( $st['exp'] ) ) : ?><span class="p-file">Expires <?php echo esc_html( wp_date( 'd/m/Y', strtotime( $st['exp'] ) ) ); ?></span><?php endif; ?>
+										<?php echo hcc_exp_staff_line( $aid, $k, $st, $it ); // phpcs:ignore ?>
 										<?php if ( ! empty( $st['missing'] ) && ! hcc_has_upload( $st ) ) : ?><span class="p-file">Candidate ticked "I don't have this yet"</span><?php endif; ?>
 										<?php if ( 'na' === $s && ! empty( $it['note'] ) ) : ?><span class="p-file" style="color:var(--muted)"><?php echo esc_html( $it['note'] ); ?></span><?php endif; ?>
 										<?php if ( ! empty( $r['reason'] ) ) : ?><span class="<?php echo 'override' === $s ? 'p-ov' : 'p-reason'; ?>"><?php echo esc_html( ( 'override' === $s ? 'Override: ' : '' ) . $r['reason'] . ( ! empty( $r['by'] ) ? ' · ' . $r['by'] : '' ) ); ?></span><?php endif; ?>
@@ -529,8 +541,7 @@ get_header();
 				</aside>
 			</div>
 <?php endif; ?>
-		</div>
-	</section>
+<?php hcc_app_close(); ?>
 </main>
 <?php
 get_footer();

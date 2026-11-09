@@ -432,6 +432,7 @@ function hcc_reg_save_item( $id, $key, $uploads, $changes ) {
 	if ( array_key_exists( 'exp', $changes ) ) {
 		$clean['exp'] = preg_match( '/^\d{4}-\d{2}-\d{2}$/', $changes['exp'] ) ? $changes['exp'] : null;
 	}
+	$clean = apply_filters( 'hcc_item_changes', $clean, $id, $key );
 	if ( $clean ) {
 		hcc_update_item( $id, $key, $clean );
 	}

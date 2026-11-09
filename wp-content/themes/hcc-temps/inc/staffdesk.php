@@ -72,6 +72,7 @@ add_action( 'admin_post_hcc_desk', function () {
 	if ( 'items' === $do && $act ) {
 		list( $verb, $key ) = array_pad( explode( ':', $act, 2 ), 2, '' );
 		$key = sanitize_key( $key );
+		do_action( 'hcc_desk_item_verb', $id, $verb, $key, $items ); // add-ons (e.g. confirm an expiry date) redirect and exit
 		$sel = isset( $_POST['sel'] ) ? array_values( array_intersect( array_map( 'sanitize_key', (array) wp_unslash( $_POST['sel'] ) ), array_keys( $items ) ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification
 		if ( 'approve' === $verb && isset( $items[ $key ] ) ) {
 			hcc_desk_approve( $id, array( $key ) );
@@ -164,6 +165,7 @@ add_action( 'admin_post_hcc_desk', function () {
 			$msgs   = (array) hcc_meta( $id, 'messages', array() );
 			$msgs[] = array( 'at' => time(), 'by' => $me, 'items' => $q );
 			hcc_set( $id, 'messages', $msgs );
+			do_action( 'hcc_update_sent', $id, $q );
 			hcc_set( $id, 'queue', array() );
 			hcc_log( $id, 'Update email sent to candidate (' . count( $q ) . ' change' . ( count( $q ) > 1 ? 's' : '' ) . ': ' . implode( ', ', array_map( function ( $x ) { return $x['label'] ? $x['label'] : 'message'; }, $q ) ) . ')' );
 		}
@@ -479,6 +481,7 @@ add_action( 'admin_post_hcc_train_bulk', function () {
 		$msgs   = (array) hcc_meta( $id, 'messages', array() );
 		$msgs[] = array( 'at' => time(), 'by' => $me, 'items' => $items );
 		hcc_set( $id, 'messages', $msgs );
+		do_action( 'hcc_update_sent', $id, $items );
 		hcc_set( $id, 'train_reminded', array( 'at' => time(), 'by' => $me, 'n' => count( $missing ), 'how' => 'email' ) );
 		hcc_log( $id, 'Training reminder emailed (' . count( $missing ) . ' course' . ( count( $missing ) > 1 ? 's' : '' ) . ': ' . implode( ', ', $missing ) . ')' );
 		$sent++;

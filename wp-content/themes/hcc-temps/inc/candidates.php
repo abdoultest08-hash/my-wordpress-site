@@ -222,6 +222,7 @@ function hcc_store_item( $id, $key, $item, $uploads ) {
 	unset( $state['missing'] );
 	$files[ $key ] = $state;
 	hcc_set( $id, 'files', $files );
+	do_action( 'hcc_item_uploaded', $id, $key );
 	return wp_list_pluck( $saved, 'name' );
 }
 

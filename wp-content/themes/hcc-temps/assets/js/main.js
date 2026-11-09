@@ -291,6 +291,61 @@
   }
 
   /* Bring success and error messages into view after a form redirect */
+  /* App layout: sidebar (collapse on a computer, slide-in menu on a phone) */
+  var app = $('app');
+  if (app) {
+    var side = $('appSide'), shade = $('sideShade'), openBtn = $('sideOpen');
+    try { if (localStorage.getItem('hccSideMini') === '1') app.classList.add('side-mini'); } catch (e) {}
+    var setOpen = function (on) { app.classList.toggle('side-open', on); shade.hidden = !on; if (openBtn) openBtn.setAttribute('aria-expanded', on ? 'true' : 'false'); document.documentElement.style.overflow = on ? 'hidden' : ''; };
+    if (openBtn) openBtn.addEventListener('click', function () { setOpen(true); });
+    if ($('sideClose')) $('sideClose').addEventListener('click', function () { setOpen(false); });
+    if (shade) shade.addEventListener('click', function () { setOpen(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && app.classList.contains('side-open')) setOpen(false); });
+    if ($('sideCollapse')) $('sideCollapse').addEventListener('click', function () {
+      var mini = app.classList.toggle('side-mini');
+      try { localStorage.setItem('hccSideMini', mini ? '1' : '0'); } catch (e) {}
+    });
+    /* Candidate portal: one view at a time, chosen by the address (#documents, #messages...) */
+    var views = document.querySelectorAll('.view[data-view]');
+    if (views.length) {
+      document.documentElement.classList.add('js-views');
+      var links = side.querySelectorAll('[data-view-link]'), title = $('appTitle');
+      var show = function (scroll) {
+        var h = decodeURIComponent(location.hash.slice(1)), target = h ? document.getElementById(h) : null;
+        var view = target ? (target.matches('.view') ? target : target.closest('.view')) : null;
+        if (!view) view = views[0];
+        views.forEach(function (v) { v.classList.toggle('is-on', v === view); });
+        links.forEach(function (l) { var on = l.getAttribute('data-view-link') === view.getAttribute('data-view'); l.classList.toggle('is-on', on); if (on) { l.setAttribute('aria-current', 'page'); if (title) title.textContent = l.textContent.replace(/\s*\d+(\/\d+)?\s*$/, '').trim(); } else l.removeAttribute('aria-current'); });
+        if (target && target !== view) {
+          for (var p = target.parentElement; p; p = p.parentElement) if (p.tagName === 'DETAILS') p.open = true;
+          if (target.tagName === 'DETAILS') target.open = true;
+          setTimeout(function () { target.scrollIntoView({ block: 'start' }); }, 30);
+        } else if (scroll) window.scrollTo(0, 0);
+        view.querySelectorAll('.thread').forEach(function (t) { t.scrollTop = t.scrollHeight; });
+      };
+      window.addEventListener('hashchange', function () { show(true); setOpen(false); });
+      show(false);
+    }
+  }
+
+  /* Notifications: filter chips (All / Action required / Updates / Reminders) */
+  document.querySelectorAll('[data-note-filter]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var f = b.getAttribute('data-note-filter'), card = b.closest('.p-card');
+      card.querySelectorAll('[data-note-filter]').forEach(function (x) { x.classList.toggle('is-on', x === b); });
+      card.querySelectorAll('.notes-all .note').forEach(function (n) { n.classList.toggle('hide', f !== 'all' && n.getAttribute('data-type') !== f); });
+    });
+  });
+
+  /* Expiring soon: tick all, and say how many rows the report will include */
+  var expForm = $('expForm');
+  if (expForm) {
+    var boxes = expForm.querySelectorAll('input[name="rows[]"]'), sel = $('expSel'), total = boxes.length;
+    var upd = function () { var n = expForm.querySelectorAll('input[name="rows[]"]:checked').length; if (sel) sel.textContent = n ? n + ' ticked: the report will include these' : 'None ticked: the report will include all ' + total; };
+    if ($('expAll')) $('expAll').addEventListener('change', function () { var on = this.checked; boxes.forEach(function (b) { b.checked = on; }); upd(); });
+    boxes.forEach(function (b) { b.addEventListener('change', upd); });
+  }
+
   /* Message boxes open on the newest message (older ones scroll up) */
   document.querySelectorAll('.thread').forEach(function (t) { t.scrollTop = t.scrollHeight; });
 
