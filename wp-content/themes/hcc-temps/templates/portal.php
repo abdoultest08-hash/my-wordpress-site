@@ -20,7 +20,7 @@ if ( $aid && ! $preview && ! hcc_meta( $aid, 'submitted' ) ) {
 	wp_safe_redirect( hcc_apply_url() );
 	exit;
 }
-$ok_msgs = array( 'notified' => 'Thank you. We have let the compliance team know about your new files.', 'nothing' => 'There are no new files to tell the team about.', 'answers' => 'Your answers have been saved.', 'email_changed' => 'Your email has been changed. Use the new address next time you log in.', 'email_code_sent' => 'We sent a code to your new email address. Enter it under "Change my email address" below.' );
+$ok_msgs = array( 'notified' => 'Thank you. We have let the compliance team know about your new files.', 'nothing' => 'There are no new files to tell the team about.', 'answers' => 'Your answers have been saved.', 'email_changed' => 'Your email has been changed. Use the new address next time you log in.', 'email_code_sent' => 'We sent a code to your new email address. Enter it under "Change my email address" below.', 'signed' => 'Thank you. Your documents are signed and we have emailed you a copy.' );
 $email_errs = array(
 	'email_code'     => 'That code isn\'t right. Check the email we sent to your new address.',
 	'email_code_old' => 'That code has expired or was tried too many times. Please start again.',
@@ -77,6 +77,7 @@ get_header();
 	?>
 			<?php if ( $preview ) : ?><p class="preview-bar">Staff preview: this is what <?php echo esc_html( hcc_name( $aid ) ); ?> sees. Read-only. <a href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $aid ) ) ); ?>">Back to their folder</a></p><?php endif; ?>
 			<?php if ( isset( $ok_msgs[ $ok ] ) ) : ?><p class="form-ok"><?php echo esc_html( $ok_msgs[ $ok ] ); ?></p><?php endif; ?>
+			<?php if ( 'pack' === $err ) : ?><p class="form-alert" role="alert">Some answers or signatures were missing, so nothing was signed. Please go through the documents again and complete every part.</p><?php endif; ?>
 			<?php echo hcc_notice(); // phpcs:ignore ?>
 
 			<section class="view" data-view="dashboard" id="dashboard">

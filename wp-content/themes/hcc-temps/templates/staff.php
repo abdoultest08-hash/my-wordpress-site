@@ -52,7 +52,7 @@ hcc_app_open( array(
 	'logout'  => wp_logout_url( hcc_login_url( true ) ),
 ) );
 ?>
-			<?php if ( isset( $msgs[ $msg ] ) ) : ?><p class="<?php echo in_array( $msg, array( 'train_none', 'cant_finish', 'need_note', 'close_need', 'check_result', 'staff_exists', 'error', 'nothing', 'approve_none', 'approved_some', 'email_taken', 'email_email', 'email_same', 'email_user', 'exp_bad' ), true ) ? 'form-alert' : 'form-ok'; ?>" role="status"><?php echo esc_html( $msgs[ $msg ] ); ?></p><?php endif; ?>
+			<?php if ( isset( $msgs[ $msg ] ) ) : ?><p class="<?php echo in_array( $msg, array( 'train_none', 'cant_finish', 'need_note', 'close_need', 'check_result', 'staff_exists', 'error', 'nothing', 'approve_none', 'approved_some', 'email_taken', 'email_email', 'email_same', 'email_user', 'exp_bad', 'pack_need' ), true ) ? 'form-alert' : 'form-ok'; ?>" role="status"><?php echo esc_html( $msgs[ $msg ] ); ?></p><?php endif; ?>
 
 <?php if ( has_action( 'hcc_staff_view_' . $view ) ) :
 	do_action( 'hcc_staff_view_' . $view, $form_url, $me );

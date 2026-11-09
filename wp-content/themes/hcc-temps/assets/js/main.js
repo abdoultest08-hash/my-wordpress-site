@@ -328,6 +328,7 @@
     }
   }
 
+  (function () {
   /* Notifications: filter chips (All / Action required / Updates / Reminders) */
   document.querySelectorAll('[data-note-filter]').forEach(function (b) {
     b.addEventListener('click', function () {
@@ -336,7 +337,9 @@
       card.querySelectorAll('.notes-all .note').forEach(function (n) { n.classList.toggle('hide', f !== 'all' && n.getAttribute('data-type') !== f); });
     });
   });
+  })();
 
+  (function () {
   /* Expiring soon: tick all, and say how many rows the report will include */
   var expForm = $('expForm');
   if (expForm) {
@@ -345,6 +348,74 @@
     if ($('expAll')) $('expAll').addEventListener('change', function () { var on = this.checked; boxes.forEach(function (b) { b.checked = on; }); upd(); });
     boxes.forEach(function (b) { b.addEventListener('change', upd); });
   }
+  })();
+
+  (function () {
+  /* Signature pads: draw with a finger or mouse; the drawing is saved as a PNG in a hidden field */
+  var pads = [];
+  document.querySelectorAll('[data-sig]').forEach(function (box) {
+    var c = box.querySelector('canvas'), out = box.querySelector('[data-sig-val]'), ctx = c.getContext('2d'), drawing = false, last = null, dirty = false;
+    var size = function () {
+      var r = c.getBoundingClientRect(); if (!r.width) return;
+      var keep = dirty ? c.toDataURL() : null, dpr = window.devicePixelRatio || 1;
+      c.width = Math.round(r.width * dpr); c.height = Math.round(r.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#171A45';
+      if (keep) { var im = new Image(); im.onload = function () { ctx.drawImage(im, 0, 0, r.width, r.height); }; im.src = keep; }
+    };
+    var pos = function (e) { var r = c.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    var save = function () { out.value = dirty ? c.toDataURL('image/png') : ''; box.classList.toggle('has', dirty); box.classList.remove('need'); };
+    c.addEventListener('pointerdown', function (e) { e.preventDefault(); c.setPointerCapture(e.pointerId); drawing = true; last = pos(e); ctx.beginPath(); ctx.arc(last.x, last.y, 1.1, 0, 7); ctx.fillStyle = '#171A45'; ctx.fill(); dirty = true; });
+    c.addEventListener('pointermove', function (e) { if (!drawing) return; var p = pos(e); ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (t) { c.addEventListener(t, function () { if (drawing) { drawing = false; save(); } }); });
+    var clear = function () { ctx.clearRect(0, 0, c.width, c.height); dirty = false; save(); };
+    box.querySelector('[data-sig-clear]').addEventListener('click', clear);
+    var pad = { box: box, c: c, isSet: function () { return dirty; }, size: size, copyFrom: function (o) { var r = c.getBoundingClientRect(), im = new Image(); im.onload = function () { clear(); ctx.drawImage(im, 0, 0, r.width, r.height); dirty = true; save(); }; im.src = o.c.toDataURL(); } };
+    var cp = box.querySelector('[data-sig-copy]');
+    if (cp) cp.addEventListener('click', function () { var prev = pads.slice(0, pads.indexOf(pad)).reverse().filter(function (x) { return x.isSet(); })[0]; if (prev) pad.copyFrom(prev); });
+    pads.push(pad); size(); window.addEventListener('resize', size);
+  });
+  /* Forms with signatures: every pad must be signed before sending */
+  document.querySelectorAll('[data-sign-form]').forEach(function (f) {
+    f.addEventListener('submit', function (e) {
+      var miss = pads.filter(function (p) { return f.contains(p.box) && !p.isSet() && p.box.offsetParent !== null; });
+      if (miss.length) { e.preventDefault(); miss.forEach(function (p) { p.box.classList.add('need'); }); miss[0].box.scrollIntoView({ block: 'center' }); }
+    });
+  });
+  /* Onboarding pack: one document at a time, questions that depend on earlier answers, tax statement */
+  var pack = $('packForm');
+  if (pack) {
+    var steps = pack.querySelectorAll('.sg-step'), cur = 0, dots = pack.querySelectorAll('.sg-steps li');
+    var back = pack.querySelector('[data-sg-back]'), next = pack.querySelector('[data-sg-next]'), sub = pack.querySelector('[data-sg-submit]');
+    var val = function (n) { var x = pack.querySelector('input[name="f[' + n + ']"]:checked'); return x ? x.value : ''; };
+    var deps = function () {
+      pack.querySelectorAll('[data-sg-show]').forEach(function (fs) {
+        var ok = fs.getAttribute('data-sg-show').split('&').every(function (c) { var kv = c.split('='); return val(kv[0]) === kv[1]; });
+        fs.hidden = !ok; fs.querySelectorAll('input').forEach(function (i) { i.disabled = !ok; if (i.type === 'radio') i.required = ok && i === fs.querySelector('input[type=radio]'); });
+      });
+      var st = $('sgStatement'), q8 = val('q8'), q9 = val('q9'), q10 = val('q10');
+      var s = (q8 === 'Yes' || q9 === 'Yes') ? 'C' : (q10 === 'Yes' ? 'B' : (q10 === 'No' ? 'A' : ''));
+      if (st) { st.hidden = !s; st.textContent = s ? 'Your statement: ' + s : ''; }
+    };
+    pack.addEventListener('change', deps); deps();
+    var show = function (i, quiet) {
+      cur = i; steps.forEach(function (s, k) { s.hidden = k !== i; }); dots.forEach(function (d, k) { d.classList.toggle('on', k === i); d.classList.toggle('done', k < i); });
+      back.hidden = i === 0; next.hidden = i === steps.length - 1; sub.hidden = i !== steps.length - 1;
+      pads.forEach(function (p) { if (steps[i].contains(p.box)) p.size(); });
+      if (!quiet) pack.scrollIntoView({ block: 'start' });
+    };
+    var check = function () {
+      var ok = true, step = steps[cur];
+      step.querySelectorAll('input,select').forEach(function (i) { if (ok && !i.disabled && !i.checkValidity()) { i.reportValidity(); ok = false; } });
+      if (ok) { var miss = pads.filter(function (p) { return step.contains(p.box) && !p.isSet(); }); if (miss.length) { miss[0].box.classList.add('need'); miss[0].box.scrollIntoView({ block: 'center' }); ok = false; } }
+      return ok;
+    };
+    next.addEventListener('click', function () { if (check()) show(cur + 1); });
+    back.addEventListener('click', function () { show(cur - 1); });
+    pack.addEventListener('submit', function (e) { if (!check()) { e.preventDefault(); e.stopImmediatePropagation(); } else { sub.disabled = true; sub.textContent = 'Signing…'; } });
+    show(0, true);
+  }
+
+  })();
 
   /* Message boxes open on the newest message (older ones scroll up) */
   document.querySelectorAll('.thread').forEach(function (t) { t.scrollTop = t.scrollHeight; });

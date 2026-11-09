@@ -310,6 +310,13 @@ add_action( 'admin_post_hcc_zip', function () {
 			}
 		}
 	}
+	foreach ( apply_filters( 'hcc_zip_extra', array(), $id ) as $extra ) {
+		$copy = is_readable( $dir . '/' . basename( $extra ) ) ? hcc_decrypted_copy( $dir . '/' . basename( $extra ) ) : '';
+		if ( $copy ) {
+			$copies[] = $copy;
+			$zip->addFile( $copy, $folder . '/' . basename( $extra ) );
+		}
+	}
 	$zip->addFromString( $folder . '/' . hcc_meta( $id, 'ref' ) . ' ' . hcc_name( $id ) . ' - Summary.html', hcc_summary_page( $id, hcc_is_manager() ) );
 	$zip->close();
 	hcc_crypto_cleanup( $copies );
