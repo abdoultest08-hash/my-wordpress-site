@@ -34,8 +34,44 @@ function hcc_pay_products() {
 
 /** Monzo (and optional Ayan Pay) payment links, set by a manager. */
 function hcc_pay_links() {
-	return wp_parse_args( (array) get_option( 'hcc_pay_links', array() ), array_fill_keys( array_merge( array_keys( hcc_pay_products() ), array( 'ayan' ) ), '' ) );
+	return wp_parse_args( (array) get_option( 'hcc_pay_links', array() ), array_fill_keys( array_merge( array_keys( hcc_pay_products() ), array( 'ayan', 'uniform_care', 'uniform_hosp' ) ), '' ) );
 }
+
+/* ---------- Uniform: HCC-Temps does not supply uniforms ---------- */
+
+/** What uniform the role needs and where to buy it: array( name, link ). */
+function hcc_uniform_for( $id ) {
+	$role  = hcc_meta( $id, 'role_key' );
+	$links = hcc_pay_links();
+	if ( in_array( $role, array( 'nurse', 'hca', 'senior-carer' ), true ) ) {
+		return array( 'blue tunic', $links['uniform_care'] );
+	}
+	if ( in_array( $role, array( 'chef', 'head-chef', 'kitchen', 'catering', 'barista' ), true ) ) {
+		return array( 'chef whites or kitchen uniform', $links['uniform_hosp'] );
+	}
+	return array( 'work uniform', '' );
+}
+
+/** 'need' (said No and not bought yet), 'got' (bought since), or '' (has one). */
+function hcc_uniform_state( $id ) {
+	$a = (array) hcc_meta( $id, 'answers', array() );
+	if ( ! isset( $a['uniform'] ) || 'No' !== $a['uniform'] ) {
+		return '';
+	}
+	return hcc_meta( $id, 'uniform_got' ) ? 'got' : 'need';
+}
+
+add_action( 'admin_post_hcc_uniform_got', function () {
+	$id = hcc_applicant_for_user( get_current_user_id() );
+	if ( ! $id || ! check_admin_referer( 'hcc_uniform_' . $id ) ) {
+		wp_die( 'Your session has expired. Please log in again.', 403 );
+	}
+	hcc_set( $id, 'uniform_got', time() );
+	hcc_todo_done( $id, 'uniform' );
+	hcc_log( $id, 'Candidate says they now have their ' . hcc_uniform_for( $id )[0], 'Candidate' );
+	wp_safe_redirect( hcc_portal_url() . '#payments' );
+	exit;
+} );
 
 /** Which bundle a role can buy ('' = none: each course is bought on its own). */
 function hcc_pay_bundle_for( $role ) {
@@ -172,6 +208,13 @@ function hcc_pay_sync( $id ) {
 		hcc_order_create( $id, 'dbs', array( array( 'dbs', $p['dbs'][0], $p['dbs'][1] ) ) );
 		hcc_set( $id, 'pay_dbs_made', time() );
 	}
+	if ( 'need' === hcc_uniform_state( $id ) && ! hcc_meta( $id, 'uniform_todo' ) ) {
+		$u = hcc_uniform_for( $id );
+		hcc_notify( $id, array( 'type' => 'action', 'title' => 'Get your ' . $u[0], 'text' => 'We don\'t supply uniforms. You\'ll need your own ' . $u[0] . ' before your first shift.', 'link' => '#payments', 'key' => 'uniform', 'todo' => true ) );
+		hcc_set( $id, 'uniform_todo', time() );
+	} elseif ( 'need' !== hcc_uniform_state( $id ) ) {
+		hcc_todo_done( $id, 'uniform' );
+	}
 	$need    = hcc_pay_training_need( $id );
 	$courses = wp_list_pluck( $need['buy'], 0 );
 	$open    = hcc_open_order( $id, 'training' );
@@ -221,22 +264,23 @@ add_action( 'admin_post_hcc_pay_claim', function () {
 /* ---------- Candidate portal: Payments view ---------- */
 
 add_filter( 'hcc_portal_nav', function ( $nav, $id, $base ) {
-	if ( ! hcc_orders( $id ) ) {
+	if ( ! hcc_orders( $id ) && ! hcc_uniform_state( $id ) ) {
 		return $nav;
 	}
-	$due = count( array_filter( hcc_orders( $id ), function ( $o ) { return 'due' === $o['status']; } ) );
+	$due = count( array_filter( hcc_orders( $id ), function ( $o ) { return 'due' === $o['status']; } ) ) + ( 'need' === hcc_uniform_state( $id ) ? 1 : 0 );
 	array_splice( $nav, 4, 0, array( array( 'payments', 'Payments', 'card', $base . '#payments', $due ? $due : '', $due ? 'data-hot="1"' : '' ) ) );
 	return $nav;
 }, 20, 3 );
 
 add_action( 'hcc_portal_views', function ( $id, $ctx ) {
 	$orders = array_reverse( hcc_orders( $id ) );
-	if ( ! $orders ) {
+	$ustate = hcc_uniform_state( $id );
+	if ( ! $orders && ! $ustate ) {
 		return;
 	}
 	$links = hcc_pay_links();
 	$live  = 'portal' === $ctx;
-	echo '<section class="view" data-view="payments" id="payments"><div class="view-head"><h2>Payments</h2><p>Your DBS check and training. Pay by bank transfer to our Monzo Business account, then press "I\'ve paid".</p></div>';
+	echo '<section class="view" data-view="payments" id="payments"><div class="view-head"><h2>Payments</h2><p>' . ( $orders ? 'Your DBS check and training. Pay by bank transfer to our Monzo Business account, then press "I\'ve paid".' : 'What you need before your first shift.' ) . '</p></div>';
 	foreach ( $orders as $o ) {
 		if ( 'cancelled' === $o['status'] ) {
 			continue;
@@ -282,6 +326,21 @@ add_action( 'hcc_portal_views', function ( $id, $ctx ) {
 			echo '<b class="co-t">All done</b><p>' . ( 'dbs' === $o['kind'] ? 'Your DBS application has been submitted.' : 'Your courses have been assigned. Complete them, then upload each certificate under Compliance & training.' ) . '</p>' . ( ! empty( $o['done_note'] ) ? '<p class="hint">' . esc_html( $o['done_note'] ) . '</p>' : '' );
 		}
 		echo '</div></div></div>';
+	}
+	if ( $ustate ) {
+		$u = hcc_uniform_for( $id );
+		echo '<div class="p-card checkout uniform-card"><div class="co-head"><h3>Uniform</h3><span class="co-status ' . ( 'need' === $ustate ? 'co-due">Needed before your first shift' : 'co-done">Done' ) . '</span></div>';
+		if ( 'need' === $ustate ) {
+			echo '<p>We don\'t supply uniforms. You told us you don\'t have a ' . esc_html( $u[0] ) . ' yet, so please buy one before your first shift. It\'s bought directly from the shop, not paid to us.</p><div class="form-actions" style="margin-top:12px">';
+			echo $u[1] ? '<a class="btn btn-sun" href="' . esc_url( $u[1] ) . '" target="_blank" rel="noopener">Buy your ' . esc_html( $u[0] ) . ' on Amazon ↗</a>' : '<a class="btn btn-ghost" href="#messages">Ask us where to buy one</a>';
+			if ( $live ) {
+				echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline"><input type="hidden" name="action" value="hcc_uniform_got">' . wp_nonce_field( 'hcc_uniform_' . $id, '_wpnonce', true, false ) . '<button class="btn btn-ghost" type="submit">I\'ve got my uniform now</button></form>';
+			}
+			echo '</div>';
+		} else {
+			echo '<p>Thank you. You told us on ' . esc_html( wp_date( 'j M Y', (int) hcc_meta( $id, 'uniform_got' ) ) ) . ' that you now have your ' . esc_html( $u[0] ) . '.</p>';
+		}
+		echo '</div>';
 	}
 	$need = hcc_pay_training_need( $id );
 	if ( $need['external'] ) {
@@ -422,12 +481,14 @@ add_action( 'hcc_staff_view_payments', function () {
 	</div>
 	<?php if ( hcc_is_manager() ) : $links = hcc_pay_links(); ?>
 	<details class="p-card" style="margin-top:18px"<?php echo array_filter( $links ) ? '' : ' open'; ?>>
-		<summary class="p-card-head"><h2>Payment links</h2><span class="p-count">Managers only · paste each Monzo payment link</span></summary>
+		<summary class="p-card-head"><h2>Payment links</h2><span class="p-count">Managers only · Monzo payment links and Amazon uniform links</span></summary>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="pay-links">
 			<input type="hidden" name="action" value="hcc_pay_links"><?php wp_nonce_field( 'hcc_pay_links' ); ?>
 			<?php foreach ( hcc_pay_products() as $k => $p ) : ?>
 				<label><span><?php echo esc_html( $p[0] . ' · £' . $p[1] ); ?></span><input type="url" name="links[<?php echo esc_attr( $k ); ?>]" value="<?php echo esc_attr( $links[ $k ] ); ?>" placeholder="https://monzo.me/..."></label>
 			<?php endforeach; ?>
+			<label><span>Uniform: blue tunics (Amazon link, care roles)</span><input type="url" name="links[uniform_care]" value="<?php echo esc_attr( $links['uniform_care'] ); ?>" placeholder="https://www.amazon.co.uk/..."></label>
+			<label><span>Uniform: chef whites (Amazon link, kitchen roles)</span><input type="url" name="links[uniform_hosp]" value="<?php echo esc_attr( $links['uniform_hosp'] ); ?>" placeholder="https://www.amazon.co.uk/..."></label>
 			<label><span>Ayan Pay (spread the cost, optional)</span><input type="url" name="links[ayan]" value="<?php echo esc_attr( $links['ayan'] ); ?>" placeholder="Leave empty to hide this option"></label>
 			<div class="form-actions"><button class="btn btn-navy btn-sm" type="submit">Save links</button></div>
 		</form>
@@ -470,6 +531,10 @@ add_action( 'hcc_staff_folder_side', function ( $aid ) {
 		$f .= '<button class="btn btn-sm btn-ghost" name="kind" value="training">Ask to pay for training (' . count( $need['buy'] ) . ' course' . ( count( $need['buy'] ) > 1 ? 's' : '' ) . ')</button>';
 	}
 	echo $f . '</form>'; // phpcs:ignore
+	$us = hcc_uniform_state( $aid );
+	if ( $us ) {
+		echo '<p class="hint" style="margin-top:8px">Uniform: ' . ( 'need' === $us ? '<b>does not have a ' . esc_html( hcc_uniform_for( $aid )[0] ) . '</b> (shown where to buy one)' : 'bought one since registering (' . esc_html( wp_date( 'j M', (int) hcc_meta( $aid, 'uniform_got' ) ) ) . ')' ) . '</p>'; // phpcs:ignore
+	}
 	if ( $need['external'] ) {
 		echo '<p class="hint" style="margin-top:8px">To book face to face (not sold online): ' . esc_html( implode( ', ', $need['external'] ) ) . '</p>';
 	}

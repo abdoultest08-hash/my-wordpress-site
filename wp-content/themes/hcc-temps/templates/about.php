@@ -43,6 +43,30 @@ get_header();
 		</div>
 	</section>
 
+	<section class="section commitments" id="commitments" aria-labelledby="commitTitle">
+		<div class="wrap">
+			<div class="sec-head"><span class="eyebrow">Our commitments</span><h2 id="commitTitle">Responsible by design</h2><p>How we look after people and the planet, beyond the shifts we fill.</p></div>
+			<div class="commit-grid">
+				<article class="commit">
+					<img src="<?php echo esc_url( hcc_img( 'accred/modern-slavery.svg' ) ); ?>" alt="" width="110" height="110" loading="lazy">
+					<div>
+						<h3>Modern Slavery Policy</h3>
+						<p>We have zero tolerance for modern slavery and human trafficking. Every candidate's identity and right to work is checked, we never charge work-seekers for finding them work, and we expect the same standards from everyone in our supply chain.</p>
+						<a class="link-arrow" href="<?php echo esc_url( hcc_modern_slavery_url() ); ?>" target="_blank" rel="noopener">Read our Modern Slavery Policy 2025 (PDF) <span aria-hidden="true">→</span></a>
+					</div>
+				</article>
+				<article class="commit">
+					<img src="<?php echo esc_url( hcc_img( 'accred/net-zero.svg' ) ); ?>" alt="" width="110" height="110" loading="lazy">
+					<div>
+						<h3>Carbon footprint: Net Zero by 2045</h3>
+						<p>Our emissions have already fallen from 3.59 to 3.08 tonnes of CO2e since our 2022/23 baseline. We aim to cut them by around 90% by 2045, through home working, energy efficiency, a renewable energy tariff and hiring locally.</p>
+						<a class="link-arrow" href="<?php echo esc_url( hcc_page_url( 'carbon', '/hcc-temps-carbon-footprint-plan/' ) ); ?>">Read our Carbon Reduction Plan <span aria-hidden="true">→</span></a>
+					</div>
+				</article>
+			</div>
+		</div>
+	</section>
+
 	<section class="section" id="team">
 		<div class="wrap">
 			<div class="sec-head"><span class="eyebrow">Meet the team</span><h2>The people behind HCC-Temps</h2><p>Based in Leeds and London, covering the whole UK.</p></div>

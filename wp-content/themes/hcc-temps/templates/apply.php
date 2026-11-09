@@ -199,7 +199,7 @@ get_header();
 						<div class="f"><label for="exp">Experience in this role</label><?php echo $select( 'exp', array( 'Less than 6 months', '6 to 12 months', '1 to 2 years', '3 to 5 years', 'More than 5 years' ), $g( 'exp' ) ); // phpcs:ignore ?></div>
 						<fieldset class="f"><legend>Do you have valid training certificates, dated within the last year?</legend><?php echo $radio( 'trainok', array( 'All' => 'Yes, all', 'Some' => 'Some', 'None' => 'No' ), $g( 'trainok' ) ); // phpcs:ignore ?></fieldset>
 						<fieldset class="f"><legend><?php echo preg_match( '/nurse|hca|senior/', $role ) ? 'Do you have a blue tunic?' : ( preg_match( '/chef|kitchen|catering|barista/', $role ) ? 'Do you have chef whites or kitchen uniform?' : 'Do you have a suitable work uniform?' ); ?></legend><?php echo $radio( 'uniform', array( 'Yes', 'No' ), $g( 'uniform' ) ); // phpcs:ignore ?></fieldset>
-						<div class="f"><label for="size">Uniform size</label><?php echo $select( 'size', array( 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL' ), $g( 'size' ), 'Choose a comfortable fit' ); // phpcs:ignore ?></div>
+						<p class="f hint uniform-note">We don't supply uniforms. If you don't have one yet, we'll show you where to buy it after you register (under Payments in your portal).</p>
 					</div></fieldset>
 
 					<fieldset class="q-group"><legend>Professional referees</legend>

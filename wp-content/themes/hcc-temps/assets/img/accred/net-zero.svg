@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" role="img" aria-label="Net Zero by 2045: Carbon Reduction Plan">
+  <circle cx="100" cy="100" r="94" fill="#fff" stroke="#2E8B57" stroke-width="8"/>
+  <circle cx="100" cy="100" r="80" fill="none" stroke="#2E8B57" stroke-width="1.5" stroke-dasharray="3 4"/>
+  <path d="M100 34c-19 9-29 24-26 41 3 13 13 21 26 22 13-1 23-9 26-22 3-17-7-32-26-41z" fill="#2E8B57"/>
+  <path d="M100 43v53M100 62l-10-9M100 74l12-10M100 85l-10-8" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <text x="100" y="124" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-weight="800" font-size="22" fill="#171A45">NET ZERO</text>
+  <text x="100" y="143" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-weight="800" font-size="17" fill="#2E8B57">BY 2045</text>
+  <text x="100" y="160" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-weight="600" font-size="8.6" fill="#5B6078" letter-spacing=".6">CARBON REDUCTION PLAN</text>
+</svg>

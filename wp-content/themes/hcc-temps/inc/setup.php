@@ -142,6 +142,11 @@ function hcc_logo_url() {
 }
 
 /** Find the page using one of our templates, so links survive slug changes. */
+/** The Modern Slavery Policy PDF that ships with the theme. */
+function hcc_modern_slavery_url() {
+	return HCC_URI . '/assets/docs/HCC-Temps-Ltd-Modern-Slavery-Policy-2025.pdf';
+}
+
 function hcc_page_url( $template, $fallback = '/' ) {
 	static $cache = array();
 	if ( ! isset( $cache[ $template ] ) ) {
