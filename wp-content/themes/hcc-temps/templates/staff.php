@@ -22,6 +22,7 @@ $msgs = array(
 	'finished' => 'Onboarding finished. Moved to Staff completed.', 'cant_finish' => 'Finish needs: profile 100%, declaration sent and signed, and no unsent updates.', 'closed' => 'Application closed and moved to Withdrawn / not qualified.', 'reopened' => 'Application reopened.',
 	'close_need' => 'Add a reason and your name to close the application.', 'staff_added' => 'Staff member added. They have been emailed a link to set their password.', 'staff_exists' => 'There is already an account with that email.', 'error' => 'Something went wrong. Please try again.', 'nothing' => 'Tick at least one item first.', 'train_none' => 'Tick at least one course for the training reminder.', 'email_changed' => 'Email changed. The candidate logs in with the new address; both addresses were told.', 'email_taken' => 'Another account already uses that email.', 'email_email' => 'That is not a valid email address.', 'email_same' => 'That is already the candidate\'s email.', 'email_user' => 'This registration has no login to update.', 'approved_some' => 'Uploaded items approved. Items with nothing uploaded were skipped: use "Mark complete (override)" for those.', 'exp_ok' => 'Expiry date saved and marked as checked.', 'exp_bad' => 'Enter a valid expiry date.', 'approve_none' => 'Nothing was approved: the ticked items have no upload. Use "Mark complete (override)" and add a note.',
 );
+$msgs     = apply_filters( 'hcc_staff_msgs', $msgs );
 $form_url = esc_url( admin_url( 'admin-post.php' ) );
 $me   = hcc_staff_name();
 $role_label = function ( $aid ) { return hcc_role_name( hcc_meta( $aid, 'role_key' ) ); };
@@ -491,6 +492,8 @@ elseif ( 'dash' === $view ) :
 					</details>
 
 
+					<?php do_action( 'hcc_staff_folder_side', $aid, $form_url ); ?>
+					<?php if ( has_action( 'hcc_staff_folder_declaration' ) ) : do_action( 'hcc_staff_folder_declaration', $aid, $form_url ); else : ?>
 					<details open class="p-sec p-card" id="declaration">
 						<summary class="p-card-head"><h2>Declaration</h2><span class="p-count">Sent manually</span></summary>
 						<form method="post" action="<?php echo $form_url; ?>"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="dec">
@@ -500,6 +503,7 @@ elseif ( 'dash' === $view ) :
 							<div class="form-actions" style="margin-top:10px"><button class="btn btn-ghost btn-sm" type="submit">Save</button></div>
 						</form>
 					</details>
+					<?php endif; ?>
 
 					<details open class="p-sec p-card bank-card">
 						<summary class="p-card-head"><h2>Bank details</h2><span class="p-count"><?php echo hcc_is_manager() ? 'Managers only' : 'Last 4 digits'; ?></span></summary>

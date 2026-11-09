@@ -163,6 +163,14 @@ function hcc_email_update( $id, $queue ) {
 
 /** How to get missing training: buy the course on the e-learning portal, then upload the certificate. */
 function hcc_training_buy_block() {
+	return '<div style="background:#FDF6DA;border-radius:10px;padding:12px 14px;margin:6px 0 14px">'
+		. '<p style="margin:0 0 8px"><b>You can buy these courses from us</b> and do them online at your own pace: the full training bundle for your role if you are missing more than 2, otherwise each course on its own. The courses and prices are in your portal under Payments.</p>'
+		. '<p style="margin:0 0 8px"><a href="' . esc_url( hcc_portal_url() . '#payments' ) . '" style="background:#2D338C;color:#fff;text-decoration:none;font-weight:bold;padding:10px 16px;border-radius:999px;display:inline-block">See what to pay</a></p>'
+		. '<p style="margin:0;font-size:13px">When you finish a course, download the certificate and upload it in your portal under Compliance &amp; training.</p></div>';
+}
+
+/** The older e-learning block (VideoTile shop links), kept for reference. */
+function hcc_training_buy_block_elearn() {
 	$l = hcc_elearn_links();
 	if ( ! $l ) {
 		return '<p>Call us on <b>' . esc_html( hcc_opt( 'phone' ) ) . '</b> and we will help you book these courses.</p>';

@@ -17,6 +17,7 @@ require HCC_DIR . '/inc/crypto.php';
 require HCC_DIR . '/inc/app.php';
 require HCC_DIR . '/inc/notify.php';
 require HCC_DIR . '/inc/expiry.php';
+require HCC_DIR . '/inc/payments.php';
 require HCC_DIR . '/inc/candidates.php';
 require HCC_DIR . '/inc/forms.php';
 require HCC_DIR . '/inc/auth.php';

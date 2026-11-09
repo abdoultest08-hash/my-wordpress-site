@@ -488,6 +488,7 @@ add_action( 'admin_post_hcc_reg_submit', function () {
 		hcc_log( $id, 'Registration submitted. Staffing inbox emailed with full summary and CV attached', 'Candidate' );
 		hcc_email_staff_summary( $id );
 		hcc_email_received( $id );
+		do_action( 'hcc_registration_submitted', $id );
 	}
 	hcc_reg_back( 7 );
 } );
@@ -565,8 +566,8 @@ function hcc_item_row( $id, $key, $it, $ctx = 'wizard' ) {
 			if ( ! $has ) {
 				$h .= '<label class="nohave"><input type="checkbox" name="missing" value="1"' . checked( ! empty( $st['missing'] ), true, false ) . '> I don\'t have this yet</label>';
 			}
-			if ( 0 === strpos( $key, 't-' ) && ! $has && hcc_elearn_links() ) {
-				$h .= '<a class="course-link" href="' . esc_url( hcc_elearn_links()['buy'] ) . '" target="_blank" rel="noopener">Buy this course online ↗</a>';
+			if ( 0 === strpos( $key, 't-' ) && ! $has && 'portal' === $ctx && function_exists( 'hcc_orders' ) && hcc_orders( $id ) ) {
+				$h .= '<a class="course-link" href="#payments">Buy this course from us</a>';
 			}
 			if ( 0 === strpos( $key, 't-' ) && $has ) {
 				$h .= '<div class="exp-box"><label class="exp-in">Certificate expiry date <input type="date" name="exp" value="' . esc_attr( isset( $st['exp'] ) ? $st['exp'] : '' ) . '"></label><button type="button" class="btn btn-navy btn-sm exp-save" hidden>Save date</button></div>';
@@ -590,9 +591,11 @@ function hcc_training_box( $id, $with_list = true, $ask = false ) {
 	if ( $with_list ) {
 		$h .= '<ul>' . implode( '', array_map( function ( $l ) { return '<li>' . esc_html( $l ) . '</li>'; }, $miss ) ) . '</ul>';
 	}
-	$h .= '<p style="margin:4px 0">You can <b>buy</b> the courses online through our e-learning portal and do them at your own pace. Prices are shown on the portal before you pay. When you finish, download the certificate and upload it here.</p>';
-	if ( $links ) {
-		$h .= '<div class="train-links"><a class="btn btn-sm btn-navy" href="' . esc_url( $links['buy'] ) . '" target="_blank" rel="noopener">Buy a course ↗</a><a class="btn btn-sm btn-ghost" href="' . esc_url( $links['trial'] ) . '" target="_blank" rel="noopener">Free trial ↗</a><a class="link-btn" href="' . esc_url( $links['login'] ) . '" target="_blank" rel="noopener">Already have an account? Log in</a></div>';
+	$h .= '<p style="margin:4px 0">You can <b>buy</b> the online courses from us and do them at your own pace: the full training bundle for your role if you are missing more than 2, otherwise each course on its own. When you finish, download the certificate and upload it here.</p>';
+	if ( $ask && hcc_orders( $id ) ) {
+		$h .= '<div class="train-links"><a class="btn btn-sm btn-navy" href="#payments">See what to pay</a></div>';
+	} elseif ( ! hcc_meta( $id, 'submitted' ) ) {
+		$h .= '<p style="margin:4px 0;font-size:14px">After you submit your registration, the courses and prices appear in your portal under <b>Payments</b>.</p>';
 	}
 	if ( $ask ) {
 		$h .= '<p style="margin:8px 0 0;font-size:14px">Prefer help? <a href="' . esc_url( add_query_arg( 'ask', 'training', hcc_portal_url() ) . '#messages' ) . '">Ask the team to get you set up</a>, or call ' . esc_html( hcc_opt( 'phone' ) ) . '.</p>';

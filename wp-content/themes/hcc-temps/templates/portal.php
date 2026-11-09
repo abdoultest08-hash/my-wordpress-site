@@ -50,6 +50,9 @@ get_header();
 		array( 'Compliance review', 'completed' === $state ? true : 'part' ),
 		array( 'Ready to work', 'completed' === $state ),
 	);
+	if ( ! $preview ) {
+		do_action( 'hcc_portal_before', $aid );
+	}
 	$messages = array_reverse( (array) hcc_meta( $aid, 'messages', array() ) );
 	$thread   = array_slice( hcc_thread( $aid ), -30 );
 	$base     = $preview ? add_query_arg( 'preview', $aid, hcc_portal_url() ) : hcc_portal_url();
