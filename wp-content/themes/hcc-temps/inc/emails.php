@@ -7,7 +7,7 @@
  *     a "Missing" list at the end, CV attached (all other files stay in the Staff portal)
  *   - uploads after submitting: one email per upload visit listing everything in it
  * Candidate:
- *   - email code, welcome, reminders (24 hours and 3 days), registration received,
+ *   - email code, welcome, reminders (24 hours, 3 days, 7 days; "still interested?" at 30 days), registration received,
  *     update email (whatever staff put in the tray), ready to work
  */
 
@@ -24,12 +24,67 @@ function hcc_email_welcome( $id ) {
 			. hcc_button( hcc_apply_url(), 'Continue my registration' ), array(), hcc_opt( 'email_jobs' ) );
 }
 
+/** Reminder to finish registering: $n = 1 (after 24 hours), 2 (3 days), 3 (7 days, the last one). */
 function hcc_email_reminder( $id, $n ) {
 	$left = max( 1, 7 - (int) hcc_meta( $id, 'step', 1 ) );
-	return hcc_mail( hcc_meta( $id, 'email' ), 'Your registration is nearly done',
-		'<p>Hi ' . esc_html( hcc_meta( $id, 'first' ) ) . ',</p><p>You\'re ' . $left . ' step' . ( $left > 1 ? 's' : '' ) . ' away from finishing your registration as a <b>' . esc_html( hcc_role_name( hcc_meta( $id, 'role_key' ) ) ) . '</b>. Most candidates are ready to work within 3 days of finishing.</p>'
-			. hcc_button( hcc_login_url(), 'Carry on' ), array(), hcc_opt( 'email_jobs' ) );
+	$role = esc_html( hcc_role_name( hcc_meta( $id, 'role_key' ) ) );
+	$subj = array( 1 => 'Your registration is nearly done', 2 => 'Don\'t miss out: finish your registration', 3 => 'Last reminder: finish your registration' );
+	$body = array(
+		1 => 'You\'re ' . $left . ' step' . ( $left > 1 ? 's' : '' ) . ' away from finishing your registration as a <b>' . $role . '</b>. Most candidates are ready to work within 3 days of finishing.',
+		2 => 'Your registration as a <b>' . $role . '</b> is still waiting for you: ' . $left . ' step' . ( $left > 1 ? 's' : '' ) . ' to go. Everything you have entered so far is saved, so you can carry on where you stopped.',
+		3 => 'This is our last reminder. Your registration as a <b>' . $role . '</b> is ' . $left . ' step' . ( $left > 1 ? 's' : '' ) . ' from finished. If you need help, reply to this email or call us on ' . esc_html( hcc_opt( 'phone' ) ) . ', 24 hours a day.',
+	);
+	$n = max( 1, min( 3, (int) $n ) );
+	return hcc_mail( hcc_meta( $id, 'email' ), $subj[ $n ],
+		'<p>Hi ' . esc_html( hcc_meta( $id, 'first' ) ) . ',</p><p>' . $body[ $n ] . '</p>' . hcc_button( hcc_login_url(), 'Carry on' ), array(), hcc_opt( 'email_jobs' ) );
 }
+
+/* ---------- 30 days without finishing: "Are you still interested?" ---------- */
+
+function hcc_interest_url( $id, $answer ) {
+	return add_query_arg( array( 'hcc_interest' => $answer, 'a' => $id, 't' => substr( wp_hash( 'interest|' . $id . '|' . $answer ), 0, 20 ) ), home_url( '/' ) );
+}
+
+function hcc_email_interest( $id ) {
+	$role = esc_html( hcc_role_name( hcc_meta( $id, 'role_key' ) ) );
+	return hcc_mail( hcc_meta( $id, 'email' ), 'Are you still interested in working with HCC-Temps?',
+		'<p>Hi ' . esc_html( hcc_meta( $id, 'first' ) ) . ',</p><p>You started registering as a <b>' . $role . '</b> a month ago but haven\'t finished yet. Are you still interested?</p>'
+			. hcc_button( hcc_interest_url( $id, 'yes' ), 'Yes, I\'m still interested' )
+			. '<p style="margin:0 0 18px"><a href="' . esc_url( hcc_interest_url( $id, 'no' ) ) . '">No, I\'m no longer interested</a> (we\'ll close your registration)</p>'
+			. '<p>If you\'re still interested, log in and carry on: everything you entered is saved. If you need help, call us on ' . esc_html( hcc_opt( 'phone' ) ) . '.</p>', array(), hcc_opt( 'email_jobs' ) );
+}
+
+/* The two buttons in that email: work without logging in (signed links), then show a short message. */
+add_action( 'template_redirect', function () {
+	if ( empty( $_GET['hcc_interest'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+		return;
+	}
+	$answer = 'no' === $_GET['hcc_interest'] ? 'no' : 'yes'; // phpcs:ignore
+	$id     = isset( $_GET['a'] ) ? absint( $_GET['a'] ) : 0; // phpcs:ignore
+	$token  = isset( $_GET['t'] ) ? sanitize_text_field( wp_unslash( $_GET['t'] ) ) : ''; // phpcs:ignore
+	$ok     = $id && 'hcc_applicant' === get_post_type( $id ) && hash_equals( substr( wp_hash( 'interest|' . $id . '|' . $answer ), 0, 20 ), $token );
+	$msg    = array( 'This link is not valid any more.', 'Please call us on ' . hcc_opt( 'phone' ) . ' if you need help.' );
+	if ( $ok && 'yes' === $answer ) {
+		if ( ! hcc_meta( $id, 'interest' ) ) {
+			hcc_set( $id, 'interest', array( 'answer' => 'yes', 'at' => time() ) );
+			hcc_log( $id, 'Candidate replied to the 30-day email: still interested', 'Candidate' );
+		}
+		$msg = array( 'Thank you, ' . hcc_meta( $id, 'first' ) . '!', 'Great to hear you\'re still interested. Log in to carry on with your registration: everything you entered is saved.' );
+	} elseif ( $ok && 'no' === $answer ) {
+		if ( 'in_progress' === hcc_state( $id ) && ! hcc_meta( $id, 'submitted' ) ) {
+			hcc_set( $id, 'interest', array( 'answer' => 'no', 'at' => time() ) );
+			hcc_set( $id, 'closed', array( 'outcome' => 'Withdrawn by candidate', 'why' => 'Replied "no longer interested" to the 30-day email', 'by' => 'Candidate', 'date' => wp_date( 'Y-m-d' ), 'at' => time() ) );
+			hcc_set( $id, 'stage', 'Closed' );
+			hcc_log( $id, 'Application closed: candidate replied "no longer interested" to the 30-day email', 'Candidate' );
+		}
+		$msg = array( 'Thank you for letting us know', 'We have closed your registration. If you change your mind, call us on ' . hcc_opt( 'phone' ) . ' and we\'ll reopen it.' );
+	}
+	nocache_headers();
+	get_header();
+	echo '<main id="main"><section class="section"><div class="wrap" style="max-width:640px"><div class="form-card"><h1 style="font-size:28px;color:var(--ink)">' . esc_html( $msg[0] ) . '</h1><p class="sub" style="margin-top:10px">' . esc_html( $msg[1] ) . '</p>' . ( $ok && 'yes' === $answer ? '<p style="margin-top:18px"><a class="btn btn-sun" href="' . esc_url( hcc_login_url() ) . '">Log in and carry on</a></p>' : '' ) . '</div></div></section></main>';
+	get_footer();
+	exit;
+} );
 
 function hcc_email_received( $id ) {
 	$d = hcc_counts( $id, hcc_items( $id, 'docs' ) );
@@ -231,10 +286,16 @@ add_action( 'hcc_daily', function () {
 		}
 		$age  = time() - (int) hcc_meta( $id, 'registered', time() );
 		$sent = (int) hcc_meta( $id, 'reminders', 0 );
-		if ( ( 0 === $sent && $age > DAY_IN_SECONDS ) || ( 1 === $sent && $age > 3 * DAY_IN_SECONDS ) ) {
-			hcc_email_reminder( $id, $sent + 1 );
-			hcc_set( $id, 'reminders', $sent + 1 );
-			hcc_log( $id, 'Reminder email ' . ( $sent + 1 ) . ' sent (registration not finished)', 'System' );
+		// Three reminders: after 24 hours, 3 days and 7 days. A late first one does not trigger several at once.
+		$due = $age > 7 * DAY_IN_SECONDS ? 3 : ( $age > 3 * DAY_IN_SECONDS ? 2 : ( $age > DAY_IN_SECONDS ? 1 : 0 ) );
+		if ( $sent < 3 && $due > $sent ) {
+			hcc_email_reminder( $id, $due );
+			hcc_set( $id, 'reminders', $due );
+			hcc_log( $id, 'Reminder email ' . $due . ' of 3 sent (registration not finished)', 'System' );
+		} elseif ( $age > 30 * DAY_IN_SECONDS && ! hcc_meta( $id, 'interest_asked' ) ) {
+			hcc_email_interest( $id );
+			hcc_set( $id, 'interest_asked', time() );
+			hcc_log( $id, '30-day email sent: still interested?', 'System' );
 		}
 	}
 } );
