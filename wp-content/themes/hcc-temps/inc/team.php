@@ -47,7 +47,7 @@ function hcc_seed_team() {
 	if ( get_posts( array( 'post_type' => 'hcc_team', 'numberposts' => 1, 'post_status' => 'any', 'fields' => 'ids' ) ) ) {
 		return;
 	}
-	$people = array( array( 'David', 'Founder & Senior Business Development Manager', 'david.jpg' ), array( 'Geraldine', 'Compliance Manager', 'geraldine.jpg' ), array( 'Arjun', 'Consultant', 'arjun.jpg' ), array( 'Debbie', 'Compliance Admin', 'debbie.jpg' ), array( 'Temi', 'Compliance Admin', 'temi.jpg' ), array( 'Ashanti', 'Onboarding Manager', 'ashanti.jpg' ), array( 'Eddie', 'Client Manager', 'eddie.jpg' ) );
+	$people = array( array( 'David', 'Founder & Senior Business Development Manager', 'david.jpg' ), array( 'Geraldine', 'Compliance Manager', 'geraldine.jpg' ), array( 'Arjun', 'Consultant', 'arjun.jpg' ), array( 'Debbie', 'Compliance Admin', 'debbie.jpg' ), array( 'Temi', 'Compliance Admin', 'temi.jpg' ), array( 'Ashanti', 'Onboarding Manager', 'ashanti.jpg' ), array( 'Eddie', 'Client Manager', 'eddie.jpg' ), array( 'Tola', 'Out of Hours Consultant', 'tola.jpg' ) );
 	foreach ( $people as $i => $p ) {
 		$id = wp_insert_post( array( 'post_type' => 'hcc_team', 'post_status' => 'publish', 'post_title' => $p[0], 'menu_order' => $i + 1 ) );
 		update_post_meta( $id, '_hcc_role_title', $p[1] );
@@ -61,3 +61,23 @@ add_action( 'init', function () {
 		hcc_seed_team();
 	}
 }, 40 );
+
+/* Team members added after the first set-up (sites that already have a team): added once, if not there yet. */
+add_action( 'init', function () {
+	$later = array( 'tola' => array( 'Tola', 'Out of Hours Consultant', 'tola.jpg' ) );
+	$done  = (array) get_option( 'hcc_team_added', array() );
+	foreach ( $later as $key => $p ) {
+		if ( in_array( $key, $done, true ) || ! get_option( 'hcc_team_seeded' ) ) {
+			continue;
+		}
+		$done[] = $key;
+		update_option( 'hcc_team_added', $done );
+		if ( get_posts( array( 'post_type' => 'hcc_team', 'title' => $p[0], 'post_status' => 'any', 'numberposts' => 1, 'fields' => 'ids' ) ) ) {
+			continue;
+		}
+		$last = get_posts( array( 'post_type' => 'hcc_team', 'post_status' => 'any', 'numberposts' => 1, 'orderby' => 'menu_order', 'order' => 'DESC' ) );
+		$id   = wp_insert_post( array( 'post_type' => 'hcc_team', 'post_status' => 'publish', 'post_title' => $p[0], 'menu_order' => $last ? $last[0]->menu_order + 1 : 8 ) );
+		update_post_meta( $id, '_hcc_role_title', $p[1] );
+		update_post_meta( $id, '_hcc_theme_img', $p[2] );
+	}
+}, 41 );

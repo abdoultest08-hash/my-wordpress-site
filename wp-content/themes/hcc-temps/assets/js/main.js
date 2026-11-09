@@ -291,6 +291,11 @@
   }
 
   /* Bring success and error messages into view after a form redirect */
+  /* Login page: remember where an email link was pointing (#payments, #sign...) so the portal opens there after logging in */
+  if ((document.getElementById('loginform') || document.getElementById('authcode')) && /^#[a-z-]+$/.test(location.hash)) {
+    try { sessionStorage.setItem('hccHash', location.hash); } catch (e) {}
+  }
+
   /* App layout: sidebar (collapse on a computer, slide-in menu on a phone) */
   var app = $('app');
   if (app) {
@@ -307,6 +312,7 @@
     });
     /* Candidate portal: one view at a time, chosen by the address (#documents, #messages...) */
     var views = document.querySelectorAll('.view[data-view]');
+    try { var keep = sessionStorage.getItem('hccHash'); if (keep) { sessionStorage.removeItem('hccHash'); if (!location.hash && views.length && document.getElementById(keep.slice(1))) history.replaceState(null, '', keep); } } catch (e) {}
     if (views.length) {
       document.documentElement.classList.add('js-views');
       var links = side.querySelectorAll('[data-view-link]'), title = $('appTitle');

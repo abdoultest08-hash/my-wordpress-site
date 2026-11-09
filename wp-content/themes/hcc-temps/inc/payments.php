@@ -371,7 +371,7 @@ function hcc_pay_all() {
 }
 
 add_filter( 'hcc_staff_nav', function ( $nav ) {
-	$n     = count( array_filter( hcc_pay_all(), function ( $o ) { return in_array( $o['status'], array( 'claimed', 'paid' ), true ); } ) );
+	$n     = hcc_cached_count( 'pay', function () { return count( array_filter( hcc_pay_all(), function ( $o ) { return in_array( $o['status'], array( 'claimed', 'paid' ), true ); } ) ); } );
 	$nav[] = array( 'payments', 'Payments', 'card', hcc_staff_url( array( 'view' => 'payments' ) ), $n ? $n : '', $n ? 'data-hot="1"' : '' );
 	return $nav;
 }, 30 );

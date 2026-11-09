@@ -275,15 +275,14 @@ function hcc_exp_filter( $rows, $win, $who, $search, $unchecked ) {
 }
 
 function hcc_exp_counts() {
-	static $c = null;
-	if ( null === $c ) {
+	return hcc_cached_count( 'exp', function () {
 		$c = array( 'soon' => 0, 'urgent' => 0 );
 		foreach ( hcc_exp_all_rows() as $r ) {
 			$c['soon']   += $r['days'] <= 30 ? 1 : 0;
 			$c['urgent'] += $r['days'] <= 2 ? 1 : 0;
 		}
-	}
-	return $c;
+		return $c;
+	} );
 }
 
 add_filter( 'hcc_staff_nav', function ( $nav ) {

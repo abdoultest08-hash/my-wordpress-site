@@ -73,3 +73,32 @@ function hcc_app_open( $a ) {
 function hcc_app_close() {
 	echo '</div></div></div>';
 }
+
+/**
+ * Sidebar counts that need every candidate (expiring dates, payments, signing) are kept for a
+ * minute so staff pages stay fast, and recalculated as soon as a candidate's dates, payments,
+ * signing pack or status change.
+ */
+function hcc_cached_count( $key, $fn ) {
+	$v = get_transient( 'hcc_cnt_' . $key );
+	if ( false === $v ) {
+		$v = $fn();
+		set_transient( 'hcc_cnt_' . $key, $v, MINUTE_IN_SECONDS );
+	}
+	return $v;
+}
+
+function hcc_cached_counts_clear( $meta_id = 0, $object_id = 0, $meta_key = '' ) {
+	if ( '' === $meta_key || in_array( $meta_key, array( '_hcc_files', '_hcc_checks', '_hcc_orders', '_hcc_pack', '_hcc_closed', '_hcc_completed' ), true ) ) {
+		foreach ( array( 'exp', 'pay', 'sign' ) as $k ) {
+			delete_transient( 'hcc_cnt_' . $k );
+		}
+	}
+}
+foreach ( array( 'added_post_meta', 'updated_post_meta', 'deleted_post_meta' ) as $hook ) {
+	add_action( $hook, 'hcc_cached_counts_clear', 10, 3 );
+}
+add_action( 'deleted_post', function () {
+	hcc_cached_counts_clear();
+} );
+
