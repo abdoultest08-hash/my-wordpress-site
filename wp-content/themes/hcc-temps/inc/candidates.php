@@ -210,6 +210,7 @@ function hcc_store_item( $id, $key, $item, $uploads ) {
 		if ( ! @move_uploaded_file( $f['tmp_name'], $dir . '/' . $name ) && ! @rename( $f['tmp_name'], $dir . '/' . $name ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors
 			return new WP_Error( 'move', 'We could not save your file. Please try again.' );
 		}
+		hcc_encrypt_file( $dir . '/' . $name ); // encrypted at rest (inc/crypto.php)
 		$saved[] = array( 'name' => $name, 'at' => time(), 'size' => (int) $f['size'] );
 	}
 	$files         = (array) hcc_meta( $id, 'files', array() );
@@ -263,13 +264,18 @@ add_action( 'admin_post_hcc_file', function () {
 	if ( hcc_is_staff() ) {
 		hcc_log( $id, ( $dl ? 'Downloaded ' : 'Viewed ' ) . basename( $path ) );
 	}
+	if ( ! hcc_crypto_can_open( $path ) ) {
+		wp_die( 'This file cannot be opened: it was encrypted with a different key. See Users → File security.', 500 );
+	}
 	$type = wp_check_filetype( $path );
 	nocache_headers();
 	header( 'X-Content-Type-Options: nosniff' );
 	header( 'Content-Type: ' . ( $type['type'] ? $type['type'] : 'application/octet-stream' ) );
 	header( 'Content-Disposition: ' . ( $dl ? 'attachment' : 'inline' ) . '; filename="' . basename( $path ) . '"' );
-	header( 'Content-Length: ' . filesize( $path ) );
-	readfile( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+	header( 'Content-Length: ' . hcc_plain_size( $path ) );
+	hcc_decrypt_file( $path, function ( $s ) {
+		echo $s; // phpcs:ignore WordPress.Security.EscapeOutput
+	} );
 	exit;
 } );
 
@@ -288,18 +294,24 @@ add_action( 'admin_post_hcc_zip', function () {
 	$tmp    = wp_tempnam( 'hcc-zip' );
 	$zip    = new ZipArchive();
 	$zip->open( $tmp, ZipArchive::OVERWRITE );
+	$copies = array();
 	foreach ( array( 'docs' => '', 'train' => 'Training/' ) as $set => $sub ) {
 		foreach ( hcc_items( $id, $set ) as $k => $it ) {
 			$st = hcc_file_state( $id, $k );
 			foreach ( isset( $st['files'] ) ? $st['files'] : array() as $f ) {
 				if ( is_readable( $dir . '/' . $f['name'] ) ) {
-					$zip->addFile( $dir . '/' . $f['name'], $folder . '/' . $sub . $f['name'] );
+					$copy = hcc_decrypted_copy( $dir . '/' . $f['name'] );
+					if ( $copy ) {
+						$copies[] = $copy;
+						$zip->addFile( $copy, $folder . '/' . $sub . $f['name'] );
+					}
 				}
 			}
 		}
 	}
 	$zip->addFromString( $folder . '/' . hcc_meta( $id, 'ref' ) . ' ' . hcc_name( $id ) . ' - Summary.html', hcc_summary_page( $id, hcc_is_manager() ) );
 	$zip->close();
+	hcc_crypto_cleanup( $copies );
 	hcc_log( $id, 'Downloaded all files (zip)' );
 	nocache_headers();
 	header( 'Content-Type: application/zip' );

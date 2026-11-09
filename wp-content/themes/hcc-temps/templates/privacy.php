@@ -10,7 +10,7 @@ get_header();
     <div class="wrap">
       <div class="crumbs"><a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a> / Privacy policy</div>
       <h1>Privacy policy</h1>
-      <p class="lead">How HCC-Temp Staffing Ltd collects, uses and protects your personal information. Last updated: October 2026.</p>
+      <p class="lead">How HCC-Temp Staffing Ltd collects, uses and protects your personal information. Last updated: November 2026.</p>
     </div>
   </section>
 
@@ -126,20 +126,22 @@ get_header();
         <h2 id="keep">8. How long we keep it</h2>
         <div class="legal-table" role="table" aria-label="How long we keep your information">
           <div role="row" class="lt-head"><span role="columnheader">Information</span><span role="columnheader">How long</span></div>
-          <div role="row"><span role="cell">Candidates who register but are not placed</span><span role="cell">12 months after your last contact with us, unless you ask us to keep you on file</span></div>
-          <div role="row"><span role="cell">Records of work-seekers we supply or introduce</span><span role="cell">At least 1 year after we last provide services to you, as required by the Conduct Regulations 2003</span></div>
+          <div role="row"><span role="cell">Candidates who register but are not placed</span><span role="cell">6 years after your last contact with us, so we can deal with any questions or legal claims</span></div>
+          <div role="row"><span role="cell">Personnel file of staff who work through us (registration details, references, contract and signed forms)</span><span role="cell">6 years after your last shift (and at least 1 year, as required by the Conduct Regulations 2003)</span></div>
+          <div role="row"><span role="cell">Assignment and timesheet records</span><span role="cell">6 years</span></div>
+          <div role="row"><span role="cell">Training records</span><span role="cell">For the time you work through us and 2 years after</span></div>
           <div role="row"><span role="cell">Right to work check copies</span><span role="cell">For the time you work through us and 2 years after</span></div>
           <div role="row"><span role="cell">Payroll, tax and pay records</span><span role="cell">6 years after the end of the tax year they relate to</span></div>
           <div role="row"><span role="cell">DBS certificate details</span><span role="cell">Only as long as needed to make a decision, in line with the DBS Code of Practice; we record the certificate number, date and outcome</span></div>
           <div role="row"><span role="cell">Client records</span><span role="cell">6 years after our last contract with the client</span></div>
-          <div role="row"><span role="cell">Withdrawn or unsuccessful applications, and the documents uploaded with them</span><span role="cell">12 months after the application is closed</span></div>
-          <div role="row"><span role="cell">Website messages and enquiries</span><span role="cell">12 months</span></div>
+          <div role="row"><span role="cell">Withdrawn or unsuccessful applications, and the documents uploaded with them</span><span role="cell">6 years after the application is closed</span></div>
+          <div role="row"><span role="cell">Website messages and enquiries</span><span role="cell">6 years</span></div>
         </div>
         <p>When we no longer need your information, we delete it securely or make it anonymous.</p>
 
         <h2 id="security">9. How we protect it</h2>
         <ul>
-          <li>Documents you upload are stored in a private area of our website. They are not listed or linked anywhere public, are renamed and kept in a folder with a random name, and are only shown to logged-in members of our team.</li>
+          <li>Documents you upload are encrypted as soon as they reach our server and kept in a private area of our website. They are not listed or linked anywhere public, and they are only decrypted when you, or a logged-in member of our team, open them.</li>
           <li>Every login needs your password and a one-time code sent to your email.</li>
           <li>Staff access is limited to what each person needs, and downloads are logged.</li>
           <li>Our website uses an encrypted connection (HTTPS), and we keep regular backups.</li>

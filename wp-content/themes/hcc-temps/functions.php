@@ -5,7 +5,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'HCC_VERSION', '2.6.3' );
+define( 'HCC_VERSION', '2.7.0' );
 define( 'HCC_DIR', get_template_directory() );
 define( 'HCC_URI', get_template_directory_uri() );
 
@@ -13,6 +13,7 @@ require HCC_DIR . '/inc/setup.php';
 require HCC_DIR . '/inc/requirements.php';
 require HCC_DIR . '/inc/jobs.php';
 require HCC_DIR . '/inc/applicants.php';
+require HCC_DIR . '/inc/crypto.php';
 require HCC_DIR . '/inc/candidates.php';
 require HCC_DIR . '/inc/forms.php';
 require HCC_DIR . '/inc/auth.php';

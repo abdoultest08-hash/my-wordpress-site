@@ -82,7 +82,10 @@ function hcc_email_staff_summary( $id ) {
 	$cv  = hcc_file_state( $id, 'cv' );
 	$att = array();
 	if ( ! empty( $cv['files'][0]['name'] ) && is_readable( hcc_private_dir( $id ) . '/' . $cv['files'][0]['name'] ) ) {
-		$att[] = hcc_private_dir( $id ) . '/' . $cv['files'][0]['name'];
+		$copy = hcc_decrypted_copy( hcc_private_dir( $id ) . '/' . $cv['files'][0]['name'] );
+		if ( $copy ) {
+			$att[] = $copy;
+		}
 	}
 	$body = '<p>A new registration has been submitted.</p>'
 		. ( $att ? '<p style="background:#F4F8F7;padding:8px 10px;border-radius:8px;font-size:13px">Attached: ' . esc_html( basename( $att[0] ) ) . '</p>' : '' )
@@ -90,7 +93,9 @@ function hcc_email_staff_summary( $id ) {
 		. ( $missing ? '<div style="background:#FFF2F1;border:1px solid #F2B8B3;border-radius:10px;padding:10px 14px;margin-top:14px"><b>Missing, to be submitted (' . count( $missing ) . ')</b><ul>' . implode( '', array_map( function ( $m ) { return '<li>' . esc_html( $m ) . '</li>'; }, $missing ) ) . '</ul></div>' : '<p><b>Everything has been submitted.</b></p>' )
 		. hcc_button( hcc_staff_url( array( 'candidate' => $id ) ), 'Open in Staff portal' )
 		. '<p style="font-size:13px;color:#5B6078">Only the CV is attached. All other files are stored securely in the Staff portal.</p>';
-	return hcc_mail( hcc_opt( 'email_jobs' ), '[REGISTRATION] ' . hcc_meta( $id, 'ref' ) . ' ' . hcc_name( $id ) . ', ' . hcc_role_name( hcc_meta( $id, 'role_key' ) ) . ': ' . ( $missing ? count( $missing ) . ' item' . ( count( $missing ) > 1 ? 's' : '' ) . ' missing' : 'all submitted' ), $body, $att, hcc_meta( $id, 'email' ) );
+	$sent = hcc_mail( hcc_opt( 'email_jobs' ), '[REGISTRATION] ' . hcc_meta( $id, 'ref' ) . ' ' . hcc_name( $id ) . ', ' . hcc_role_name( hcc_meta( $id, 'role_key' ) ) . ': ' . ( $missing ? count( $missing ) . ' item' . ( count( $missing ) > 1 ? 's' : '' ) . ' missing' : 'all submitted' ), $body, $att, hcc_meta( $id, 'email' ) );
+	hcc_crypto_cleanup( $att ); // the decrypted CV copy only existed for this email
+	return $sent;
 }
 
 /** Uploads after submitting: one email listing everything uploaded since the last one. */
