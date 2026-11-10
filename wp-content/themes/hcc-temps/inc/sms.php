@@ -165,10 +165,10 @@ function hcc_twilio_post( $url, $body ) {
 		$why = 'Twilio could not find the Verify Service SID. Check it on this page (it starts with VA).';
 	} elseif ( 60203 === $tc ) {
 		$why = 'Too many codes sent to this number. Wait 10 minutes or use the email option.';
-	} elseif ( false !== stripos( $why, 'template' ) ) {
+	} elseif ( false !== stripos( $why, 'template' ) && false !== strpos( $url, '/Messages.json' ) ) {
 		$why = 'Twilio trial accounts can only send Twilio\'s own preset messages. Login codes work through Twilio Verify (add the Verify Service SID on this page). Alerts and test messages need the account to be upgraded.';
 	}
-	return new WP_Error( 'hcc_sms_twilio', $why );
+	return new WP_Error( 'hcc_sms_twilio', $why . ( $tc ? ' (Twilio error ' . $tc . ')' : '' ) );
 }
 
 /** Log a text in the settings page list and the candidate's activity log. */
