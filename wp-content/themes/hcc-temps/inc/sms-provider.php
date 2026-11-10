@@ -42,11 +42,23 @@ class HCC_Two_Factor_SMS extends Two_Factor_Provider {
 		if ( count( $sends ) >= self::MAX_SEND ) {
 			return 'We have sent a lot of codes to your phone in the last hour. Please use the email option below.';
 		}
+		$aid = in_array( 'hcc_candidate', (array) $user->roles, true ) ? hcc_applicant_for_user( $user->ID ) : 0;
+		if ( hcc_sms_verify_sid() ) {
+			// Twilio Verify makes, texts and checks the code (works on trial accounts too).
+			$r = hcc_sms_verify_start( hcc_sms_user_phone( $user->ID ), $aid );
+			if ( true !== $r ) {
+				delete_user_meta( $user->ID, self::META );
+				return 'We couldn\'t send a text message just now. Please use the email option below to get your code.';
+			}
+			$sends[] = time();
+			update_user_meta( $user->ID, self::SENDS, array_values( $sends ) );
+			update_user_meta( $user->ID, self::META, array( 'verify' => 1, 'hash' => 'verify', 'at' => time() ) );
+			return true;
+		}
 		$code = '';
 		for ( $i = 0; $i < 6; $i++ ) {
 			$code .= (string) random_int( 0, 9 );
 		}
-		$aid = in_array( 'hcc_candidate', (array) $user->roles, true ) ? hcc_applicant_for_user( $user->ID ) : 0;
 		$r   = hcc_sms_send( hcc_sms_user_phone( $user->ID ), 'Your HCC-Temps login code is ' . substr( $code, 0, 3 ) . ' ' . substr( $code, 3 ) . '. It works for 10 minutes. Never share this code.', 'code', $aid );
 		if ( true !== $r ) {
 			delete_user_meta( $user->ID, self::META );
@@ -78,7 +90,7 @@ class HCC_Two_Factor_SMS extends Two_Factor_Provider {
 		?>
 		<p>
 			<label for="authcode">Login code</label>
-			<input type="text" inputmode="numeric" name="hcc-sms-code" id="authcode" class="input authcode" value="" size="20" pattern="[0-9 ]*" autocomplete="one-time-code" placeholder="123 456" data-digits="6">
+			<input type="text" inputmode="numeric" name="hcc-sms-code" id="authcode" class="input authcode" value="" size="20" pattern="[0-9 ]*" autocomplete="one-time-code" placeholder="123456">
 		</p>
 		<?php
 		do_action( 'two_factor_after_authentication_input', $this );
@@ -104,7 +116,14 @@ class HCC_Two_Factor_SMS extends Two_Factor_Provider {
 		}
 		$code = preg_replace( '/\D/', '', (string) wp_unslash( $_REQUEST['hcc-sms-code'] ) ); // phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
 		$c    = get_user_meta( $user->ID, self::META, true );
-		if ( 6 !== strlen( $code ) || ! $this->has_live_code( $user->ID ) || ! hash_equals( (string) $c['hash'], wp_hash( $code . '|' . $user->ID ) ) ) {
+		if ( strlen( $code ) < 4 || strlen( $code ) > 10 || ! $this->has_live_code( $user->ID ) ) {
+			return false;
+		}
+		if ( ! empty( $c['verify'] ) ) {
+			if ( ! hcc_sms_verify_check( hcc_sms_user_phone( $user->ID ), $code ) ) {
+				return false;
+			}
+		} elseif ( 6 !== strlen( $code ) || ! hash_equals( (string) $c['hash'], wp_hash( $code . '|' . $user->ID ) ) ) {
 			return false;
 		}
 		delete_user_meta( $user->ID, self::META );

@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
 /* ---------- Settings ---------- */
 
 function hcc_sms_opts() {
-	return wp_parse_args( (array) get_option( 'hcc_sms', array() ), array( 'codes' => 0, 'staff' => 0, 'alerts' => 0, 'sid' => '', 'from' => '', 'token' => '' ) );
+	return wp_parse_args( (array) get_option( 'hcc_sms', array() ), array( 'codes' => 0, 'staff' => 0, 'alerts' => 0, 'sid' => '', 'from' => '', 'token' => '', 'verify' => '' ) );
 }
 
 function hcc_sms_secret_key() {
@@ -63,8 +63,10 @@ function hcc_sms_ready() {
 	return $c['sid'] && $c['token'] && $c['from'];
 }
 
+/** Login codes need the account details and either Twilio Verify or a sender number. */
 function hcc_sms_codes_on() {
-	return hcc_sms_ready() && hcc_sms_opts()['codes'];
+	$c = hcc_sms_creds();
+	return $c['sid'] && $c['token'] && ( hcc_sms_verify_sid() || $c['from'] ) && hcc_sms_opts()['codes'];
 }
 
 function hcc_sms_alerts_on() {
@@ -130,37 +132,78 @@ function hcc_sms_send( $to, $body, $kind = 'alert', $aid = 0 ) {
 	} elseif ( ! $to ) {
 		$r = new WP_Error( 'hcc_sms_number', 'That is not a mobile number we can text.' );
 	} else {
-		$res = wp_remote_post( 'https://api.twilio.com/2010-04-01/Accounts/' . rawurlencode( $c['sid'] ) . '/Messages.json', array(
-			'timeout' => 12,
-			'headers' => array( 'Authorization' => 'Basic ' . base64_encode( $c['sid'] . ':' . $c['token'] ) ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-			'body'    => array( 'To' => $to, 'From' => $c['from'], 'Body' => $body ),
-		) );
-		if ( is_wp_error( $res ) ) {
-			$r = new WP_Error( 'hcc_sms_net', 'Could not reach Twilio: ' . $res->get_error_message() );
-		} else {
-			$code = (int) wp_remote_retrieve_response_code( $res );
-			$json = json_decode( wp_remote_retrieve_body( $res ), true );
-			if ( $code >= 200 && $code < 300 ) {
-				$r = true;
-			} else {
-				$tc  = isset( $json['code'] ) ? (int) $json['code'] : 0;
-				$why = isset( $json['message'] ) ? $json['message'] : 'Error ' . $code;
-				if ( 21608 === $tc ) {
-					$why = 'This number is not verified on the Twilio trial account. Add it in Twilio under Phone Numbers → Verified Caller IDs, or upgrade the account.';
-				} elseif ( 20003 === $tc ) {
-					$why = 'Twilio did not accept the Account SID or Auth Token. Check them on this page.';
-				}
-				$r = new WP_Error( 'hcc_sms_twilio', $why );
-			}
-		}
+		$r = hcc_twilio_post( 'https://api.twilio.com/2010-04-01/Accounts/' . rawurlencode( $c['sid'] ) . '/Messages.json', array( 'To' => $to, 'From' => $c['from'], 'Body' => $body ) );
+		$r = is_wp_error( $r ) ? $r : true;
 	}
+	hcc_sms_done( $to, $kind, $r, $aid );
+	return $r;
+}
+
+/** POST to Twilio. Returns the decoded reply, or a WP_Error with a plain-English reason. */
+function hcc_twilio_post( $url, $body ) {
+	$c   = hcc_sms_creds();
+	$res = wp_remote_post( $url, array(
+		'timeout' => 12,
+		'headers' => array( 'Authorization' => 'Basic ' . base64_encode( $c['sid'] . ':' . $c['token'] ) ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
+		'body'    => $body,
+	) );
+	if ( is_wp_error( $res ) ) {
+		return new WP_Error( 'hcc_sms_net', 'Could not reach Twilio: ' . $res->get_error_message() );
+	}
+	$code = (int) wp_remote_retrieve_response_code( $res );
+	$json = json_decode( wp_remote_retrieve_body( $res ), true );
+	if ( $code >= 200 && $code < 300 ) {
+		return is_array( $json ) ? $json : array();
+	}
+	$tc  = isset( $json['code'] ) ? (int) $json['code'] : 0;
+	$why = isset( $json['message'] ) ? $json['message'] : 'Error ' . $code;
+	if ( 21608 === $tc || 21219 === $tc ) {
+		$why = 'This number is not verified on the Twilio trial account. Add it in Twilio under Phone Numbers → Verified Caller IDs, or upgrade the account.';
+	} elseif ( 20003 === $tc ) {
+		$why = 'Twilio did not accept the Account SID or Auth Token. Check them on this page.';
+	} elseif ( 20404 === $tc && false !== strpos( $url, 'verify.twilio.com' ) ) {
+		$why = 'Twilio could not find the Verify Service SID. Check it on this page (it starts with VA).';
+	} elseif ( 60203 === $tc ) {
+		$why = 'Too many codes sent to this number. Wait 10 minutes or use the email option.';
+	} elseif ( false !== stripos( $why, 'template' ) ) {
+		$why = 'Twilio trial accounts can only send Twilio\'s own preset messages. Login codes work through Twilio Verify (add the Verify Service SID on this page). Alerts and test messages need the account to be upgraded.';
+	}
+	return new WP_Error( 'hcc_sms_twilio', $why );
+}
+
+/** Log a text in the settings page list and the candidate's activity log. */
+function hcc_sms_done( $to, $kind, $r, $aid ) {
 	hcc_sms_log( $to, $kind, $r );
 	if ( $aid ) {
 		$labels = array( 'code' => 'login code', 'update' => 'update alert', 'sign' => 'documents ready to sign', 'expiry' => 'expiry reminder', 'test' => 'test message' );
 		$lab    = isset( $labels[ $kind ] ) ? $labels[ $kind ] : $kind;
 		hcc_log( $aid, true === $r ? 'Text message sent: ' . $lab : 'Text message not sent (' . $lab . '): ' . $r->get_error_message(), 'System' );
 	}
+}
+
+/* ---------- Twilio Verify (login codes; works on trial accounts) ---------- */
+
+function hcc_sms_verify_sid() {
+	return defined( 'HCC_TWILIO_VERIFY' ) && HCC_TWILIO_VERIFY ? (string) HCC_TWILIO_VERIFY : hcc_sms_opts()['verify'];
+}
+
+/** Ask Twilio Verify to text a code. True or WP_Error. */
+function hcc_sms_verify_start( $to, $aid = 0, $kind = 'code' ) {
+	$to = hcc_sms_e164( $to );
+	if ( ! $to ) {
+		$r = new WP_Error( 'hcc_sms_number', 'That is not a mobile number we can text.' );
+	} else {
+		$r = hcc_twilio_post( 'https://verify.twilio.com/v2/Services/' . rawurlencode( hcc_sms_verify_sid() ) . '/Verifications', array( 'To' => $to, 'Channel' => 'sms' ) );
+		$r = is_wp_error( $r ) ? $r : true;
+	}
+	hcc_sms_done( $to, $kind, $r, $aid );
 	return $r;
+}
+
+/** Check a code with Twilio Verify. */
+function hcc_sms_verify_check( $to, $code ) {
+	$r = hcc_twilio_post( 'https://verify.twilio.com/v2/Services/' . rawurlencode( hcc_sms_verify_sid() ) . '/VerificationCheck', array( 'To' => hcc_sms_e164( $to ), 'Code' => $code ) );
+	return ! is_wp_error( $r ) && isset( $r['status'] ) && 'approved' === $r['status'];
 }
 
 /** The last 40 messages for the settings page (never the message text, so no codes are kept). */
@@ -289,7 +332,7 @@ function hcc_sms_page() {
 	if ( 'saved' === $m ) {
 		echo '<div class="notice notice-success"><p>Saved.</p></div>';
 	} elseif ( 'sent' === $m ) {
-		echo '<div class="notice notice-success"><p>Test message sent. It should arrive within a few seconds.</p></div>';
+		echo '<div class="notice notice-success"><p>Sent. It should arrive within a few seconds.</p></div>';
 	} elseif ( 'fail' === $m ) {
 		$log = (array) get_option( 'hcc_sms_log', array() );
 		$l   = end( $log );
@@ -300,12 +343,13 @@ function hcc_sms_page() {
 	wp_nonce_field( 'hcc_sms_save' );
 	echo '<h2>Twilio account</h2>';
 	if ( $cfg ) {
-		echo '<p>The Twilio details come from <code>wp-config.php</code> (HCC_TWILIO_SID, HCC_TWILIO_TOKEN, HCC_TWILIO_FROM). Change them there.</p><table class="form-table"><tr><th>Account SID</th><td><code>' . esc_html( substr( $c['sid'], 0, 6 ) . '…' ) . '</code></td></tr><tr><th>Sender</th><td><code>' . esc_html( $c['from'] ) . '</code></td></tr></table>';
+		echo '<p>The Twilio details come from <code>wp-config.php</code> (HCC_TWILIO_SID, HCC_TWILIO_TOKEN, HCC_TWILIO_FROM). Change them there.</p><table class="form-table"><tr><th>Account SID</th><td><code>' . esc_html( substr( $c['sid'], 0, 6 ) . '…' ) . '</code></td></tr><tr><th>Sender</th><td><code>' . esc_html( $c['from'] ) . '</code></td></tr><tr><th>Verify Service SID</th><td><code>' . esc_html( hcc_sms_verify_sid() ? substr( hcc_sms_verify_sid(), 0, 6 ) . '…' : 'not set' ) . '</code></td></tr></table>';
 	} else {
 		echo '<table class="form-table">';
 		echo '<tr><th><label for="sid">Account SID</label></th><td><input type="text" id="sid" name="sid" class="regular-text" value="' . esc_attr( $o['sid'] ) . '" placeholder="AC…" autocomplete="off"><p class="description">Twilio Console home page, under Account Info.</p></td></tr>';
 		echo '<tr><th><label for="token">Auth Token</label></th><td><input type="password" id="token" name="token" class="regular-text" value="" placeholder="' . ( $o['token'] ? '●●●●●●●● saved: leave empty to keep it' : '32 letters and numbers' ) . '" autocomplete="new-password"><p class="description">Kept encrypted on the website. To change it, paste the new one; leave empty to keep the saved one.</p></td></tr>';
 		echo '<tr><th><label for="from">Send from</label></th><td><input type="text" id="from" name="from" class="regular-text" value="' . esc_attr( $o['from'] ) . '" placeholder="+447460077297"><p class="description">Your Twilio phone number with +44, or later a sender name of up to 11 letters (for example HCCTemps) once the account is upgraded.</p></td></tr>';
+		echo '<tr><th><label for="verify">Verify Service SID</label></th><td><input type="text" id="verify" name="verify" class="regular-text" value="' . esc_attr( $o['verify'] ) . '" placeholder="VA…" autocomplete="off"><p class="description">Used for login codes. In Twilio: Explore products → Verify → Services → Create new (name it HCC-Temps, tick SMS), then copy the Service SID. <b>Needed on a trial account</b>, which only allows Twilio\'s own preset messages.</p></td></tr>';
 		echo '</table>';
 	}
 	echo '<h2>What to send</h2><table class="form-table">';
@@ -316,13 +360,21 @@ function hcc_sms_page() {
 	submit_button( 'Save' );
 	echo '</form>';
 
-	echo '<h2>Send a test message</h2>';
-	if ( ! hcc_sms_ready() ) {
-		echo '<p>Add the Account SID, Auth Token and sender above first.</p>';
+	echo '<h2>Test it</h2>';
+	$c_ok = hcc_sms_creds();
+	if ( ! $c_ok['sid'] || ! $c_ok['token'] ) {
+		echo '<p>Add the Account SID and Auth Token above first.</p>';
 	} else {
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="hcc_sms_test">';
 		wp_nonce_field( 'hcc_sms_test' );
-		echo '<p><input type="tel" name="to" class="regular-text" placeholder="07700 900123" required> <button class="button">Send test</button></p><p class="description">On a Twilio trial account, the number must be verified first in Twilio (Phone Numbers → Verified Caller IDs), and messages start with "Sent from your Twilio trial account".</p></form>';
+		echo '<p><input type="tel" name="to" class="regular-text" placeholder="07700 900123" required> ';
+		if ( hcc_sms_verify_sid() ) {
+			echo '<button class="button button-primary" name="kind" value="verify">Send a test login code</button> ';
+		}
+		if ( $c_ok['from'] ) {
+			echo '<button class="button" name="kind" value="message">Send a test message</button>';
+		}
+		echo '</p><p class="description">On a Twilio trial account the number must be verified first in Twilio (Phone Numbers → Verified Caller IDs). Trial accounts can send login codes (through Verify) but not our own messages, so "Send a test message" and the alerts only work once the account is upgraded.</p></form>';
 	}
 
 	$log = array_reverse( (array) get_option( 'hcc_sms_log', array() ) );
@@ -350,7 +402,8 @@ add_action( 'admin_post_hcc_sms_save', function () {
 		$o[ $k ] = $p( $k ) ? 1 : 0;
 	}
 	if ( isset( $_POST['sid'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
-		$o['sid']  = preg_replace( '/[^A-Za-z0-9]/', '', $p( 'sid' ) );
+		$o['sid']    = preg_replace( '/[^A-Za-z0-9]/', '', $p( 'sid' ) );
+		$o['verify'] = preg_replace( '/[^A-Za-z0-9]/', '', $p( 'verify' ) );
 		$from      = $p( 'from' );
 		$o['from'] = preg_match( '/^[A-Za-z][A-Za-z0-9 ]{0,10}$/', $from ) ? $from : ( hcc_sms_e164( $from ) ? hcc_sms_e164( $from ) : preg_replace( '/[^\d+]/', '', $from ) );
 		$tok       = preg_replace( '/\s+/', '', $p( 'token' ) );
@@ -369,7 +422,7 @@ add_action( 'admin_post_hcc_sms_test', function () {
 	}
 	check_admin_referer( 'hcc_sms_test' );
 	$to = isset( $_POST['to'] ) ? sanitize_text_field( wp_unslash( $_POST['to'] ) ) : '';
-	$r  = hcc_sms_send( $to, 'HCC-Temps: this is a test message from your website. Text messages are working.', 'test' );
+	$r  = isset( $_POST['kind'] ) && 'verify' === $_POST['kind'] && hcc_sms_verify_sid() ? hcc_sms_verify_start( $to, 0, 'test code' ) : hcc_sms_send( $to, 'HCC-Temps: this is a test message from your website. Text messages are working.', 'test' ); // phpcs:ignore WordPress.Security.NonceVerification
 	wp_safe_redirect( admin_url( 'users.php?page=hcc-sms&m=' . ( true === $r ? 'sent' : 'fail' ) ) );
 	exit;
 } );
