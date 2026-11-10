@@ -178,6 +178,7 @@ function hcc_exp_reminders_run() {
 		}
 		if ( $due ) {
 			hcc_email_expiry( $id, $due );
+			do_action( 'hcc_expiry_reminded', $id, $due );
 			$sent++;
 		}
 	}

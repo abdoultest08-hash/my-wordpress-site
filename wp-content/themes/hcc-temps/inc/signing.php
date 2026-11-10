@@ -79,7 +79,7 @@ add_action( 'hcc_staff_folder_declaration', function ( $aid ) {
 	} elseif ( 'signed' === $status ) {
 		echo '<p class="pack-ok">✓ Signed by ' . esc_html( $p['fields']['full_name'] ) . ' on ' . esc_html( wp_date( 'j M Y, H:i', (int) $p['signed_at'] ) ) . '</p>';
 		echo '<ul class="pack-sum"><li>Start date: <b>' . esc_html( wp_date( 'j M Y', strtotime( $p['start'] ) ) ) . '</b></li><li>Pension: <b>' . ( 'in' === $p['fields']['pension'] ? 'Opted in' : 'Not joining now' ) . '</b></li><li>Starter checklist: <b>Statement ' . esc_html( $p['fields']['statement'] ) . '</b>' . ( 'Yes' === $p['fields']['q11'] ? ' · student loan: ' . esc_html( implode( ', ', (array) $p['fields']['q13'] ) ? implode( ', ', (array) $p['fields']['q13'] ) : 'see form' ) : '' ) . '</li><li>Company signature: ' . esc_html( $p['company']['name'] . ', ' . $p['company']['title'] ) . '</li></ul>';
-		echo '<div class="form-actions"><a class="btn btn-navy btn-sm" href="' . esc_url( hcc_pack_pdf_url( $aid ) ) . '">Download signed PDF</a><a class="btn btn-ghost btn-sm" href="' . esc_url( hcc_pack_pdf_url( $aid, false ) ) . '" target="_blank" rel="noopener">View</a></div>';
+		echo '<div class="form-actions"><a class="btn btn-navy btn-sm" href="' . esc_url( hcc_pack_pdf_url( $aid, false ) ) . '" target="_blank" rel="noopener">View signed PDF</a><a class="btn btn-ghost btn-sm" href="' . esc_url( hcc_pack_pdf_url( $aid ) ) . '">Download</a></div>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin-top:10px">' . $hidden . '<button class="link-btn" name="do" value="reset" onclick="return confirm(\'Issue a new pack? The signed PDF stays in the candidate folder; the candidate will be asked to sign a new pack.\')">Issue a new pack</button></form>'; // phpcs:ignore
 	} elseif ( 'sent' === $status ) {
 		echo '<p>Released on ' . esc_html( wp_date( 'j M Y, H:i', (int) $p['released_at'] ) ) . ' by ' . esc_html( $p['company']['name'] ) . ' (signed for HCC-Temps). Start date ' . esc_html( wp_date( 'j M Y', strtotime( $p['start'] ) ) ) . '.</p><p class="hint">The candidate has a to-do and an email to sign.</p>';
@@ -130,6 +130,7 @@ add_action( 'admin_post_hcc_pack_staff', function () {
 		hcc_set( $aid, 'dec_signed', '' );
 		hcc_notify( $aid, array( 'type' => 'action', 'title' => 'Sign your onboarding documents', 'text' => 'Your GDPR declaration, starter checklist, pension form and contract are ready. It takes about 10 minutes.', 'link' => '#sign', 'key' => 'sign:pack', 'todo' => true ) );
 		hcc_email_pack( $aid, false );
+		do_action( 'hcc_pack_released', $aid );
 		hcc_log( $aid, 'Onboarding documents signed for HCC-Temps by ' . $p['company']['name'] . ' and released to the candidate (start date ' . wp_date( 'd/m/Y', strtotime( $start ) ) . ')' );
 		wp_safe_redirect( add_query_arg( 'msg', 'pack_sent', $back ) . '#declaration' );
 		exit;
@@ -198,7 +199,7 @@ add_action( 'hcc_portal_views', function ( $id, $ctx ) {
 		return;
 	}
 	if ( 'signed' === $status ) {
-		echo '<div class="p-card pack-done"><h3>✓ All signed</h3><p>You signed your onboarding documents on ' . esc_html( wp_date( 'j F Y', (int) $p['signed_at'] ) ) . '. We emailed you a copy.</p><div class="form-actions"><a class="btn btn-navy btn-sm" href="' . esc_url( hcc_pack_pdf_url( $id ) ) . '">Download my signed documents (PDF)</a></div></div></section>';
+		echo '<div class="p-card pack-done"><h3>✓ All signed</h3><p>You signed your onboarding documents on ' . esc_html( wp_date( 'j F Y', (int) $p['signed_at'] ) ) . '. We emailed you a copy.</p><div class="form-actions"><a class="btn btn-navy btn-sm" href="' . esc_url( hcc_pack_pdf_url( $id, false ) ) . '" target="_blank" rel="noopener">View my signed documents</a><a class="btn btn-ghost btn-sm" href="' . esc_url( hcc_pack_pdf_url( $id ) ) . '">Download (PDF)</a></div></div></section>';
 		return;
 	}
 	if ( 'sent' !== $status ) {
@@ -496,7 +497,7 @@ add_action( 'hcc_staff_view_signing', function () {
 		echo '<div class="d-table">';
 		foreach ( $rows[ $k ] as $aid ) {
 			$p = hcc_pack( $aid );
-			echo '<div class="d-row"><span><b>' . esc_html( hcc_name( $aid ) ) . '</b><small>' . esc_html( hcc_meta( $aid, 'ref' ) . ' · ' . hcc_role_name( hcc_meta( $aid, 'role_key' ) ) ) . '</small></span><span data-l="Start">' . esc_html( ! empty( $p['start'] ) ? 'Starts ' . wp_date( 'j M Y', strtotime( $p['start'] ) ) : '' ) . '</span><span data-l="When">' . esc_html( 'signed' === $k ? ( ! empty( $p['signed_at'] ) ? 'Signed ' . hcc_ago( (int) $p['signed_at'] ) : 'Signed (outside the portal)' ) : ( 'sent' === $k ? 'Sent ' . hcc_ago( (int) $p['released_at'] ) : '' ) ) . '</span><span></span><span>' . ( 'signed' === $k && ! empty( $p['pdf'] ) ? '<a class="btn btn-sm btn-ghost" href="' . esc_url( hcc_pack_pdf_url( $aid ) ) . '">PDF</a> ' : '' ) . '<a class="btn btn-sm btn-navy" href="' . esc_url( hcc_staff_url( array( 'candidate' => $aid ) ) . '#declaration' ) . '">Open</a></span></div>';
+			echo '<div class="d-row"><span><b>' . esc_html( hcc_name( $aid ) ) . '</b><small>' . esc_html( hcc_meta( $aid, 'ref' ) . ' · ' . hcc_role_name( hcc_meta( $aid, 'role_key' ) ) ) . '</small></span><span data-l="Start">' . esc_html( ! empty( $p['start'] ) ? 'Starts ' . wp_date( 'j M Y', strtotime( $p['start'] ) ) : '' ) . '</span><span data-l="When">' . esc_html( 'signed' === $k ? ( ! empty( $p['signed_at'] ) ? 'Signed ' . hcc_ago( (int) $p['signed_at'] ) : 'Signed (outside the portal)' ) : ( 'sent' === $k ? 'Sent ' . hcc_ago( (int) $p['released_at'] ) : '' ) ) . '</span><span></span><span>' . ( 'signed' === $k && ! empty( $p['pdf'] ) ? '<a class="btn btn-sm btn-ghost" href="' . esc_url( hcc_pack_pdf_url( $aid, false ) ) . '" target="_blank" rel="noopener">View PDF</a> <a class="btn btn-sm btn-ghost" href="' . esc_url( hcc_pack_pdf_url( $aid ) ) . '">Download</a> ' : '' ) . '<a class="btn btn-sm btn-navy" href="' . esc_url( hcc_staff_url( array( 'candidate' => $aid ) ) . '#declaration' ) . '">Open</a></span></div>';
 		}
 		echo '</div></div>';
 	}

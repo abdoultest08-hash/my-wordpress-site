@@ -365,9 +365,17 @@ function hcc_check_list( $id ) {
 
 /** All candidate ids for a tab: in_progress, completed, closed. Optional search. */
 function hcc_desk_list( $tab, $search = '' ) {
-	$q   = new WP_Query( array( 'post_type' => 'hcc_applicant', 'post_status' => 'private', 'posts_per_page' => -1, 'fields' => 'ids', 'orderby' => 'date', 'order' => 'DESC', 'no_found_rows' => true ) );
+	static $ids = null;
+	if ( null === $ids ) {
+		// One query for the list and one for all their details, instead of one per candidate.
+		$q   = new WP_Query( array( 'post_type' => 'hcc_applicant', 'post_status' => 'private', 'posts_per_page' => -1, 'fields' => 'ids', 'orderby' => 'date', 'order' => 'DESC', 'no_found_rows' => true ) );
+		$ids = $q->posts;
+		if ( $ids ) {
+			update_meta_cache( 'post', $ids );
+		}
+	}
 	$out = array();
-	foreach ( $q->posts as $id ) {
+	foreach ( $ids as $id ) {
 		if ( hcc_state( $id ) !== $tab ) {
 			continue;
 		}

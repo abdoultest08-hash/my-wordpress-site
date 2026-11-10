@@ -278,6 +278,39 @@
       document.querySelectorAll('.p-sec, .p-folder').forEach(function (d) { d.open = open; });
     });
   });
+  /* Staff candidate file: left menu opens the section, scrolls to it and highlights where you are */
+  (function () {
+    var nav = document.querySelector('.cf-nav');
+    if (!nav) return;
+    var links = [].slice.call(nav.querySelectorAll('.cf-link'));
+    function openTo(id, scroll) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var d = el.tagName === 'DETAILS' ? el : el.closest('details');
+      while (d) { d.open = true; d = d.parentElement && d.parentElement.closest('details'); }
+      mark(id);
+      if (scroll) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    function mark(id) { links.forEach(function (l) { l.classList.toggle('is-on', l.dataset.cf === id); }); }
+    links.forEach(function (l) {
+      l.addEventListener('click', function (e) {
+        e.preventDefault();
+        openTo(l.dataset.cf, true);
+        try { history.replaceState(null, '', '#' + l.dataset.cf); } catch (x) {}
+        if (window.innerWidth < 900) l.scrollIntoView({ inline: 'center', block: 'nearest' });
+      });
+    });
+    if (links[0]) mark(links[0].dataset.cf);
+    var h = location.hash.slice(1);
+    if (h && document.getElementById(h)) { openTo(h, false); setTimeout(function () { var el = document.getElementById(h); if (el) el.scrollIntoView({ block: 'start' }); }, 50); }
+    if ('IntersectionObserver' in window) {
+      var ids = links.map(function (l) { return l.dataset.cf; });
+      var io = new IntersectionObserver(function (en) {
+        en.forEach(function (x) { if (x.isIntersecting) mark(x.target.id); });
+      }, { rootMargin: '-20% 0px -70% 0px' });
+      ids.forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
+    }
+  })();
   document.addEventListener('click', function (e) {
     document.querySelectorAll('.mini-pop[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
   });

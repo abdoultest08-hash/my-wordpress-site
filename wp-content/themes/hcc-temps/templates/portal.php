@@ -20,7 +20,7 @@ if ( $aid && ! $preview && ! hcc_meta( $aid, 'submitted' ) ) {
 	wp_safe_redirect( hcc_apply_url() );
 	exit;
 }
-$ok_msgs = array( 'notified' => 'Thank you. We have let the compliance team know about your new files.', 'nothing' => 'There are no new files to tell the team about.', 'answers' => 'Your answers have been saved.', 'email_changed' => 'Your email has been changed. Use the new address next time you log in.', 'email_code_sent' => 'We sent a code to your new email address. Enter it under "Change my email address" below.', 'signed' => 'Thank you. Your documents are signed and we have emailed you a copy.' );
+$ok_msgs = array( 'notified' => 'Thank you. We have let the compliance team know about your new files.', 'nothing' => 'There are no new files to tell the team about.', 'answers' => 'Your answers have been saved.', 'email_changed' => 'Your email has been changed. Use the new address next time you log in.', 'email_code_sent' => 'We sent a code to your new email address. Enter it under "Change my email address" below.', 'signed' => 'Thank you. Your documents are signed and we have emailed you a copy.', 'sms' => 'Your text message setting has been saved.' );
 $email_errs = array(
 	'email_code'     => 'That code isn\'t right. Check the email we sent to your new address.',
 	'email_code_old' => 'That code has expired or was tried too many times. Please start again.',
@@ -186,6 +186,7 @@ get_header();
 				<?php endif; ?>
 			</details>
 
+			<?php if ( ! $preview && function_exists( 'hcc_sms_pref_card' ) ) { hcc_sms_pref_card( $aid ); } ?>
 			</section>
 
 			<section class="view" data-view="documents" id="documents">

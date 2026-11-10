@@ -136,6 +136,12 @@ add_action( 'login_enqueue_scripts', function () {
 		#loginform .forgetmenot label { display: inline; }
 		#loginform #authcode, #loginform input[name="two-factor-email-code"] { display: block !important; width: 100%; font-size: 24px; letter-spacing: .2em; text-align: center; }
 		#loginform .submit, #loginform #submit { display: block !important; }
+		/* Jetpack's "Prove your humanity" sum: on one line, left-aligned like the other fields. */
+		#loginform div:has(> input[name=jetpack_protect_num]) { margin: 0 0 18px !important; text-align: left !important; float: none !important; display: flex !important; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+		#loginform div:has(> input[name=jetpack_protect_num]) p { width: 100%; margin: 0 !important; font-size: 14px !important; }
+		#loginform div:has(> input[name=jetpack_protect_num]) br { display: none; }
+		#loginform label[for=jetpack_protect_answer] { display: inline-block !important; vertical-align: middle !important; margin: 0 !important; font-size: 18px; font-weight: 600; }
+		#loginform input[name=jetpack_protect_num] { display: inline-block !important; width: 110px !important; height: auto !important; margin: 0 !important; font-size: 18px !important; padding: 6px 10px !important; }
 	</style>
 	<?php
 }, 20 );

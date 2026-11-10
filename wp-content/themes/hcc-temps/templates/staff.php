@@ -220,14 +220,48 @@ elseif ( 'dash' === $view ) :
 	$closed  = hcc_meta( $aid, 'closed' );
 	$completed = hcc_meta( $aid, 'completed' );
 	?>
-			<div class="crumbs" style="color:var(--muted)"><a href="<?php echo esc_url( hcc_staff_url() ); ?>">Dashboard</a> / <?php echo esc_html( hcc_name( $aid ) ); ?></div>
-			<div class="s-head">
-				<div>
-					<h1><?php echo esc_html( hcc_name( $aid ) ); ?></h1>
-					<div class="pct"><div class="progress"><i style="width:<?php echo (int) $pct; ?>%"></i></div><b>Profile <?php echo (int) $pct; ?>% complete</b></div>
-					<p><?php echo esc_html( $role_label( $aid ) ); ?> · <b><?php echo esc_html( hcc_meta( $aid, 'ref' ) ); ?></b> · Registered <?php echo esc_html( wp_date( 'j M Y, H:i', hcc_started( $aid ) ) ); ?> · <?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?> · <?php echo esc_html( hcc_meta( $aid, 'phone' ) ); ?><?php echo hcc_meta( $aid, 'submitted' ) ? '' : ' · <b>Still registering (step ' . (int) hcc_meta( $aid, 'step', 1 ) . ' of 7)</b>'; ?></p>
+			<?php
+			$unread  = hcc_unread_msgs( $aid );
+			$cdocs   = hcc_counts( $aid, hcc_items( $aid, 'docs' ) );
+			$ctrain  = hcc_counts( $aid, hcc_items( $aid, 'train' ) );
+			$chk_all = hcc_check_list( $aid );
+			$chk_v   = (array) hcc_meta( $aid, 'checks', array() );
+			$chk_n   = count( array_filter( array_keys( $chk_all ), function ( $k ) use ( $chk_v ) { return ! empty( $chk_v[ $k ]['result'] ); } ) );
+			$refs_l  = hcc_refs( $aid );
+			$refs_n  = count( array_filter( $refs_l, function ( $r ) { return ! empty( $r['recv'] ); } ) );
+			$orders  = function_exists( 'hcc_orders' ) ? hcc_orders( $aid ) : array();
+			$pay_n   = count( array_filter( $orders, function ( $o ) { return 'claimed' === $o['status']; } ) );
+			$pay_due = count( array_filter( $orders, function ( $o ) { return 'due' === $o['status']; } ) );
+			$pack    = function_exists( 'hcc_pack' ) ? hcc_pack( $aid ) : array();
+			$pack_st = isset( $pack['status'] ) ? $pack['status'] : '';
+			$sent_l  = (array) hcc_meta( $aid, 'messages', array() );
+			$state_l = array( 'in_progress' => array( 'In progress', 'prog' ), 'completed' => array( 'Staff completed', 'ok' ), 'closed' => array( 'Withdrawn / not qualified', 'red' ) )[ $state ];
+			$badge   = function ( $n, $cls = '' ) { return $n ? '<b class="cf-b' . ( $cls ? ' ' . $cls : '' ) . '">' . esc_html( $n ) . '</b>' : ''; };
+			$fnav    = array(
+				array( 'answers', 'Profile', '' ),
+				array( 'sec-docs', 'Documents', $cdocs['review'] ? $badge( $cdocs['review'] ) : ( $cdocs['amend'] ? $badge( $cdocs['amend'], 'red' ) : '' ) ),
+				array( 'sec-train', 'Training certificates', $ctrain['review'] ? $badge( $ctrain['review'] ) : ( $ctrain['todo'] ? $badge( $ctrain['todo'], 'red' ) : '' ) ),
+				array( 'messages', 'Messages', $badge( $unread, 'pink' ) ),
+				array( 'checks', 'Checks', $badge( $chk_n . '/' . count( $chk_all ), $chk_n === count( $chk_all ) ? 'ok' : 'grey' ) ),
+				array( 'refs', 'References', $refs_l ? $badge( $refs_n . '/' . count( $refs_l ), $refs_n === count( $refs_l ) ? 'ok' : 'grey' ) : '' ),
+				array( 'payments-card', 'Payments', $pay_n ? $badge( $pay_n . ' to confirm' ) : ( $pay_due ? $badge( 'Due', 'grey' ) : '' ) ),
+				array( 'declaration', 'Signing pack', 'signed' === $pack_st ? $badge( 'Signed', 'ok' ) : ( 'sent' === $pack_st ? $badge( 'Sent', 'grey' ) : '' ) ),
+				array( 'notes', 'Notes', '' ),
+				array( 'sent', 'Sent updates', $badge( count( $sent_l ), 'grey' ) ),
+				array( 'activity', 'Activity log', '' ),
+			);
+			?>
+			<div class="crumbs cf-crumbs"><a href="<?php echo esc_url( hcc_staff_url() ); ?>">← Back to dashboard</a> / <?php echo esc_html( $state_l[0] ); ?></div>
+			<div class="cf-head">
+				<div class="cf-who">
+					<span class="cf-ava" aria-hidden="true"><?php echo esc_html( strtoupper( mb_substr( (string) hcc_meta( $aid, 'first' ), 0, 1 ) ) ); ?></span>
+					<div>
+						<h1><?php echo esc_html( hcc_name( $aid ) ); ?> <span class="cf-pill cf-pill-<?php echo esc_attr( $state_l[1] ); ?>"><?php echo esc_html( $state_l[0] ); ?></span></h1>
+						<p><?php echo esc_html( $role_label( $aid ) ); ?> · <b><?php echo esc_html( hcc_meta( $aid, 'ref' ) ); ?></b> · Registered <?php echo esc_html( wp_date( 'j M Y', hcc_started( $aid ) ) ); ?> · Last activity <?php echo esc_html( hcc_ago( hcc_last_activity( $aid ) ) ); ?><?php echo hcc_meta( $aid, 'submitted' ) ? '' : ' · <b>Still registering (step ' . (int) hcc_meta( $aid, 'step', 1 ) . ' of 7)</b>'; ?></p>
+					</div>
 				</div>
-				<div class="s-actions">
+				<div class="pct cf-pct"><b>Profile <?php echo (int) $pct; ?>% complete</b><div class="progress"><i style="width:<?php echo (int) $pct; ?>%"></i></div><small><?php echo esc_html( ( $cdocs['ok'] + $ctrain['ok'] ) . ' of ' . ( $cdocs['need'] + $ctrain['need'] ) . ' items approved' ); ?></small></div>
+				<div class="s-actions cf-acts">
 					<form method="post" action="<?php echo $form_url; ?>" class="s-stage"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="stage"><label>Stage <select name="stage" onchange="this.form.submit()"><?php foreach ( hcc_stage_options() as $o ) : ?><option<?php selected( hcc_meta( $aid, 'stage' ), $o ); ?>><?php echo esc_html( $o ); ?></option><?php endforeach; ?></select></label><noscript><button class="btn btn-ghost btn-sm" type="submit">Set</button></noscript></form>
 					<?php if ( 'in_progress' === $state ) : ?>
 					<form method="post" action="<?php echo $form_url; ?>"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="approve_all"><button class="btn btn-aqua btn-sm" type="submit">Approve all uploaded</button></form>
@@ -245,10 +279,34 @@ elseif ( 'dash' === $view ) :
 					<?php endif; ?>
 				</div>
 			</div>
-
+					<div class="p-card tray cf-tray<?php echo $queue ? ' has' : ''; ?>" id="tray">
+						<div class="cf-tray-head"><div class="cf-tray-t"><h2>Email update to <?php echo esc_html( hcc_meta( $aid, 'first' ) ); ?><?php echo $queue ? ': ' . count( $queue ) . ' change' . ( count( $queue ) > 1 ? 's' : '' ) . ' waiting' : ''; ?> <span class="tray-n"><?php echo count( $queue ); ?></span></h2><small><?php echo $queue ? 'They go in one email when you press Send. Nothing has been sent yet.' : 'No changes waiting. Approvals, replace requests, missing items and notes for the candidate collect here and go in one email.'; ?></small></div>
+							<?php if ( $queue ) : ?><div class="cf-chips"><?php foreach ( array( 'approved' => array( '✓', 'approved', 'a' ), 'amend' => array( '↺', 'to replace', 'r' ), 'missing' => array( '!', 'still needed', 'r' ), 'training' => array( '🎓', 'training', 'n' ), 'note' => array( '✉', 'message', 'n' ) ) as $type => $ch ) : $nq = count( array_filter( $queue, function ( $q ) use ( $type ) { return $q['type'] === $type; } ) ); if ( $nq ) : ?><span class="cf-chip cf-chip-<?php echo esc_attr( $ch[2] ); ?>"><?php echo esc_html( $ch[0] . ' ' . $nq . ' ' . $ch[1] . ( 'message' === $ch[1] && $nq > 1 ? 's' : '' ) ); ?></span><?php endif; endforeach; ?></div><?php endif; ?>
+						</div>
+						<?php if ( $queue ) : ?><details class="tray-preview"><summary class="btn btn-sun btn-sm">Review and send</summary><div class="cf-tray-body"><?php
+							foreach ( array( 'approved' => 'Approved', 'amend' => 'Please replace', 'missing' => 'Still needed from you', 'training' => 'Training still needed (can be bought online)', 'note' => 'Messages from our team' ) as $type => $title ) :
+								$rows = array_filter( $queue, function ( $q ) use ( $type ) { return $q['type'] === $type; } );
+								if ( ! $rows ) { continue; } ?>
+								<div class="tray-g"><b><?php echo esc_html( $title ); ?></b><ul>
+									<?php foreach ( $rows as $i => $q ) : ?><li><?php echo esc_html( trim( $q['label'] . ( $q['label'] && $q['text'] ? ': ' : '' ) . $q['text'] ) ); ?> <form method="post" action="<?php echo $form_url; ?>" class="inline"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="unqueue"><input type="hidden" name="i" value="<?php echo (int) $i; ?>"><button class="link-btn" type="submit">remove</button></form></li><?php endforeach; ?>
+								</ul></div>
+							<?php endforeach; ?>
+							<p class="cf-sub">Email preview</p>
+								<div class="email"><div class="email-meta"><span>To: <?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?></span></div><div class="email-body">
+									<p>Hi <?php echo esc_html( hcc_meta( $aid, 'first' ) ); ?>,</p><p>Here is an update on your registration (<?php echo esc_html( hcc_meta( $aid, 'ref' ) ); ?>):</p>
+									<?php foreach ( array( 'approved' => 'Approved', 'amend' => 'Please replace', 'missing' => 'Still needed from you', 'training' => 'Training still needed (can be bought online)', 'note' => 'Messages from our team' ) as $type => $title ) :
+										$rows = array_filter( $queue, function ( $q ) use ( $type ) { return $q['type'] === $type; } );
+										if ( ! $rows ) { continue; } ?>
+										<p><b><?php echo esc_html( $title ); ?></b></p><ul><?php foreach ( $rows as $q ) : ?><li><?php echo esc_html( trim( $q['label'] . ( $q['label'] && $q['text'] ? ': ' : '' ) . $q['text'] ) ); ?></li><?php endforeach; ?></ul>
+									<?php endforeach; ?>
+								</div></div>
+								<form method="post" action="<?php echo $form_url; ?>" class="form-actions"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="send"><button class="btn btn-navy" type="submit">Send email</button></form>
+							</div></details><p class="hint cf-tray-note">Not sent yet. Nothing is sent automatically: until someone presses Send, this shows on the dashboard under <b>Updates not sent</b>.</p>
+						<?php endif; ?>
+					</div>
 			<?php if ( $dupes ) : ?>
 				<div class="dup-card"><b>Possible duplicate</b>
-					<?php foreach ( $dupes as $dp ) : ?><span>Same <?php echo esc_html( implode( ' and ', $dp['on'] ) ); ?> as <a href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $dp['id'] ) ) ); ?>"><?php echo esc_html( hcc_name( $dp['id'] ) . ' (' . hcc_meta( $dp['id'], 'ref' ) . ')' ); ?></a> · <?php echo esc_html( array( 'in_progress' => 'In progress', 'completed' => 'Staff completed', 'closed' => 'Withdrawn / not qualified' )[ hcc_state( $dp['id'] ) ] ); ?></span><?php endforeach; ?>
+					<?php foreach ( array_values( $dupes ) as $di => $dp ) : ?><?php if ( 3 === $di ) : ?><details class="dup-more"><summary class="link-btn"><?php echo esc_html( 'Show ' . ( count( $dupes ) - 3 ) . ' more' ); ?></summary><?php endif; ?><span>Same <?php echo esc_html( implode( ' and ', $dp['on'] ) ); ?> as <a href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $dp['id'] ) ) ); ?>"><?php echo esc_html( hcc_name( $dp['id'] ) . ' (' . hcc_meta( $dp['id'], 'ref' ) . ')' ); ?></a> · <?php echo esc_html( array( 'in_progress' => 'In progress', 'completed' => 'Staff completed', 'closed' => 'Withdrawn / not qualified' )[ hcc_state( $dp['id'] ) ] ); ?></span><?php endforeach; ?><?php echo count( $dupes ) > 3 ? '</details>' : ''; ?>
 					<form method="post" action="<?php echo $form_url; ?>"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="dup_ok"><button class="link-btn" type="submit">Checked: not a duplicate</button></form>
 				</div>
 			<?php endif; ?>
@@ -303,22 +361,54 @@ elseif ( 'dash' === $view ) :
 					<div class="finish-act"><input type="text" name="by" value="<?php echo esc_attr( $me ); ?>" aria-label="Signed off by"><button class="btn btn-navy btn-sm" type="submit"<?php disabled( ! $can ); ?>>Finish onboarding and move to Staff completed</button></div>
 				</form>
 			<?php endif; ?>
-
-			<div class="sec-toggle"><button class="link-btn" type="button" data-sections="open">Expand all</button> · <button class="link-btn" type="button" data-sections="close">Collapse all</button></div>
-			<div class="staff-grid">
-				<div>
+			<div class="cf-body">
+				<nav class="cf-nav" aria-label="Candidate file">
+					<?php foreach ( $fnav as $fi ) : ?><a class="cf-link" href="#<?php echo esc_attr( $fi[0] ); ?>" data-cf="<?php echo esc_attr( $fi[0] ); ?>"><span><?php echo esc_html( $fi[1] ); ?></span><?php echo $fi[2]; // phpcs:ignore ?></a><?php endforeach; ?>
+				</nav>
+				<div class="cf-main">
+				<div class="sec-toggle"><button class="link-btn" type="button" data-sections="open">Open all sections</button> · <button class="link-btn" type="button" data-sections="close">Close all</button></div>
+					<details open class="p-sec p-card" id="answers">
+						<summary class="p-card-head"><h2>Profile</h2><span class="p-count">Contact details and everything they told us</span></summary>
+							<div class="cf-facts">
+								<?php foreach ( array( 'Email' => hcc_meta( $aid, 'email' ), 'Mobile' => hcc_meta( $aid, 'phone' ), 'Reference' => hcc_meta( $aid, 'ref' ), 'Role applied for' => $role_label( $aid ), 'Registered' => wp_date( 'j M Y, H:i', hcc_started( $aid ) ), 'Stage' => hcc_meta( $aid, 'submitted' ) ? hcc_meta( $aid, 'stage', 'Documents' ) : 'Registering (step ' . (int) hcc_meta( $aid, 'step', 1 ) . ' of 7)' ) as $fk => $fv ) : ?><div><small><?php echo esc_html( $fk ); ?></small><span><?php echo esc_html( '' !== (string) $fv ? $fv : '—' ); ?></span></div><?php endforeach; ?>
+							</div>
+						<details class="email-fix cf-email"><summary>Change email address</summary>
+							<form method="post" action="<?php echo $form_url; ?>"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="email">
+								<p class="hint">Now: <b><?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?></b>. The new email becomes their login. Both addresses get a notice.</p>
+								<div class="f"><label for="sne">New email address</label><input type="email" id="sne" name="new_email" required></div>
+								<div class="form-actions" style="margin-top:8px"><button class="btn btn-ghost btn-sm" type="submit">Change email</button></div>
+							</form>
+						</details>
+							<p class="cf-sub">Pre-screening answers</p>
+						<?php $i = 0;
+						foreach ( hcc_answer_groups( $aid, false ) as $title => $rows ) : ?>
+							<details class="det"<?php echo $i++ < 1 ? ' open' : ''; ?>><summary><?php echo esc_html( $title ); ?></summary><dl><?php foreach ( $rows as $k => $v ) : ?><div><dt><?php echo esc_html( $k ); ?></dt><dd><?php echo esc_html( '' !== (string) $v ? $v : '—' ); ?></dd></div><?php endforeach; ?></dl></details>
+						<?php endforeach; ?>
+					</details>
+					<details class="p-sec p-card bank-card" id="bank">
+						<summary class="p-card-head"><h2>Bank details</h2><span class="p-count"><?php echo hcc_is_manager() ? 'Managers only' : 'Last 4 digits'; ?></span></summary>
+						<dl class="bank-dl">
+							<?php $bank = hcc_answer_groups( $aid, true )['Bank details'];
+							if ( ! hcc_is_manager() ) {
+								$bank['Sort code']      = $bank['Sort code'] ? '**-**-' . substr( $bank['Sort code'], -2 ) : '';
+								$bank['Account number'] = $bank['Account number'] ? '****' . substr( $bank['Account number'], -4 ) : '';
+							}
+							foreach ( $bank as $k => $v ) : ?><div><dt><?php echo esc_html( $k ); ?></dt><dd><?php echo esc_html( $v ? $v : '—' ); ?></dd></div><?php endforeach; ?>
+						</dl>
+					</details>
 					<form method="post" action="<?php echo $form_url; ?>" id="documents" class="items-form"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="items">
 					<?php foreach ( array( 'docs' => 'Documents', 'train' => 'Training certificates' ) as $set => $title ) :
 						$list = hcc_items( $aid, $set );
 						$c    = hcc_counts( $aid, $list );
 						$sum  = $c['need'] . ' items · ' . $c['ok'] . ' approved · ' . $c['review'] . ' to review · ' . $c['todo'] . ' missing' . ( $c['amend'] ? ' · ' . $c['amend'] . ' to replace' : '' );
 						?>
-						<details open class="<?php echo 'docs' === $set ? 'p-sec p-card' : 'p-card p-folder'; ?>">
+						<details open class="p-sec p-card" id="sec-<?php echo esc_attr( $set ); ?>">
 							<?php if ( 'docs' === $set ) : ?>
 								<summary class="p-card-head"><h2>Documents</h2><span class="p-count"><?php echo esc_html( $sum ); ?></span></summary>
 								<div class="bulk"><span>With ticked items:</span><button class="btn btn-sm btn-aqua" type="submit" name="act" value="bulk:approve">Approve</button><button class="btn btn-sm btn-sun" type="submit" name="act" value="bulk:missing">Request as missing</button><button class="btn btn-sm btn-ghost-light" type="submit" name="act" value="bulk:override">Mark complete (override)</button></div>
 							<?php else : ?>
-								<summary><span class="folder-ico" aria-hidden="true"><?php echo hcc_icon( 'doc', 22 ); // phpcs:ignore ?></span><span><b>Training certificates</b><small><?php echo esc_html( $sum ); ?></small></span><span class="folder-arrow" aria-hidden="true">▾</span></summary>
+								<summary class="p-card-head"><h2>Training certificates</h2><span class="p-count"><?php echo esc_html( $sum ); ?></span></summary>
+								<div class="bulk"><span>With ticked items:</span><button class="btn btn-sm btn-aqua" type="submit" name="act" value="bulk:approve">Approve</button><button class="btn btn-sm btn-sun" type="submit" name="act" value="bulk:missing">Request as missing</button><button class="btn btn-sm btn-ghost-light" type="submit" name="act" value="bulk:override">Mark complete (override)</button></div>
 								<?php $tmiss = hcc_missing_training( $aid ); $trem = hcc_meta( $aid, 'train_reminded' ); ?>
 								<div class="train-remind"><span><?php echo $tmiss ? esc_html( count( $tmiss ) . ' training certificate' . ( count( $tmiss ) > 1 ? 's' : '' ) . ' still to come.' ) : 'No training certificates missing.'; ?><?php echo is_array( $trem ) ? ' <small>' . esc_html( 'Last reminder ' . wp_date( 'j M Y', (int) $trem['at'] ) . ' by ' . $trem['by'] . ' (' . (int) $trem['n'] . ' course' . ( (int) $trem['n'] > 1 ? 's' : '' ) . ')' ) . '</small>' : ''; // phpcs:ignore ?></span><?php if ( $tmiss && 'in_progress' === $state ) : ?><a class="btn btn-sm btn-sun" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $aid, 'training' => 1 ) ) ); ?>#train-panel">Send training reminder</a><?php endif; ?></div>
 							<?php endif; ?>
@@ -336,7 +426,7 @@ elseif ( 'dash' === $view ) :
 										<?php endforeach; ?>
 										<?php if ( ! empty( $st['pin'] ) ) : ?><span class="p-file">PIN <?php echo esc_html( $st['pin'] ); ?> · <a href="https://www.nmc.org.uk/registration/search-the-register/" target="_blank" rel="noopener">check NMC register</a></span><?php endif; ?>
 										<?php echo hcc_exp_staff_line( $aid, $k, $st, $it ); // phpcs:ignore ?>
-										<?php if ( ! empty( $st['missing'] ) && ! hcc_has_upload( $st ) ) : ?><span class="p-file">Candidate ticked "I don't have this yet"</span><?php endif; ?>
+										<?php if ( ! empty( $st['missing'] ) && ! hcc_has_upload( $st ) && ! in_array( $s, array( 'approved', 'override' ), true ) ) : ?><span class="p-file">Candidate ticked "I don't have this yet"</span><?php endif; ?>
 										<?php if ( 'na' === $s && ! empty( $it['note'] ) ) : ?><span class="p-file" style="color:var(--muted)"><?php echo esc_html( $it['note'] ); ?></span><?php endif; ?>
 										<?php if ( ! empty( $r['reason'] ) ) : ?><span class="<?php echo 'override' === $s ? 'p-ov' : 'p-reason'; ?>"><?php echo esc_html( ( 'override' === $s ? 'Override: ' : '' ) . $r['reason'] . ( ! empty( $r['by'] ) ? ' · ' . $r['by'] : '' ) ); ?></span><?php endif; ?>
 										<?php foreach ( isset( $dnotes[ $k ] ) ? $dnotes[ $k ] : array() as $n ) : ?><span class="d-note<?php echo $n['internal'] ? ' internal' : ''; ?>"><?php echo esc_html( ( $n['internal'] ? 'Internal' : 'To candidate' ) . ' · ' . $n['by'] . ': ' . $n['text'] ); ?></span><?php endforeach; ?>
@@ -363,24 +453,6 @@ elseif ( 'dash' === $view ) :
 						</details>
 					<?php endforeach; ?>
 					</form>
-				</div>
-
-				<aside>
-					<details open class="p-sec p-card" id="answers">
-						<summary class="p-card-head"><h2>Pre-screening answers</h2><span class="p-count">What the candidate told us first</span></summary>
-						<details class="email-fix" style="margin:0 0 12px;padding-top:0;border-top:0"><summary>Change email address</summary>
-							<form method="post" action="<?php echo $form_url; ?>"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="email">
-								<p class="hint">Now: <b><?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?></b>. The new email becomes their login. Both addresses get a notice.</p>
-								<div class="f"><label for="sne">New email address</label><input type="email" id="sne" name="new_email" required></div>
-								<div class="form-actions" style="margin-top:8px"><button class="btn btn-ghost btn-sm" type="submit">Change email</button></div>
-							</form>
-						</details>
-						<?php $i = 0;
-						foreach ( hcc_answer_groups( $aid, false ) as $title => $rows ) : ?>
-							<details class="det"<?php echo $i++ < 2 ? ' open' : ''; ?>><summary><?php echo esc_html( $title ); ?></summary><dl><?php foreach ( $rows as $k => $v ) : ?><div><dt><?php echo esc_html( $k ); ?></dt><dd><?php echo esc_html( '' !== (string) $v ? $v : '—' ); ?></dd></div><?php endforeach; ?></dl></details>
-						<?php endforeach; ?>
-					</details>
-
 					<?php
 					$seen_before = (int) hcc_meta( $aid, 'cmsg_seen', 0 );
 					$unread      = hcc_unread_msgs( $aid );
@@ -407,45 +479,7 @@ elseif ( 'dash' === $view ) :
 							<div class="form-actions" style="margin-top:8px"><button class="btn btn-navy btn-sm" type="submit">Add reply to update</button><span class="form-note">Goes out with the next update email when you press Send.</span></div>
 						</form>
 					</details>
-
-					<div class="p-card tray<?php echo $queue ? ' has' : ''; ?>" id="tray">
-						<div class="p-card-head"><h2>Update for <?php echo esc_html( hcc_meta( $aid, 'first' ) ); ?></h2><span class="tray-n"><?php echo count( $queue ); ?></span></div>
-						<?php if ( ! $queue ) : ?>
-							<p class="hint">No changes waiting. Approvals, replace requests, missing items and notes for the candidate collect here and go in one email.</p>
-						<?php else :
-							foreach ( array( 'approved' => 'Approved', 'amend' => 'Please replace', 'missing' => 'Still needed from you', 'training' => 'Training still needed (can be bought online)', 'note' => 'Messages from our team' ) as $type => $title ) :
-								$rows = array_filter( $queue, function ( $q ) use ( $type ) { return $q['type'] === $type; } );
-								if ( ! $rows ) { continue; } ?>
-								<div class="tray-g"><b><?php echo esc_html( $title ); ?></b><ul>
-									<?php foreach ( $rows as $i => $q ) : ?><li><?php echo esc_html( trim( $q['label'] . ( $q['label'] && $q['text'] ? ': ' : '' ) . $q['text'] ) ); ?> <form method="post" action="<?php echo $form_url; ?>" class="inline"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="unqueue"><input type="hidden" name="i" value="<?php echo (int) $i; ?>"><button class="link-btn" type="submit">remove</button></form></li><?php endforeach; ?>
-								</ul></div>
-							<?php endforeach; ?>
-							<details class="tray-preview"><summary class="btn btn-navy btn-sm">Preview and send email</summary>
-								<div class="email" style="margin-top:12px"><div class="email-meta"><span>To: <?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?></span></div><div class="email-body">
-									<p>Hi <?php echo esc_html( hcc_meta( $aid, 'first' ) ); ?>,</p><p>Here is an update on your registration (<?php echo esc_html( hcc_meta( $aid, 'ref' ) ); ?>):</p>
-									<?php foreach ( array( 'approved' => 'Approved', 'amend' => 'Please replace', 'missing' => 'Still needed from you', 'training' => 'Training still needed (can be bought online)', 'note' => 'Messages from our team' ) as $type => $title ) :
-										$rows = array_filter( $queue, function ( $q ) use ( $type ) { return $q['type'] === $type; } );
-										if ( ! $rows ) { continue; } ?>
-										<p><b><?php echo esc_html( $title ); ?></b></p><ul><?php foreach ( $rows as $q ) : ?><li><?php echo esc_html( trim( $q['label'] . ( $q['label'] && $q['text'] ? ': ' : '' ) . $q['text'] ) ); ?></li><?php endforeach; ?></ul>
-									<?php endforeach; ?>
-								</div></div>
-								<form method="post" action="<?php echo $form_url; ?>" class="form-actions"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="send"><button class="btn btn-navy" type="submit">Send email</button></form>
-							</details>
-							<p class="hint" style="margin-top:10px">Not sent yet. Nothing is sent automatically: until someone presses Send, this shows on the dashboard under <b>Updates not sent</b>.</p>
-						<?php endif; ?>
-					</div>
-
-					<?php $sent = array_reverse( (array) hcc_meta( $aid, 'messages', array() ) ); ?>
-					<details class="p-sec p-card" id="sent"<?php echo $sent ? '' : ' open'; ?>>
-						<summary class="p-card-head"><h2>Sent to candidate</h2><span class="p-count"><?php echo $sent ? count( $sent ) . ' update' . ( count( $sent ) > 1 ? 's' : '' ) . ' · also shown in their portal' : 'Nothing sent yet'; ?></span></summary>
-						<?php foreach ( $sent as $m ) : ?>
-							<div class="sent-item"><b><?php echo esc_html( wp_date( 'j M Y, H:i', (int) $m['at'] ) . ( ! empty( $m['by'] ) ? ' · ' . $m['by'] : '' ) ); ?></b><ul>
-								<?php foreach ( (array) $m['items'] as $q ) : ?><li><span class="sent-t sent-<?php echo esc_attr( $q['type'] ); ?>"><?php echo esc_html( array( 'approved' => 'Approved', 'amend' => 'Replace', 'missing' => 'Needed', 'training' => 'Training', 'note' => 'Message' )[ $q['type'] ] ?? $q['type'] ); ?></span> <?php echo esc_html( trim( $q['label'] . ( $q['label'] && $q['text'] ? ': ' : '' ) . $q['text'] ) ); ?></li><?php endforeach; ?>
-							</ul></div>
-						<?php endforeach; ?>
-					</details>
-
-					<details open class="p-sec p-card" id="checks">
+					<details class="p-sec p-card" id="checks"<?php echo $chk_n < count( $chk_all ) ? ' open' : ''; ?>>
 						<summary class="p-card-head"><h2>Checks</h2><span class="p-count">Who checked, when, result</span></summary>
 						<?php $checks = (array) hcc_meta( $aid, 'checks', array() );
 						foreach ( hcc_check_list( $aid ) as $k => $c ) :
@@ -463,8 +497,7 @@ elseif ( 'dash' === $view ) :
 							</details>
 						<?php endforeach; ?>
 					</details>
-
-					<details open class="p-sec p-card" id="refs">
+					<details class="p-sec p-card" id="refs"<?php echo $refs_n < count( $refs_l ) ? ' open' : ''; ?>>
 						<summary class="p-card-head"><h2>References</h2><span class="p-count">Sent and checked manually</span></summary>
 						<?php foreach ( hcc_refs( $aid ) as $i => $rf ) :
 							$stc = $rf['recv'] ? '<span class="stat stat-' . ( 'Concerns' === $rf['outcome'] ? 'amend' : 'ok' ) . '">Received ' . esc_html( wp_date( 'd/m/Y', strtotime( $rf['recv'] ) ) ) . '</span>' : ( $rf['sent'] ? '<span class="stat stat-wait">Sent ' . esc_html( wp_date( 'd/m/Y', strtotime( $rf['sent'] ) ) ) . '</span>' : '<span class="stat stat-todo">Not sent</span>' ); ?>
@@ -490,8 +523,6 @@ elseif ( 'dash' === $view ) :
 							</form>
 						</details>
 					</details>
-
-
 					<?php do_action( 'hcc_staff_folder_side', $aid, $form_url ); ?>
 					<?php if ( has_action( 'hcc_staff_folder_declaration' ) ) : do_action( 'hcc_staff_folder_declaration', $aid, $form_url ); else : ?>
 					<details open class="p-sec p-card" id="declaration">
@@ -504,20 +535,7 @@ elseif ( 'dash' === $view ) :
 						</form>
 					</details>
 					<?php endif; ?>
-
-					<details open class="p-sec p-card bank-card">
-						<summary class="p-card-head"><h2>Bank details</h2><span class="p-count"><?php echo hcc_is_manager() ? 'Managers only' : 'Last 4 digits'; ?></span></summary>
-						<dl class="bank-dl">
-							<?php $bank = hcc_answer_groups( $aid, true )['Bank details'];
-							if ( ! hcc_is_manager() ) {
-								$bank['Sort code']      = $bank['Sort code'] ? '**-**-' . substr( $bank['Sort code'], -2 ) : '';
-								$bank['Account number'] = $bank['Account number'] ? '****' . substr( $bank['Account number'], -4 ) : '';
-							}
-							foreach ( $bank as $k => $v ) : ?><div><dt><?php echo esc_html( $k ); ?></dt><dd><?php echo esc_html( $v ? $v : '—' ); ?></dd></div><?php endforeach; ?>
-						</dl>
-					</details>
-
-					<details open class="p-sec p-card" id="notes">
+					<details class="p-sec p-card" id="notes">
 						<summary class="p-card-head"><h2>Notes</h2></summary>
 						<form method="post" action="<?php echo $form_url; ?>"><?php echo $hidden; // phpcs:ignore ?><input type="hidden" name="do" value="cnote">
 							<div class="radios note-type"><label class="radio"><input type="radio" name="type" value="internal" checked><span>Internal compliance note</span></label><label class="radio"><input type="radio" name="type" value="cand"><span>Message to candidate</span></label></div>
@@ -535,14 +553,22 @@ elseif ( 'dash' === $view ) :
 							<?php endforeach; ?>
 						</div>
 					</details>
-
-					<details open class="p-sec p-card">
+					<?php $sent = array_reverse( (array) hcc_meta( $aid, 'messages', array() ) ); ?>
+					<details class="p-sec p-card" id="sent">
+						<summary class="p-card-head"><h2>Sent to candidate</h2><span class="p-count"><?php echo $sent ? count( $sent ) . ' update' . ( count( $sent ) > 1 ? 's' : '' ) . ' · also shown in their portal' : 'Nothing sent yet'; ?></span></summary>
+						<?php foreach ( $sent as $m ) : ?>
+							<div class="sent-item"><b><?php echo esc_html( wp_date( 'j M Y, H:i', (int) $m['at'] ) . ( ! empty( $m['by'] ) ? ' · ' . $m['by'] : '' ) ); ?></b><ul>
+								<?php foreach ( (array) $m['items'] as $q ) : ?><li><span class="sent-t sent-<?php echo esc_attr( $q['type'] ); ?>"><?php echo esc_html( array( 'approved' => 'Approved', 'amend' => 'Replace', 'missing' => 'Needed', 'training' => 'Training', 'note' => 'Message' )[ $q['type'] ] ?? $q['type'] ); ?></span> <?php echo esc_html( trim( $q['label'] . ( $q['label'] && $q['text'] ? ': ' : '' ) . $q['text'] ) ); ?></li><?php endforeach; ?>
+							</ul></div>
+						<?php endforeach; ?>
+					</details>
+					<details class="p-sec p-card" id="activity">
 						<summary class="p-card-head"><h2>Activity log</h2></summary>
 						<ol class="timeline">
 							<?php foreach ( array_reverse( (array) hcc_meta( $aid, 'log', array() ) ) as $l ) : ?><li><b><?php echo esc_html( $l['text'] ); ?></b><span><?php echo esc_html( wp_date( 'j M, H:i', (int) $l['time'] ) . ' · ' . ( is_string( $l['by'] ) ? $l['by'] : '' ) ); ?></span></li><?php endforeach; ?>
 						</ol>
 					</details>
-				</aside>
+				</div>
 			</div>
 <?php endif; ?>
 <?php hcc_app_close(); ?>

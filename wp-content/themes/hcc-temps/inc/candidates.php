@@ -148,10 +148,11 @@ function hcc_counts( $id, $items ) {
 		$c['need']++;
 		if ( hcc_has_upload( $st ) ) {
 			$c['have']++;
-		} elseif ( ! empty( $st['missing'] ) ) {
-			$c['later']++;
 		}
 		$s = hcc_item_status( $id, $k, $it );
+		if ( ! hcc_has_upload( $st ) && ! empty( $st['missing'] ) && ! in_array( $s, array( 'approved', 'override' ), true ) ) {
+			$c['later']++;
+		}
 		if ( in_array( $s, array( 'approved', 'override' ), true ) ) {
 			$c['ok']++;
 		} elseif ( 'review' === $s ) {

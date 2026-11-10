@@ -522,7 +522,7 @@ function hcc_item_row( $id, $key, $it, $ctx = 'wizard' ) {
 	$review = (array) hcc_meta( $id, 'review', array() );
 	$reason = isset( $review[ $key ]['reason'] ) && in_array( $status, array( 'amend' ), true ) ? $review[ $key ]['reason'] : '';
 	$nonce  = wp_create_nonce( 'hcc_reg_item' );
-	$cls    = 'doc' . ( $has || ! empty( $it['na'] ) ? ' done' : '' ) . ( ! empty( $st['missing'] ) && ! $has ? ' later' : '' ) . ' s-' . $status;
+	$cls    = 'doc' . ( $has || ! empty( $it['na'] ) ? ' done' : '' ) . ( ! empty( $st['missing'] ) && ! $has && ! in_array( $status, array( 'approved', 'override' ), true ) ? ' later' : '' ) . ' s-' . $status;
 	$ico    = $has || ! empty( $it['na'] ) ? hcc_icon( 'check', 20 ) : hcc_icon( 'doc', 20 );
 	$files  = '';
 	foreach ( isset( $st['files'] ) ? $st['files'] : array() as $n => $f ) {
@@ -538,7 +538,7 @@ function hcc_item_row( $id, $key, $it, $ctx = 'wizard' ) {
 	if ( $reason ) {
 		$h .= '<span class="p-reason">' . esc_html( $reason ) . '</span>';
 	}
-	if ( ! empty( $st['missing'] ) && ! $has ) {
+	if ( ! empty( $st['missing'] ) && ! $has && ! in_array( $status, array( 'approved', 'override' ), true ) ) {
 		$h .= '<div class="later-note">Marked to follow. You can upload it later from your portal.</div>';
 	}
 	if ( 'wizard' !== $ctx ) { // Notes about this document that the team has sent to the candidate.

@@ -57,7 +57,7 @@ get_header();
 				remove_filter( 'login_form_middle', $extra );
 				?>
 				<p class="form-note" style="margin-top:14px"><a href="<?php echo esc_url( wp_lostpassword_url( hcc_login_url( $staff ) ) ); ?>">Forgotten your password?</a> · <a href="<?php echo esc_url( hcc_page_url( 'privacy', '/privacy-policy/' ) ); ?>">Privacy policy</a></p>
-				<div class="lock" style="margin-top:18px"><?php echo hcc_icon( 'lock', 18 ); // phpcs:ignore ?><span>For your security we email you a 6-digit code every time you log in. This applies to candidates and HCC staff.</span></div>
+				<div class="lock" style="margin-top:18px"><?php echo hcc_icon( 'lock', 18 ); // phpcs:ignore ?><span><?php echo function_exists( 'hcc_sms_codes_on' ) && hcc_sms_codes_on() ? 'For your security we send you a 6-digit code by text message (or email) every time you log in. This applies to candidates and HCC staff.' : 'For your security we email you a 6-digit code every time you log in. This applies to candidates and HCC staff.'; ?></span></div>
 			</div>
 			<?php if ( $staff ) : ?>
 			<aside class="side-card">
