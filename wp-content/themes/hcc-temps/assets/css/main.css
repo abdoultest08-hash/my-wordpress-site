@@ -1703,3 +1703,13 @@ main > .section:nth-of-type(3n) .eyebrow { color: var(--pink-deep); }
 .sg-q > label { min-height: 40px; padding: 4px 2px; }
 .sg-q > label input[type=radio] { width: 20px; height: 20px; }
 .sg-choice { gap: 12px; }
+
+/* Modern Slavery Policy page */
+.policy-sign { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 16px; margin: 18px 0; }
+.policy-sign p { margin: 0; }
+
+/* Staff Messages inbox */
+.d-row.d-msgs { grid-template-columns: minmax(0, 1.4fr) minmax(0, 2.6fr) .8fr auto; }
+.d-row.d-msgs.is-new { background: #FFF4F8; }
+.d-row.d-msgs .msg-who { display: block; color: var(--muted); font-size: 12px; margin-bottom: 2px; }
+@media (max-width: 900px) { .d-row.d-msgs { grid-template-columns: 1fr 1fr; gap: 6px 12px; } .d-row.d-msgs > span:nth-child(2) { grid-column: 1 / -1; } }

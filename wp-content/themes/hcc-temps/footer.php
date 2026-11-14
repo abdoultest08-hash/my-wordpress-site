@@ -7,7 +7,7 @@ $accred = array(
 	array( 'iso-14001.png', 'ISO 14001:2015 certified, environmental management', 177, 187, false ),
 	array( 'ico.png', "Registered with the Information Commissioner's Office", 194, 195, false ),
 	array( 'net-zero.svg', 'Net Zero by 2045: read our Carbon Reduction Plan', 190, 190, false, hcc_page_url( 'carbon', '/hcc-temps-carbon-footprint-plan/' ) ),
-	array( 'modern-slavery.svg', 'Modern Slavery Policy 2025: zero tolerance (PDF)', 190, 190, false, hcc_modern_slavery_url() ),
+	array( 'modern-slavery.svg', 'Modern Slavery Policy 2025: zero tolerance', 190, 190, false, hcc_page_url( 'slavery', '/modern-slavery-policy/' ) ),
 );
 $socials = array(
 	'social_x'         => array( 'X', '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.7 8 10.3h-6.3l-4.9-6.4L5.3 21H2.2l7.3-8.3L1.8 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg>' ),
@@ -72,7 +72,7 @@ $socials = array(
 					<li><a href="<?php echo esc_url( hcc_blog_url() ); ?>">Blog</a></li>
 					<li><a href="<?php echo esc_url( hcc_page_url( 'contact', '/contact/' ) ); ?>">Contact</a></li>
 					<li><a href="<?php echo esc_url( hcc_page_url( 'carbon', '/hcc-temps-carbon-footprint-plan/' ) ); ?>">Carbon Reduction Plan 2025</a></li>
-					<li><a href="<?php echo esc_url( hcc_modern_slavery_url() ); ?>" target="_blank" rel="noopener">Modern Slavery Policy 2025 (PDF)</a></li>
+					<li><a href="<?php echo esc_url( hcc_page_url( 'slavery', '/modern-slavery-policy/' ) ); ?>">Modern Slavery Policy 2025</a></li>
 				</ul>
 			</div>
 			<div>

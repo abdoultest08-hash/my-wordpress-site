@@ -48,6 +48,7 @@ function hcc_seed() {
 		'privacy'  => array( 'Privacy Policy', 'privacy-policy' ),
 		'terms'    => array( 'Terms and Conditions', 'terms' ),
 		'carbon'   => array( 'Carbon Reduction Plan', 'hcc-temps-carbon-footprint-plan' ),
+		'slavery'  => array( 'Modern Slavery Policy', 'modern-slavery-policy' ),
 	);
 	foreach ( $pages as $tpl => $p ) {
 		$exists = get_posts( array( 'post_type' => 'page', 'meta_key' => '_wp_page_template', 'meta_value' => 'templates/' . $tpl . '.php', 'numberposts' => 1, 'post_status' => 'any' ) );

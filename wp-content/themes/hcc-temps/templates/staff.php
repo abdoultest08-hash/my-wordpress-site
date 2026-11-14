@@ -14,7 +14,7 @@ if ( ! hcc_is_staff() ) {
 	exit;
 }
 $cid  = isset( $_GET['candidate'] ) ? absint( $_GET['candidate'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification
-$view = $cid && 'hcc_applicant' === get_post_type( $cid ) ? 'folder' : ( isset( $_GET['view'] ) && in_array( $_GET['view'], apply_filters( 'hcc_staff_views', array( 'team', 'training' ) ), true ) ? sanitize_key( $_GET['view'] ) : 'dash' ); // phpcs:ignore WordPress.Security.NonceVerification
+$view = $cid && 'hcc_applicant' === get_post_type( $cid ) ? 'folder' : ( isset( $_GET['view'] ) && in_array( $_GET['view'], apply_filters( 'hcc_staff_views', array( 'team', 'training', 'messages' ) ), true ) ? sanitize_key( $_GET['view'] ) : 'dash' ); // phpcs:ignore WordPress.Security.NonceVerification
 $msg  = isset( $_GET['msg'] ) ? sanitize_key( $_GET['msg'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 $msgs = array(
 	'approved' => 'Approved. Added to the update for the candidate.', 'queued' => 'Added to the update for the candidate. Press "Preview and send" when you are ready.', 'note' => 'Saved to the profile.', 'sent' => 'Update email sent to the candidate.',
@@ -30,10 +30,11 @@ get_header();
 ?>
 <main class="staff-page app-wrap">
 <?php
-$unread_n = count( array_filter( array_merge( hcc_desk_list( 'in_progress' ), hcc_desk_list( 'completed' ) ), 'hcc_unread_msgs' ) );
+$all_ids  = array_merge( hcc_desk_list( 'in_progress' ), hcc_desk_list( 'completed' ), hcc_desk_list( 'closed' ) );
+$unread_n = count( array_filter( $all_ids, 'hcc_unread_msgs' ) );
 $snav     = array(
 	array( 'dash', 'Dashboard', 'home', hcc_staff_url() ),
-	array( 'messages', 'New messages', 'chat', hcc_staff_url() . '#newmsgs', $unread_n ? $unread_n : '' ),
+	array( 'messages', 'Messages', 'chat', hcc_staff_url( array( 'view' => 'messages' ) ), $unread_n ? $unread_n : '' ),
 	array( 'training', 'Training', 'grad', hcc_staff_url( array( 'view' => 'training' ) ) ),
 );
 $snav = apply_filters( 'hcc_staff_nav', $snav );
@@ -132,6 +133,51 @@ elseif ( 'dash' === $view ) :
 					<?php endforeach; ?>
 				<?php endif; ?>
 				<?php if ( ! $lists[ $tab ] ) : ?><p class="hint" style="padding:12px 6px">No candidates here<?php echo $search ? ' matching "' . esc_html( $search ) . '"' : ''; ?>.</p><?php endif; ?>
+			</div></div>
+
+<?php elseif ( 'messages' === $view ) :
+	$mq     = hcc_field_get( 'q' );
+	$mtab   = isset( $_GET['mt'] ) && 'all' === $_GET['mt'] ? 'all' : 'unread'; // phpcs:ignore WordPress.Security.NonceVerification
+	$convos = array();
+	foreach ( $all_ids as $aid ) {
+		$thread = hcc_thread( $aid );
+		if ( ! $thread ) {
+			continue;
+		}
+		if ( $mq ) {
+			$hay = strtolower( hcc_name( $aid ) . ' ' . hcc_meta( $aid, 'ref' ) . ' ' . hcc_meta( $aid, 'email' ) );
+			if ( false === strpos( $hay, strtolower( $mq ) ) ) {
+				continue;
+			}
+		}
+		$convos[ $aid ] = array( 'last' => end( $thread ), 'new' => hcc_unread_msgs( $aid ), 'n' => count( $thread ) );
+	}
+	uasort( $convos, function ( $a, $b ) { return ( $b['new'] > 0 ) - ( $a['new'] > 0 ) ?: $b['last']['at'] - $a['last']['at']; } );
+	$unread_c = array_filter( $convos, function ( $c ) { return $c['new'] > 0; } );
+	$show     = 'all' === $mtab ? $convos : $unread_c;
+	?>
+			<div class="s-head" style="margin-top:0"><div><h1>Messages</h1><p>Messages candidates send from their portal. Open one to read the whole conversation and reply; it is marked as read when you open it.</p></div></div>
+			<form class="d-tabs" method="get" action="<?php echo esc_url( hcc_staff_url() ); ?>">
+				<input type="hidden" name="view" value="messages">
+				<a role="tab" aria-selected="<?php echo 'unread' === $mtab ? 'true' : 'false'; ?>" href="<?php echo esc_url( add_query_arg( array_filter( array( 'view' => 'messages', 'q' => $mq ) ), hcc_staff_url() ) ); ?>">Unread (<?php echo count( $unread_c ); ?>)</a>
+				<a role="tab" aria-selected="<?php echo 'all' === $mtab ? 'true' : 'false'; ?>" href="<?php echo esc_url( add_query_arg( array_filter( array( 'view' => 'messages', 'mt' => 'all', 'q' => $mq ) ), hcc_staff_url() ) ); ?>">All conversations (<?php echo count( $convos ); ?>)</a>
+				<?php if ( 'all' === $mtab ) : ?><input type="hidden" name="mt" value="all"><?php endif; ?>
+				<input type="search" name="q" value="<?php echo esc_attr( $mq ); ?>" placeholder="Search name, reference or email" aria-label="Search messages">
+			</form>
+			<div class="p-card"><div class="d-table">
+				<?php if ( $show ) : ?>
+					<div class="d-row d-hd d-msgs"><span>Candidate</span><span>Latest message</span><span>When</span><span></span></div>
+					<?php foreach ( $show as $aid => $c ) : $l = $c['last']; ?>
+						<div class="d-row d-msgs<?php echo $c['new'] ? ' is-new' : ''; ?>">
+							<span><b><?php echo esc_html( hcc_name( $aid ) ); ?></b><?php echo $c['new'] ? ' <em class="new-msg-tag">' . (int) $c['new'] . ' new</em>' : ''; ?><small><?php echo esc_html( hcc_meta( $aid, 'ref' ) . ' · ' . $role_label( $aid ) . ( 'closed' === hcc_state( $aid ) ? ' · closed' : '' ) ); ?></small></span>
+							<span data-l="Latest message"><small class="msg-who"><?php echo esc_html( 'cand' === $l['from'] ? hcc_meta( $aid, 'first' ) . ' wrote' : 'You (' . $l['by'] . ') replied' ); ?></small><?php echo esc_html( mb_strimwidth( wp_strip_all_tags( (string) $l['text'] ), 0, 110, '…' ) ); ?></span>
+							<span data-l="When"><?php echo esc_html( hcc_ago( (int) $l['at'] ) ); ?></span>
+							<span><a class="btn btn-sm <?php echo $c['new'] ? 'btn-navy' : 'btn-ghost'; ?>" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $aid ) ) ); ?>#messages"><?php echo $c['new'] ? 'Open and reply' : 'Open'; ?></a></span>
+						</div>
+					<?php endforeach; ?>
+				<?php else : ?>
+					<p class="hint" style="padding:14px 8px"><?php echo $mq ? 'No conversations matching "' . esc_html( $mq ) . '".' : ( 'all' === $mtab ? 'No candidate has sent a message yet.' : 'No unread messages. You are all caught up.' ); ?><?php if ( 'unread' === $mtab && $convos ) : ?> <a href="<?php echo esc_url( hcc_staff_url( array( 'view' => 'messages', 'mt' => 'all' ) ) ); ?>">See all conversations</a><?php endif; ?></p>
+				<?php endif; ?>
 			</div></div>
 
 <?php elseif ( 'training' === $view ) :

@@ -52,7 +52,7 @@ get_header();
 					<div>
 						<h3>Modern Slavery Policy</h3>
 						<p>We have zero tolerance for modern slavery and human trafficking. Every candidate's identity and right to work is checked, we never charge work-seekers for finding them work, and we expect the same standards from everyone in our supply chain.</p>
-						<a class="link-arrow" href="<?php echo esc_url( hcc_modern_slavery_url() ); ?>" target="_blank" rel="noopener">Read our Modern Slavery Policy 2025 (PDF) <span aria-hidden="true">→</span></a>
+						<a class="link-arrow" href="<?php echo esc_url( hcc_page_url( 'slavery', '/modern-slavery-policy/' ) ); ?>">Read our Modern Slavery Policy 2025 <span aria-hidden="true">→</span></a>
 					</div>
 				</article>
 				<article class="commit">
