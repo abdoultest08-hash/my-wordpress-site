@@ -125,7 +125,7 @@ export const RemotionRoot: React.FC = () => {
           fps={30}
           width={1080}
           height={1920}
-          defaultProps={{ discount: 30, audio: "audio/creamy-13s.m4a", lineTimes: [3.32, 7.73] as [number, number], spillStart: 9.0 }}
+          defaultProps={{ discount: 30, audio: "audio/creamy-13s.m4a", lineTimes: [3.32, 7.73] as [number, number] }}
         />
         <Composition
           id="BlackFridayLiftSilent"
@@ -134,7 +134,7 @@ export const RemotionRoot: React.FC = () => {
           fps={30}
           width={1080}
           height={1920}
-          defaultProps={{ discount: 30, audio: null, lineTimes: [3.32, 7.73] as [number, number], spillStart: 9.0 }}
+          defaultProps={{ discount: 30, audio: null, lineTimes: [3.32, 7.73] as [number, number] }}
         />
       </Folder>
     </>
