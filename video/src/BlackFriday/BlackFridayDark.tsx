@@ -25,7 +25,7 @@ export type BlackFridayDarkProps = {
 
 const fill = { width: "100%", height: "100%", objectFit: "cover" } as const;
 
-const Grain: React.FC = () => {
+export const Grain: React.FC = () => {
   const frame = useCurrentFrame();
   return (
     <AbsoluteFill style={{ opacity: 0.09, mixBlendMode: "overlay", pointerEvents: "none" }}>

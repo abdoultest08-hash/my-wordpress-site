@@ -4,6 +4,7 @@ import { Logo } from "./HelloWorld/Logo";
 import { Title } from "./HelloWorld/Title";
 import { BlackFridayDark } from "./BlackFriday/BlackFridayDark";
 import { BlackFridayLift } from "./BlackFriday/BlackFridayLift";
+import { BlackFridayPainter } from "./BlackFriday/BlackFridayPainter";
 import { Lookbook } from "./Lookbook/Lookbook";
 import {
   brownTracksuitA,
@@ -172,6 +173,24 @@ export const RemotionRoot: React.FC = () => {
           width={1080}
           height={1920}
           defaultProps={{ discount: 30, audio: null, lineTimes: [3.32, 7.73] as [number, number], frameB: "bf/frame-B-mixed.png" }}
+        />
+        <Composition
+          id="BlackFridayPainter"
+          component={BlackFridayPainter}
+          durationInFrames={Math.round(12.14 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ audio: "audio/creamy-13s.m4a", clipSeconds: 6.6, lineTimes: [6.63, 9.94] as [number, number] }}
+        />
+        <Composition
+          id="BlackFridayPainterSilent"
+          component={BlackFridayPainter}
+          durationInFrames={Math.round(12.14 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ audio: null, clipSeconds: 6.6, lineTimes: [6.63, 9.94] as [number, number] }}
         />
       </Folder>
     </>

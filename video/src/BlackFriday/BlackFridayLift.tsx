@@ -55,11 +55,13 @@ const DoorLeaf: React.FC<{ side: "left" | "right"; open: number }> = ({ side, op
   );
 };
 
-export const Line: React.FC<{ text: string; from: number; to: number; band: number }> = ({
+export const Line: React.FC<{ text: string; from: number; to: number; band: number; offsetY?: number; size?: number }> = ({
   text,
   from,
   to,
   band,
+  offsetY = 0,
+  size = 168,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -75,7 +77,9 @@ export const Line: React.FC<{ text: string; from: number; to: number; band: numb
     easing: Easing.out(Easing.cubic),
   });
   return (
-    <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", opacity: Math.min(fadeIn, fadeOut) }}>
+    <AbsoluteFill
+      style={{ justifyContent: "center", alignItems: "center", opacity: Math.min(fadeIn, fadeOut), transform: `translateY(${offsetY}px)` }}
+    >
       {/* Soft mocha band so ivory text stays readable over the ivory bags */}
       <div
         style={{
@@ -92,7 +96,7 @@ export const Line: React.FC<{ text: string; from: number; to: number; band: numb
           transform: `translateY(${rise}px)`,
           fontFamily: SERIF,
           fontWeight: 500,
-          fontSize: 168,
+          fontSize: size,
           lineHeight: 0.98,
           letterSpacing: 6,
           color: IVORY,
