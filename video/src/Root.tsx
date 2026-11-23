@@ -4,6 +4,7 @@ import { Logo } from "./HelloWorld/Logo";
 import { Title } from "./HelloWorld/Title";
 import { BlackFridayDark } from "./BlackFriday/BlackFridayDark";
 import { BlackFridayLift } from "./BlackFriday/BlackFridayLift";
+import { BlackFridayMural } from "./BlackFriday/BlackFridayMural";
 import { BlackFridayPainter } from "./BlackFriday/BlackFridayPainter";
 import { Lookbook } from "./Lookbook/Lookbook";
 import {
@@ -191,6 +192,24 @@ export const RemotionRoot: React.FC = () => {
           width={1080}
           height={1920}
           defaultProps={{ audio: null, clipSeconds: 6.6, lineTimes: [6.63, 9.94] as [number, number] }}
+        />
+        <Composition
+          id="BlackFridayMural"
+          component={BlackFridayMural}
+          durationInFrames={Math.round(12.14 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ audio: "audio/creamy-13s.m4a", lineTimes: [6.63, 9.94] as [number, number], zoom: [1.0, 8.0] as [number, number] }}
+        />
+        <Composition
+          id="BlackFridayMuralSilent"
+          component={BlackFridayMural}
+          durationInFrames={Math.round(12.14 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ audio: null, lineTimes: [6.63, 9.94] as [number, number], zoom: [1.0, 8.0] as [number, number] }}
         />
       </Folder>
     </>
