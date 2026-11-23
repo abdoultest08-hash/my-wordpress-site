@@ -126,7 +126,7 @@ export const RemotionRoot: React.FC = () => {
           fps={30}
           width={1080}
           height={1920}
-          defaultProps={{ discount: 30, audio: "audio/creamy-13s.m4a", lineTimes: [3.32, 7.73] as [number, number] }}
+          defaultProps={{ discount: 30, audio: "audio/creamy-13s.m4a", lineTimes: [3.32, 7.73] as [number, number], frameB: "bf/frame-B.png" }}
         />
         <Composition
           id="BlackFridayLiftSilent"
@@ -135,7 +135,7 @@ export const RemotionRoot: React.FC = () => {
           fps={30}
           width={1080}
           height={1920}
-          defaultProps={{ discount: 30, audio: null, lineTimes: [3.32, 7.73] as [number, number] }}
+          defaultProps={{ discount: 30, audio: null, lineTimes: [3.32, 7.73] as [number, number], frameB: "bf/frame-B.png" }}
         />
         <Composition
           id="BlackFridayDark"
@@ -154,6 +154,24 @@ export const RemotionRoot: React.FC = () => {
           width={1080}
           height={1920}
           defaultProps={{ discount: 30, audio: null, lineTimes: [3.32, 7.73] as [number, number], clipSeconds: [31 / 6, 31 / 6] as [number, number] }}
+        />
+        <Composition
+          id="BlackFridayLiftMixed"
+          component={BlackFridayLift}
+          durationInFrames={Math.round(13.25 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ discount: 30, audio: "audio/creamy-13s.m4a", lineTimes: [3.32, 7.73] as [number, number], frameB: "bf/frame-B-mixed.png" }}
+        />
+        <Composition
+          id="BlackFridayLiftMixedSilent"
+          component={BlackFridayLift}
+          durationInFrames={Math.round(13.25 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ discount: 30, audio: null, lineTimes: [3.32, 7.73] as [number, number], frameB: "bf/frame-B-mixed.png" }}
         />
       </Folder>
     </>

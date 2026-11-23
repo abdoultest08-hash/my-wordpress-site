@@ -28,6 +28,8 @@ export type BlackFridayProps = {
   audio: string | null;
   // Seconds at which the text changes (on the soundtrack's own cut points)
   lineTimes: [number, number];
+  // Still of the open lift (what the doors reveal)
+  frameB: string;
 };
 
 const DoorLeaf: React.FC<{ side: "left" | "right"; open: number }> = ({ side, open }) => {
@@ -106,7 +108,7 @@ export const Line: React.FC<{ text: string; from: number; to: number; band: numb
   );
 };
 
-export const BlackFridayLift: React.FC<BlackFridayProps> = ({ discount, audio, lineTimes }) => {
+export const BlackFridayLift: React.FC<BlackFridayProps> = ({ discount, audio, lineTimes, frameB }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
   const t = frame / fps;
@@ -129,7 +131,7 @@ export const BlackFridayLift: React.FC<BlackFridayProps> = ({ discount, audio, l
   return (
     <AbsoluteFill style={{ backgroundColor: "#EDE6DB" }}>
       <AbsoluteFill style={{ transform: `scale(${push})`, transformOrigin: "50% 46%" }}>
-        <Img src={staticFile("bf/frame-B.png")} style={{ width: 1080, height: 1920 }} />
+        <Img src={staticFile(frameB)} style={{ width: 1080, height: 1920 }} />
         {/* Doorway: the packed interior with the two door leaves sliding over it */}
         <div
           style={{
@@ -142,7 +144,7 @@ export const BlackFridayLift: React.FC<BlackFridayProps> = ({ discount, audio, l
           }}
         >
           <Img
-            src={staticFile("bf/frame-B.png")}
+            src={staticFile(frameB)}
             style={{
               position: "absolute",
               left: -DOOR.left,
