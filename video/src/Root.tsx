@@ -121,20 +121,20 @@ export const RemotionRoot: React.FC = () => {
         <Composition
           id="BlackFridayLift"
           component={BlackFridayLift}
-          durationInFrames={9 * 30}
+          durationInFrames={Math.round(13.25 * 30)}
           fps={30}
           width={1080}
           height={1920}
-          defaultProps={{ discount: 30, audio: "audio/creamy-9s.m4a", lineTimes: [2.29, 5.67] as [number, number] }}
+          defaultProps={{ discount: 30, audio: "audio/creamy-13s.m4a", lineTimes: [3.32, 7.73] as [number, number], spillStart: 9.0 }}
         />
         <Composition
           id="BlackFridayLiftSilent"
           component={BlackFridayLift}
-          durationInFrames={9 * 30}
+          durationInFrames={Math.round(13.25 * 30)}
           fps={30}
           width={1080}
           height={1920}
-          defaultProps={{ discount: 30, audio: null, lineTimes: [2.29, 5.67] as [number, number] }}
+          defaultProps={{ discount: 30, audio: null, lineTimes: [3.32, 7.73] as [number, number], spillStart: 9.0 }}
         />
       </Folder>
     </>
