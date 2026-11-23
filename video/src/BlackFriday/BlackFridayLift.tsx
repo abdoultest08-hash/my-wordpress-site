@@ -53,7 +53,7 @@ const DoorLeaf: React.FC<{ side: "left" | "right"; open: number }> = ({ side, op
   );
 };
 
-const Line: React.FC<{ text: string; from: number; to: number; band: number }> = ({
+export const Line: React.FC<{ text: string; from: number; to: number; band: number }> = ({
   text,
   from,
   to,

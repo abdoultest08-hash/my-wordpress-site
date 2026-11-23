@@ -2,6 +2,7 @@ import { Composition, Folder } from "remotion";
 import { HelloWorld } from "./HelloWorld";
 import { Logo } from "./HelloWorld/Logo";
 import { Title } from "./HelloWorld/Title";
+import { BlackFridayDark } from "./BlackFriday/BlackFridayDark";
 import { BlackFridayLift } from "./BlackFriday/BlackFridayLift";
 import { Lookbook } from "./Lookbook/Lookbook";
 import {
@@ -135,6 +136,24 @@ export const RemotionRoot: React.FC = () => {
           width={1080}
           height={1920}
           defaultProps={{ discount: 30, audio: null, lineTimes: [3.32, 7.73] as [number, number] }}
+        />
+        <Composition
+          id="BlackFridayDark"
+          component={BlackFridayDark}
+          durationInFrames={Math.round(13.25 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ discount: 30, audio: "audio/creamy-13s.m4a", lineTimes: [3.32, 7.73] as [number, number], clipSeconds: [31 / 6, 31 / 6] as [number, number] }}
+        />
+        <Composition
+          id="BlackFridayDarkSilent"
+          component={BlackFridayDark}
+          durationInFrames={Math.round(13.25 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ discount: 30, audio: null, lineTimes: [3.32, 7.73] as [number, number], clipSeconds: [31 / 6, 31 / 6] as [number, number] }}
         />
       </Folder>
     </>
