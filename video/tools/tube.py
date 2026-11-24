@@ -59,10 +59,17 @@ n = int(round(secs * fps))
 for f in range(n):
     t = f / fps
     ph = (SPEED * t) % 1.0
-    k2 = kk - ph
-    k2 = np.where(k2 < k_of_y(Y0) + 0.02, k2 + 1.0, k2)   # wrap: the step behind looks identical
-    ys = y_of_k(k2); xs = CX + (sx - CX) * hw(ys) / hw(sy)
-    frame = np.where(inband[..., None], sample(plate, xs, ys), static)
+    # Seamless loop: blend the pattern sampled at k - ph with the one a step nearer (k - ph + 1).
+    # At ph = 0 that is S(k); as ph -> 1 the weight moves fully to S(k - 1 + 1) = S(k) again, so the
+    # wrap from ph = 1 back to 0 shows exactly the same picture and nothing snaps.
+    def steps_at(kq):
+        kq = np.where(kq > KS[-1], kq - 1.0, kq)                 # beyond the last measured edge: same phase, one step up
+        kq = np.where(kq < k_of_y(Y0) + 0.02, kq + 1.0, kq)      # at the far landing: same phase, one step down
+        ys = y_of_k(kq); xs = CX + (sx - CX) * hw(ys) / hw(sy)
+        return sample(plate, xs, ys)
+    A = steps_at(kk - ph); C = steps_at(kk - ph + 1.0)
+    moving = A * (1.0 - ph) + C * ph
+    frame = np.where(inband[..., None], moving, static)
     im = Image.fromarray(np.clip(frame, 0, 255).astype(np.uint8)).convert("RGBA")
     # box: arrives at its photographed spot at the end
     kb = K_BOX - SPEED * (secs - t)
