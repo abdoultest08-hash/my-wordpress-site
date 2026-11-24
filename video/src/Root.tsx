@@ -3,6 +3,7 @@ import { HelloWorld } from "./HelloWorld";
 import { Logo } from "./HelloWorld/Logo";
 import { Title } from "./HelloWorld/Title";
 import { BlackFridayDark } from "./BlackFriday/BlackFridayDark";
+import { BlackFridayEscalator } from "./BlackFriday/BlackFridayEscalator";
 import { BlackFridayLift } from "./BlackFriday/BlackFridayLift";
 import { BlackFridayMural } from "./BlackFriday/BlackFridayMural";
 import { BlackFridayPainter } from "./BlackFriday/BlackFridayPainter";
@@ -228,6 +229,42 @@ export const RemotionRoot: React.FC = () => {
           width={1080}
           height={1920}
           defaultProps={{ discount: 30, audio: null, lineTimes: [3.32, 7.73] as [number, number], frameB: "bf/frame-B-mixed.png", showText: false }}
+        />
+        <Composition
+          id="BlackFridayEscalatorText"
+          component={BlackFridayEscalator}
+          durationInFrames={364}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ audio: "audio/creamy-13s.m4a", showText: true, textFrom: 6.63 }}
+        />
+        <Composition
+          id="BlackFridayEscalatorTextSilent"
+          component={BlackFridayEscalator}
+          durationInFrames={364}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ audio: null, showText: true, textFrom: 6.63 }}
+        />
+        <Composition
+          id="BlackFridayEscalatorNoText"
+          component={BlackFridayEscalator}
+          durationInFrames={364}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ audio: "audio/creamy-13s.m4a", showText: false, textFrom: 6.63 }}
+        />
+        <Composition
+          id="BlackFridayEscalatorNoTextSilent"
+          component={BlackFridayEscalator}
+          durationInFrames={364}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ audio: null, showText: false, textFrom: 6.63 }}
         />
       </Folder>
     </>
