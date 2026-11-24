@@ -1,6 +1,6 @@
 """Realistic Tube escalator, camera at the top looking down: steps glide towards the camera with the
 fitted perspective and one HLC box rides up from far away to its spot in the photo.
-usage: tube.py STILL OUT_DIR SECONDS FPS"""
+usage: tube.py STILL OUT_DIR SECONDS FPS CLEAN_PLATE"""
 import sys, os
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
@@ -38,10 +38,7 @@ poly = [(576, 1878), (962, 1878), (984, 2138), (974, 2222), (562, 2222), (552, 2
 mask = Image.new("L", (SW, SH), 0); ImageDraw.Draw(mask).polygon(poly, fill=255)
 mask_np = np.array(mask.filter(ImageFilter.MaxFilter(15)).filter(ImageFilter.GaussianBlur(5))).astype(np.float32) / 255
 yy, xx = np.mgrid[0:SH, 0:SW].astype(np.float32)
-ksrc = k_of_y(yy) - 2.0
-ysh = y_of_k(ksrc); xsh = CX + (xx - CX) * hw(ysh) / hw(yy)
-fill = sample(src, xsh, ysh)
-plate = src * (1 - mask_np[..., None]) + fill * mask_np[..., None]
+plate = np.array(Image.open(sys.argv[5]).convert("RGB")).astype(np.float32)   # AI clean plate (box removed)
 
 # --- box sprite (from the original photo) with its alpha
 bx0, by0, bx1, by1 = 540, 1870, 1000, 2226

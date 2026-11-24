@@ -266,6 +266,42 @@ export const RemotionRoot: React.FC = () => {
           height={1920}
           defaultProps={{ audio: null, showText: false, textFrom: 6.63 }}
         />
+        <Composition
+          id="BlackFridayTubeText"
+          component={BlackFridayEscalator}
+          durationInFrames={364}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ audio: "audio/creamy-13s.m4a", showText: true, textFrom: 6.63, src: "bfe/tube.mp4", textY: -150, sway: true }}
+        />
+        <Composition
+          id="BlackFridayTubeTextSilent"
+          component={BlackFridayEscalator}
+          durationInFrames={364}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ audio: null, showText: true, textFrom: 6.63, src: "bfe/tube.mp4", textY: -150, sway: true }}
+        />
+        <Composition
+          id="BlackFridayTubeNoText"
+          component={BlackFridayEscalator}
+          durationInFrames={364}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ audio: "audio/creamy-13s.m4a", showText: false, textFrom: 6.63, src: "bfe/tube.mp4", textY: -150, sway: true }}
+        />
+        <Composition
+          id="BlackFridayTubeNoTextSilent"
+          component={BlackFridayEscalator}
+          durationInFrames={364}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ audio: null, showText: false, textFrom: 6.63, src: "bfe/tube.mp4", textY: -150, sway: true }}
+        />
       </Folder>
     </>
   );
