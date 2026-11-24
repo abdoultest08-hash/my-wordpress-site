@@ -211,6 +211,24 @@ export const RemotionRoot: React.FC = () => {
           height={1920}
           defaultProps={{ audio: null, lineTimes: [6.63, 9.94] as [number, number], zoom: [1.0, 8.0] as [number, number] }}
         />
+        <Composition
+          id="BlackFridayLiftMixedNoText"
+          component={BlackFridayLift}
+          durationInFrames={Math.round(13.25 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ discount: 30, audio: "audio/creamy-13s.m4a", lineTimes: [3.32, 7.73] as [number, number], frameB: "bf/frame-B-mixed.png", showText: false }}
+        />
+        <Composition
+          id="BlackFridayLiftMixedNoTextSilent"
+          component={BlackFridayLift}
+          durationInFrames={Math.round(13.25 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ discount: 30, audio: null, lineTimes: [3.32, 7.73] as [number, number], frameB: "bf/frame-B-mixed.png", showText: false }}
+        />
       </Folder>
     </>
   );

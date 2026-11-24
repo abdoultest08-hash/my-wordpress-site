@@ -30,6 +30,8 @@ export type BlackFridayProps = {
   lineTimes: [number, number];
   // Still of the open lift (what the doors reveal)
   frameB: string;
+  // Set false for a clean version without the on-screen text
+  showText?: boolean;
 };
 
 const DoorLeaf: React.FC<{ side: "left" | "right"; open: number }> = ({ side, open }) => {
@@ -112,7 +114,7 @@ export const Line: React.FC<{ text: string; from: number; to: number; band: numb
   );
 };
 
-export const BlackFridayLift: React.FC<BlackFridayProps> = ({ discount, audio, lineTimes, frameB }) => {
+export const BlackFridayLift: React.FC<BlackFridayProps> = ({ discount, audio, lineTimes, frameB, showText = true }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
   const t = frame / fps;
@@ -163,9 +165,13 @@ export const BlackFridayLift: React.FC<BlackFridayProps> = ({ discount, audio, l
           <DoorLeaf side="right" open={open} />
         </div>
       </AbsoluteFill>
-      <Line text={"BLACK\nFRIDAY"} from={0} to={lineTimes[0]} band={band} />
-      <Line text={`UP TO\n${discount}% OFF`} from={lineTimes[0]} to={lineTimes[1]} band={band} />
-      <Line text={"EARLY\nACCESS"} from={lineTimes[1]} to={durationInFrames / fps + 1} band={band} />
+      {showText ? (
+        <>
+          <Line text={"BLACK\nFRIDAY"} from={0} to={lineTimes[0]} band={band} />
+          <Line text={`UP TO\n${discount}% OFF`} from={lineTimes[0]} to={lineTimes[1]} band={band} />
+          <Line text={"EARLY\nACCESS"} from={lineTimes[1]} to={durationInFrames / fps + 1} band={band} />
+        </>
+      ) : null}
       {audio ? (
         <Audio
           src={staticFile(audio)}
