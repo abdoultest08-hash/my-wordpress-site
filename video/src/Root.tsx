@@ -4,6 +4,7 @@ import { Logo } from "./HelloWorld/Logo";
 import { Title } from "./HelloWorld/Title";
 import { BlackFridayDark } from "./BlackFriday/BlackFridayDark";
 import { BlackFridayEscalator } from "./BlackFriday/BlackFridayEscalator";
+import { ByDesign } from "./BlackFriday/ByDesign";
 import { BlackFridayLift } from "./BlackFriday/BlackFridayLift";
 import { BlackFridayMural } from "./BlackFriday/BlackFridayMural";
 import { BlackFridayPainter } from "./BlackFriday/BlackFridayPainter";
@@ -301,6 +302,42 @@ export const RemotionRoot: React.FC = () => {
           width={1080}
           height={1920}
           defaultProps={{ audio: null, showText: false, textFrom: 6.63, src: "bfe/tube.mp4", textY: -150, sway: true }}
+        />
+        <Composition
+          id="ByDesignBrown"
+          component={ByDesign}
+          durationInFrames={Math.round(13.25 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ sketchFront: "bd/sk-brown-front.png", sketchBack: "bd/sk-brown-back.png", pin: "bd/pin-brown.jpg", detail: "bd/det-brown.jpg", swatches: ["bd/sw-brown.jpg", "bd/sw-black.jpg", "bd/sw-mocha.jpg"] as [string, string, string], note: ["SOFT FORM", "FLEECE", "TRACKSUIT"] as [string, string, string], audio: "audio/creamy-13s.m4a" }}
+        />
+        <Composition
+          id="ByDesignBrownSilent"
+          component={ByDesign}
+          durationInFrames={Math.round(13.25 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ sketchFront: "bd/sk-brown-front.png", sketchBack: "bd/sk-brown-back.png", pin: "bd/pin-brown.jpg", detail: "bd/det-brown.jpg", swatches: ["bd/sw-brown.jpg", "bd/sw-black.jpg", "bd/sw-mocha.jpg"] as [string, string, string], note: ["SOFT FORM", "FLEECE", "TRACKSUIT"] as [string, string, string], audio: null }}
+        />
+        <Composition
+          id="ByDesignCorset"
+          component={ByDesign}
+          durationInFrames={Math.round(13.25 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ sketchFront: "bd/sk-corset-front.png", sketchBack: "bd/sk-corset-back.png", pin: "bd/pin-corset.jpg", detail: "bd/det-corset.jpg", swatches: ["bd/sw-corset.jpg", "bd/sw-denim.jpg", "bd/sw-floral.jpg"] as [string, string, string], note: ["FLORAL", "CORSET", "& ROSE DENIM"] as [string, string, string], audio: "audio/creamy-13s.m4a" }}
+        />
+        <Composition
+          id="ByDesignCorsetSilent"
+          component={ByDesign}
+          durationInFrames={Math.round(13.25 * 30)}
+          fps={30}
+          width={1080}
+          height={1920}
+          defaultProps={{ sketchFront: "bd/sk-corset-front.png", sketchBack: "bd/sk-corset-back.png", pin: "bd/pin-corset.jpg", detail: "bd/det-corset.jpg", swatches: ["bd/sw-corset.jpg", "bd/sw-denim.jpg", "bd/sw-floral.jpg"] as [string, string, string], note: ["FLORAL", "CORSET", "& ROSE DENIM"] as [string, string, string], audio: null }}
         />
       </Folder>
     </>
