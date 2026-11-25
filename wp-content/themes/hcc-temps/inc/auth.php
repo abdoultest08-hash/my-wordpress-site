@@ -192,6 +192,7 @@ add_action( 'template_redirect', function () {
 			}
 			nocache_headers();
 			header( 'X-Accel-Expires: 0' );
+			header( 'X-LiteSpeed-Cache-Control: no-cache' ); // LiteSpeed web server reads this even without the LiteSpeed Cache plugin.
 			return;
 		}
 	}

@@ -42,6 +42,37 @@ function hcc_desk_approve( $id, $keys, $how = 'Approved' ) {
 	}
 }
 
+/**
+ * Reply to a candidate straight from the Messages inbox: sent immediately (no update tray).
+ * Stored as a team message so it shows in the conversation here and in the candidate's file,
+ * emailed and texted to the candidate, and the conversation is marked as read.
+ */
+add_action( 'admin_post_hcc_msg_reply', function () {
+	$id = isset( $_POST['candidate'] ) ? absint( $_POST['candidate'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification
+	if ( ! $id || ! hcc_is_staff() || 'hcc_applicant' !== get_post_type( $id ) || ! check_admin_referer( 'hcc_desk_' . $id ) ) {
+		wp_die( 'Not allowed.', 403 );
+	}
+	$back = hcc_staff_url( array( 'view' => 'messages', 'convo' => $id ) );
+	$text = trim( hcc_field( 'text', 'textarea' ) );
+	if ( '' === $text ) {
+		wp_safe_redirect( $back . '#reply' );
+		exit;
+	}
+	$text   = mb_substr( $text, 0, 2000 );
+	$by     = hcc_staff_name();
+	$msgs   = (array) hcc_meta( $id, 'messages', array() );
+	$msgs[] = array( 'at' => time(), 'by' => $by, 'items' => array( array( 'type' => 'note', 'key' => '', 'label' => '', 'text' => $text, 'by' => $by, 'at' => time() ) ) );
+	hcc_set( $id, 'messages', $msgs );
+	hcc_set( $id, 'cmsg_seen', time() ); // Replying clears the "new message" flag.
+	hcc_email_msg_reply( $id, $text );
+	if ( function_exists( 'hcc_sms_alert' ) ) {
+		hcc_sms_alert( $id, 'update', 'HCC-Temps: Hi ' . hcc_meta( $id, 'first' ) . ', you have a reply from our team. Read it in your portal: ' . hcc_sms_short_portal() );
+	}
+	hcc_log( $id, 'Replied to candidate from Messages (sent): ' . $text );
+	wp_safe_redirect( add_query_arg( 'sent', '1', $back ) . '#reply' );
+	exit;
+} );
+
 /** Items still not approved or completed, optionally only uploaded ones. */
 function hcc_open_items( $id, $only_uploaded = false ) {
 	$out = array();

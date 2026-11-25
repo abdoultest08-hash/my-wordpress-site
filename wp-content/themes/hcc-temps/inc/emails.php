@@ -216,6 +216,19 @@ function hcc_email_update( $id, $queue ) {
 	return hcc_mail( hcc_meta( $id, 'email' ), ( $action ? 'Action needed: ' : '' ) . 'Update on your HCC-Temps registration', $body, array(), hcc_opt( 'email_jobs' ) );
 }
 
+/** A single staff reply sent straight from the Messages inbox (not via the update tray). */
+function hcc_email_msg_reply( $id, $text ) {
+	return hcc_mail(
+		hcc_meta( $id, 'email' ),
+		'A message from the HCC-Temps team',
+		'<p>Hi ' . esc_html( hcc_meta( $id, 'first' ) ) . ',</p><p>You have a new message from our team:</p>'
+			. '<p style="background:#E4F4F2;padding:12px 16px;border-radius:10px">' . nl2br( esc_html( $text ) ) . '</p>'
+			. hcc_button( hcc_portal_url() . '#messages', 'Read and reply in my portal' ),
+		array(),
+		hcc_opt( 'email_jobs' )
+	);
+}
+
 /** How to get missing training: buy the course on the e-learning portal, then upload the certificate. */
 function hcc_training_buy_block() {
 	return '<div style="background:#FDF6DA;border-radius:10px;padding:12px 14px;margin:6px 0 14px">'

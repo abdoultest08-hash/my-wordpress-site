@@ -69,12 +69,7 @@ get_header();
 
 	<section class="section" id="team">
 		<div class="wrap">
-			<div class="sec-head"><span class="eyebrow">Meet the team</span><h2>The people behind HCC-Temps</h2><p>Based in Leeds and London, covering the whole UK.</p></div>
-			<div class="team">
-				<?php foreach ( hcc_team_members() as $m ) : ?>
-					<div class="member<?php echo $m['lead'] ? ' lead' : ''; ?>"><img src="<?php echo esc_url( $m['img'] ); ?>" class="skip-lazy" data-skip-lazy alt="Portrait of <?php echo esc_attr( $m['name'] ); ?>" width="640" height="640" decoding="async"><h3><?php echo esc_html( $m['name'] ); ?></h3><p><?php echo esc_html( $m['role'] ); ?></p></div>
-				<?php endforeach; ?>
-			</div>
+			<div class="sec-head"><span class="eyebrow">Where to find us</span><h2>Based across the UK</h2><p>Offices in Leeds and London, covering the whole country.</p></div>
 			<div class="offices">
 				<div class="office"><h3>Leeds</h3><p><?php echo esc_html( hcc_opt( 'address' ) ); ?></p></div>
 				<div class="office"><h3>London</h3><p>Our London office, serving the capital and the South.</p></div>

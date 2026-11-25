@@ -136,8 +136,19 @@ elseif ( 'dash' === $view ) :
 			</div></div>
 
 <?php elseif ( 'messages' === $view ) :
-	$mq     = hcc_field_get( 'q' );
-	$mtab   = isset( $_GET['mt'] ) && 'all' === $_GET['mt'] ? 'all' : 'unread'; // phpcs:ignore WordPress.Security.NonceVerification
+	$mq      = hcc_field_get( 'q' );
+	$mtab    = isset( $_GET['mt'] ) && 'all' === $_GET['mt'] ? 'all' : 'unread'; // phpcs:ignore WordPress.Security.NonceVerification
+	$open_id = isset( $_GET['convo'] ) ? absint( $_GET['convo'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification
+	if ( $open_id && 'hcc_applicant' !== get_post_type( $open_id ) ) {
+		$open_id = 0;
+	}
+	if ( $open_id ) {
+		$open_unread = hcc_unread_msgs( $open_id );
+		if ( $open_unread ) {
+			hcc_set( $open_id, 'cmsg_seen', time() );
+			hcc_log( $open_id, 'Opened ' . $open_unread . ' new message' . ( $open_unread > 1 ? 's' : '' ) . ' from the candidate' );
+		}
+	}
 	$convos = array();
 	foreach ( $all_ids as $aid ) {
 		$thread = hcc_thread( $aid );
@@ -155,30 +166,64 @@ elseif ( 'dash' === $view ) :
 	uasort( $convos, function ( $a, $b ) { return ( $b['new'] > 0 ) - ( $a['new'] > 0 ) ?: $b['last']['at'] - $a['last']['at']; } );
 	$unread_c = array_filter( $convos, function ( $c ) { return $c['new'] > 0; } );
 	$show     = 'all' === $mtab ? $convos : $unread_c;
+	$keepmt   = 'all' === $mtab ? 'all' : null;
 	?>
-			<div class="s-head" style="margin-top:0"><div><h1>Messages</h1><p>Messages candidates send from their portal. Open one to read the whole conversation and reply; it is marked as read when you open it.</p></div></div>
-			<form class="d-tabs" method="get" action="<?php echo esc_url( hcc_staff_url() ); ?>">
-				<input type="hidden" name="view" value="messages">
-				<a role="tab" aria-selected="<?php echo 'unread' === $mtab ? 'true' : 'false'; ?>" href="<?php echo esc_url( add_query_arg( array_filter( array( 'view' => 'messages', 'q' => $mq ) ), hcc_staff_url() ) ); ?>">Unread (<?php echo count( $unread_c ); ?>)</a>
-				<a role="tab" aria-selected="<?php echo 'all' === $mtab ? 'true' : 'false'; ?>" href="<?php echo esc_url( add_query_arg( array_filter( array( 'view' => 'messages', 'mt' => 'all', 'q' => $mq ) ), hcc_staff_url() ) ); ?>">All conversations (<?php echo count( $convos ); ?>)</a>
-				<?php if ( 'all' === $mtab ) : ?><input type="hidden" name="mt" value="all"><?php endif; ?>
-				<input type="search" name="q" value="<?php echo esc_attr( $mq ); ?>" placeholder="Search name, reference or email" aria-label="Search messages">
-			</form>
-			<div class="p-card"><div class="d-table">
-				<?php if ( $show ) : ?>
-					<div class="d-row d-hd d-msgs"><span>Candidate</span><span>Latest message</span><span>When</span><span></span></div>
-					<?php foreach ( $show as $aid => $c ) : $l = $c['last']; ?>
-						<div class="d-row d-msgs<?php echo $c['new'] ? ' is-new' : ''; ?>">
-							<span><b><?php echo esc_html( hcc_name( $aid ) ); ?></b><?php echo $c['new'] ? ' <em class="new-msg-tag">' . (int) $c['new'] . ' new</em>' : ''; ?><small><?php echo esc_html( hcc_meta( $aid, 'ref' ) . ' · ' . $role_label( $aid ) . ( 'closed' === hcc_state( $aid ) ? ' · closed' : '' ) ); ?></small></span>
-							<span data-l="Latest message"><small class="msg-who"><?php echo esc_html( 'cand' === $l['from'] ? hcc_meta( $aid, 'first' ) . ' wrote' : 'You (' . $l['by'] . ') replied' ); ?></small><?php echo esc_html( mb_strimwidth( wp_strip_all_tags( (string) $l['text'] ), 0, 110, '…' ) ); ?></span>
-							<span data-l="When"><?php echo esc_html( hcc_ago( (int) $l['at'] ) ); ?></span>
-							<span><a class="btn btn-sm <?php echo $c['new'] ? 'btn-navy' : 'btn-ghost'; ?>" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $aid ) ) ); ?>#messages"><?php echo $c['new'] ? 'Open and reply' : 'Open'; ?></a></span>
+			<div class="s-head" style="margin-top:0"><div><h1>Messages</h1><p>Chat with candidates. Open a conversation to read it and reply — your reply is sent straight away (email and text), and also appears in the candidate's file.</p></div></div>
+			<div class="msg-layout<?php echo $open_id ? ' has-open' : ''; ?>">
+				<div class="msg-list">
+					<form class="d-tabs" method="get" action="<?php echo esc_url( hcc_staff_url() ); ?>">
+						<input type="hidden" name="view" value="messages">
+						<a role="tab" aria-selected="<?php echo 'unread' === $mtab ? 'true' : 'false'; ?>" href="<?php echo esc_url( add_query_arg( array_filter( array( 'view' => 'messages', 'q' => $mq ) ), hcc_staff_url() ) ); ?>">Unread (<?php echo count( $unread_c ); ?>)</a>
+						<a role="tab" aria-selected="<?php echo 'all' === $mtab ? 'true' : 'false'; ?>" href="<?php echo esc_url( add_query_arg( array_filter( array( 'view' => 'messages', 'mt' => 'all', 'q' => $mq ) ), hcc_staff_url() ) ); ?>">All (<?php echo count( $convos ); ?>)</a>
+						<input type="search" name="q" value="<?php echo esc_attr( $mq ); ?>" placeholder="Search name, ref or email" aria-label="Search messages">
+						<?php if ( 'all' === $mtab ) : ?><input type="hidden" name="mt" value="all"><?php endif; ?>
+					</form>
+					<div class="p-card msg-rows">
+						<?php if ( $show ) : ?>
+							<?php foreach ( $show as $aid => $c ) : $l = $c['last']; ?>
+								<a class="msg-item<?php echo $c['new'] ? ' is-new' : ''; ?><?php echo $aid === $open_id ? ' is-open' : ''; ?>" href="<?php echo esc_url( add_query_arg( array_filter( array( 'view' => 'messages', 'mt' => $keepmt, 'q' => $mq, 'convo' => $aid ) ), hcc_staff_url() ) ); ?>#reply">
+									<span class="msg-item-top"><b><?php echo esc_html( hcc_name( $aid ) ); ?></b><?php echo $c['new'] ? ' <em class="new-msg-tag">' . (int) $c['new'] . '</em>' : ''; ?><small><?php echo esc_html( hcc_ago( (int) $l['at'] ) ); ?></small></span>
+									<span class="msg-item-sub"><?php echo esc_html( ( 'cand' === $l['from'] ? hcc_meta( $aid, 'first' ) : 'You' ) . ': ' . mb_strimwidth( wp_strip_all_tags( (string) $l['text'] ), 0, 64, '…' ) ); ?></span>
+								</a>
+							<?php endforeach; ?>
+						<?php else : ?>
+							<p class="hint" style="padding:14px 8px"><?php echo $mq ? 'No conversations matching "' . esc_html( $mq ) . '".' : ( 'all' === $mtab ? 'No candidate has sent a message yet.' : 'No unread messages. You are all caught up.' ); ?><?php if ( 'unread' === $mtab && $convos ) : ?> <a href="<?php echo esc_url( hcc_staff_url( array( 'view' => 'messages', 'mt' => 'all' ) ) ); ?>">See all</a><?php endif; ?></p>
+						<?php endif; ?>
+					</div>
+				</div>
+				<div class="msg-convo p-card" id="reply">
+					<?php if ( $open_id ) : $othread = hcc_thread( $open_id ); ?>
+						<div class="msg-convo-head">
+							<a class="msg-back" href="<?php echo esc_url( add_query_arg( array_filter( array( 'view' => 'messages', 'mt' => $keepmt, 'q' => $mq ) ), hcc_staff_url() ) ); ?>">← All</a>
+							<div class="msg-convo-who"><b><?php echo esc_html( hcc_name( $open_id ) ); ?></b><small><?php echo esc_html( hcc_meta( $open_id, 'ref' ) . ' · ' . $role_label( $open_id ) . ( 'closed' === hcc_state( $open_id ) ? ' · closed' : '' ) ); ?></small></div>
+							<a class="btn btn-ghost btn-sm" href="<?php echo esc_url( hcc_staff_url( array( 'candidate' => $open_id ) ) ); ?>">Open file</a>
 						</div>
-					<?php endforeach; ?>
-				<?php else : ?>
-					<p class="hint" style="padding:14px 8px"><?php echo $mq ? 'No conversations matching "' . esc_html( $mq ) . '".' : ( 'all' === $mtab ? 'No candidate has sent a message yet.' : 'No unread messages. You are all caught up.' ); ?><?php if ( 'unread' === $mtab && $convos ) : ?> <a href="<?php echo esc_url( hcc_staff_url( array( 'view' => 'messages', 'mt' => 'all' ) ) ); ?>">See all conversations</a><?php endif; ?></p>
-				<?php endif; ?>
-			</div></div>
+						<?php if ( isset( $_GET['sent'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification ?><p class="msg-sent-ok">✓ Reply sent to <?php echo esc_html( hcc_meta( $open_id, 'first' ) ); ?>.</p><?php endif; ?>
+						<?php if ( $othread ) : ?>
+							<ol class="thread msg-thread">
+								<?php foreach ( array_slice( $othread, -50 ) as $m ) : ?>
+									<li class="<?php echo esc_attr( $m['from'] ); ?>"><span class="who"><?php echo esc_html( ( 'cand' === $m['from'] ? hcc_meta( $open_id, 'first' ) : $m['by'] ) . ' · ' . wp_date( 'j M, H:i', $m['at'] ) ); ?></span><?php echo nl2br( esc_html( $m['text'] ) ); ?></li>
+								<?php endforeach; ?>
+							</ol>
+						<?php else : ?>
+							<p class="hint">No messages yet with <?php echo esc_html( hcc_meta( $open_id, 'first' ) ); ?>. Send the first one below.</p>
+						<?php endif; ?>
+						<?php if ( 'closed' === hcc_state( $open_id ) ) : ?>
+							<p class="hint">This application is closed. Reopen it from the candidate's file to message them.</p>
+						<?php else : ?>
+							<form method="post" action="<?php echo $form_url; ?>" class="msg-reply">
+								<input type="hidden" name="action" value="hcc_msg_reply"><input type="hidden" name="candidate" value="<?php echo (int) $open_id; ?>"><?php wp_nonce_field( 'hcc_desk_' . $open_id, '_wpnonce', true ); ?>
+								<label for="creply" class="screen-reader-text">Reply</label>
+								<textarea id="creply" name="text" rows="2" placeholder="Reply to <?php echo esc_attr( hcc_meta( $open_id, 'first' ) ); ?>…" required></textarea>
+								<button class="btn btn-navy" type="submit">Send</button>
+							</form>
+							<p class="form-note">Sent straight away by email and text, and saved to the candidate's file.</p>
+						<?php endif; ?>
+					<?php else : ?>
+						<div class="msg-empty"><p>Select a conversation on the left to read it and reply.</p></div>
+					<?php endif; ?>
+				</div>
+			</div>
 
 <?php elseif ( 'training' === $view ) :
 	$tlist   = hcc_training_list();
