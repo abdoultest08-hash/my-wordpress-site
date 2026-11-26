@@ -46,12 +46,24 @@ function hcc_code_hash( $id, $code ) {
 	return hash_hmac( 'sha256', (string) $code, wp_salt( 'auth' ) . '|' . (int) $id );
 }
 
-function hcc_reg_send_code( $id ) {
+function hcc_reg_send_code( $id, $force_email = false ) {
 	$code = (string) wp_rand( 100000, 999999 );
 	hcc_set( $id, 'code', hcc_code_hash( $id, $code ) );
 	hcc_set( $id, 'code_exp', time() + 10 * MINUTE_IN_SECONDS );
 	hcc_set( $id, 'code_tries', 0 );
-	hcc_email_code( hcc_meta( $id, 'email' ), hcc_meta( $id, 'first' ), $code );
+	// Text message first (when SMS is set up and a mobile is on file); email is the backup.
+	$via = 'email';
+	if ( ! $force_email && function_exists( 'hcc_sms_codes_on' ) && hcc_sms_codes_on() && function_exists( 'hcc_sms_send' ) ) {
+		$to = hcc_sms_e164( hcc_meta( $id, 'phone' ) );
+		if ( $to && true === hcc_sms_send( $to, 'HCC-Temps: your verification code is ' . $code . '. It expires in 10 minutes.', 'code', $id ) ) {
+			$via = 'sms';
+		}
+	}
+	if ( 'sms' !== $via ) {
+		hcc_email_code( hcc_meta( $id, 'email' ), hcc_meta( $id, 'first' ), $code );
+	}
+	hcc_set( $id, 'code_via', $via );
+	return $via;
 }
 
 /* ---------- Step 1: create the account ---------- */
@@ -136,7 +148,7 @@ add_action( 'admin_post_hcc_reg_verify', function () {
 	delete_post_meta( $id, '_hcc_code' );
 	hcc_set( $id, 'verified', '1' );
 	hcc_set( $id, 'step', max( 3, (int) hcc_meta( $id, 'step', 2 ) ) );
-	hcc_log( $id, 'Email confirmed', 'Candidate' );
+	hcc_log( $id, ( 'sms' === hcc_meta( $id, 'code_via' ) ? 'Phone confirmed by text code' : 'Email confirmed' ), 'Candidate' );
 	hcc_email_welcome( $id );
 	hcc_reg_back( 3 );
 } );
@@ -149,9 +161,10 @@ add_action( 'admin_post_hcc_reg_resend', function () {
 	if ( time() - ( (int) hcc_meta( $id, 'code_exp', 0 ) - 10 * MINUTE_IN_SECONDS ) < 30 ) {
 		hcc_reg_back( 2, array( 'hcc_err' => 'code_wait' ) );
 	}
-	hcc_reg_send_code( $id );
-	hcc_log( $id, 'New email code sent', 'Candidate' );
-	hcc_reg_back( 2, array( 'hcc_ok' => 'resent' ) );
+	$force_email = isset( $_POST['via'] ) && 'email' === $_POST['via']; // phpcs:ignore WordPress.Security.NonceVerification
+	$via         = hcc_reg_send_code( $id, $force_email );
+	hcc_log( $id, 'New ' . ( 'sms' === $via ? 'text' : 'email' ) . ' code sent', 'Candidate' );
+	hcc_reg_back( 2, array( 'hcc_ok' => 'sms' === $via ? 'resent_sms' : 'resent' ) );
 } );
 
 /* ---------- Changing the email address ---------- */

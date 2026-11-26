@@ -399,9 +399,13 @@ function hcc_desk_list( $tab, $search = '' ) {
 	static $ids = null;
 	if ( null === $ids ) {
 		// One query for the list and one for all their details, instead of one per candidate.
-		$q   = new WP_Query( array( 'post_type' => 'hcc_applicant', 'post_status' => 'private', 'posts_per_page' => -1, 'fields' => 'ids', 'orderby' => 'date', 'order' => 'DESC', 'no_found_rows' => true ) );
+		$q   = new WP_Query( array( 'post_type' => 'hcc_applicant', 'post_status' => 'private', 'posts_per_page' => -1, 'fields' => 'ids', 'orderby' => 'date', 'order' => 'DESC', 'no_found_rows' => true, 'cache_results' => false ) );
 		$ids = $q->posts;
 		if ( $ids ) {
+			// Force live reads: some hosts serve stale candidate lists / post meta from a persistent object cache.
+			foreach ( $ids as $pid ) {
+				wp_cache_delete( $pid, 'post_meta' );
+			}
 			update_meta_cache( 'post', $ids );
 		}
 	}

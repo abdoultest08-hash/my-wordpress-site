@@ -14,6 +14,9 @@ if ( ! hcc_is_staff() ) {
 	exit;
 }
 $cid  = isset( $_GET['candidate'] ) ? absint( $_GET['candidate'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification
+if ( $cid ) {
+	wp_cache_delete( $cid, 'post_meta' ); // Force a live read of this candidate: some hosts serve stale post meta from a persistent object cache.
+}
 $view = $cid && 'hcc_applicant' === get_post_type( $cid ) ? 'folder' : ( isset( $_GET['view'] ) && in_array( $_GET['view'], apply_filters( 'hcc_staff_views', array( 'team', 'training', 'messages' ) ), true ) ? sanitize_key( $_GET['view'] ) : 'dash' ); // phpcs:ignore WordPress.Security.NonceVerification
 $msg  = isset( $_GET['msg'] ) ? sanitize_key( $_GET['msg'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 $msgs = array(

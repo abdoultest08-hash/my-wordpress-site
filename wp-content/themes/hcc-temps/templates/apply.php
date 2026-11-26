@@ -123,17 +123,18 @@ get_header();
 
 				<?php elseif ( 2 === $step ) : ?>
 				<div class="form-card wiz-step">
-					<h2>Check your email</h2>
-					<p class="sub">We've sent a 6-digit code to <b><?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?></b>. Enter it below to confirm your email address. The code works for 10 minutes.</p>
-					<?php if ( isset( $_GET['hcc_ok'] ) ) : // phpcs:ignore ?><p class="form-ok"><?php echo 'email_changed' === $_GET['hcc_ok'] ? 'Email changed. ' : ''; // phpcs:ignore ?>A new code is on its way to <?php echo esc_html( hcc_meta( $aid, 'email' ) ); ?>. Only the newest code works.</p><?php endif; ?>
+					<?php $code_via = 'sms' === hcc_meta( $aid, 'code_via' ) ? 'sms' : 'email'; ?>
+					<h2><?php echo 'sms' === $code_via ? 'Check your phone' : 'Check your email'; ?></h2>
+					<p class="sub">We've sent a 6-digit code <?php echo 'sms' === $code_via ? 'by text to <b>' . esc_html( hcc_meta( $aid, 'phone' ) ) . '</b>' : 'by email to <b>' . esc_html( hcc_meta( $aid, 'email' ) ) . '</b>'; // phpcs:ignore ?>. Enter it below to confirm your account. The code works for 10 minutes.</p>
+					<?php if ( isset( $_GET['hcc_ok'] ) ) : // phpcs:ignore ?><p class="form-ok"><?php echo 'email_changed' === $_GET['hcc_ok'] ? 'Email changed. ' : ''; // phpcs:ignore ?>A new code is on its way<?php echo 'resent_sms' === ( $_GET['hcc_ok'] ?? '' ) ? ' by text' : ( 'resent' === ( $_GET['hcc_ok'] ?? '' ) ? ' by email' : '' ); // phpcs:ignore ?>. Only the newest code works.</p><?php endif; ?>
 					<form method="post" action="<?php echo $form_url; ?>" class="code-form">
 						<input type="hidden" name="action" value="hcc_reg_verify"><?php echo $nonce( 'hcc_reg_verify' ); // phpcs:ignore ?>
 						<div class="f" style="max-width:260px"><label for="code">6-digit code</label><input class="code-input" type="text" id="code" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" pattern="[0-9 ]*" required></div>
-						<div class="form-actions"><button class="btn btn-navy" type="submit">Verify email</button></div>
+						<div class="form-actions"><button class="btn btn-navy" type="submit">Verify</button></div>
 					</form>
 					<form method="post" action="<?php echo $form_url; ?>" style="margin-top:14px">
 						<input type="hidden" name="action" value="hcc_reg_resend"><?php echo $nonce( 'hcc_reg_resend' ); // phpcs:ignore ?>
-						<p class="form-note">Not arrived? Check your spam folder or <button class="link-btn" type="submit">send a new code</button>.</p>
+						<p class="form-note">Not arrived? Check your <?php echo 'sms' === $code_via ? 'text messages' : 'spam folder'; ?> or <button class="link-btn" type="submit">send a new code</button><?php if ( 'sms' === $code_via ) : ?>, or <button class="link-btn" type="submit" name="via" value="email">send the code by email instead</button><?php endif; ?>.</p>
 					</form>
 					<details class="email-fix"<?php echo 0 === strpos( $err, 'email_' ) ? ' open' : ''; ?>>
 						<summary>Wrong email address? Change it</summary>
